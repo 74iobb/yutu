@@ -5406,7 +5406,7 @@ body {
    ========================================================================== */
 
 body {
-  background: #f2efe8;
+  background: #040610;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
 }
@@ -5427,53 +5427,18 @@ body {
   --y-brand-2: #126b59;
   --y-amber: #f5a03b;
   overflow: clip;
-  /* 纸面本身也是彩玻璃：预模糊底图以 soft-light 叠在暖白纸上，
-     整块 #yutu2 从顶到底都有颜色，而不是只在页面边缘 */
-  background-color: #f7f3ea;
-  background-image:
+  /* 夜空中的暖白纸面：星空白底留在纸外，纸内保持暖白可读 */
+  background:
     radial-gradient(
-      72% 62% at 8% 3%,
-      rgba(196, 52, 62, 0.1),
-      transparent 62%
+      120% 80% at 100% 0%,
+      rgba(255, 252, 246, 0.94),
+      transparent 60%
     ),
-    radial-gradient(
-      64% 58% at 94% 6%,
-      rgba(245, 160, 59, 0.12),
-      transparent 64%
-    ),
-    url('./assets/yutu-glass-bg.jpg');
-  background-image:
-    radial-gradient(
-      72% 62% at 8% 3%,
-      rgba(196, 52, 62, 0.1),
-      transparent 62%
-    ),
-    radial-gradient(
-      64% 58% at 94% 6%,
-      rgba(245, 160, 59, 0.12),
-      transparent 64%
-    ),
-    image-set(
-      url('./assets/yutu-glass-bg.webp') type('image/webp'),
-      url('./assets/yutu-glass-bg.jpg') type('image/jpeg')
-    );
-  background-size:
-    auto,
-    auto,
-    118% 108%;
-  background-position:
-    50% 50%,
-    50% 50%,
-    42% 50%;
-  background-repeat: no-repeat;
-  background-blend-mode:
-    normal,
-    normal,
-    color;
-  animation: yShellGlass 64s ease-in-out infinite alternate;
+    linear-gradient(180deg, #faf7f0 0%, #f4f0e8 100%);
   box-shadow:
-    0 1px 0 rgba(255, 255, 255, 0.8) inset,
-    0 24px 60px -40px rgba(35, 34, 31, 0.5);
+    0 1px 0 rgba(255, 255, 255, 0.85) inset,
+    0 30px 80px -40px rgba(2, 4, 10, 0.8),
+    0 0 0 1px rgba(170, 196, 255, 0.06);
   font-feature-settings: 'tnum' 1;
 }
 
@@ -5489,86 +5454,81 @@ body {
   overflow: hidden;
   pointer-events: none;
 }
-/* 全屏彩绘玻璃光场：预模糊底图 + 缓慢漂移，作为整页的彩色底色 */
+/* 全屏星空：星点图层叠在深空渐变与星云之上，缓慢漂移 */
 .y-ambient::before {
   content: '';
   position: absolute;
-  inset: -8%;
-  background-color: #efd9c8;
-  background-image: url('./assets/yutu-glass-bg.jpg');
+  inset: -6%;
+  background-color: #040815;
   background-image:
-    image-set(
-      url('./assets/yutu-glass-bg.webp') type('image/webp'),
-      url('./assets/yutu-glass-bg.jpg') type('image/jpeg')
-    );
+    url('./assets/yutu-starfield.webp'),
+    radial-gradient(
+      60% 55% at 22% 28%,
+      rgba(47, 90, 168, 0.42),
+      transparent 66%
+    ),
+    radial-gradient(
+      55% 50% at 78% 72%,
+      rgba(106, 60, 148, 0.3),
+      transparent 70%
+    ),
+    radial-gradient(
+      45% 45% at 62% 16%,
+      rgba(31, 122, 134, 0.24),
+      transparent 68%
+    ),
+    radial-gradient(
+      40% 40% at 8% 86%,
+      rgba(181, 122, 58, 0.16),
+      transparent 70%
+    ),
+    linear-gradient(160deg, #040815 0%, #0a1226 42%, #131f3c 72%, #070b18 100%);
   background-size: cover;
-  background-position: 50% 46%;
-  filter: saturate(1.06);
-  opacity: 0.92;
-  transform: scale(1.06) rotate(-1deg);
-  animation: yGlassDrift 58s ease-in-out infinite alternate;
+  background-position: 50% 50%;
+  background-repeat: no-repeat;
+  transform: scale(1.04) rotate(-0.5deg);
+  animation: yStarDrift 120s ease-in-out infinite alternate;
   pointer-events: none;
 }
-/* 光场的明暗呼吸：不改变色相，只让亮部更亮、暗部更深 */
+/* 闪烁星层：短周期明暗，让星空有呼吸 */
 .y-ambient::after {
   content: '';
   position: absolute;
   inset: 0;
-  background:
+  background-image:
+    url('./assets/yutu-starfield-twinkle.webp'),
     radial-gradient(
-      56% 48% at 22% 18%,
-      rgba(255, 247, 225, 0.38),
+      50% 46% at 24% 30%,
+      rgba(88, 126, 224, 0.2),
       transparent 70%
     ),
     radial-gradient(
-      52% 46% at 82% 24%,
-      rgba(255, 190, 120, 0.22),
+      46% 44% at 80% 74%,
+      rgba(128, 76, 180, 0.18),
       transparent 72%
-    ),
-    radial-gradient(
-      48% 46% at 84% 82%,
-      rgba(26, 68, 140, 0.24),
-      transparent 74%
-    ),
-    radial-gradient(
-      52% 46% at 16% 82%,
-      rgba(30, 96, 74, 0.24),
-      transparent 72%
-    ),
-    linear-gradient(180deg, rgba(255, 253, 248, 0.1), rgba(18, 16, 20, 0.2));
-  mix-blend-mode: soft-light;
-  opacity: 0.7;
-  animation: yGlassBreathe 26s ease-in-out infinite alternate;
+    );
+  background-size: cover;
+  background-position: 50% 50%;
+  background-repeat: no-repeat;
+  mix-blend-mode: screen;
+  opacity: 0.5;
+  animation: yStarTwinkle 9s ease-in-out infinite alternate;
   pointer-events: none;
 }
-@keyframes yGlassDrift {
+@keyframes yStarDrift {
   from {
-    transform: scale(1.06) translate3d(-1%, -0.6%, 0) rotate(-1deg);
+    transform: scale(1.04) translate3d(-0.8%, -0.5%, 0) rotate(-0.5deg);
   }
   to {
-    transform: scale(1.13) translate3d(1%, 0.6%, 0) rotate(1deg);
+    transform: scale(1.1) translate3d(0.8%, 0.5%, 0) rotate(0.5deg);
   }
 }
-@keyframes yGlassBreathe {
+@keyframes yStarTwinkle {
   from {
-    opacity: 0.58;
+    opacity: 0.38;
   }
   to {
-    opacity: 0.86;
-  }
-}
-@keyframes yShellGlass {
-  from {
-    background-position:
-      50% 50%,
-      50% 50%,
-      42% 48%;
-  }
-  to {
-    background-position:
-      50% 50%,
-      50% 50%,
-      58% 52%;
+    opacity: 0.72;
   }
 }
 .y-ambient i {
@@ -5576,7 +5536,7 @@ body {
   display: block;
   border-radius: 50%;
   filter: blur(70px);
-  opacity: 0.42;
+  opacity: 0.34;
   will-change: transform;
 }
 .y-ambient i:nth-child(1) {
@@ -5584,7 +5544,7 @@ body {
   height: 46vw;
   left: -14vw;
   top: -18vw;
-  background: radial-gradient(circle, rgba(245, 160, 59, 0.3), transparent 66%);
+  background: radial-gradient(circle, rgba(70, 110, 210, 0.28), transparent 66%);
   animation: y-float-a 24s ease-in-out infinite alternate;
 }
 .y-ambient i:nth-child(2) {
@@ -5592,7 +5552,7 @@ body {
   height: 54vw;
   right: -20vw;
   top: 16vh;
-  background: radial-gradient(circle, rgba(110, 175, 145, 0.26), transparent 68%);
+  background: radial-gradient(circle, rgba(130, 80, 180, 0.24), transparent 68%);
   animation: y-float-b 28s ease-in-out infinite alternate;
 }
 .y-ambient i:nth-child(3) {
@@ -5600,13 +5560,17 @@ body {
   height: 40vw;
   left: 24vw;
   bottom: -24vw;
-  background: radial-gradient(circle, rgba(31, 111, 178, 0.14), transparent 70%);
+  background: radial-gradient(circle, rgba(40, 140, 150, 0.2), transparent 70%);
   animation: y-float-c 32s ease-in-out infinite alternate;
 }
 .y-page > #yutu2,
 .y-page > .y-page-foot {
   position: relative;
   z-index: 1;
+}
+.y-page > .y-page-foot {
+  color: rgba(220, 230, 255, 0.72);
+  text-shadow: 0 1px 10px rgba(0, 0, 0, 0.6);
 }
 .y-page > #yutu2 {
   box-shadow:
@@ -5621,8 +5585,8 @@ body {
   z-index: 60;
   background: linear-gradient(
     180deg,
-    rgba(253, 251, 246, 0.72),
-    rgba(246, 242, 234, 0.62)
+    rgba(253, 251, 246, 0.9),
+    rgba(246, 242, 234, 0.84)
   );
   -webkit-backdrop-filter: blur(18px) saturate(155%);
   backdrop-filter: blur(18px) saturate(155%);
@@ -7820,7 +7784,7 @@ html.y-motion-ready #yutu2 .y-card.y-in {
   position: absolute;
   inset: -14%;
   overflow: hidden;
-  opacity: 0.55;
+  opacity: 0.28;
   transform: translate3d(0, calc(var(--y-scroll, 0) * -0.06px), 0);
   -webkit-mask-image: radial-gradient(
     ellipse 64% 56% at 50% 20%,
@@ -7841,8 +7805,8 @@ html.y-motion-ready #yutu2 .y-card.y-in {
   position: absolute;
   inset: -64px;
   background-image:
-    linear-gradient(rgba(14, 91, 76, 0.06) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(14, 91, 76, 0.06) 1px, transparent 1px);
+    linear-gradient(rgba(150, 180, 255, 0.07) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(150, 180, 255, 0.07) 1px, transparent 1px);
   background-size: 64px 64px;
   animation: yGridDrift 44s linear infinite;
   will-change: transform;
@@ -7862,9 +7826,9 @@ html.y-motion-ready #yutu2 .y-card.y-in {
   border-radius: 50%;
   background: radial-gradient(
     circle,
-    rgba(245, 160, 59, 0.18) 0%,
-    rgba(110, 175, 145, 0.12) 38%,
-    rgba(31, 111, 178, 0.06) 56%,
+    rgba(200, 220, 255, 0.18) 0%,
+    rgba(120, 90, 200, 0.12) 38%,
+    rgba(40, 140, 150, 0.08) 56%,
     transparent 70%
   );
   filter: blur(26px);
