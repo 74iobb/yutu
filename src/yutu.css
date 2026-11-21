@@ -12493,3 +12493,20 @@ html.y-motion-off #yutu2 .y-step-stage.is-page-dragging {
     ),
     linear-gradient(180deg, rgba(4, 8, 18, 0.12) 0%, rgba(4, 8, 18, 0.55) 100%);
 }
+
+/* 头部「平台数据表 x/5」：.y-sync-wrap .y-chip 的旧浅色规则优先级更高，单独覆盖 */
+#yutu2 .y-sync-wrap .y-chip {
+  background: rgba(18, 30, 56, 0.72);
+  border-color: var(--y-line2);
+  color: var(--y-ink2);
+}
+#yutu2 .y-sync-wrap .y-chip.y-chip-c {
+  background: rgba(18, 30, 56, 0.72);
+  border-color: var(--y-line2);
+  color: var(--y-ink2);
+}
+#yutu2 .y-sync-wrap .y-chip .y-sync-dot.is-on {
+  background: #6fd6a8;
+  box-shadow: 0 0 0 2px rgba(111, 214, 168, 0.16);
+  animation: none;
+}
