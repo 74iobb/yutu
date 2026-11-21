@@ -1,0 +1,1893 @@
+<div id="yutu">
+<style>
+#yutu{
+  --yt-bg:#f6f4ef; --yt-surface:#fffefb; --yt-surface-2:#f1eee7;
+  --yt-ink:#23221f; --yt-ink-2:#5c5850; --yt-muted:#8d887e;
+  --yt-line:#e0dbd1; --yt-line-2:#cfc8bb;
+  --yt-accent:#1f6fb2; --yt-accent-soft:#e7f0f8;
+  --yt-warm:#a9762f; --yt-calm:#4f7a58;
+  --yt-r:10px; --yt-r-s:6px;
+  background:var(--yt-bg); color:var(--yt-ink);
+  font-family:"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Noto Sans CJK SC",system-ui,sans-serif;
+  font-size:14px; line-height:1.72; border:1px solid var(--yt-line);
+  border-radius:14px; overflow:hidden;
+}
+#yutu *{box-sizing:border-box}
+#yutu h1,#yutu h2,#yutu h3,#yutu h4,#yutu p,#yutu ul,#yutu ol,#yutu li{margin:0;padding:0;list-style:none}
+#yutu button{font:inherit;color:inherit}
+
+#yutu .yt-head{display:flex;flex-wrap:wrap;gap:14px;align-items:flex-start;justify-content:space-between;
+  padding:18px 22px 14px;background:var(--yt-surface);border-bottom:1px solid var(--yt-line)}
+#yutu .yt-brand{display:flex;gap:12px;align-items:center;min-width:0}
+#yutu .yt-mascot{width:42px;height:42px;flex:0 0 auto}
+#yutu .yt-title{font-size:21px;font-weight:650;letter-spacing:.04em}
+#yutu .yt-slogan{font-size:13px;color:var(--yt-accent);letter-spacing:.01em;margin:1px 0 2px;line-height:1.5}
+#yutu .yt-sub{font-size:12.5px;color:var(--yt-muted)}
+#yutu .yt-note{max-width:430px;font-size:12px;color:var(--yt-ink-2);background:var(--yt-surface-2);
+  border:1px solid var(--yt-line);border-radius:var(--yt-r-s);padding:8px 11px;line-height:1.6}
+
+#yutu .yt-rail{display:flex;gap:4px;overflow-x:auto;padding:10px 18px 0;background:var(--yt-surface);
+  border-bottom:1px solid var(--yt-line);scrollbar-width:thin}
+#yutu .yt-tab{flex:0 0 auto;background:none;border:0;border-bottom:2px solid transparent;
+  padding:8px 13px 11px;font-size:13.5px;color:var(--yt-ink-2);cursor:pointer;border-radius:var(--yt-r-s) var(--yt-r-s) 0 0}
+#yutu .yt-tab:hover{color:var(--yt-ink);background:var(--yt-surface-2)}
+#yutu .yt-tab[aria-selected="true"]{color:var(--yt-accent);border-bottom-color:var(--yt-accent);font-weight:600}
+#yutu .yt-tab:focus-visible,#yutu button:focus-visible,#yutu input:focus-visible,
+#yutu select:focus-visible,#yutu textarea:focus-visible{outline:2px solid var(--yt-accent);outline-offset:2px}
+#yutu .yt-tab-flag{display:inline-block;margin-left:6px;min-width:17px;padding:0 5px;border-radius:9px;
+  background:var(--yt-accent-soft);color:var(--yt-accent);font-size:11px;font-weight:600;text-align:center}
+
+#yutu .yt-main{padding:18px 22px 24px}
+#yutu .yt-screen[hidden]{display:none}
+#yutu .yt-scr-head{margin-bottom:14px}
+#yutu .yt-scr-head h2{font-size:16.5px;font-weight:620}
+#yutu .yt-scr-head p{font-size:12.5px;color:var(--yt-muted);margin-top:3px}
+
+#yutu .yt-card{background:var(--yt-surface);border:1px solid var(--yt-line);border-radius:var(--yt-r);padding:16px 18px}
+#yutu .yt-card + .yt-card{margin-top:14px}
+#yutu .yt-card h3{font-size:14px;font-weight:620;margin-bottom:9px}
+#yutu .yt-card h3 .yt-mini{font-weight:400;color:var(--yt-muted);font-size:12px;margin-left:7px}
+#yutu .yt-grid-2{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:14px;align-items:start}
+#yutu .yt-grid-s{display:grid;grid-template-columns:repeat(auto-fit,minmax(215px,1fr));gap:10px 18px}
+
+#yutu .yt-btn{background:var(--yt-surface);border:1px solid var(--yt-line-2);border-radius:var(--yt-r-s);
+  padding:7px 13px;font-size:13px;cursor:pointer;transition:background .14s,border-color .14s}
+#yutu .yt-btn:hover{background:var(--yt-surface-2);border-color:var(--yt-muted)}
+#yutu .yt-btn-main{background:var(--yt-accent);border-color:var(--yt-accent);color:#fff}
+#yutu .yt-btn-main:hover{background:#1a5f99;border-color:#1a5f99}
+#yutu .yt-btn-s{padding:4px 9px;font-size:12px}
+#yutu .yt-btn:disabled{opacity:.45;cursor:not-allowed}
+#yutu .yt-btn-row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+
+#yutu .yt-dim{padding:9px 0;border-bottom:1px dashed var(--yt-line)}
+#yutu .yt-dim:last-child{border-bottom:0}
+#yutu .yt-dim-top{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+#yutu .yt-dim-name{font-size:13px;font-weight:600}
+#yutu .yt-dim-val{font-size:12px;color:var(--yt-accent);font-variant-numeric:tabular-nums}
+#yutu .yt-dim input[type=range]{width:100%;margin:5px 0 2px;accent-color:var(--yt-accent)}
+#yutu .yt-dim-ends{display:flex;justify-content:space-between;font-size:11px;color:var(--yt-muted)}
+
+#yutu textarea,#yutu input[type=text],#yutu select{width:100%;background:var(--yt-surface);
+  border:1px solid var(--yt-line-2);border-radius:var(--yt-r-s);padding:7px 9px;font:inherit;font-size:13px;color:var(--yt-ink)}
+#yutu textarea{min-height:68px;resize:vertical;line-height:1.65}
+#yutu label{display:block;font-size:12.5px;color:var(--yt-ink-2);margin-bottom:4px}
+
+#yutu .yt-mapwrap{background:var(--yt-surface);border:1px solid var(--yt-line);border-radius:var(--yt-r);padding:10px 10px 4px}
+
+/* 地理地图 */
+#yutu .yt-geo{background:var(--yt-surface-2);border:1px solid var(--yt-line);border-radius:var(--yt-r-s);padding:6px 6px 2px}
+#yutu .yt-geo svg{width:100%;height:auto;display:block;touch-action:manipulation}
+#yutu .yt-geo .yt-land{fill:#fffefb;stroke:var(--yt-line-2);stroke-width:1;stroke-linejoin:round}
+#yutu .yt-city{cursor:pointer}
+#yutu .yt-city circle{transition:r .12s,fill .12s}
+#yutu .yt-city:hover circle.yt-city-hit{fill:rgba(31,111,178,.14)}
+#yutu .yt-city:focus{outline:none}
+#yutu .yt-city:focus-visible circle.yt-city-hit{fill:rgba(31,111,178,.2);stroke:var(--yt-accent);stroke-width:1.5}
+#yutu .yt-geo-tip{min-height:18px;font-size:11.5px;color:var(--yt-ink-2);padding:4px 4px 2px;line-height:1.6}
+#yutu .yt-geo-sum{display:grid;grid-template-columns:repeat(auto-fit,minmax(118px,1fr));gap:7px;margin-top:9px}
+#yutu .yt-geo-cell{border:1px solid var(--yt-line);border-radius:var(--yt-r-s);background:var(--yt-surface);padding:7px 9px}
+#yutu .yt-geo-cell b{display:block;font-size:11px;color:var(--yt-muted);font-weight:500}
+#yutu .yt-geo-cell span{font-size:15px;font-weight:620;font-variant-numeric:tabular-nums}
+#yutu .yt-seg{display:inline-flex;border:1px solid var(--yt-line-2);border-radius:var(--yt-r-s);overflow:hidden}
+#yutu .yt-seg label{margin:0;display:inline-flex}
+#yutu .yt-seg input{position:absolute;opacity:0;pointer-events:none}
+#yutu .yt-seg span{display:block;padding:7px 12px;font-size:12.5px;cursor:pointer;background:var(--yt-surface);
+  color:var(--yt-ink-2);border-right:1px solid var(--yt-line-2)}
+#yutu .yt-seg label:last-child span{border-right:0}
+#yutu .yt-seg span:hover{background:var(--yt-surface-2)}
+#yutu .yt-seg input:checked + span{background:var(--yt-accent);color:#fff}
+#yutu .yt-seg input:focus-visible + span{outline:2px solid var(--yt-accent);outline-offset:-2px}
+#yutu .yt-derived{border:1px dashed var(--yt-line-2);border-radius:var(--yt-r-s);background:var(--yt-surface-2);
+  padding:9px 11px;font-size:12.5px;color:var(--yt-ink-2);line-height:1.7}
+#yutu .yt-derived b{color:var(--yt-ink)}
+#yutu .yt-mig{border:1px solid var(--yt-line);border-left:3px solid var(--yt-warm);border-radius:var(--yt-r-s);
+  background:var(--yt-surface);padding:10px 12px;margin-top:9px}
+#yutu .yt-legend{display:flex;flex-wrap:wrap;gap:6px 14px;padding:8px 4px 6px;font-size:11.5px;color:var(--yt-ink-2)}
+#yutu .yt-legend span{display:inline-flex;align-items:center;gap:5px}
+#yutu .yt-dot{width:9px;height:9px;border-radius:50%;flex:0 0 auto}
+#yutu .yt-formula{font-size:11.5px;color:var(--yt-muted);padding:0 4px 8px;line-height:1.7}
+
+#yutu .yt-kv{font-size:12.5px;color:var(--yt-ink-2)}
+#yutu .yt-kv li{padding:3px 0;display:flex;gap:8px}
+#yutu .yt-kv b{flex:0 0 76px;font-weight:600;color:var(--yt-ink)}
+#yutu .yt-bul li{position:relative;padding:3px 0 3px 15px;font-size:13px;color:var(--yt-ink-2)}
+#yutu .yt-bul li:before{content:"";position:absolute;left:3px;top:13px;width:4px;height:4px;border-radius:50%;background:var(--yt-line-2)}
+#yutu .yt-steps li{position:relative;padding:5px 0 5px 24px;font-size:13px;color:var(--yt-ink-2)}
+#yutu .yt-steps li>i{position:absolute;left:0;top:7px;width:17px;height:17px;border-radius:50%;
+  background:var(--yt-accent-soft);color:var(--yt-accent);font-size:11px;font-style:normal;font-weight:600;
+  display:grid;place-items:center}
+
+#yutu .yt-chip{display:inline-block;padding:1px 8px;border-radius:9px;font-size:11.5px;
+  border:1px solid var(--yt-line-2);background:var(--yt-surface-2);color:var(--yt-ink-2);margin:2px 5px 2px 0}
+#yutu .yt-chip-b{background:var(--yt-accent-soft);border-color:#c6dcee;color:var(--yt-accent)}
+#yutu .yt-chip-w{background:#f6eedf;border-color:#e4d4b4;color:var(--yt-warm)}
+#yutu .yt-chip-c{background:#e8f0e9;border-color:#cadfcd;color:var(--yt-calm)}
+
+#yutu .yt-task{border:1px solid var(--yt-line);border-radius:var(--yt-r-s);padding:11px 13px;background:var(--yt-surface)}
+#yutu .yt-task + .yt-task{margin-top:9px}
+#yutu .yt-task.is-hold{background:var(--yt-surface-2)}
+#yutu .yt-task.is-drop{opacity:.6}
+#yutu .yt-task-top{display:flex;gap:10px;justify-content:space-between;align-items:flex-start}
+#yutu .yt-task-ttl{font-size:13.5px;font-weight:600;line-height:1.55}
+#yutu .yt-task-meta{margin-top:7px;font-size:12px;color:var(--yt-muted);line-height:1.7}
+#yutu .yt-task-meta b{color:var(--yt-ink-2);font-weight:600}
+#yutu .yt-task-act{display:flex;gap:7px;align-items:center;flex:0 0 auto}
+#yutu .yt-task-act select{width:auto;min-width:96px;font-size:12px;padding:4px 7px}
+
+#yutu .yt-empty{padding:22px 16px;text-align:center;color:var(--yt-muted);font-size:13px;
+  border:1px dashed var(--yt-line-2);border-radius:var(--yt-r-s);background:var(--yt-surface-2)}
+#yutu .yt-say{display:flex;gap:10px;align-items:flex-start;background:var(--yt-accent-soft);
+  border:1px solid #d3e4f1;border-radius:var(--yt-r-s);padding:10px 12px;font-size:12.5px;color:#1d4f78;line-height:1.7}
+#yutu .yt-say svg{width:22px;height:22px;flex:0 0 auto;margin-top:1px}
+#yutu .yt-flash{font-size:12.5px;color:var(--yt-calm);min-height:20px;padding-top:2px}
+
+#yutu .yt-opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin-top:4px}
+#yutu .yt-opt{display:flex;gap:8px;align-items:flex-start;border:1px solid var(--yt-line-2);
+  border-radius:var(--yt-r-s);padding:9px 11px;background:var(--yt-surface);cursor:pointer;font-size:13px;margin:0}
+#yutu .yt-opt:hover{background:var(--yt-surface-2)}
+#yutu .yt-opt input{margin:4px 0 0;accent-color:var(--yt-accent)}
+#yutu .yt-opt em{display:block;font-style:normal;font-size:11.5px;color:var(--yt-muted);line-height:1.55}
+
+#yutu .yt-vic{border:1px solid var(--yt-line);border-left:3px solid var(--yt-accent);
+  border-radius:var(--yt-r-s);padding:11px 13px;background:var(--yt-surface)}
+#yutu .yt-vic + .yt-vic{margin-top:9px}
+#yutu .yt-vic-top{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:baseline}
+#yutu .yt-vic-ts{font-size:11.5px;color:var(--yt-muted);font-variant-numeric:tabular-nums}
+#yutu .yt-vic-body{margin-top:6px;font-size:12.5px;color:var(--yt-ink-2);line-height:1.7}
+#yutu .yt-cmp{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px;margin-top:10px}
+#yutu .yt-cmp figure{margin:0;border:1px solid var(--yt-line);border-radius:var(--yt-r-s);padding:9px;background:var(--yt-surface)}
+#yutu .yt-cmp figcaption{font-size:11.5px;color:var(--yt-muted);margin-top:5px;text-align:center}
+#yutu .yt-cmp svg{width:100%;height:auto;display:block}
+
+#yutu .yt-pool{border:1px solid var(--yt-line);border-radius:var(--yt-r-s);padding:11px 13px;background:var(--yt-surface)}
+#yutu .yt-pool + .yt-pool{margin-top:9px}
+#yutu .yt-meter{height:5px;border-radius:3px;background:var(--yt-surface-2);overflow:hidden;margin:7px 0 4px}
+#yutu .yt-meter i{display:block;height:100%;background:var(--yt-accent);border-radius:3px}
+#yutu .yt-num{font-variant-numeric:tabular-nums}
+
+@media (max-width:760px){
+  #yutu .yt-grid-2{grid-template-columns:minmax(0,1fr)}
+  #yutu .yt-head{padding:14px 15px 12px}
+  #yutu .yt-main{padding:15px 15px 20px}
+  #yutu .yt-rail{padding:9px 12px 0}
+  #yutu .yt-note{max-width:none}
+}
+@media (max-width:520px){
+  #yutu .yt-main{padding:13px 10px 18px}
+  #yutu .yt-card{padding:13px 12px}
+  #yutu .yt-rail{padding:9px 8px 0}
+  #yutu .yt-task{padding:11px 11px}
+  /* 窄屏：控件组换行到标题下方，标题独占整行 */
+  #yutu .yt-task-top{flex-direction:column;align-items:stretch;gap:9px}
+  #yutu .yt-task-act{width:100%;gap:8px}
+  #yutu .yt-task-act select{flex:1 1 auto;min-width:0;min-height:42px;font-size:13px}
+  #yutu .yt-task-act .yt-btn{flex:0 0 auto;min-height:42px;padding:0 15px;font-size:13px}
+  #yutu .yt-btn{min-height:40px}
+  #yutu .yt-btn-s{min-height:36px}
+  #yutu .yt-tab{min-height:40px}
+  #yutu .yt-task-ttl,#yutu .yt-task-meta{word-break:keep-all;line-break:strict;overflow-wrap:break-word}
+}
+@media (prefers-reduced-motion:reduce){
+  #yutu .yt-btn{transition:none}
+}
+</style>
+
+<div class="yt-head">
+  <div class="yt-brand">
+    <svg class="yt-mascot" viewBox="0 0 48 48" aria-hidden="true">
+      <circle cx="24" cy="24" r="23" fill="#e7f0f8" stroke="#c6dcee"/>
+      <path d="M11 19c0-6 6-10 13-10s13 4 13 10c0 3-1 5-2 7 1 3 1 7-1 10-3 4-17 4-20 0-2-3-2-7-1-10-1-2-2-4-2-7z" fill="#fffefb" stroke="#8d887e" stroke-width="1.2"/>
+      <path d="M11.5 16.5 8 10.5l7 1.8zM36.5 16.5 40 10.5l-7 1.8z" fill="#cfc8bb" stroke="#8d887e" stroke-width="1.1"/>
+      <ellipse cx="18.5" cy="23" rx="3.5" ry="3.9" fill="#23221f"/>
+      <ellipse cx="29.5" cy="23" rx="3.5" ry="3.9" fill="#23221f"/>
+      <circle cx="19.6" cy="21.8" r="1.2" fill="#fffefb"/><circle cx="30.6" cy="21.8" r="1.2" fill="#fffefb"/>
+      <ellipse cx="24" cy="30.5" rx="3.6" ry="2.6" fill="#f1eee7" stroke="#8d887e" stroke-width="1"/>
+      <path d="M24 32.6v2.2" stroke="#8d887e" stroke-width="1"/>
+    </svg>
+    <div>
+      <h1 class="yt-title">域途</h1>
+      <p class="yt-slogan">远方是方向，不是终点；计划是草稿，由你改写</p>
+      <p class="yt-sub">多维沃罗诺伊体验式生涯陪伴系统 · 核心闭环原型</p>
+    </div>
+  </div>
+  <p class="yt-note">原型演示用虚构数据：节点经验、困扰清单与同伴复盘均为示意内容，非真实知乎检索结果。正式版本由 zhihu-cli 检索填充并保留原文出处。</p>
+</div>
+
+<div class="yt-rail" role="tablist" aria-label="域途模块">
+  <button type="button" class="yt-tab" role="tab" id="yt-tab-intake" aria-controls="yt-scr-intake" aria-selected="true">① 位置学习</button>
+  <button type="button" class="yt-tab" role="tab" id="yt-tab-map" aria-controls="yt-scr-map" aria-selected="false">② 环境地图</button>
+  <button type="button" class="yt-tab" role="tab" id="yt-tab-bench" aria-controls="yt-scr-bench" aria-selected="false">③ 体验工作台<span class="yt-tab-flag" id="yt-flag-bench">0</span></button>
+  <button type="button" class="yt-tab" role="tab" id="yt-tab-stop" aria-controls="yt-scr-stop" aria-selected="false">④ 停靠驿站</button>
+  <button type="button" class="yt-tab" role="tab" id="yt-tab-wall" aria-controls="yt-scr-wall" aria-selected="false">⑤ 胜利档案墙<span class="yt-tab-flag" id="yt-flag-wall">0</span></button>
+  <button type="button" class="yt-tab" role="tab" id="yt-tab-peer" aria-controls="yt-scr-peer" aria-selected="false">⑥ 同伴经验域</button>
+</div>
+
+<div class="yt-main">
+
+  <section class="yt-screen" id="yt-scr-intake" role="tabpanel" aria-labelledby="yt-tab-intake">
+    <div class="yt-scr-head">
+      <h2>位置学习：先识别你当下处在什么位置</h2>
+      <p>地理位置由地图选点客观导出，其余维度采用区间滑动而非是非选择。所有数值都可以随时手动修正。</p>
+    </div>
+    <div class="yt-card">
+      <h3>第一步：在地图上点选常住城市<span class="yt-mini">地理位置维度由城市属性导出，不靠自评</span></h3>
+      <div class="yt-grid-2">
+        <div>
+          <div class="yt-geo">
+            <svg id="yt-geo-map" viewBox="0 0 560 420" role="application" aria-label="中国城市选择地图，使用 Tab 聚焦城市后按回车选择"></svg>
+            <p class="yt-geo-tip" id="yt-geo-tip" role="status">点击圆点选择常住城市；也可用 Tab 键聚焦后按回车选择。</p>
+          </div>
+          <p class="yt-formula" style="padding:7px 2px 0">示意地图：轮廓为简化示意，不用于地理测量。城市的岗位密度、生活成本为公开统计的近似示意值，非实时数据。</p>
+        </div>
+        <div>
+          <div class="yt-btn-row" style="margin-bottom:9px">
+            <label for="yt-city-select" style="margin:0 2px 0 0;display:inline">或从列表选择</label>
+            <select id="yt-city-select" style="width:auto;min-width:150px"></select>
+          </div>
+          <div style="margin-bottom:10px">
+            <label style="margin-bottom:5px">城乡属性<span style="color:var(--yt-muted)">（同一城市内部仍有差异，由你确认）</span></label>
+            <div class="yt-seg" role="group" aria-label="城乡属性">
+              <label><input type="radio" name="yt-urban" value="core" checked><span>主城区</span></label>
+              <label><input type="radio" name="yt-urban" value="suburb"><span>近郊/新区</span></label>
+              <label><input type="radio" name="yt-urban" value="county"><span>下辖县镇</span></label>
+            </div>
+          </div>
+          <div class="yt-geo-sum" id="yt-geo-sum"></div>
+          <p class="yt-derived" id="yt-geo-derived" style="margin-top:10px"></p>
+          <div class="yt-mig" id="yt-mig">
+            <label for="yt-mig-select" style="margin-bottom:5px">迁移事件：如果搬到<span style="color:var(--yt-muted)">（可选，用于比较迁移前后的域归属）</span></label>
+            <div class="yt-btn-row">
+              <select id="yt-mig-select" style="width:auto;min-width:150px"></select>
+              <button type="button" class="yt-btn yt-btn-s" id="yt-mig-apply">应用这次迁移</button>
+            </div>
+            <p class="yt-vic-body" id="yt-mig-out" style="margin-top:7px"></p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="yt-grid-2">
+      <div class="yt-card">
+        <h3>第二步：其余六个维度<span class="yt-mini">地理位置已由地图导出，此处不再自评</span></h3>
+        <div id="yt-sliders"></div>
+      </div>
+      <div>
+        <div class="yt-card">
+          <h3>自然语言描述<span class="yt-mini">可选</span></h3>
+          <label for="yt-nl">用一段话描述你的情况，由直答能力辅助解析为结构化向量</label>
+          <textarea id="yt-nl" placeholder="例：专科在读，川内，家里经济一般需要尽快自立，学的土木但不太想进工地。"></textarea>
+          <div class="yt-btn-row" style="margin-top:9px">
+            <button type="button" class="yt-btn" id="yt-parse">解析为向量</button>
+            <button type="button" class="yt-btn yt-btn-s" id="yt-demo">填入演示背景</button>
+          </div>
+          <p class="yt-flash" id="yt-parse-flash" role="status"></p>
+          <p class="yt-formula" style="padding:4px 0 0">解析结果仅作为初值，最终确认权归你；未命中的维度保持原值不动。</p>
+        </div>
+        <div class="yt-card">
+          <h3>当前域归属</h3>
+          <p class="yt-say">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="11" fill="#fff" stroke="#1f6fb2"/><ellipse cx="9" cy="11" rx="1.7" ry="2" fill="#1f6fb2"/><ellipse cx="15" cy="11" rx="1.7" ry="2" fill="#1f6fb2"/><ellipse cx="12" cy="16" rx="2.2" ry="1.6" fill="none" stroke="#1f6fb2"/></svg>
+            <span id="yt-intake-say">这是你当下的位置，不是对你的评价。确认后可以到地图上看看旁边的人在面对什么。</span>
+          </p>
+          <ul class="yt-kv" id="yt-intake-domain" style="margin-top:10px"></ul>
+          <div class="yt-btn-row" style="margin-top:11px">
+            <button type="button" class="yt-btn yt-btn-main" id="yt-to-map">确认位置，进入环境地图</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="yt-screen" id="yt-scr-map" role="tabpanel" aria-labelledby="yt-tab-map" hidden>
+    <div class="yt-scr-head">
+      <h2>环境地图：你落在哪个域，旁边有哪些同行者</h2>
+      <p>不渲染几何多边形，用向量余弦相似度取最近邻，把几何沃罗诺伊划分转译为相似度归属。</p>
+    </div>
+    <div class="yt-grid-2">
+      <div>
+        <div class="yt-mapwrap">
+          <svg id="yt-map" viewBox="0 0 520 390" role="img" aria-labelledby="yt-map-alt"></svg>
+          <p id="yt-map-alt" class="yt-formula">地图以二维投影呈现七维向量：横轴为资源余量（经济宽裕、时间余量与家庭负担的合成，0–100），纵轴为探索倾向（认知惯性、行业机会与体验积累的合成，0–100）。光点为你，圆点为环境原型节点与用户贡献节点，标签后的百分比为与你的带权余弦相似度。</p>
+          <div class="yt-legend">
+            <span><i class="yt-dot" style="background:#1f6fb2"></i>你的位置</span>
+            <span><i class="yt-dot" style="background:#23221f"></i>当前归属节点</span>
+            <span><i class="yt-dot" style="background:#8d887e"></i>其他原型节点</span>
+            <span><i class="yt-dot" style="background:#4f7a58"></i>用户贡献节点</span>
+            <span><i class="yt-dot" style="background:#a9762f"></i>过渡带内邻域</span>
+          </div>
+        </div>
+        <div class="yt-card">
+          <h3>拖动滑块，观察落点漂移<span class="yt-mini">参考内容随落点实时刷新</span></h3>
+          <div id="yt-sliders-map"></div>
+        </div>
+      </div>
+      <div>
+        <div class="yt-card">
+          <h3 id="yt-dom-name">当前知识域</h3>
+          <p class="yt-formula" style="padding:0 0 8px" id="yt-dom-sim"></p>
+          <h4 style="font-size:12.5px;font-weight:620;margin:4px 0 4px">本域高频困扰</h4>
+          <ul class="yt-bul" id="yt-dom-pains"></ul>
+          <h4 style="font-size:12.5px;font-weight:620;margin:10px 0 2px">可行路线参考</h4>
+          <p class="yt-formula" style="padding:0 0 4px">多来源交叉印证，孤证不上线</p>
+          <ul class="yt-steps" id="yt-dom-routes"></ul>
+          <h4 style="font-size:12.5px;font-weight:620;margin:10px 0 4px">风险提示</h4>
+          <ul class="yt-bul" id="yt-dom-risks"></ul>
+          <div class="yt-btn-row" style="margin-top:12px">
+            <button type="button" class="yt-btn yt-btn-main" id="yt-load-tasks">把本域路线载入工作台</button>
+          </div>
+          <p class="yt-flash" id="yt-map-flash" role="status"></p>
+        </div>
+        <div class="yt-card">
+          <h3>邻近节点<span class="yt-mini">如果处境稍作改变，会遇到什么</span></h3>
+          <div id="yt-neighbors"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="yt-screen" id="yt-scr-bench" role="tabpanel" aria-labelledby="yt-tab-bench" hidden>
+    <div class="yt-scr-head">
+      <h2>体验工作台：系统只给草稿，编辑权完全归你</h2>
+      <p>状态只有四种中性标签，没有逾期提醒，也没有红色警示。暂停、修改、放弃都是被接纳的合法选择。</p>
+    </div>
+    <div class="yt-card">
+      <div class="yt-btn-row" style="justify-content:space-between">
+        <div class="yt-btn-row">
+          <label for="yt-filter" style="margin:0 2px 0 0;display:inline">按状态筛选</label>
+          <select id="yt-filter" style="width:auto;min-width:118px">
+            <option value="all">全部</option>
+            <option value="doing">进行中</option>
+            <option value="done">已完成</option>
+            <option value="hold">暂时搁置</option>
+            <option value="drop">选择放弃</option>
+          </select>
+          <span class="yt-chip" id="yt-count-chip"></span>
+        </div>
+        <button type="button" class="yt-btn" id="yt-add-open">＋ 新增自定义任务</button>
+      </div>
+      <div id="yt-add-form" hidden style="margin-top:12px;border-top:1px dashed var(--yt-line);padding-top:12px">
+        <div class="yt-grid-s">
+          <div>
+            <label for="yt-add-title">任务内容</label>
+            <input type="text" id="yt-add-title" placeholder="例：找两位在施工单位做过一年的师兄做访谈">
+          </div>
+          <div>
+            <label for="yt-add-type">六体分类</label>
+            <select id="yt-add-type">
+              <option>亲情体验</option><option>团队体验</option><option>非营利组织体验</option>
+              <option selected>营利组织体验</option><option>创新创业体验</option><option>全球事务体验</option>
+            </select>
+          </div>
+        </div>
+        <p class="yt-flash" id="yt-add-err" style="color:var(--yt-warm)" role="alert"></p>
+        <div class="yt-btn-row" style="margin-top:8px">
+          <button type="button" class="yt-btn yt-btn-main yt-btn-s" id="yt-add-submit">加入清单</button>
+          <button type="button" class="yt-btn yt-btn-s" id="yt-add-cancel">取消</button>
+        </div>
+      </div>
+    </div>
+    <div class="yt-card">
+      <h3>当前阶段任务<span class="yt-mini">任务按六体分类，每张卡片带前人经验出处</span></h3>
+      <div id="yt-tasks"></div>
+      <p class="yt-flash" id="yt-bench-flash" role="status"></p>
+      <div class="yt-btn-row" style="margin-top:11px">
+        <button type="button" class="yt-btn yt-btn-main" id="yt-to-stop">有任务完成了，去驿站停靠</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="yt-screen" id="yt-scr-stop" role="tabpanel" aria-labelledby="yt-tab-stop" hidden>
+    <div class="yt-scr-head">
+      <h2>停靠驿站：不推送新任务，不做成败判定</h2>
+      <p>反思需要时间，而人在连续赶路时不会真正反思。这里所有待办收起，界面降噪。</p>
+    </div>
+    <div class="yt-grid-2">
+      <div class="yt-card">
+        <h3>四组反思问题</h3>
+        <div id="yt-stop-ctx" class="yt-say" style="margin-bottom:12px"></div>
+        <div style="margin-bottom:11px">
+          <label for="yt-q1">这段体验带给我的真实感受是什么</label>
+          <textarea id="yt-q1" placeholder="不必写得完整，想到什么写什么。"></textarea>
+        </div>
+        <div style="margin-bottom:11px">
+          <label for="yt-q2">出发时的处境参数现在变了没有</label>
+          <textarea id="yt-q2" placeholder="经济压力、家庭责任、时间余量——哪一项和出发时不一样了。"></textarea>
+        </div>
+        <div style="margin-bottom:11px">
+          <label for="yt-q3">原来的远方愿景对我还重要吗</label>
+          <textarea id="yt-q3" placeholder="愿景是方向，可以长期保留，也可以修改。"></textarea>
+        </div>
+        <div>
+          <label>下一步打算怎么走<span style="color:var(--yt-muted)">（四者权重相同，没有哪一个更高级）</span></label>
+          <div class="yt-opts">
+            <label class="yt-opt"><input type="radio" name="yt-next" value="keep" checked><span>维持方向<em>继续当前路线</em></span></label>
+            <label class="yt-opt"><input type="radio" name="yt-next" value="revise"><span>修改计划<em>方向不变，换做法</em></span></label>
+            <label class="yt-opt"><input type="radio" name="yt-next" value="rest"><span>暂时休整<em>不推送新任务</em></span></label>
+            <label class="yt-opt"><input type="radio" name="yt-next" value="switch"><span>更换方向<em>排除也是胜利</em></span></label>
+          </div>
+        </div>
+        <div class="yt-btn-row" style="margin-top:13px">
+          <button type="button" class="yt-btn yt-btn-main" id="yt-archive">归档这次阶段性胜利</button>
+        </div>
+        <p class="yt-flash" id="yt-stop-flash" role="status"></p>
+      </div>
+      <div class="yt-card">
+        <h3>可归档的已完成体验</h3>
+        <p class="yt-formula" style="padding:0 0 6px">阶段性胜利指在当前处境下完整走通一轮体验学习循环：完成体验、做出反思、形成一个对下一步有效的判断。</p>
+        <div id="yt-stop-list"></div>
+        <h4 style="font-size:12.5px;font-weight:620;margin:12px 0 5px">本次停靠将带来的向量漂移</h4>
+        <ul class="yt-kv" id="yt-drift"></ul>
+        <p class="yt-formula" style="padding:6px 0 0">所有更新都是小幅调整，不做跳变；地图上的移动呈现为缓慢漂移而非瞬间跳转。</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="yt-screen" id="yt-scr-wall" role="tabpanel" aria-labelledby="yt-tab-wall" hidden>
+    <div class="yt-scr-head">
+      <h2>胜利档案墙：你从哪里走到了哪里</h2>
+      <p>每个节点绑定当时的向量快照、计划版本与自省原文。档案是个人资产，是否对外分享由你单独决定。</p>
+    </div>
+    <div class="yt-card">
+      <h3>两点对比<span class="yt-mini">用两张地图的落点变化直观呈现位置移动</span></h3>
+      <div class="yt-btn-row">
+        <label for="yt-cmp-a" style="margin:0 2px 0 0;display:inline">起点</label>
+        <select id="yt-cmp-a" style="width:auto;min-width:150px"></select>
+        <label for="yt-cmp-b" style="margin:0 2px 0 12px;display:inline">终点</label>
+        <select id="yt-cmp-b" style="width:auto;min-width:150px"></select>
+      </div>
+      <div class="yt-cmp" id="yt-cmp"></div>
+      <ul class="yt-kv" id="yt-cmp-diff" style="margin-top:10px"></ul>
+    </div>
+    <div class="yt-card">
+      <h3>阶段性胜利时间轴</h3>
+      <div id="yt-wall"></div>
+    </div>
+  </section>
+
+  <section class="yt-screen" id="yt-scr-peer" role="tabpanel" aria-labelledby="yt-tab-peer" hidden>
+    <div class="yt-scr-head">
+      <h2>同伴经验域：结构化经验，无闲聊与排名</h2>
+      <p>复盘提交后初始仅本人可见；多位处境相近的用户标记有效后权重提升，升级为公共节点进入网络。</p>
+    </div>
+    <div class="yt-grid-2">
+      <div class="yt-card">
+        <h3>我的校验池</h3>
+        <p class="yt-formula" style="padding:0 0 8px">需 3 位同处境用户标记有效后升级为公共节点。系统不设排行榜，不展示薪资与结果对比。</p>
+        <div id="yt-pool"></div>
+        <p class="yt-flash" id="yt-peer-flash" role="status"></p>
+      </div>
+      <div class="yt-card">
+        <h3>同处境者的真实复盘<span class="yt-mini">虚构示例</span></h3>
+        <div id="yt-peer-list"></div>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<script>
+(function(){
+  "use strict";
+  var root=document.getElementById("yutu");
+  if(!root) return;
+  var $=function(id){return root.querySelector("#"+id);};
+
+  /* ---------- 维度定义（表 1 的七个维度） ---------- */
+  var DIMS=[
+    {k:"place",  n:"地理位置", lo:"县域乡镇", hi:"一线城市", min:0,max:100,step:1,w:1.00,derived:true},
+    {k:"econ",   n:"经济压力", lo:"完全没有负担", hi:"必须立刻赚钱", min:0,max:100,step:1,w:1.25},
+    {k:"family", n:"家庭负担", lo:"无赡养抚养", hi:"责任很重", min:0,max:100,step:1,w:1.15},
+    {k:"age",    n:"年龄", lo:"18 岁", hi:"45 岁", min:18,max:45,step:1,w:0.85,unit:"岁"},
+    {k:"cycle",  n:"行业周期", lo:"收缩期", hi:"扩张期", min:0,max:100,step:1,w:0.90},
+    {k:"inertia",n:"认知惯性", lo:"稳健型", hi:"探索型", min:0,max:100,step:1,w:1.05},
+    {k:"history",n:"体验历史", lo:"尚未开始", hi:"大量积累", min:0,max:100,step:1,w:0.80}
+  ];
+
+  /* ---------- 城市属性表（公开统计的近似示意值，非实时数据） ----------
+     jobs  岗位密度 0–100：本地可选岗位的广度
+     cost  生活成本 0–100：以一线为上界的相对值
+     tier  行政层级标签，仅用于展示
+     x,y   简化示意地图坐标，不用于地理测量 */
+  var CITIES=[
+    {id:"beijing", name:"北京",   tier:"一线",   jobs:98, cost:95, x:398, y:150},
+    {id:"shanghai",name:"上海",   tier:"一线",   jobs:97, cost:97, x:458, y:226},
+    {id:"guangzhou",name:"广州",  tier:"一线",   jobs:93, cost:86, x:376, y:328},
+    {id:"shenzhen",name:"深圳",   tier:"一线",   jobs:95, cost:93, x:396, y:352},
+    {id:"hangzhou",name:"杭州",   tier:"新一线", jobs:88, cost:84, x:444, y:250},
+    {id:"chengdu", name:"成都",   tier:"新一线", jobs:82, cost:62, x:280, y:254},
+    {id:"wuhan",   name:"武汉",   tier:"新一线", jobs:81, cost:64, x:380, y:243},
+    {id:"xian",    name:"西安",   tier:"新一线", jobs:76, cost:58, x:318, y:196},
+    {id:"chongqing",name:"重庆",  tier:"新一线", jobs:78, cost:60, x:306, y:272},
+    {id:"nanjing", name:"南京",   tier:"新一线", jobs:84, cost:76, x:430, y:222},
+    {id:"qingdao", name:"青岛",   tier:"二线",   jobs:70, cost:63, x:424, y:181},
+    {id:"changsha",name:"长沙",   tier:"二线",   jobs:72, cost:57, x:372, y:268},
+    {id:"hefei",   name:"合肥",   tier:"二线",   jobs:66, cost:56, x:414, y:246},
+    {id:"kunming", name:"昆明",   tier:"二线",   jobs:58, cost:52, x:272, y:306},
+    {id:"shenyang",name:"沈阳",   tier:"二线",   jobs:60, cost:50, x:452, y:120},
+    {id:"lanzhou", name:"兰州",   tier:"三线",   jobs:44, cost:42, x:268, y:182},
+    {id:"mianyang",name:"绵阳",   tier:"三线",   jobs:40, cost:38, x:268, y:226},
+    {id:"nanchong",name:"南充",   tier:"三线",   jobs:34, cost:34, x:300, y:232},
+    {id:"ganzhou", name:"赣州",   tier:"三线",   jobs:36, cost:38, x:402, y:290},
+    {id:"zunyi",   name:"遵义",   tier:"四线",   jobs:28, cost:32, x:302, y:294},
+    {id:"yulin",   name:"榆林",   tier:"四线",   jobs:26, cost:33, x:324, y:170},
+    {id:"county",  name:"县域乡镇",tier:"县域",  jobs:12, cost:22, x:340, y:308}
+  ];
+  var URBAN={core:{n:"主城区",adj:0},suburb:{n:"近郊/新区",adj:-6},county:{n:"下辖县镇",adj:-14}};
+
+  /* 地理位置维度由城市属性导出：岗位密度为主，生活成本为辅，再按城乡属性修正 */
+  function placeFrom(cityId,urban){
+    var c=cityById(cityId); if(!c) return 50;
+    var base=c.jobs*0.7+c.cost*0.3;
+    return Math.max(0,Math.min(100,Math.round(base+(URBAN[urban]||URBAN.core).adj)));
+  }
+  function cityById(id){
+    for(var i=0;i<CITIES.length;i++) if(CITIES[i].id===id) return CITIES[i];
+    return null;
+  }
+
+  function norm(k,v){ if(k==="age") return (v-18)/27*100; return v; }
+  function vec(s){ return DIMS.map(function(d){return norm(d.k,s[d.k]);}); }
+
+  /* 带权余弦相似度，向量先以 50 为中心（见方案 4.3：以相似度归属替代几何多边形） */
+  function cosSim(a,b){
+    var dot=0,na=0,nb=0;
+    for(var i=0;i<a.length;i++){
+      var w=DIMS[i].w, x=(a[i]-50)/50*w, y=(b[i]-50)/50*w;
+      dot+=x*y; na+=x*x; nb+=y*y;
+    }
+    if(na<1e-9||nb<1e-9) return 0;
+    return dot/Math.sqrt(na*nb);
+  }
+
+  /* ---------- 环境原型节点（演示用虚构数据） ---------- */
+  function T(id,type,title,src,pre,risk,std){
+    return {id:id,type:type,title:title,src:src,pre:pre,risk:risk,std:std};
+  }
+  var NODES=[
+    {id:"n1",name:"川内专科在读 · 土木相关 · 经济一般",hue:"#1f6fb2",kind:"proto",
+     s:{place:28,econ:68,family:55,age:22,cycle:25,inertia:55,history:18},
+     pains:["学的土木但不确定要不要进工地，怕一进去就被路径锁死","家里能支撑到毕业，之后必须自己赚钱，试错窗口只有一年左右","专升本、考证、直接就业三条路同时压过来，不知道先动哪一个"],
+     routes:["先用两周把本专业下游岗位摊开：施工、造价、监理、检测各自的真实日常","约访 2 位毕业 1–3 年的同校师兄，重点问代价而不是薪资","挑一个最低成本的方向先做 4 周验证，例如造价软件自学 + 一份小体量实操","拿验证结果回头修订专升本与考证的优先级"],
+     risks:["高赞回答多来自一线城市本科背景，直接套用会高估起点","“劝退”与“真香”两类回答都存在幸存者偏差，需交叉印证"],
+     tasks:[
+       T("n1t1","营利组织体验","摊开本专业四类下游岗位的真实日常，各写 200 字","社区亲历记述 × 6 篇，含 2 篇反向意见","能上网检索，预留 2 周","容易被单一高赞回答带偏，要求每类岗位至少两个来源","四类岗位各能说清一天干什么、代价是什么"),
+       T("n1t2","团队体验","约访 2 位毕业 1–3 年的同校师兄","同处境者复盘 × 3 条","已找到联系渠道","对方经验仅代表其个人路径，不作为普遍结论","拿到两份带具体数字的回答记录"),
+       T("n1t3","创新创业体验","用 4 周自学造价软件并完成一份小体量算量练习","行业共识类回答 × 4 篇","每周可投入 6 小时以上","4 周不足以判断长期适配，只用于排除明显不合","交付一份可被人检查的算量成果"),
+       T("n1t4","亲情体验","和家里谈一次：试错窗口到底有多长","—","选一个双方都不急的时间","谈话可能触发期待压力，允许中止","双方对时间与底线有一致说法")
+     ]},
+    {id:"n2",name:"一线城市本科应届 · 无家庭负担 · 想进互联网",hue:"#7a4fa0",kind:"proto",
+     s:{place:92,econ:35,family:18,age:25,cycle:62,inertia:78,history:35},
+     pains:["投递量大但面试转化低，不清楚卡在哪一环","岗位名称相近但实际工作差异很大，难以判断适配","同辈比较带来的焦虑超过了信息本身的价值"],
+     routes:["把近 20 个目标岗位的 JD 拆成能力项，统计高频项","针对高频项做一个可展示的小项目，而不是继续刷题","约访 2 位在职一年内的从业者，校准 JD 与真实工作的差距","按校准结果重排投递优先级"],
+     risks:["行业扩张标签来自公开信息，存在滞后","社区对大厂的描述两极化，需区分亲历与转述"],
+     tasks:[
+       T("n2t1","营利组织体验","拆解 20 份目标 JD，统计高频能力项","岗位要求公开信息 × 20 条","已确定 2–3 个目标方向","JD 常含理想化描述，需与在职者校准","得到一张排序后的能力项清单"),
+       T("n2t2","创新创业体验","针对高频能力项做一个可展示的小项目","亲历记述 × 5 篇","能连续投入 3 周","项目可能偏离真实业务场景","项目能在 10 分钟内讲清问题与取舍"),
+       T("n2t3","团队体验","约访 2 位在职一年内的从业者","同处境者复盘 × 4 条","已有可触达渠道","单一公司经验不能代表整个行业","记录两份 JD 与真实工作的差异点")
+     ]},
+    {id:"n3",name:"二线在职三年 · 房贷初期 · 考虑转行",hue:"#a9762f",kind:"proto",
+     s:{place:62,econ:72,family:62,age:29,cycle:45,inertia:48,history:52},
+     pains:["房贷让脱产学习几乎不可行，只能在下班后挤时间","现有岗位经验在目标行业被折价，担心从零开始","家里不反对但也不支持，决策缺少外部确认"],
+     routes:["先做可迁移能力盘点，找到不必归零的交叉地带","在不离职前提下用 8 周做一次小规模实做验证","计算最低现金流底线，确定可承受的转换周期","用验证结果决定是渐进迁移还是维持现状"],
+     risks:["转行成功故事多未披露家庭支持条件","“裸辞三个月上岸”类经验的前置条件通常被省略"],
+     tasks:[
+       T("n3t1","营利组织体验","做一次可迁移能力盘点，标出交叉地带","亲历记述 × 7 篇，含 3 篇失败复盘","能拿到现岗位的工作记录","容易高估自己经验的可迁移度","列出 3 个交叉岗位与各自缺口"),
+       T("n3t2","创新创业体验","不离职，用 8 周做一次小规模实做验证","行业共识 × 5 篇","每周 8 小时以上且不影响本职","业余投入强度不等于全职状态","产出一份可对外说明的阶段成果"),
+       T("n3t3","亲情体验","算清最低现金流底线并与家人对齐","—","掌握完整收支数据","数字可能引发焦虑，允许分次完成","得到一个双方认可的可承受周期")
+     ]},
+    {id:"n4",name:"县域体制内 · 稳定但看不到上限",hue:"#4f7a58",kind:"proto",
+     s:{place:15,econ:38,family:58,age:31,cycle:50,inertia:28,history:40},
+     pains:["本地岗位选择少，离开即意味着迁移","稳定带来的沉没成本让任何变动都显得昂贵","缺少同处境参照，身边人普遍不理解探索的意义"],
+     routes:["先在不动现有身份的前提下做低风险外部连接","判断目标方向是否真的需要迁移，还是可以远程切入","用一次短期异地实地走访替代长期想象","再决定是本地深耕还是准备迁移"],
+     risks:["远程机会类信息水分较大，需核实用工形式","迁移决策涉及家庭，单人测算会低估成本"],
+     tasks:[
+       T("n4t1","非营利组织体验","参与一次本地公共项目，测试自己的真实动力","亲历记述 × 4 篇","周末可安排","短期参与难以判断长期意愿","完成一次有交付物的协作"),
+       T("n4t2","全球事务体验","核实目标方向的远程切入可行性","岗位要求公开信息 × 8 条","能稳定上网","远程机会描述常夸大，需看用工合同形式","给出可行/不可行的明确结论与依据"),
+       T("n4t3","团队体验","做一次目标城市的短期实地走访","同处境者复盘 × 2 条","能请出 3 天假","三天观察不足以代表长期生活","记录住行成本与岗位密度的实际观察")
+     ]},
+    {id:"n5",name:"三线已婚育 · 时间碎片 · 想做副业",hue:"#b0527a",kind:"proto",
+     s:{place:42,econ:65,family:85,age:34,cycle:48,inertia:58,history:45},
+     pains:["可支配时间以半小时为单位，长链条计划无法执行","副业信息噪声极大，难以分辨哪些需要前期投入","一旦占用家庭时间，推进就会被迫中断"],
+     routes:["先把可用时间如实记录两周，得到真实时间预算","只选择可在碎片时间内闭环的最小单元","用一个月做一次完整小闭环，验证可持续性","根据可持续性决定是否扩大投入"],
+     risks:["副业收入类经验极少披露前期沉没时间","高收益案例常依赖已有存量资源"],
+     tasks:[
+       T("n5t1","亲情体验","如实记录两周可支配时间，得到真实预算","—","随手可记","记录本身会轻微改变行为","得到一张按半小时切分的时间表"),
+       T("n5t2","营利组织体验","筛出 3 个可在碎片时间闭环的最小单元","行业共识 × 6 篇，含 2 篇成本披露","已有时间预算表","“轻松上手”类描述通常省略前期投入","每个单元标出首次产出所需时间"),
+       T("n5t3","创新创业体验","用一个月跑完一次最小闭环","同处境者复盘 × 3 条","家庭已知情并同意","一次闭环不能证明可持续","完成一次从投入到产出的完整记录")
+     ]},
+    {id:"n6",name:"新一线硕士在读 · 家里可支持脱产",hue:"#2f7d8c",kind:"proto",
+     s:{place:78,econ:22,family:25,age:24,cycle:68,inertia:82,history:30},
+     pains:["选择过多反而难以收敛，容易在探索中消耗掉窗口期","学术路径与产业路径的切换成本判断不清","支持条件良好，但缺少真实约束来校准判断"],
+     routes:["先给探索设定边界：三个方向、各 6 周、到期必须出结论","每个方向都要有一次真实对外交付，不只是阅读","在两条路径各找一位已做出选择的人访谈","到期按排除法收敛，而不是继续并行"],
+     risks:["资源宽裕会掩盖方案的脆弱性，需人为加入约束","学界与产业的描述口径不同，不可直接比较"],
+     tasks:[
+       T("n6t1","创新创业体验","为三个候选方向各设定 6 周验证窗口","亲历记述 × 6 篇","已初步列出候选方向","并行探索容易全部半途而废","三个方向各有明确的到期判断标准"),
+       T("n6t2","团队体验","在学术与产业各访谈一位已做出选择的人","同处境者复盘 × 4 条","已有联系渠道","已做选择者倾向为自己的选择辩护","记录两种路径各自的放弃成本"),
+       T("n6t3","全球事务体验","完成一次对外公开交付，接受外部反馈","行业共识 × 3 篇","方向已收敛到一个","外部反馈可能与自我评价冲突","拿到至少 3 条具体的外部意见")
+     ]},
+    {id:"n7",name:"川内专科 → 成都造价员 · 已走通",hue:"#4f7a58",kind:"user",
+     s:{place:55,econ:52,family:50,age:24,cycle:32,inertia:50,history:72},
+     pains:["从专科到成都落脚，最卡的是前三个月的现金流","造价方向上手快，但天花板需要更早规划","同批同学里一半转行，缺少持续的同处境参照"],
+     routes:["先用在校时间把算量软件练到能独立出量","毕业前锁定一份能带师傅的岗位，薪资次要","入职后半年内补齐一本证，不等到被动需要时再考","一年后再评估是留在造价还是横向迁移"],
+     risks:["这条路线依赖本人在校期间已有软件基础","成都岗位密度不代表其他川内城市"],
+     tasks:[
+       T("n7t1","营利组织体验","把算量软件练到能独立完成一份完整出量","贡献者本人复盘 × 1 条（已升级为公共节点）","能拿到练习图纸","软件熟练不等于能承担工程责任","独立完成一份可被复核的出量"),
+       T("n7t2","团队体验","找一份有师傅带的岗位，优先学习密度","同处境者复盘 × 3 条","已有可独立出量的作品","低薪起点需要家庭现金流支撑","入职并明确带教关系")
+     ]}
+  ];
+
+  /* ---------- 同伴经验（虚构示例） ---------- */
+  var PEERS=[
+    {who:"同处境者 · 川内专科 2024 届",kind:"亲历记述",text:"我也是土木专科，先去工地待了一个暑假才确定不适合。这个暑假没白花——它把一条路彻底排除了，后面选造价时就不再犹豫。",marks:7},
+    {who:"同处境者 · 二线在职转行",kind:"亲历记述",text:"不离职做验证这件事，最大的难点不是时间而是情绪。建议把验证窗口写死在日历上，到期就出结论，否则会无限期拖延。",marks:12},
+    {who:"行业共识",kind:"行业共识",text:"造价与施工的起薪差距在前两年并不明显，差异主要体现在工作地点稳定性与加班强度上。",marks:9},
+    {who:"同处境者 · 县域体制内",kind:"个人推测",text:"我的判断是远程岗位对本地身份的要求在变低，但这只是我的观察，没有数据支撑。",marks:3}
+  ];
+
+  /* ---------- 状态模型（单一数据源） ---------- */
+  var ST={
+    s:{place:28,econ:68,family:55,age:22,cycle:25,inertia:55,history:18},
+    city:"nanchong",
+    urban:"core",
+    tasks:[],
+    loadedNode:null,
+    victories:[],
+    pool:[],
+    filter:"all",
+    seq:0,
+    startedAt:new Date()
+  };
+  var STATUS={doing:"进行中",done:"已完成",hold:"暂时搁置",drop:"选择放弃"};
+
+  function fmt(d){
+    var p=function(n){return n<10?"0"+n:""+n;};
+    return d.getFullYear()+"-"+p(d.getMonth()+1)+"-"+p(d.getDate())+" "+p(d.getHours())+":"+p(d.getMinutes());
+  }
+  /* 归档发生在“体验已完成”之后，时间戳取当前真实时刻，不向未来推进 */
+  function now(){ return new Date(); }
+  function flash(id,msg){
+    var el=$(id); if(!el) return;
+    el.textContent=msg;
+    if(!msg) return;
+    var token=(el.__t||0)+1; el.__t=token;
+    setTimeout(function(){ if(el.__t===token) el.textContent=""; },4200);
+  }
+
+  /* ---------- 域归属：最近邻 + 过渡带 ---------- */
+  function ranked(){
+    var v=vec(ST.s);
+    return NODES.map(function(n){ return {node:n,sim:cosSim(v,vec(n.s))}; })
+      .sort(function(a,b){ return b.sim-a.sim; });
+  }
+  function current(){ return ranked()[0]; }
+  function inBand(r){
+    /* 相邻两域之间存在过渡带：与首位相似度差距小于 0.06 视为同时参考 */
+    return r.slice(1).filter(function(x){ return r[0].sim-x.sim<0.06; });
+  }
+
+  /* ---------- 二维投影（仅用于可视化，不改变模型） ---------- */
+  function proj(s){
+    var resource=(100-s.econ)*0.55+(100-norm("age",s.age))*0.2+(100-s.family)*0.25;
+    var explore=s.inertia*0.6+s.cycle*0.25+s.history*0.15;
+    return {x:30+resource/100*460, y:348-explore/100*316};
+  }
+
+  /* ---------- 滑块（创建一次，input 只更新读数与视图） ---------- */
+  function buildSliders(host,prefix){
+    var box=$(host); if(!box) return;
+    box.textContent="";
+    DIMS.forEach(function(d){
+      if(d.derived){ box.appendChild(derivedRow(d,prefix)); return; }
+      var wrap=document.createElement("div"); wrap.className="yt-dim";
+      var top=document.createElement("div"); top.className="yt-dim-top";
+      var nm=document.createElement("span"); nm.className="yt-dim-name"; nm.textContent=d.n;
+      var vl=document.createElement("output"); vl.className="yt-dim-val yt-num";
+      vl.id=prefix+"-out-"+d.k; vl.setAttribute("for",prefix+"-"+d.k);
+      top.appendChild(nm); top.appendChild(vl);
+      var inp=document.createElement("input");
+      inp.type="range"; inp.id=prefix+"-"+d.k; inp.min=d.min; inp.max=d.max; inp.step=d.step;
+      inp.value=ST.s[d.k]; inp.setAttribute("aria-label",d.n);
+      var ends=document.createElement("div"); ends.className="yt-dim-ends";
+      var e1=document.createElement("span"); e1.textContent=d.lo;
+      var e2=document.createElement("span"); e2.textContent=d.hi;
+      ends.appendChild(e1); ends.appendChild(e2);
+      inp.addEventListener("input",function(){
+        ST.s[d.k]=Number(inp.value);
+        syncSliderOutputs();
+        renderMap(); renderDomain(); renderNeighbors(); renderIntake(); renderDrift();
+      });
+      wrap.appendChild(top); wrap.appendChild(inp); wrap.appendChild(ends);
+      box.appendChild(wrap);
+    });
+  }
+  /* 派生维度不提供滑块：显示导出值与来源，并给出回到地图修改的入口 */
+  function derivedRow(d,prefix){
+    var wrap=document.createElement("div"); wrap.className="yt-dim";
+    var top=document.createElement("div"); top.className="yt-dim-top";
+    var nm=document.createElement("span"); nm.className="yt-dim-name"; nm.textContent=d.n;
+    var vl=document.createElement("span"); vl.className="yt-dim-val yt-num";
+    vl.id=prefix+"-out-"+d.k;
+    top.appendChild(nm); top.appendChild(vl);
+    var src=document.createElement("p");
+    src.className="yt-geo-tip"; src.style.padding="3px 0 0"; src.id=prefix+"-src-place";
+    var act=document.createElement("button");
+    act.type="button"; act.className="yt-btn yt-btn-s"; act.style.marginTop="5px";
+    act.textContent="在地图上修改城市";
+    act.addEventListener("click",function(){
+      show("yt-tab-intake");
+      var el=$("yt-geo-map");
+      if(el&&el.scrollIntoView) el.scrollIntoView({block:"center"});
+      var sel=$("yt-city-select"); if(sel) sel.focus();
+    });
+    wrap.appendChild(top); wrap.appendChild(src); wrap.appendChild(act);
+    return wrap;
+  }
+  function syncSliderOutputs(){
+    ["yt","map"].forEach(function(p){
+      DIMS.forEach(function(d){
+        var out=root.querySelector("#"+p+"-out-"+d.k), inp=root.querySelector("#"+p+"-"+d.k);
+        var v=ST.s[d.k];
+        if(out) out.textContent=d.unit?(v+d.unit):(v+" / 100");
+        if(inp&&document.activeElement!==inp&&Number(inp.value)!==v) inp.value=v;
+      });
+      var src=root.querySelector("#"+p+"-src-place");
+      if(src){
+        var c=cityById(ST.city);
+        src.textContent=c?("由地图导出："+c.name+"（"+c.tier+"）· "+(URBAN[ST.urban]||URBAN.core).n):"尚未选择城市";
+      }
+    });
+  }
+
+  /* ---------- 地图 ---------- */
+  var SVGNS="http://www.w3.org/2000/svg";
+  function mk(t,a){ var e=document.createElementNS(SVGNS,t); for(var k in a) e.setAttribute(k,a[k]); return e; }
+
+  /* ---------- 地理地图：简化示意轮廓，不用于地理测量 ---------- */
+  var LAND="M196 118 L228 96 L266 86 L300 92 L318 78 L344 70 L372 60 L404 56 L436 64 L462 78 L486 96 "+
+    "L500 118 L494 140 L470 152 L452 146 L438 158 L452 176 L468 196 L478 220 L474 248 L462 272 "+
+    "L446 292 L434 316 L420 340 L398 360 L376 372 L352 368 L336 352 L318 342 L300 348 L282 342 "+
+    "L262 330 L248 312 L232 296 L214 288 L196 276 L180 258 L168 236 L158 212 L150 188 L156 164 "+
+    "L170 142 L196 118 Z";
+  function renderGeo(){
+    var svg=$("yt-geo-map"); if(!svg) return;
+    svg.textContent="";
+    svg.appendChild(mk("path",{d:LAND,"class":"yt-land"}));
+
+    var cur=cityById(ST.city);
+    /* 先铺圆点与交互层，标签单独做防碰撞后再画在最上层 */
+    var dots=CITIES.map(function(c){
+      return {x:c.x,y:c.y,r:2.6+c.jobs/100*4.4,city:c,sel:c.id===ST.city};
+    });
+    /* 命中半径严格取最近邻距离的一半，保证相邻城市的点击区永不重叠 */
+    dots.forEach(function(d){
+      var near=Infinity;
+      dots.forEach(function(o){
+        if(o===d) return;
+        var dist=Math.hypot(o.x-d.x,o.y-d.y);
+        if(dist<near) near=dist;
+      });
+      d.hit=Math.min(20,near/2);
+    });
+    var reserved=dots.map(function(d){ return {x:d.x,y:d.y,r:d.r+3}; });
+    /* 先定“常住”徽标位置，并纳入标签预留区，避免与城市名相撞 */
+    var badge=null;
+    if(cur){
+      var selDot=dots.filter(function(d){return d.sel;})[0];
+      var cr=selDot?selDot.r:5, mw=20, mh=11;
+      var clash=function(cy){
+        for(var i=0;i<dots.length;i++){
+          var d=dots[i]; if(d.sel) continue;
+          if(cur.x-mw/2<d.x+d.r&&cur.x+mw/2>d.x-d.r&&cy-8.5<d.y+d.r&&cy-8.5+mh>d.y-d.r) return true;
+        }
+        return false;
+      };
+      var below=cur.y+cr+10, above=cur.y-cr-4;
+      badge={x:cur.x,y:clash(below)?(clash(above)?below:above):below,w:mw,h:mh};
+      reserved.push({x:badge.x,y:badge.y-3,r:12});
+    }
+
+    dots.forEach(function(d){
+      var c=d.city;
+      var g=mk("g",{"class":"yt-city",tabindex:"0",role:"button","data-city":c.id});
+      g.setAttribute("aria-label",c.name+"，"+c.tier+"，岗位密度 "+c.jobs+"，生活成本 "+c.cost);
+      g.setAttribute("aria-pressed",d.sel?"true":"false");
+      /* 每个点都带原生 title，密集区省略文字标签时仍可悬停辨认 */
+      var tip=mk("title",{});
+      tip.textContent=c.name+"（"+c.tier+"）";
+      g.appendChild(tip);
+      g.appendChild(mk("circle",{cx:c.x,cy:c.y,r:d.hit,fill:"transparent","class":"yt-city-hit"}));
+      if(d.sel) g.appendChild(mk("circle",{cx:c.x,cy:c.y,r:11,fill:"#1f6fb2",opacity:.17}));
+      /* 点径随岗位密度变化，使“本地有多少选择”直接可见 */
+      g.appendChild(mk("circle",{cx:c.x,cy:c.y,r:d.r,
+        fill:d.sel?"#1f6fb2":(c.tier==="县域"?"#a9762f":"#8d887e"),
+        stroke:"#fffefb","stroke-width":d.sel?2:1.2}));
+      function pick(){ selectCity(c.id); }
+      g.addEventListener("click",pick);
+      g.addEventListener("keydown",function(ev){
+        if(ev.key==="Enter"||ev.key===" "){ ev.preventDefault(); pick(); }
+      });
+      g.addEventListener("mouseenter",function(){
+        $("yt-geo-tip").textContent=c.name+"（"+c.tier+"）· 岗位密度 "+c.jobs+" · 生活成本 "+c.cost;
+      });
+      g.addEventListener("focus",function(){
+        $("yt-geo-tip").textContent=c.name+"（"+c.tier+"）· 岗位密度 "+c.jobs+" · 生活成本 "+c.cost+"，按回车选择";
+      });
+      svg.appendChild(g);
+      d.g=g;
+    });
+
+    /* 选中城市优先占位，其余按岗位密度降序；密集区让位给更重要的点 */
+    var order=dots.slice().sort(function(a,b){
+      if(a.sel!==b.sel) return a.sel?-1:1;
+      return b.city.jobs-a.city.jobs;
+    });
+    var items=order.map(function(d){
+      return {x:d.x,y:d.y,size:d.sel?10.5:9.5,text:d.city.name,sel:d.sel,dot:d};
+    });
+    placeLabels(items,reserved,{bounds:{x0:4,x1:556,y0:10,y1:414},skipCrowded:true})
+      .forEach(function(res){
+        var it=res.item,ps=res.pos;
+        if(ps.crowded) return;           /* 实在放不下就不画，避免糊成一团 */
+        if(ps.lead){
+          svg.appendChild(mk("line",{x1:it.x,y1:it.y,
+            x2:ps.anchor==="start"?ps.x-2:(ps.anchor==="end"?ps.x+2:ps.x),y2:ps.y-3,
+            stroke:"#cfc8bb","stroke-width":1}));
+        }
+        var w=it.text.length*it.size*0.92;
+        var bx=ps.anchor==="middle"?ps.x-w/2:(ps.anchor==="end"?ps.x-w:ps.x);
+        svg.appendChild(mk("rect",{x:bx-1.5,y:ps.y-9.5,width:w+3,height:12.5,rx:2,
+          fill:"#fffefb",opacity:it.sel?0.92:0.8}));
+        var t=mk("text",{x:ps.x,y:ps.y,"text-anchor":ps.anchor,"font-size":it.size,
+          fill:it.sel?"#1f6fb2":"#5c5850","font-weight":it.sel?"600":"400"});
+        t.textContent=it.text;
+        svg.appendChild(t);
+      });
+
+    if(badge){
+      svg.appendChild(mk("rect",{x:badge.x-badge.w/2,y:badge.y-8.5,width:badge.w,height:badge.h,
+        rx:2.5,fill:"#1f6fb2"}));
+      var mark=mk("text",{x:badge.x,y:badge.y,"text-anchor":"middle","font-size":8.5,
+        fill:"#fffefb","font-weight":"600"});
+      mark.textContent="常住";
+      svg.appendChild(mark);
+    }
+  }
+
+  function renderGeoPanel(){
+    var c=cityById(ST.city), box=$("yt-geo-sum");
+    if(!box||!c) return;
+    box.textContent="";
+    var cells=[["行政层级",c.tier],["岗位密度",c.jobs+" / 100"],["生活成本",c.cost+" / 100"],
+               ["地理位置维度",ST.s.place+" / 100"]];
+    cells.forEach(function(p){
+      var cell=document.createElement("div"); cell.className="yt-geo-cell";
+      var b=document.createElement("b"); b.textContent=p[0];
+      var s=document.createElement("span"); s.textContent=p[1];
+      cell.appendChild(b); cell.appendChild(s); box.appendChild(cell);
+    });
+    var d=$("yt-geo-derived");
+    if(d){
+      d.textContent="";
+      var u=URBAN[ST.urban]||URBAN.core;
+      var strong=document.createElement("b");
+      strong.textContent="地理位置 = "+ST.s.place+"：";
+      d.appendChild(strong);
+      d.appendChild(document.createTextNode(
+        "岗位密度 "+c.jobs+"×0.7 + 生活成本 "+c.cost+"×0.3 "+
+        (u.adj?("，"+u.n+" "+u.adj):"，"+u.n+" 不修正")+
+        "。该维度由城市属性导出，不接受直接自评。"));
+    }
+    var sel=$("yt-city-select");
+    if(sel&&sel.value!==ST.city) sel.value=ST.city;
+    var ur=root.querySelector('input[name="yt-urban"][value="'+ST.urban+'"]');
+    if(ur&&!ur.checked) ur.checked=true;
+  }
+
+  function selectCity(id,quiet){
+    var prev=ST.s.place;
+    /* 重绘会替换节点，先记下焦点所在城市，重绘后恢复，保证连续键盘操作不断 */
+    var act=document.activeElement;
+    var keepFocus=act&&act.classList&&act.classList.contains("yt-city");
+    ST.city=id;
+    ST.s.place=placeFrom(ST.city,ST.urban);
+    renderGeo(); renderGeoPanel(); syncSliderOutputs();
+    renderMap(); renderDomain(); renderNeighbors(); renderIntake(); renderDrift(); renderStopCtx();
+    if(keepFocus){
+      var back=root.querySelector('#yt-geo-map .yt-city[data-city="'+id+'"]');
+      if(back&&back.focus) back.focus();
+    }
+    if(!quiet){
+      var c=cityById(id);
+      $("yt-geo-tip").textContent="已选择"+c.name+"：地理位置维度 "+prev+" → "+ST.s.place+
+        "，归属节点已同步刷新。";
+    }
+  }
+
+  /* 迁移事件：比较迁入前后的域归属变化，不直接改写当前位置 */
+  function previewMigration(){
+    var to=$("yt-mig-select").value, out=$("yt-mig-out");
+    if(!out) return;
+    if(!to||to===ST.city){
+      out.textContent="选择一个与当前不同的城市，可以先看迁移后的域归属再决定。";
+      return;
+    }
+    var c=cityById(to);
+    var probe={}; DIMS.forEach(function(d){ probe[d.k]=ST.s[d.k]; });
+    probe.place=placeFrom(to,ST.urban);
+    var v=vec(probe);
+    var best=NODES.map(function(n){return {n:n,sim:cosSim(v,vec(n.s))};})
+      .sort(function(a,b){return b.sim-a.sim;})[0];
+    var now=current();
+    out.textContent="迁入"+c.name+"后：地理位置 "+ST.s.place+" → "+probe.place+
+      "，归属将变为「"+best.n.name.split(" · ")[0]+"」"+(best.sim*100).toFixed(1)+"%"+
+      (best.n.id===now.node.id?"（与当前同域，迁移不改变参考内容）":"（跨域，整套参考内容会切换）")+"。";
+  }
+
+  /* 标签防碰撞：在候选位置中选择第一个不与已放标签、节点圆点冲突的位置 */
+  function placeLabels(items,reserved,opt){
+    opt=opt||{};
+    var bd=opt.bounds||{x0:30,x1:492,y0:14,y1:352};
+    var placed=[],out=[];
+    var CAND=[[0,-14,"middle"],[0,22,"middle"],[13,4,"start"],[-13,4,"end"],
+              [13,-12,"start"],[-13,-12,"end"],[13,20,"start"],[-13,20,"end"],
+              [0,-28,"middle"],[0,36,"middle"],[26,4,"start"],[-26,4,"end"]];
+    function box(x,y,w,anchor){
+      var x0=anchor==="middle"?x-w/2:(anchor==="end"?x-w:x);
+      return {x0:x0-2,x1:x0+w+2,y0:y-11,y1:y+4};
+    }
+    function hits(b){
+      for(var i=0;i<placed.length;i++){
+        var o=placed[i];
+        if(b.x0<o.x1&&b.x1>o.x0&&b.y0<o.y1&&b.y1>o.y0) return true;
+      }
+      for(var j=0;j<reserved.length;j++){
+        var p=reserved[j];
+        if(b.x0<p.x+p.r&&b.x1>p.x-p.r&&b.y0<p.y+p.r&&b.y1>p.y-p.r) return true;
+      }
+      return false;
+    }
+    items.forEach(function(it){
+      var w=it.text.length*it.size*0.92;
+      var best=null;
+      for(var c=0;c<CAND.length;c++){
+        var dx=CAND[c][0],dy=CAND[c][1],an=CAND[c][2];
+        var x=it.x+dx,y=it.y+dy;
+        var b=box(x,y,w,an);
+        if(b.x0<bd.x0||b.x1>bd.x1||b.y0<bd.y0||b.y1>bd.y1) continue;
+        if(hits(b)) continue;
+        best={x:x,y:y,anchor:an,bbox:b,lead:c>=2};
+        break;
+      }
+      if(!best){
+        var fx=it.x,fy=it.y-14,fb=box(fx,fy,w,"middle");
+        best={x:fx,y:fy,anchor:"middle",bbox:fb,lead:false,crowded:true};
+      }
+      /* skipCrowded 时放不下的标签不占位，留给后续标签更多空间 */
+      if(!(best.crowded&&opt.skipCrowded)) placed.push(best.bbox);
+      out.push({item:it,pos:best});
+    });
+    return out;
+  }
+
+  function renderMap(){
+    var svg=$("yt-map"); if(!svg) return;
+    svg.textContent="";
+    var r=ranked(), cur=r[0], band=inBand(r), bandIds=band.map(function(b){return b.node.id;});
+
+    var g=mk("g",{}); svg.appendChild(g);
+    for(var x=30;x<=490;x+=46) g.appendChild(mk("line",{x1:x,y1:22,x2:x,y2:348,stroke:"#e0dbd1","stroke-width":1}));
+    for(var y=32;y<=348;y+=39.5) g.appendChild(mk("line",{x1:30,y1:y,x2:490,y2:y,stroke:"#e0dbd1","stroke-width":1}));
+    svg.appendChild(mk("line",{x1:30,y1:348,x2:490,y2:348,stroke:"#cfc8bb","stroke-width":1.5}));
+    svg.appendChild(mk("line",{x1:30,y1:22,x2:30,y2:348,stroke:"#cfc8bb","stroke-width":1.5}));
+    [0,25,50,75,100].forEach(function(v){
+      var px=30+v/100*460;
+      svg.appendChild(mk("line",{x1:px,y1:348,x2:px,y2:353,stroke:"#cfc8bb","stroke-width":1.2}));
+      var tx=mk("text",{x:px,y:364,"text-anchor":v===0?"start":(v===100?"end":"middle"),"font-size":9.5,fill:"#8d887e"});
+      tx.textContent=v; svg.appendChild(tx);
+      var py=348-v/100*316;
+      svg.appendChild(mk("line",{x1:25,y1:py,x2:30,y2:py,stroke:"#cfc8bb","stroke-width":1.2}));
+      var ty=mk("text",{x:22,y:py+3.5,"text-anchor":"end","font-size":9.5,fill:"#8d887e"});
+      ty.textContent=v; svg.appendChild(ty);
+    });
+    var lx=mk("text",{x:490,y:376,"text-anchor":"end","font-size":10.5,fill:"#8d887e"});
+    lx.textContent="资源余量 →"; svg.appendChild(lx);
+    var ly=mk("text",{x:30,y:14,"font-size":10.5,fill:"#8d887e"});
+    ly.textContent="↑ 探索倾向"; svg.appendChild(ly);
+
+    /* 相似度着色：按与用户的相似度画出域影响范围 */
+    r.forEach(function(item){
+      var p=proj(item.node.s);
+      var radius=26+Math.max(0,item.sim)*44;
+      svg.appendChild(mk("circle",{cx:p.x,cy:p.y,r:radius,fill:item.node.hue,opacity:item.node.id===cur.node.id?0.14:0.06}));
+    });
+
+    /* 历史轨迹：成长漂移 */
+    if(ST.victories.length){
+      var pts=ST.victories.map(function(v){ return proj(v.snap); });
+      pts.push(proj(ST.s));
+      var d="M"+pts.map(function(p){return p.x.toFixed(1)+" "+p.y.toFixed(1);}).join(" L ");
+      svg.appendChild(mk("path",{d:d,fill:"none",stroke:"#1f6fb2","stroke-width":1.4,"stroke-dasharray":"4 3",opacity:.7}));
+      pts.slice(0,-1).forEach(function(p){
+        svg.appendChild(mk("circle",{cx:p.x,cy:p.y,r:3,fill:"#fffefb",stroke:"#1f6fb2","stroke-width":1.3}));
+      });
+    }
+
+    var me=proj(ST.s);
+    var reserved=r.map(function(item){
+      var p=proj(item.node.s);
+      return {x:p.x,y:p.y,r:item.node.id===cur.node.id?9:7};
+    });
+    reserved.push({x:me.x,y:me.y,r:16});
+
+    r.forEach(function(item){
+      var n=item.node, p=proj(n.s), isCur=n.id===cur.node.id, isBand=bandIds.indexOf(n.id)>=0;
+      var fill=isCur?"#23221f":(isBand?"#a9762f":(n.kind==="user"?"#4f7a58":"#8d887e"));
+      var dot=mk("circle",{cx:p.x,cy:p.y,r:isCur?7.5:5.5,fill:fill,stroke:"#fffefb","stroke-width":1.6});
+      if(n.kind==="user") dot.setAttribute("stroke-dasharray","3 2");
+      svg.appendChild(dot);
+    });
+
+    /* 名称与相似度合并为一条标签，优先放置当前域与过渡带节点 */
+    var items=r.map(function(item){
+      var p=proj(item.node.s), isCur=item.node.id===cur.node.id;
+      return {x:p.x,y:p.y,size:isCur?10.5:9.5,isCur:isCur,
+        isBand:bandIds.indexOf(item.node.id)>=0,kind:item.node.kind,
+        text:item.node.name.split(" · ")[0]+" "+(item.sim*100).toFixed(0)+"%"};
+    });
+    placeLabels(items,reserved).forEach(function(res){
+      var it=res.item,ps=res.pos;
+      if(ps.lead){
+        svg.appendChild(mk("line",{x1:it.x,y1:it.y,x2:ps.anchor==="start"?ps.x-3:(ps.anchor==="end"?ps.x+3:ps.x),
+          y2:ps.y-3,stroke:"#cfc8bb","stroke-width":1}));
+      }
+      var pad=1.5,w=it.text.length*it.size*0.92;
+      var bx=ps.anchor==="middle"?ps.x-w/2:(ps.anchor==="end"?ps.x-w:ps.x);
+      svg.appendChild(mk("rect",{x:bx-pad,y:ps.y-10,width:w+pad*2,height:13,rx:2,
+        fill:"#fffefb",opacity:it.isCur?0.9:0.78}));
+      var t=mk("text",{x:ps.x,y:ps.y,"text-anchor":ps.anchor,"font-size":it.size,
+        fill:it.isCur?"#23221f":(it.isBand?"#a9762f":(it.kind==="user"?"#4f7a58":"#8d887e")),
+        "font-weight":it.isCur?"600":"400"});
+      t.textContent=it.text;
+      svg.appendChild(t);
+    });
+
+    /* 用户光点绘制在最上层 */
+    svg.appendChild(mk("circle",{cx:me.x,cy:me.y,r:15,fill:"#1f6fb2",opacity:.16}));
+    svg.appendChild(mk("circle",{cx:me.x,cy:me.y,r:8.5,fill:"#1f6fb2",stroke:"#fffefb","stroke-width":2.6}));
+    svg.appendChild(mk("circle",{cx:me.x,cy:me.y,r:3,fill:"#fffefb"}));
+    var mlw=22;
+    svg.appendChild(mk("rect",{x:me.x-mlw/2,y:me.y+14,width:mlw,height:14,rx:3,fill:"#1f6fb2"}));
+    var ml=mk("text",{x:me.x,y:me.y+24.5,"text-anchor":"middle","font-size":10,fill:"#fffefb","font-weight":"600"});
+    ml.textContent="你"; svg.appendChild(ml);
+  }
+
+  /* ---------- 小地图（档案墙对比） ---------- */
+  function miniMap(snap){
+    var svg=mk("svg",{viewBox:"0 0 260 190",role:"img"});
+    svg.appendChild(mk("rect",{x:0,y:0,width:260,height:190,fill:"#fffefb"}));
+    for(var x=14;x<=246;x+=29) svg.appendChild(mk("line",{x1:x,y1:12,x2:x,y2:176,stroke:"#f1eee7","stroke-width":1}));
+    for(var y=12;y<=176;y+=27.3) svg.appendChild(mk("line",{x1:14,y1:y,x2:246,y2:y,stroke:"#f1eee7","stroke-width":1}));
+    var sc=function(p){ return {x:14+(p.x-30)/460*232, y:12+(p.y-32)/316*164}; };
+    var v=vec(snap);
+    var best=NODES.map(function(n){return {n:n,sim:cosSim(v,vec(n.s))};}).sort(function(a,b){return b.sim-a.sim;})[0];
+    NODES.forEach(function(n){
+      var p=sc(proj(n.s));
+      svg.appendChild(mk("circle",{cx:p.x,cy:p.y,r:n.id===best.n.id?5:3.2,
+        fill:n.id===best.n.id?"#23221f":"#cfc8bb"}));
+    });
+    var m=sc(proj(snap));
+    svg.appendChild(mk("circle",{cx:m.x,cy:m.y,r:8,fill:"#1f6fb2",opacity:.18}));
+    svg.appendChild(mk("circle",{cx:m.x,cy:m.y,r:4,fill:"#1f6fb2",stroke:"#fffefb","stroke-width":1.5}));
+    return {svg:svg,domain:best.n.name};
+  }
+
+  /* ---------- 位置学习屏 ---------- */
+  function renderIntake(){
+    var cur=current(), box=$("yt-intake-domain"); if(!box) return;
+    box.textContent="";
+    var rows=[
+      ["归属节点",cur.node.name],
+      ["相似度",(cur.sim*100).toFixed(1)+"%"],
+      ["节点来源",cur.node.kind==="user"?"用户贡献节点（已通过校验）":"预置环境原型节点"],
+      ["过渡带",inBand(ranked()).length?inBand(ranked()).map(function(b){return b.node.name.split(" · ")[0];}).join("、"):"当前不在过渡带内"]
+    ];
+    rows.forEach(function(p){
+      var li=document.createElement("li");
+      var b=document.createElement("b"); b.textContent=p[0];
+      var s=document.createElement("span"); s.textContent=p[1];
+      li.appendChild(b); li.appendChild(s); box.appendChild(li);
+    });
+  }
+
+  /* ---------- 环境地图：域详情与邻近节点 ---------- */
+  function listInto(id,arr,cls){
+    var box=$(id); if(!box) return;
+    box.textContent="";
+    arr.forEach(function(t,i){
+      var li=document.createElement("li");
+      if(cls==="step"){ var n=document.createElement("i"); n.textContent=i+1; li.appendChild(n); }
+      li.appendChild(document.createTextNode(t));
+      box.appendChild(li);
+    });
+  }
+  function renderDomain(){
+    var r=ranked(), cur=r[0], n=cur.node;
+    var nm=$("yt-dom-name"); if(nm) nm.textContent=n.name;
+    var sim=$("yt-dom-sim");
+    if(sim){
+      var band=inBand(r);
+      sim.textContent="相似度 "+(cur.sim*100).toFixed(1)+"% ｜ "+
+        (n.kind==="user"?"用户贡献节点":"环境原型节点")+" ｜ "+
+        (band.length?("处于过渡带，可同时参考："+band.map(function(b){return b.node.name.split(" · ")[0];}).join("、")):"不在过渡带内，参考内容来自单一域");
+    }
+    listInto("yt-dom-pains",n.pains);
+    listInto("yt-dom-routes",n.routes,"step");
+    listInto("yt-dom-risks",n.risks);
+    var btn=$("yt-load-tasks");
+    if(btn) btn.textContent=ST.loadedNode===n.id?"本域路线已载入工作台":"把本域路线载入工作台";
+  }
+  function renderNeighbors(){
+    var box=$("yt-neighbors"); if(!box) return;
+    box.textContent="";
+    var r=ranked(), bandIds=inBand(r).map(function(b){return b.node.id;});
+    r.slice(1,5).forEach(function(item){
+      var n=item.node;
+      var card=document.createElement("div"); card.className="yt-pool";
+      var top=document.createElement("div"); top.className="yt-vic-top";
+      var t=document.createElement("strong"); t.style.fontSize="13px"; t.textContent=n.name;
+      var pc=document.createElement("span"); pc.className="yt-vic-ts"; pc.textContent=(item.sim*100).toFixed(1)+"%";
+      top.appendChild(t); top.appendChild(pc); card.appendChild(top);
+      var tags=document.createElement("div"); tags.style.margin="5px 0 2px";
+      var c1=document.createElement("span");
+      c1.className="yt-chip "+(n.kind==="user"?"yt-chip-c":"");
+      c1.textContent=n.kind==="user"?"用户贡献节点":"原型节点";
+      tags.appendChild(c1);
+      if(bandIds.indexOf(n.id)>=0){
+        var c2=document.createElement("span"); c2.className="yt-chip yt-chip-w"; c2.textContent="在过渡带内"; tags.appendChild(c2);
+      }
+      card.appendChild(tags);
+      var p=document.createElement("p"); p.className="yt-vic-body";
+      p.textContent="如果处境变为该节点，首要困扰会变成：" + n.pains[0];
+      card.appendChild(p);
+      var act=document.createElement("div"); act.className="yt-btn-row"; act.style.marginTop="7px";
+      var btn=document.createElement("button");
+      btn.type="button"; btn.className="yt-btn yt-btn-s"; btn.textContent="查看该域参考内容";
+      btn.addEventListener("click",function(){
+        peek(n);
+      });
+      act.appendChild(btn); card.appendChild(act);
+      box.appendChild(card);
+    });
+  }
+  function peek(n){
+    var nm=$("yt-dom-name"); if(nm) nm.textContent=n.name+"（邻域预览）";
+    var sim=$("yt-dom-sim");
+    if(sim) sim.textContent="这是邻近节点的参考内容预览，你的实际归属未改变；拖动滑块才会真正改变落点。";
+    listInto("yt-dom-pains",n.pains);
+    listInto("yt-dom-routes",n.routes,"step");
+    listInto("yt-dom-risks",n.risks);
+    var btn=$("yt-load-tasks");
+    if(btn) btn.textContent="载入「"+n.name.split(" · ")[0]+"」的路线";
+    btn.__peek=n.id;
+    flash("yt-map-flash","已切换为邻域预览。再次拖动滑块或切换页签会回到你的实际归属。");
+  }
+
+  /* ---------- 工作台 ---------- */
+  /* 工作台中已不存在该域任务时，解除“已载入”标记，使按钮文案与实际一致 */
+  function syncLoadedNode(){
+    if(!ST.loadedNode) return;
+    var still=ST.tasks.some(function(t){ return t.node===ST.loadedNode; });
+    if(!still) ST.loadedNode=null;
+  }
+  function loadTasks(node){
+    var added=0;
+    node.tasks.forEach(function(t){
+      if(ST.tasks.some(function(x){return x.src===t.id;})) return;
+      ST.seq+=1;
+      ST.tasks.push({
+        id:"t"+ST.seq, src:t.id, node:node.id, nodeName:node.name,
+        type:t.type, title:t.title, origin:t.src, pre:t.pre, risk:t.risk, std:t.std,
+        status:"doing", custom:false, archived:false
+      });
+      added+=1;
+    });
+    ST.loadedNode=node.id;
+    return added;
+  }
+  function visibleTasks(){
+    return ST.tasks.filter(function(t){ return ST.filter==="all"||t.status===ST.filter; });
+  }
+  function renderTasks(){
+    var box=$("yt-tasks"); if(!box) return;
+    var vis=visibleTasks();
+    box.textContent="";
+    var chip=$("yt-count-chip");
+    if(chip){
+      var cDoing=ST.tasks.filter(function(t){return t.status==="doing";}).length;
+      var cDone=ST.tasks.filter(function(t){return t.status==="done";}).length;
+      chip.textContent="共 "+ST.tasks.length+" 项 ｜ 进行中 "+cDoing+" ｜ 已完成 "+cDone+
+        (ST.filter==="all"?"":" ｜ 当前筛选 "+vis.length+" 项");
+    }
+    var flag=$("yt-flag-bench");
+    if(flag) flag.textContent=String(ST.tasks.filter(function(t){return t.status==="doing";}).length);
+
+    if(!ST.tasks.length){
+      var e=document.createElement("div"); e.className="yt-empty";
+      e.textContent="清单还是空的。到环境地图把本域路线载入，或直接新增一条自定义任务。";
+      box.appendChild(e); return;
+    }
+    if(!vis.length){
+      var e2=document.createElement("div"); e2.className="yt-empty";
+      var p=document.createElement("p");
+      p.textContent="当前筛选条件下没有任务，共有 "+ST.tasks.length+" 项被隐藏。";
+      var b=document.createElement("button");
+      b.type="button"; b.className="yt-btn yt-btn-s"; b.style.marginTop="9px"; b.textContent="清除筛选";
+      b.addEventListener("click",function(){
+        ST.filter="all"; var sel=$("yt-filter"); if(sel) sel.value="all"; renderTasks();
+      });
+      e2.appendChild(p); e2.appendChild(b); box.appendChild(e2); return;
+    }
+
+    vis.forEach(function(t){
+      var card=document.createElement("div");
+      card.className="yt-task"+(t.status==="hold"?" is-hold":"")+(t.status==="drop"?" is-drop":"");
+      var top=document.createElement("div"); top.className="yt-task-top";
+      var left=document.createElement("div"); left.style.minWidth="0";
+      var ttl=document.createElement("p"); ttl.className="yt-task-ttl"; ttl.textContent=t.title;
+      left.appendChild(ttl);
+      var tags=document.createElement("div"); tags.style.marginTop="4px";
+      var c1=document.createElement("span"); c1.className="yt-chip yt-chip-b"; c1.textContent=t.type; tags.appendChild(c1);
+      var c2=document.createElement("span"); c2.className="yt-chip"; c2.textContent=STATUS[t.status]; tags.appendChild(c2);
+      if(t.custom){ var c3=document.createElement("span"); c3.className="yt-chip yt-chip-c"; c3.textContent="自定义"; tags.appendChild(c3); }
+      if(t.archived){ var c4=document.createElement("span"); c4.className="yt-chip yt-chip-w"; c4.textContent="已归档"; tags.appendChild(c4); }
+      left.appendChild(tags);
+      var meta=document.createElement("p"); meta.className="yt-task-meta";
+      var rows=[["经验出处",t.origin],["前置条件",t.pre],["风险提示",t.risk],["完成标准",t.std]];
+      rows.forEach(function(r,i){
+        if(!r[1]||r[1]==="—") return;
+        if(i>0&&meta.childNodes.length) meta.appendChild(document.createElement("br"));
+        var b=document.createElement("b"); b.textContent=r[0]+"：";
+        meta.appendChild(b); meta.appendChild(document.createTextNode(r[1]));
+      });
+      left.appendChild(meta);
+      top.appendChild(left);
+
+      var act=document.createElement("div"); act.className="yt-task-act";
+      var sel=document.createElement("select");
+      sel.setAttribute("aria-label","任务状态："+t.title);
+      Object.keys(STATUS).forEach(function(k){
+        var o=document.createElement("option"); o.value=k; o.textContent=STATUS[k];
+        if(t.status===k) o.selected=true;
+        sel.appendChild(o);
+      });
+      sel.disabled=t.archived;
+      sel.addEventListener("change",function(){
+        t.status=sel.value;
+        var hidden=ST.filter!=="all"&&t.status!==ST.filter;
+        renderTasks(); renderStopList(); renderDrift();
+        flash("yt-bench-flash", hidden
+          ? ("已保存为「"+STATUS[t.status]+"」，但当前筛选条件下不显示该任务。")
+          : ("已更新为「"+STATUS[t.status]+"」。"+(t.status==="done"?"可以去驿站停靠了。":"")));
+      });
+      act.appendChild(sel);
+      var del=document.createElement("button");
+      del.type="button"; del.className="yt-btn yt-btn-s"; del.textContent="移除";
+      del.setAttribute("aria-label","移除任务："+t.title);
+      del.disabled=t.archived;
+      del.addEventListener("click",function(){
+        ST.tasks=ST.tasks.filter(function(x){return x.id!==t.id;});
+        syncLoadedNode();
+        renderTasks(); renderStopList(); renderDrift(); renderDomain();
+        flash("yt-bench-flash","已移除「"+t.title.slice(0,14)+"…」。不适用的任务可以直接删掉。");
+      });
+      act.appendChild(del);
+      top.appendChild(act);
+      card.appendChild(top);
+      box.appendChild(card);
+    });
+  }
+
+  /* ---------- 驿站 ---------- */
+  var DRIFT={keep:{history:4,inertia:1},revise:{history:4,inertia:3},rest:{history:2,econ:-2},switch:{history:5,inertia:6,cycle:2}};
+  function nextChoice(){
+    var el=root.querySelector('input[name="yt-next"]:checked');
+    return el?el.value:"keep";
+  }
+  function archivableTasks(){
+    return ST.tasks.filter(function(t){ return t.status==="done"&&!t.archived; });
+  }
+  function renderStopCtx(){
+    var box=$("yt-stop-ctx"); if(!box) return;
+    box.textContent="";
+    var svg=mk("svg",{viewBox:"0 0 24 24","aria-hidden":"true"});
+    svg.appendChild(mk("circle",{cx:12,cy:12,r:11,fill:"#fff",stroke:"#1f6fb2"}));
+    svg.appendChild(mk("ellipse",{cx:9,cy:11,rx:1.7,ry:2,fill:"#1f6fb2"}));
+    svg.appendChild(mk("ellipse",{cx:15,cy:11,rx:1.7,ry:2,fill:"#1f6fb2"}));
+    svg.appendChild(mk("ellipse",{cx:12,cy:16,rx:2.2,ry:1.6,fill:"none",stroke:"#1f6fb2"}));
+    box.appendChild(svg);
+    var span=document.createElement("span");
+    var cur=current();
+    span.textContent="先回到你出发时的处境：经济压力 "+ST.s.econ+"，家庭负担 "+ST.s.family+
+      "，时间余量对应的年龄分量 "+ST.s.age+" 岁，当时归属「"+cur.node.name.split(" · ")[0]+"」。现在变了没有？";
+    box.appendChild(span);
+  }
+  function renderStopList(){
+    var box=$("yt-stop-list"); if(!box) return;
+    box.textContent="";
+    var arr=archivableTasks();
+    if(!arr.length){
+      var e=document.createElement("div"); e.className="yt-empty";
+      e.textContent="还没有标记为「已完成」的体验。驿站不催促——等真的完成一段再回来。";
+      box.appendChild(e);
+    }else{
+      arr.forEach(function(t){
+        var row=document.createElement("div"); row.className="yt-pool";
+        var s=document.createElement("strong"); s.style.fontSize="13px"; s.textContent=t.title;
+        row.appendChild(s);
+        var m=document.createElement("p"); m.className="yt-vic-body";
+        m.textContent=t.type+" ｜ 完成标准："+t.std;
+        row.appendChild(m);
+        box.appendChild(row);
+      });
+    }
+    var btn=$("yt-archive");
+    if(btn) btn.disabled=!arr.length;
+  }
+  function renderDrift(){
+    var box=$("yt-drift"); if(!box) return;
+    box.textContent="";
+    var d=DRIFT[nextChoice()], n=archivableTasks().length;
+    var any=false;
+    DIMS.forEach(function(dim){
+      var base=d[dim.k]; if(!base) return;
+      any=true;
+      var cur=ST.s[dim.k], next=n?clampDim(dim,cur+base):cur;
+      var li=document.createElement("li");
+      var b=document.createElement("b"); b.textContent=dim.n;
+      var s=document.createElement("span");
+      if(!n){
+        s.textContent="+"+base+"（需先有可归档的体验）";
+      }else if(next===cur){
+        /* 增量被上下界截断：显示真实增量并说明已封顶，避免误读为“该项不变” */
+        s.textContent=(base>0?"+":"")+base+"（当前 "+cur+"，已达"+(base>0?"上":"下")+"限 "+
+          (base>0?dim.max:dim.min)+"，本次不再变化）";
+      }else{
+        s.textContent=(base>0?"+":"")+base+"（当前 "+cur+" → "+next+"）";
+      }
+      li.appendChild(b); li.appendChild(s); box.appendChild(li);
+    });
+    if(!any||!n){
+      var li2=document.createElement("li");
+      var b2=document.createElement("b"); b2.textContent="说明";
+      var s2=document.createElement("span");
+      s2.textContent=n?"该选项不改变向量，只记录判断。":"没有可归档的体验时不产生漂移。";
+      li2.appendChild(b2); li2.appendChild(s2); box.appendChild(li2);
+    }
+  }
+  function clampDim(dim,v){ return Math.max(dim.min,Math.min(dim.max,Math.round(v))); }
+
+  var CHOICE={keep:"维持方向",revise:"修改计划",rest:"暂时休整",switch:"更换方向"};
+  function archive(){
+    var arr=archivableTasks();
+    if(!arr.length){ flash("yt-stop-flash","还没有已完成的体验可以归档。"); return; }
+    var choice=nextChoice();
+    var snap={}; DIMS.forEach(function(d){ snap[d.k]=ST.s[d.k]; });
+    var cur=current();
+    var answers={
+      feel:($("yt-q1").value||"").trim(),
+      ctx:($("yt-q2").value||"").trim(),
+      vision:($("yt-q3").value||"").trim()
+    };
+    ST.seq+=1;
+    ST.victories.push({
+      id:"v"+ST.seq,
+      no:ST.victories.length+1,
+      at:fmt(now()),
+      snap:snap,
+      domain:cur.node.name,
+      sim:cur.sim,
+      tasks:arr.map(function(t){return {title:t.title,type:t.type};}),
+      choice:choice,
+      answers:answers
+    });
+    arr.forEach(function(t){ t.archived=true; });
+
+    /* 向量小幅漂移 */
+    var d=DRIFT[choice];
+    DIMS.forEach(function(dim){
+      if(d[dim.k]) ST.s[dim.k]=clampDim(dim,ST.s[dim.k]+d[dim.k]);
+    });
+    /* 年龄随时间平滑漂移 */
+    ST.s.age=clampDim(DIMS[3],ST.s.age+(ST.victories.length%3===0?1:0));
+
+    ["yt-q1","yt-q2","yt-q3"].forEach(function(id){ var el=$(id); if(el) el.value=""; });
+
+    syncSliderOutputs(); renderMap(); renderDomain(); renderNeighbors(); renderIntake();
+    renderTasks(); renderStopList(); renderDrift(); renderWall(); renderCompare(); renderPool();
+
+    var msg="第 "+ST.victories.length+" 次阶段性胜利已归档";
+    if(choice==="rest") msg+="。选择了暂时休整，系统不推送新任务，只确认记录已存档。";
+    else if(choice==="switch") msg+="。排除一条路线同样是胜利——它以可控成本换来了清晰结论。";
+    else msg+="。位置已小幅漂移，回到地图可以看到新的落点。";
+    flash("yt-stop-flash",msg);
+  }
+
+  /* ---------- 档案墙 ---------- */
+  function renderWall(){
+    var box=$("yt-wall"); if(!box) return;
+    box.textContent="";
+    var flag=$("yt-flag-wall"); if(flag) flag.textContent=String(ST.victories.length);
+    if(!ST.victories.length){
+      var e=document.createElement("div"); e.className="yt-empty";
+      e.textContent="档案墙还是空的。完成一段体验、在驿站做完反思之后，第一次阶段性胜利就会出现在这里。";
+      box.appendChild(e); return;
+    }
+    ST.victories.slice().reverse().forEach(function(v){
+      var card=document.createElement("div"); card.className="yt-vic";
+      var top=document.createElement("div"); top.className="yt-vic-top";
+      var t=document.createElement("strong");
+      t.style.fontSize="13.5px";
+      t.textContent="第 "+v.no+" 次阶段性胜利 · "+CHOICE[v.choice];
+      var ts=document.createElement("span"); ts.className="yt-vic-ts"; ts.textContent=v.at;
+      top.appendChild(t); top.appendChild(ts); card.appendChild(top);
+
+      var tags=document.createElement("div"); tags.style.margin="5px 0 2px";
+      v.tasks.forEach(function(x){
+        var c=document.createElement("span"); c.className="yt-chip yt-chip-b"; c.textContent=x.type; tags.appendChild(c);
+      });
+      var cd=document.createElement("span"); cd.className="yt-chip"; cd.textContent=v.domain.split(" · ")[0];
+      tags.appendChild(cd);
+      card.appendChild(tags);
+
+      var body=document.createElement("p"); body.className="yt-vic-body";
+      body.appendChild(document.createTextNode("完成体验："+v.tasks.map(function(x){return x.title;}).join("；")));
+      card.appendChild(body);
+
+      var hasText=v.answers.feel||v.answers.ctx||v.answers.vision;
+      var ref=document.createElement("p"); ref.className="yt-vic-body";
+      if(hasText){
+        var parts=[];
+        if(v.answers.feel) parts.push("真实感受："+v.answers.feel);
+        if(v.answers.ctx) parts.push("处境变化："+v.answers.ctx);
+        if(v.answers.vision) parts.push("愿景："+v.answers.vision);
+        ref.textContent="自省原文 — "+parts.join(" ／ ");
+      }else{
+        ref.textContent="自省原文 — 本次未填写文字，仅记录了下一步选择。";
+        ref.style.color="var(--yt-muted)";
+      }
+      card.appendChild(ref);
+
+      var snap=document.createElement("p"); snap.className="yt-vic-body"; snap.style.color="var(--yt-muted)";
+      snap.textContent="向量快照 — "+DIMS.map(function(d){return d.n+" "+v.snap[d.k];}).join("，");
+      card.appendChild(snap);
+      box.appendChild(card);
+    });
+  }
+
+  function snapOptions(){
+    var opts=ST.victories.map(function(v){
+      return {id:v.id,label:"第 "+v.no+" 次胜利（"+v.at.slice(0,10)+"）",snap:v.snap};
+    });
+    opts.push({id:"now",label:"当前位置",snap:ST.s});
+    return opts;
+  }
+  function fillSelect(sel,opts,keep){
+    var prev=keep&&opts.some(function(o){return o.id===keep;})?keep:null;
+    sel.textContent="";
+    opts.forEach(function(o){
+      var el=document.createElement("option"); el.value=o.id; el.textContent=o.label; sel.appendChild(el);
+    });
+    if(prev) sel.value=prev;
+    return sel.value;
+  }
+  function renderCompare(){
+    var a=$("yt-cmp-a"), b=$("yt-cmp-b"), box=$("yt-cmp"), diff=$("yt-cmp-diff");
+    if(!a||!b||!box) return;
+    var opts=snapOptions();
+    var prevA=a.value, prevB=b.value;
+    fillSelect(a,opts,prevA);
+    fillSelect(b,opts,prevB);
+    if(!prevA) a.value=opts[0].id;
+    if(!prevB) b.value=opts[opts.length-1].id;
+    if(a.value===b.value&&opts.length>1){
+      b.value=opts[opts.length-1].id;
+      if(a.value===b.value) a.value=opts[0].id;
+    }
+    var oa=opts.filter(function(o){return o.id===a.value;})[0]||opts[0];
+    var ob=opts.filter(function(o){return o.id===b.value;})[0]||opts[opts.length-1];
+
+    box.textContent="";
+    [[oa,"起点"],[ob,"终点"]].forEach(function(pair){
+      var fig=document.createElement("figure");
+      var m=miniMap(pair[0].snap);
+      fig.appendChild(m.svg);
+      var cap=document.createElement("figcaption");
+      cap.textContent=pair[1]+"：" + pair[0].label + " ｜ " + m.domain.split(" · ")[0];
+      fig.appendChild(cap);
+      box.appendChild(fig);
+    });
+
+    diff.textContent="";
+    if(oa.id===ob.id){
+      var li0=document.createElement("li");
+      var b0=document.createElement("b"); b0.textContent="提示";
+      var s0=document.createElement("span"); s0.textContent="起点与终点相同，暂无可比较的变化。";
+      li0.appendChild(b0); li0.appendChild(s0); diff.appendChild(li0);
+      return;
+    }
+    var moved=false;
+    DIMS.forEach(function(d){
+      var va=oa.snap[d.k], vb=ob.snap[d.k];
+      if(va===vb) return;
+      moved=true;
+      var li=document.createElement("li");
+      var bb=document.createElement("b"); bb.textContent=d.n;
+      var ss=document.createElement("span");
+      ss.textContent=va+" → "+vb+"（"+(vb>va?"+":"")+(vb-va)+(d.unit||"")+"）";
+      li.appendChild(bb); li.appendChild(ss); diff.appendChild(li);
+    });
+    if(!moved){
+      var li1=document.createElement("li");
+      var b1=document.createElement("b"); b1.textContent="变化";
+      var s1=document.createElement("span"); s1.textContent="两个时间点的向量完全一致。";
+      li1.appendChild(b1); li1.appendChild(s1); diff.appendChild(li1);
+    }
+  }
+
+  /* ---------- 同伴经验域 ---------- */
+  var NEED=3;
+  function renderPool(){
+    var box=$("yt-pool"); if(!box) return;
+    box.textContent="";
+    var unsub=ST.victories.filter(function(v){ return !ST.pool.some(function(p){return p.vid===v.id;}); });
+
+    if(!ST.victories.length){
+      var e=document.createElement("div"); e.className="yt-empty";
+      e.textContent="还没有可提交的复盘。先在驿站归档一次阶段性胜利。";
+      box.appendChild(e);
+    }
+
+    unsub.forEach(function(v){
+      /* 质量门槛：无有效自省内容的记录不进入校验池（与界面声明一致） */
+      var filled=[v.answers.feel,v.answers.ctx,v.answers.vision]
+        .filter(function(x){ return x&&x.length>=8; }).length;
+      var eligible=filled>0;
+      var card=document.createElement("div"); card.className="yt-pool";
+      var top=document.createElement("div"); top.className="yt-vic-top";
+      var t=document.createElement("strong"); t.style.fontSize="13px";
+      t.textContent="第 "+v.no+" 次胜利 · "+CHOICE[v.choice];
+      var c=document.createElement("span");
+      c.className="yt-chip"+(eligible?"":" yt-chip-w");
+      c.textContent=eligible?"尚未提交":"内容不足，不可提交";
+      top.appendChild(t); top.appendChild(c); card.appendChild(top);
+      var p=document.createElement("p"); p.className="yt-vic-body";
+      p.textContent=eligible
+        ? "提交后以处境区间呈现，不包含精确个人数据；初始仅本人可见。"
+        : "这次停靠没有留下自省文字。无有效内容的记录不进入校验池——回驿站补写后即可提交。";
+      card.appendChild(p);
+      var row=document.createElement("div"); row.className="yt-btn-row"; row.style.marginTop="7px";
+      var btn=document.createElement("button");
+      btn.type="button"; btn.className="yt-btn yt-btn-s"; btn.textContent="提交到校验池";
+      btn.disabled=!eligible;
+      btn.addEventListener("click",function(){
+        if(!eligible) return;
+        ST.pool.push({vid:v.id,no:v.no,choice:v.choice,marks:0,public:false,domain:v.domain});
+        renderPool();
+        flash("yt-peer-flash","已提交。当前仅本人可见，需 "+NEED+" 位同处境用户标记有效后升级为公共节点。");
+      });
+      row.appendChild(btn); card.appendChild(row);
+      box.appendChild(card);
+    });
+
+    ST.pool.forEach(function(p){
+      var card=document.createElement("div"); card.className="yt-pool";
+      var top=document.createElement("div"); top.className="yt-vic-top";
+      var t=document.createElement("strong"); t.style.fontSize="13px";
+      t.textContent="第 "+p.no+" 次胜利 · "+CHOICE[p.choice];
+      var c=document.createElement("span");
+      c.className="yt-chip "+(p.public?"yt-chip-c":"yt-chip-b");
+      c.textContent=p.public?"已升级为公共节点":"仅本人可见";
+      top.appendChild(t); top.appendChild(c); card.appendChild(top);
+
+      var meter=document.createElement("div"); meter.className="yt-meter";
+      var fill=document.createElement("i");
+      fill.style.width=Math.min(100,p.marks/NEED*100)+"%";
+      meter.appendChild(fill); card.appendChild(meter);
+
+      var info=document.createElement("p"); info.className="yt-vic-body";
+      info.textContent=p.public
+        ? ("影响力：已被 "+(p.marks+4)+" 位处境相近的用户参考，其中 "+p.marks+" 人标记有用。")
+        : ("有效标记 "+p.marks+" / "+NEED+"。无有效内容的记录不进入校验池。");
+      card.appendChild(info);
+
+      if(!p.public){
+        var row=document.createElement("div"); row.className="yt-btn-row"; row.style.marginTop="6px";
+        var btn=document.createElement("button");
+        btn.type="button"; btn.className="yt-btn yt-btn-s";
+        btn.textContent="模拟一位同处境用户标记有效";
+        btn.addEventListener("click",function(){
+          p.marks+=1;
+          if(p.marks>=NEED){
+            p.public=true;
+            var src=ST.victories.filter(function(v){return v.id===p.vid;})[0];
+            if(src&&!NODES.some(function(n){return n.id==="u"+p.vid;})){
+              NODES.push({
+                id:"u"+p.vid, name:"用户贡献 · 第 "+p.no+" 次胜利复盘", hue:"#4f7a58", kind:"user",
+                s:(function(){var o={};DIMS.forEach(function(d){o[d.k]=src.snap[d.k];});return o;})(),
+                pains:["该节点来自真实复盘，困扰清单由贡献者填写"],
+                routes:src.tasks.map(function(x){return x.title;}),
+                risks:["单条复盘仅代表贡献者本人的处境与判断"],
+                tasks:src.tasks.map(function(x,i){
+                  return {id:"u"+p.vid+"t"+i,type:x.type,title:x.title,
+                    src:"用户贡献节点 · 已通过 "+NEED+" 位同处境用户校验",
+                    pre:"与贡献者处境相近",risk:"前置条件可能不同，需自行核对",std:"由你自行设定"};
+                })
+              });
+            }
+            renderMap(); renderNeighbors(); renderDomain(); renderIntake(); renderCompare();
+            flash("yt-peer-flash","已达到 "+NEED+" 个有效标记，该复盘升级为公共节点，已出现在环境地图上。");
+          }else{
+            flash("yt-peer-flash","已记录 1 个有效标记（"+p.marks+"/"+NEED+"）。单条反馈不直接改变公共知识。");
+          }
+          renderPool();
+        });
+        row.appendChild(btn); card.appendChild(row);
+      }
+      box.appendChild(card);
+    });
+  }
+  function renderPeers(){
+    var box=$("yt-peer-list"); if(!box) return;
+    box.textContent="";
+    PEERS.forEach(function(p){
+      var card=document.createElement("div"); card.className="yt-pool";
+      var top=document.createElement("div"); top.className="yt-vic-top";
+      var t=document.createElement("strong"); t.style.fontSize="12.5px"; t.textContent=p.who;
+      var c=document.createElement("span");
+      c.className="yt-chip "+(p.kind==="亲历记述"?"yt-chip-c":(p.kind==="行业共识"?"yt-chip-b":"yt-chip-w"));
+      c.textContent=p.kind;
+      top.appendChild(t); top.appendChild(c); card.appendChild(top);
+      var b=document.createElement("p"); b.className="yt-vic-body"; b.textContent=p.text; card.appendChild(b);
+      var m=document.createElement("p"); m.className="yt-vic-ts"; m.style.marginTop="5px";
+      m.textContent=p.marks+" 位处境相近的用户标记有用";
+      card.appendChild(m);
+      box.appendChild(card);
+    });
+  }
+
+  /* ---------- 自然语言解析（本地关键词，非真实直答调用） ---------- */
+  var RULES=[
+    {re:/专科|大专|高职/,set:{age:22},note:"专科在读 → 年龄 22"},
+    {re:/本科|应届/,set:{age:23},note:"本科应届 → 年龄 23"},
+    {re:/硕士|研究生/,set:{age:24,inertia:75},note:"硕士在读 → 年龄 24、探索倾向上调"},
+    {re:/尽快赚钱|自立|没钱|经济一般|生活费|养家/,set:{econ:70},note:"需要尽快自立 → 经济压力 70"},
+    {re:/可以支持|不缺钱|家里条件好|脱产/,set:{econ:22},note:"家庭可支持 → 经济压力 22"},
+    {re:/房贷|车贷|还款/,set:{econ:74,family:62},note:"房贷 → 经济压力 74、家庭负担 62"},
+    {re:/孩子|育儿|带娃|已婚/,set:{family:84},note:"抚养责任 → 家庭负担 84"},
+    {re:/独生|赡养|父母身体/,set:{family:66},note:"赡养责任 → 家庭负担 66"},
+    {re:/土木|建筑|工地|施工/,set:{cycle:24},note:"土木相关 → 行业周期 24（收缩）"},
+    {re:/互联网|算法|程序|开发/,set:{cycle:60},note:"互联网 → 行业周期 60"},
+    {re:/体制|考公|编制|事业单位/,set:{cycle:52,inertia:28},note:"体制内 → 行业周期 52、稳健倾向"},
+    {re:/想试|折腾|不甘|换方向|转行/,set:{inertia:70},note:"转向意愿 → 认知惯性 70（探索）"},
+    {re:/稳定|求稳|不敢|怕风险/,set:{inertia:26},note:"求稳 → 认知惯性 26（稳健）"},
+    {re:/实习过|做过|待过|经历过/,set:{history:48},note:"已有体验 → 体验历史 48"}
+  ];
+  /* 地名线索只定位到城市，由城市属性导出地理位置维度，不直接赋分 */
+  var GEO_RULES=[
+    {re:/北京/,city:"beijing"},{re:/上海/,city:"shanghai"},{re:/深圳/,city:"shenzhen"},
+    {re:/广州/,city:"guangzhou"},{re:/杭州/,city:"hangzhou"},{re:/南京/,city:"nanjing"},
+    {re:/成都/,city:"chengdu"},{re:/武汉/,city:"wuhan"},{re:/西安/,city:"xian"},
+    {re:/重庆/,city:"chongqing"},{re:/青岛/,city:"qingdao"},{re:/长沙/,city:"changsha"},
+    {re:/合肥/,city:"hefei"},{re:/昆明/,city:"kunming"},{re:/沈阳/,city:"shenyang"},
+    {re:/兰州/,city:"lanzhou"},{re:/绵阳/,city:"mianyang"},{re:/南充/,city:"nanchong"},
+    {re:/赣州/,city:"ganzhou"},{re:/遵义/,city:"zunyi"},{re:/榆林/,city:"yulin"},
+    {re:/县城|乡镇|农村/,city:"county"},
+    {re:/川内|四川/,city:"nanchong"}
+  ];
+  function parseNL(){
+    var txt=($("yt-nl").value||"").trim();
+    if(!txt){ flash("yt-parse-flash","请先写一段描述，或点击「填入演示背景」。"); return; }
+    var notes=[],geoHit=null;
+    RULES.forEach(function(r){
+      if(!r.re.test(txt)) return;
+      Object.keys(r.set).forEach(function(k){
+        var dim=DIMS.filter(function(d){return d.k===k;})[0];
+        if(dim&&!dim.derived) ST.s[k]=clampDim(dim,r.set[k]);
+      });
+      notes.push(r.note);
+    });
+    for(var i=0;i<GEO_RULES.length;i++){
+      if(GEO_RULES[i].re.test(txt)){ geoHit=GEO_RULES[i].city; break; }
+    }
+    if(geoHit){
+      selectCity(geoHit,true);
+      var gc=cityById(geoHit);
+      notes.unshift("地名「"+gc.name+"」→ 地图选点，地理位置由城市属性导出为 "+ST.s.place);
+    }
+    if(!notes.length){
+      flash("yt-parse-flash","这段描述没有命中可解析的维度线索，向量保持不变。你可以直接拖动滑块修正。");
+      return;
+    }
+    renderGeo(); renderGeoPanel();
+    syncSliderOutputs(); renderMap(); renderDomain(); renderNeighbors(); renderIntake(); renderDrift(); renderStopCtx();
+    flash("yt-parse-flash","解析到 "+notes.length+" 条线索：" + notes.slice(0,3).join("；") + (notes.length>3?" 等":"") + "。请核对后确认。");
+  }
+
+  /* ---------- 页签 ---------- */
+  var TABS=[["yt-tab-intake","yt-scr-intake"],["yt-tab-map","yt-scr-map"],["yt-tab-bench","yt-scr-bench"],
+            ["yt-tab-stop","yt-scr-stop"],["yt-tab-wall","yt-scr-wall"],["yt-tab-peer","yt-scr-peer"]];
+  function show(tabId){
+    TABS.forEach(function(p){
+      var tab=$(p[0]), scr=$(p[1]);
+      var on=p[0]===tabId;
+      if(tab){ tab.setAttribute("aria-selected",on?"true":"false"); tab.tabIndex=on?0:-1; }
+      if(scr) scr.hidden=!on;
+    });
+    if(tabId==="yt-tab-map"){ renderDomain(); renderNeighbors(); renderMap(); }
+    if(tabId==="yt-tab-bench") renderTasks();
+    if(tabId==="yt-tab-stop"){ renderStopCtx(); renderStopList(); renderDrift(); }
+    if(tabId==="yt-tab-wall"){ renderWall(); renderCompare(); }
+    if(tabId==="yt-tab-peer"){ renderPool(); renderPeers(); }
+  }
+  TABS.forEach(function(p,i){
+    var tab=$(p[0]); if(!tab) return;
+    tab.addEventListener("click",function(){ show(p[0]); });
+    tab.addEventListener("keydown",function(ev){
+      var k=ev.key, j=-1;
+      if(k==="ArrowRight") j=(i+1)%TABS.length;
+      else if(k==="ArrowLeft") j=(i-1+TABS.length)%TABS.length;
+      else if(k==="Home") j=0;
+      else if(k==="End") j=TABS.length-1;
+      if(j<0) return;
+      ev.preventDefault();
+      show(TABS[j][0]);
+      var nx=$(TABS[j][0]); if(nx) nx.focus();
+    });
+  });
+
+  /* ---------- 事件绑定 ---------- */
+  $("yt-parse").addEventListener("click",parseNL);
+  $("yt-demo").addEventListener("click",function(){
+    $("yt-nl").value="专科在读，川内，学的土木，家里经济一般需要毕业就自立，不太想一直待在工地，想试试别的方向但怕耽误时间。";
+    flash("yt-parse-flash","已填入演示背景，点击「解析为向量」查看效果。");
+  });
+  $("yt-to-map").addEventListener("click",function(){
+    show("yt-tab-map");
+    var t=$("yt-tab-map"); if(t) t.focus();
+  });
+  $("yt-load-tasks").addEventListener("click",function(){
+    var btn=$("yt-load-tasks");
+    var node=btn.__peek?NODES.filter(function(n){return n.id===btn.__peek;})[0]:current().node;
+    if(!node) node=current().node;
+    var added=loadTasks(node);
+    btn.__peek=null;
+    renderTasks(); renderDomain(); renderStopList(); renderDrift();
+    flash("yt-map-flash", added
+      ? ("已把「"+node.name.split(" · ")[0]+"」的 "+added+" 条参考任务载入工作台。这是草稿，增删改都在你手上。")
+      : "该域的任务已经全部在工作台里了。");
+  });
+  $("yt-filter").addEventListener("change",function(){
+    ST.filter=$("yt-filter").value; renderTasks();
+  });
+  /* 地理地图相关事件 */
+  $("yt-city-select").addEventListener("change",function(){
+    selectCity($("yt-city-select").value);
+    previewMigration();
+  });
+  root.querySelectorAll('input[name="yt-urban"]').forEach(function(rb){
+    rb.addEventListener("change",function(){
+      if(!rb.checked) return;
+      ST.urban=rb.value;
+      var prev=ST.s.place;
+      ST.s.place=placeFrom(ST.city,ST.urban);
+      renderGeo(); renderGeoPanel(); syncSliderOutputs();
+      renderMap(); renderDomain(); renderNeighbors(); renderIntake(); renderDrift(); renderStopCtx();
+      previewMigration();
+      $("yt-geo-tip").textContent="城乡属性改为「"+(URBAN[ST.urban]||URBAN.core).n+
+        "」：地理位置维度 "+prev+" → "+ST.s.place+"。";
+    });
+  });
+  $("yt-mig-select").addEventListener("change",previewMigration);
+  $("yt-mig-apply").addEventListener("click",function(){
+    var to=$("yt-mig-select").value;
+    if(!to||to===ST.city){
+      $("yt-mig-out").textContent="请先选择一个与当前不同的城市。";
+      return;
+    }
+    selectCity(to);
+    previewMigration();
+    $("yt-mig-out").textContent="已按迁移事件更新常住城市为"+cityById(to).name+
+      "。位置向量的其余维度不受影响，可继续手动校准。";
+  });
+  $("yt-add-open").addEventListener("click",function(){
+    var f=$("yt-add-form");
+    f.hidden=!f.hidden;
+    if(!f.hidden) $("yt-add-title").focus();
+  });
+  $("yt-add-cancel").addEventListener("click",function(){
+    $("yt-add-form").hidden=true;
+    $("yt-add-title").value="";
+    $("yt-add-err").textContent="";
+  });
+  function submitTask(){
+    var title=($("yt-add-title").value||"").trim();
+    if(title.length<4){
+      $("yt-add-err").textContent="请把任务写清楚一些（至少 4 个字），已输入的内容不会丢失。";
+      $("yt-add-title").focus();
+      return;
+    }
+    $("yt-add-err").textContent="";
+    ST.seq+=1;
+    ST.tasks.push({
+      id:"t"+ST.seq, src:"custom-"+ST.seq, node:"custom", nodeName:"自定义",
+      type:$("yt-add-type").value, title:title,
+      origin:"由你自己添加", pre:"由你自行设定", risk:"—", std:"由你自行设定",
+      status:"doing", custom:true, archived:false
+    });
+    $("yt-add-title").value="";
+    $("yt-add-form").hidden=true;
+    var hidden=ST.filter!=="all"&&ST.filter!=="doing";
+    renderTasks(); renderStopList(); renderDrift();
+    flash("yt-bench-flash", hidden
+      ? "已加入清单（进行中），但当前筛选条件下不显示。"
+      : "已加入清单。自定义任务与系统草稿在系统里权重相同。");
+  }
+  $("yt-add-submit").addEventListener("click",submitTask);
+  $("yt-add-title").addEventListener("keydown",function(ev){
+    if(ev.key==="Enter"){ ev.preventDefault(); submitTask(); }
+  });
+  $("yt-to-stop").addEventListener("click",function(){
+    show("yt-tab-stop");
+    var t=$("yt-tab-stop"); if(t) t.focus();
+  });
+  root.querySelectorAll('input[name="yt-next"]').forEach(function(r){
+    r.addEventListener("change",renderDrift);
+  });
+  $("yt-archive").addEventListener("click",archive);
+  $("yt-cmp-a").addEventListener("change",renderCompare);
+  $("yt-cmp-b").addEventListener("change",renderCompare);
+
+  /* ---------- 初始化（单一初始化路径） ---------- */
+  (function initCityControls(){
+    var sel=$("yt-city-select"), mig=$("yt-mig-select");
+    CITIES.forEach(function(c){
+      var o=document.createElement("option");
+      o.value=c.id; o.textContent=c.name+"（"+c.tier+"）";
+      sel.appendChild(o);
+      var o2=o.cloneNode(true); mig.appendChild(o2);
+    });
+    sel.value=ST.city;
+    var other=CITIES.filter(function(c){return c.id!==ST.city;})[0];
+    mig.value=other?other.id:ST.city;
+  })();
+  ST.s.place=placeFrom(ST.city,ST.urban);
+  buildSliders("yt-sliders","yt");
+  buildSliders("yt-sliders-map","map");
+  renderGeo(); renderGeoPanel(); previewMigration();
+  syncSliderOutputs();
+  renderMap(); renderDomain(); renderNeighbors(); renderIntake();
+  renderTasks(); renderStopCtx(); renderStopList(); renderDrift();
+  renderWall(); renderCompare(); renderPool(); renderPeers();
+  show("yt-tab-intake");
+})();
+</script>
+</div>
