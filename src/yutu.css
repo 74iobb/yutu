@@ -8539,6 +8539,7 @@ html.y-motion-ready #yutu2 .y-loop-current.y-in {
   #yutu2 .y-eyebrow::before,
   #yutu2 .y-glance::after,
   #yutu2 .y-btn-main,
+  #yutu2 .y-sub-tab[aria-selected='true'],
   #yutu2 .y-companion-fab,
   #yutu2 .y-trend-line,
   #yutu2 .y-trend-area,
@@ -12575,4 +12576,53 @@ html.y-motion-off #yutu2 .y-step-stage.is-page-dragging {
     rgba(4, 8, 18, 0.04) 0%,
     rgba(4, 8, 18, 0.38) 100%
   );
+}
+
+/* 体验工作台 / 停靠驿站等子页签：当前页签也用彩玻璃，而不是蓝/绿渐变 */
+#yutu2 .y-sub-tab[aria-selected='true'] {
+  position: relative;
+  overflow: hidden;
+  color: #fff;
+  border-bottom-color: transparent;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.58);
+  background-color: #3f1d24;
+  background-image:
+    linear-gradient(
+      180deg,
+      rgba(6, 10, 20, 0.3),
+      rgba(6, 10, 20, 0.52)
+    ),
+    url('./assets/yutu-button-glass.jpg');
+  background-image:
+    linear-gradient(
+      180deg,
+      rgba(6, 10, 20, 0.3),
+      rgba(6, 10, 20, 0.52)
+    ),
+    image-set(
+      url('./assets/yutu-button-glass.webp') type('image/webp'),
+      url('./assets/yutu-button-glass.jpg') type('image/jpeg')
+    );
+  background-size:
+    cover,
+    170% 100%;
+  background-position:
+    center,
+    0% 50%;
+  background-repeat: no-repeat;
+  box-shadow:
+    0 10px 20px -14px rgba(0, 0, 0, 0.75),
+    inset 0 1px 0 rgba(255, 255, 255, 0.24);
+  animation: yBtnFlow 7.5s ease-in-out infinite;
+}
+#yutu2 .y-sub-tab[aria-selected='true']:hover {
+  color: #fff;
+  box-shadow:
+    0 14px 24px -14px rgba(0, 0, 0, 0.8),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3),
+    inset 0 0 0 100px rgba(6, 10, 20, 0.12);
+}
+#yutu2 .y-sub-tab[aria-selected='true'] .y-flag {
+  background: rgba(255, 255, 255, 0.24);
+  color: #fff;
 }
