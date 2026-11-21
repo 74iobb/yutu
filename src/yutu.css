@@ -5454,82 +5454,50 @@ body {
   overflow: hidden;
   pointer-events: none;
 }
-/* 全屏鸢尾花星云：背景图缓慢漂移、缩放、旋转 */
+/* 全屏叶面水珠背景：缓慢漂移、缩放、旋转 */
 .y-ambient::before {
   content: '';
   position: absolute;
   inset: -8%;
-  background-color: #040815;
-  background-image:
-    url('./assets/yutu-iris-nebula.jpg'),
-    url('./assets/yutu-starfield.png'),
-    linear-gradient(160deg, #040815 0%, #0a1226 42%, #131f3c 72%, #070b18 100%);
+  background-color: #0b0a14;
+  background-image: url('./assets/yutu-bg-leaves.jpg');
   background-image:
     image-set(
-      url('./assets/yutu-iris-nebula.webp') type('image/webp'),
-      url('./assets/yutu-iris-nebula.jpg') type('image/jpeg')
-    ),
-    image-set(
-      url('./assets/yutu-starfield.webp') type('image/webp'),
-      url('./assets/yutu-starfield.png') type('image/png')
-    ),
-    linear-gradient(160deg, #040815 0%, #0a1226 42%, #131f3c 72%, #070b18 100%);
+      url('./assets/yutu-bg-leaves.webp') type('image/webp'),
+      url('./assets/yutu-bg-leaves.jpg') type('image/jpeg')
+    );
   background-size: cover;
-  background-position: 50% 48%;
+  background-position: 50% 50%;
   background-repeat: no-repeat;
-  filter: brightness(0.92) saturate(1.06);
+  filter: brightness(0.82) saturate(1.06);
   transform: scale(1.08) rotate(-0.6deg);
   animation: yNebulaDrift 72s ease-in-out infinite alternate;
   pointer-events: none;
 }
-/* 闪烁星层：星点与核心蓝光一起呼吸 */
+/* 叶面高光与水珠微光：短周期呼吸 */
 .y-ambient::after {
   content: '';
   position: absolute;
   inset: 0;
-  background-image:
-    url('./assets/yutu-starfield-twinkle.png'),
+  background:
     radial-gradient(
-      36% 36% at 50% 48%,
-      rgba(110, 170, 255, 0.3),
-      transparent 72%
-    ),
-    radial-gradient(
-      50% 46% at 24% 30%,
-      rgba(88, 126, 224, 0.16),
+      50% 45% at 28% 26%,
+      rgba(120, 160, 255, 0.2),
       transparent 70%
     ),
     radial-gradient(
-      46% 44% at 80% 74%,
-      rgba(128, 76, 180, 0.14),
+      45% 40% at 78% 74%,
+      rgba(140, 90, 200, 0.16),
       transparent 72%
+    ),
+    radial-gradient(
+      60% 50% at 50% 50%,
+      rgba(255, 255, 255, 0.06),
+      transparent 75%
     );
-  background-image:
-    image-set(
-      url('./assets/yutu-starfield-twinkle.webp') type('image/webp'),
-      url('./assets/yutu-starfield-twinkle.png') type('image/png')
-    ),
-    radial-gradient(
-      36% 36% at 50% 48%,
-      rgba(110, 170, 255, 0.3),
-      transparent 72%
-    ),
-    radial-gradient(
-      50% 46% at 24% 30%,
-      rgba(88, 126, 224, 0.16),
-      transparent 70%
-    ),
-    radial-gradient(
-      46% 44% at 80% 74%,
-      rgba(128, 76, 180, 0.14),
-      transparent 72%
-    );
-  background-size: cover;
-  background-position: 50% 48%;
-  background-repeat: no-repeat;
   mix-blend-mode: screen;
-  opacity: 0.42;
-  animation: yStarTwinkle 8s ease-in-out infinite alternate;
+  opacity: 0.38;
+  animation: yStarTwinkle 10s ease-in-out infinite alternate;
   pointer-events: none;
 }
 @keyframes yNebulaDrift {
@@ -7801,7 +7769,7 @@ html.y-motion-ready #yutu2 .y-card.y-in {
   position: absolute;
   inset: -14%;
   overflow: hidden;
-  opacity: 0.18;
+  opacity: 0.1;
   transform: translate3d(0, calc(var(--y-scroll, 0) * -0.06px), 0);
   -webkit-mask-image: radial-gradient(
     ellipse 64% 56% at 50% 20%,

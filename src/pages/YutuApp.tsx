@@ -44,7 +44,7 @@ export default function YutuApp() {
       <p className="y-page-foot">
         域途 · 体验式生涯陪伴系统 ｜ 数据来自知乎开放平台检索快照与平台数据表；示意数据已在界面标注。
         <br />
-        背景：Iris Nebula (NGC 7023) — T.A. Rector/University of Alaska Anchorage, H. Schweiker/WIYN and NOIRLab/NSF/AURA.
+        背景：用户提供的叶面水珠照片。
       </p>
     </div>
   );

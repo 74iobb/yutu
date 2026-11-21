@@ -48,13 +48,6 @@ export const PROVENANCE = {
     kind: 'real',
     detail: '案例、城市讨论与区域证据均来自同一份知乎快照，正文链接可自行核对。',
   },
-  nebula: {
-    label: '鸢尾花星云背景',
-    kind: 'real',
-    detail:
-      'NOIRLab/NSF/AURA 公开图像「NGC 7023: The Iris Nebula」；Credit: T.A. Rector/University of Alaska Anchorage, H. Schweiker/WIYN and NOIRLab/NSF/AURA.',
-    meta: '使用需保留完整 credit',
-  },
   city: {
     label: '城市属性',
     kind: 'approx',
