@@ -23,9 +23,11 @@ import DataSourceBadge from './DataSourceBadge';
 interface Props {
   /** 切到同一步内的「资源作战图」视图；传入方向则会同时选中 */
   onOpenMap?: (dirName?: string) => void;
+  /** 切到同一步内的「归属与摘要」视图 */
+  onOpenSummary?: () => void;
 }
 
-export default function Step3({ onOpenMap }: Props = {}) {
+export default function Step3({ onOpenMap, onOpenSummary }: Props = {}) {
   const {
     state,
     setStep,
@@ -353,9 +355,9 @@ export default function Step3({ onOpenMap }: Props = {}) {
         <button
           type='button'
           className='y-btn'
-          onClick={() => setStep(4)}
+          onClick={() => onOpenSummary?.()}
         >
-          直接进入归属 →
+          看归属与摘要 →
         </button>
       </div>
 

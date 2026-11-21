@@ -61,7 +61,7 @@ export default function GrowthDelta() {
         <button
           type='button'
           className='y-btn y-btn-s'
-          onClick={() => setStep(5)}
+          onClick={() => setStep(4)}
         >
           回到成长闭环
         </button>

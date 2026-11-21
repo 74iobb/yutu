@@ -151,7 +151,7 @@ const INITIAL: YutuState = {
   syncing: false,
 };
 
-/** 六步版本 → 五步版本：第三、四步合并，原第 4/5/6 步分别前移为 3/4/5 */
+/** 旧快照迁移：v>=4 的步骤前移一位（六步 / 五步快照都收敛到当前四步） */
 function migrateStep(n: unknown): number {
   const v = Number(n) || 1;
   const mapped = v >= 4 ? v - 1 : v;
@@ -933,7 +933,7 @@ export function YutuProvider({ children }: { children: ReactNode }) {
       } else if (choice === 'switch') {
         flash('已归档。排除一条路线同样是胜利——它以可控成本换来了清晰结论。');
       } else {
-        flash('第 ' + no + ' 次阶段性胜利已归档。位置已小幅漂移，回到第 4 步可以看到新的落点。');
+        flash('第 ' + no + ' 次阶段性胜利已归档。位置已小幅漂移，回到第 3 步可以看到新的落点。');
       }
       return victory;
     },

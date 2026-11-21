@@ -14,6 +14,7 @@ import {
   STATUS_LABEL as STATUS,
   simBand,
 } from '@/lib/model';
+import { openStep34 } from '@/lib/stepNav';
 import { buildBackupJson, copyText, downloadText } from '@/lib/summary';
 import { useImmersive } from '@/lib/uiMotion';
 import { useYutu } from '@/store/YutuContext';
@@ -36,6 +37,12 @@ import type {
   PrototypeNode,
   Scores,
 } from '@/types';
+
+/** 「回看落点」统一回到第 3 步的「归属与摘要」视图 */
+function goLanding(setStep: (n: number) => void) {
+  openStep34('summary');
+  setStep(3);
+}
 
 /** 指标数字缓动，让状态变化看得见 */
 function useCountUp(value: number, ms = 420) {
@@ -156,7 +163,7 @@ function LoopDone({
               ? '这次以休整收尾，系统不推送新任务，等你准备好再回来。'
               : remaining
                 ? `还有 ${remaining} 条体验在本轮清单里，可以继续做完，也可以先做方向判断。`
-                : '位置已小幅漂移，回第 4 步可以看到新的落点。'}
+                : '位置已小幅漂移，回第 3 步可以看到新的落点。'}
           </p>
         </div>
         <button
@@ -213,7 +220,7 @@ function LoopDone({
           </button>
         ) : null}
         <button type='button' className='y-btn y-btn-s' onClick={onMap}>
-          回第 4 步看新落点
+          回第 3 步看新落点
         </button>
         <button type='button' className='y-btn y-btn-s' onClick={onWall}>
           去档案墙
@@ -800,7 +807,7 @@ function StationTab({
           data={last}
           remaining={active.length}
           onDirectionChoice={onDirectionChoice}
-          onMap={() => setStep(4)}
+          onMap={() => goLanding(setStep)}
           onWall={() => setSub(3)}
           onContinue={onContinue}
           onClose={() => setHiddenAt(last.at)}
@@ -1687,7 +1694,7 @@ export default function Step6() {
   const [focus, setFocus] = useState(false);
   useImmersive(focus, setFocus);
   /**
-   * 进入第 5 步时，以「进入时已有的最近一次归档」为基线：
+   * 进入第 4 步时，以「进入时已有的最近一次归档」为基线：
    * 历史归档不再作为“本轮刚完成”弹出，只有本次进入后新产生的归档才追问方向。
    */
   const [reviewedAt, setReviewedAt] = useState<number | null>(
@@ -1720,7 +1727,7 @@ export default function Step6() {
   } else if (active === 0) {
     headline = n ? `第 ${round} 轮待启动` : '闭环还没有开始';
     detail = n
-      ? `上一轮已归档。领取一条任务，按闭环顺序开始第 ${round} 轮；也可以回第 4 步看新的落点。`
+      ? `上一轮已归档。领取一条任务，按闭环顺序开始第 ${round} 轮；也可以回第 3 步看新的落点。`
       : '从「领取任务」开始，按闭环顺序走完一轮。';
   } else if (doing > 0) {
     headline = `第 ${round} 轮正在进行`;
@@ -1752,7 +1759,7 @@ export default function Step6() {
 
   function go(k: LoopStationKey) {
     if (k === 'map') {
-      setStep(4);
+      goLanding(setStep);
       return;
     }
     if (k === 'dock' || k === 'archive') {
@@ -1858,7 +1865,7 @@ export default function Step6() {
   }
 
   function stationAction(k: LoopStationKey) {
-    if (k === 'map') return '回第 4 步';
+    if (k === 'map') return '回第 3 步';
     if (k === 'dock' || k === 'archive') return '去驿站';
     return '去工作台';
   }
@@ -1893,13 +1900,13 @@ export default function Step6() {
       case 'archive':
         return '去驿站归档';
       case 'map':
-        return '回第 4 步看落点';
+        return '回第 3 步看落点';
     }
   }
 
   const currentStation = LOOP_STATIONS[idx];
 
-  /* 进入第 5 步时只自动定位一次：
+  /* 进入第 4 步时只自动定位一次：
      领取 / 体验 / 标记 → 工作台；自省 / 归档 → 驿站。
      之后由用户点站点或按钮切换，避免“继续本轮”被自动切回驿站。
      归档后的方向确认优先展示，不被自动切换打断。 */
@@ -1911,9 +1918,9 @@ export default function Step6() {
   }, [idx, pendingDirectionReview, setSub]);
 
   return (
-    <section id='y-p5' role='tabpanel' aria-labelledby='y-s5'>
+    <section id='y-p4' role='tabpanel' aria-labelledby='y-s4'>
       <header className='y-lead'>
-        <p className='y-eyebrow'>05 / 闭环</p>
+        <p className='y-eyebrow'>04 / 闭环</p>
         <h2>成长闭环</h2>
       </header>
 
@@ -2032,9 +2039,9 @@ export default function Step6() {
                     <button
                       type='button'
                       className='y-btn y-btn-s'
-                      onClick={() => setStep(4)}
+                      onClick={() => goLanding(setStep)}
                     >
-                      回第 4 步看落点
+                      回第 3 步看落点
                     </button>
                   ) : null}
                   <button
@@ -2162,9 +2169,9 @@ export default function Step6() {
           <button
             type='button'
             className='y-btn y-btn-s y-sub-rail-extra'
-            onClick={() => setStep(4)}
+            onClick={() => goLanding(setStep)}
           >
-            ③ 回看落点 · 第 4 步
+            ③ 回看落点 · 第 3 步
           </button>
         </div>
 
@@ -2261,8 +2268,8 @@ export default function Step6() {
       </div>
 
       <div className='y-nav'>
-        <button type='button' className='y-btn' onClick={() => setStep(4)}>
-          ← 返回归属与迁移
+        <button type='button' className='y-btn' onClick={() => setStep(3)}>
+          ← 返回方向与推演
         </button>
         <button type='button' className='y-btn' onClick={() => setStep(2)}>
           回第 2 步了解你所处的环境 →

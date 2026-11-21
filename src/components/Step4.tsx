@@ -39,10 +39,12 @@ function shortDirName(name: string) {
 interface Props {
   /** 切回同一步内的「方向清单」视图 */
   onOpenList?: () => void;
+  /** 切到同一步内的「归属与摘要」视图 */
+  onOpenSummary?: () => void;
 }
 
-export default function Step4({ onOpenList }: Props = {}) {
-  const { state, setStep, setPick, clearShortlist } = useYutu();
+export default function Step4({ onOpenList, onOpenSummary }: Props = {}) {
+  const { state, setPick, clearShortlist } = useYutu();
   const p = state.profile;
   const stage = currentStage(p);
   const query = [p.field, state.intent].filter(Boolean).join(' ').trim();
@@ -927,9 +929,9 @@ export default function Step4({ onOpenList }: Props = {}) {
         <button
           type='button'
           className='y-btn y-btn-main'
-          onClick={() => setStep(4)}
+          onClick={() => onOpenSummary?.()}
         >
-          看你的处境与归属 →
+          看归属与摘要 →
         </button>
       </div>
     </section>

@@ -12,8 +12,7 @@ import DataSourcesPanel from './DataSourcesPanel';
 const STEP_META = [
   { t: '填写信息', d: '城市、年龄与处境' },
   { t: '了解你所处的环境', d: '城市、区域与真实讨论' },
-  { t: '方向与推演', d: '方向清单 × 资源作战图' },
-  { t: '归属与迁移', d: '处境、约束与迁移' },
+  { t: '方向与推演', d: '方向清单 · 作战图 · 归属摘要' },
   { t: '成长闭环', d: '体验 · 自省 · 档案 · 共建' },
 ];
 
@@ -64,10 +63,10 @@ export function Shell({ children }: { children: ReactNode }) {
   const loopActive = state.tasks.filter((t) => !t.archived);
   const loopReady = loopActive.filter((t) => t.status === 'done').length;
   const loopRound = state.victories.length + 1;
-  /** 数据上只有两段：真实处境（1–4 步）与成长（第 5 步） */
-  const realm = state.step === 5 ? 'growth' : 'state';
-  const growthUnlocked = state.maxStep >= 5;
-  const lastStateStep = Math.min(4, Math.max(1, state.maxStep));
+  /** 数据上只有两段：真实处境（1–3 步）与成长（第 4 步） */
+  const realm = state.step === 4 ? 'growth' : 'state';
+  const growthUnlocked = state.maxStep >= 4;
+  const lastStateStep = Math.min(3, Math.max(1, state.maxStep));
   const { scrolled, progressRef } = useScrollChrome();
   const [wipe, setWipe] = useState(0);
   /** 手势切步时的进入方向：左滑进入下一步、右滑回上一步 */
@@ -566,11 +565,11 @@ export function Shell({ children }: { children: ReactNode }) {
               ) : null}
             </span>
 
-            {state.maxStep >= 5 || state.tasks.length || state.victories.length ? (
+            {state.maxStep >= 4 || state.tasks.length || state.victories.length ? (
               <button
                 type='button'
                 className='y-chip y-chip-loop'
-                onClick={() => setStep(5)}
+                onClick={() => setStep(4)}
                 title='回到成长闭环，查看本轮进度'
               >
                 闭环 第 {loopRound} 轮
@@ -626,7 +625,7 @@ export function Shell({ children }: { children: ReactNode }) {
           <span className='y-realm-i'>01</span>
           <span className='y-realm-t'>
             <strong>我的处境</strong>
-            <em>填写 · 了解环境 · 方向推演 · 归属</em>
+            <em>填写 · 环境 · 方向 · 归属摘要</em>
           </span>
         </button>
         <button
@@ -641,7 +640,7 @@ export function Shell({ children }: { children: ReactNode }) {
               flash('先完成前面的处境步骤，成长闭环才会出现。');
               return;
             }
-            setStep(5);
+            setStep(4);
           }}
         >
           <span className='y-realm-i'>02</span>
@@ -655,7 +654,7 @@ export function Shell({ children }: { children: ReactNode }) {
         </button>
       </div>
 
-      <div className='y-steps' role='tablist' aria-label='域途五步流程'>
+      <div className='y-steps' role='tablist' aria-label='域途四步流程'>
         {STEP_META.slice(0, visibleCount).map((s, i) => {
           const n = i + 1;
           const on = state.step === n;

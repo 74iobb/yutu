@@ -20,8 +20,8 @@ import type {
   Scores,
 } from '@/types';
 
-/** 当前流程总步数：第三、四步已合并为「方向与推演」 */
-export const TOTAL_STEPS = 5;
+/** 当前流程总步数：方向与推演并入归属摘要，闭环收紧为第 4 步 */
+export const TOTAL_STEPS = 4;
 
 export interface Dim {
   k: DimensionKey;

@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import {
   CHOICE_LABEL,
   cosSim,
@@ -27,13 +27,12 @@ function shortName(name: string) {
 }
 
 /**
- * 第五步按 SET 模型呈现：S 处境 → C 约束 → R 相近经验 → T 迁移。
- * 版式：主列放处境与迁移，侧栏放已选方向、相近经验、边界与导出。
+ * 第 3 步「方向与推演」的第三个视图：把前两步的处境、本步的方向，
+ * 以及归属结论与一页纸摘要收在一起，作为进入闭环前的最后一次确认。
+ * SET 顺序保持不变：S 处境 → C 约束 → R 相近经验 → T 迁移。
  */
-export default function Step5() {
+export default function StepSummary({ onOpenList }: { onOpenList: () => void }) {
   const { state, setStep, setSub, nodes, ownerKey, flash } = useYutu();
-  /** 第 4 步到第 5 步之间的显式确认，进入后才展开闭环版面 */
-  const [confirmGrowth, setConfirmGrowth] = useState(false);
   const s = state.profile.s;
   const stage = currentStage(state.profile);
   const rank = useMemo(() => ranked(s, nodes), [s, nodes]);
@@ -84,7 +83,7 @@ export default function Step5() {
 
   if (!top) {
     return (
-      <section id='y-p4' role='tabpanel' aria-labelledby='y-s4'>
+      <section id='y-p3' role='tabpanel' aria-labelledby='y-s3'>
         <div className='y-card'>暂无可比较的环境域。</div>
       </section>
     );
@@ -95,8 +94,11 @@ export default function Step5() {
   return (
     <section id='y-p4' role='tabpanel' aria-labelledby='y-s4'>
       <header className='y-lead'>
-        <p className='y-eyebrow'>04 / 归属</p>
-        <h2>你的处境、约束与迁移</h2>
+        <p className='y-eyebrow'>03 / 归属与摘要</p>
+        <h2>你的处境、约束与归属</h2>
+        <p className='y-note' style={{ paddingTop: 6 }}>
+          这一步收拢前两步的处境与本步选定的方向；确认后直接进入成长闭环。
+        </p>
       </header>
 
       <div className='y-vor-metrics'>
@@ -257,22 +259,22 @@ export default function Step5() {
                   type='button'
                   className='y-btn y-btn-s'
                   style={{ marginTop: 7 }}
-                  onClick={() => setStep(3)}
+                  onClick={onOpenList}
                 >
-                  回第 3 步看全部方向
+                  回方向清单看全部方向
                 </button>
               </>
             ) : (
               <>
                 <p className='y-note'>
-                  还没有选方向。回第 3 步挑一条，或直接开始一轮体验。
+                  还没有选方向。回方向清单挑一条，或直接开始一轮体验。
                 </p>
                 <button
                   type='button'
                   className='y-btn y-btn-s'
-                  onClick={() => setStep(3)}
+                  onClick={onOpenList}
                 >
-                  回第 3 步选方向
+                  回方向清单选方向
                 </button>
               </>
             )}
@@ -350,7 +352,7 @@ export default function Step5() {
                     className='y-btn y-btn-s'
                     style={{ marginTop: 7 }}
                     onClick={() => {
-                      setStep(5);
+                      setStep(4);
                       setSub(3);
                     }}
                   >
@@ -458,54 +460,16 @@ export default function Step5() {
       </div>
 
       <div className='y-nav'>
-        <button type='button' className='y-btn' onClick={() => setStep(3)}>
-          ← 返回方向与推演
+        <button type='button' className='y-btn' onClick={onOpenList}>
+          ← 返回方向清单
         </button>
-        {confirmGrowth ? (
-          <div
-            className='y-confirm y-growth-confirm'
-            role='alertdialog'
-            aria-label='确认进入第 5 步成长闭环'
-          >
-            <p className='y-eyebrow'>进入第 5 步前确认</p>
-            <p>
-              <b>第 4 步「归属与迁移」已完成。</b>
-              进入第 5 步后，页面会按闭环顺序展开：
-              领取任务 → 去体验 → 标记完成 → 停靠自省 → 归档漂移 → 回看落点。
-            </p>
-            <p className='y-note'>
-              每完成一次归档，会先问「方向是否发生变化」：没变就开启下一轮；变了就回到第 1
-              步重新填写。已归档的胜利与历史任务会保留。
-            </p>
-            <div className='y-row'>
-              <button
-                type='button'
-                className='y-btn y-btn-s'
-                onClick={() => setConfirmGrowth(false)}
-              >
-                再检查一下
-              </button>
-              <button
-                type='button'
-                className='y-btn y-btn-main y-btn-s'
-                onClick={() => {
-                  setConfirmGrowth(false);
-                  setStep(5);
-                }}
-              >
-                确认进入第 5 步 →
-              </button>
-            </div>
-          </div>
-        ) : (
-          <button
-            type='button'
-            className='y-btn y-btn-main'
-            onClick={() => setConfirmGrowth(true)}
-          >
-            完成第 4 步 · 进入第 5 步 →
-          </button>
-        )}
+        <button
+          type='button'
+          className='y-btn y-btn-main'
+          onClick={() => setStep(4)}
+        >
+          进入成长闭环 →
+        </button>
       </div>
     </section>
   );

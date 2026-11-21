@@ -1,21 +1,26 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { currentStage, stageDirections } from '@/lib/model';
+import { openStep34, readStep34View, type Step34View } from '@/lib/stepNav';
 import { useYutu } from '@/store/YutuContext';
 import Step3 from './Step3';
 import Step4 from './Step4';
-
-type View = 'list' | 'map';
+import StepSummary from './StepSummary';
 
 /**
- * 第三步与第四步合并后的页面。
- * 两个视图共享同一批方向、候选（shortlist）与选定方向（state.pick）：
+ * 第三步「方向与推演」。三个视图共享同一批方向、候选（shortlist）与选定方向（state.pick）：
  * - 方向清单：浏览全部方向、可行性、候选与案例
  * - 资源作战图：选中的方向重高亮，候选方向带描边标记，看代价、资源与张力
- * 顶部的候选条在两个视图都常驻，点候选会直接选中并切到作战图。
+ * - 归属与摘要：收拢前两步的处境、本步方向、归属结论与一页纸摘要，直接对接成长闭环
+ * 顶部候选条在三个视图都常驻，点候选会直接选中并切到作战图。
  */
 export default function Step34() {
   const { state, setPick, toggleShortlist, clearShortlist } = useYutu();
-  const [view, setView] = useState<View>('list');
+  const [view, setViewState] = useState<Step34View>(() => readStep34View());
+  /** 切换视图时同时写入会话记忆，切步回来仍停在原视图 */
+  const setView = (v: Step34View) => {
+    setViewState(v);
+    openStep34(v);
+  };
   const topRef = useRef<HTMLDivElement>(null);
 
   const stage = currentStage(state.profile);
@@ -43,8 +48,8 @@ export default function Step34() {
         <div>
           <p className='y-eyebrow'>03 / 方向与推演</p>
           <p className='y-subview-note'>
-            方向清单与资源作战图属于同一步：在清单里点「看代价」或顶部候选标签，都会选中该方向并切到图上重高亮；
-            图内含本地近 / 中 / 外圈与全国网络两种视图。
+            方向清单、资源作战图与归属摘要属于同一步：在清单里点「看代价」或顶部候选标签，
+            都会选中该方向并切到图上重高亮；确认归属与摘要后直接进入成长闭环。
           </p>
         </div>
         <div className='y-mode' role='group' aria-label='方向与推演视图'>
@@ -63,6 +68,14 @@ export default function Step34() {
             onClick={() => setView('map')}
           >
             资源作战图
+          </button>
+          <button
+            type='button'
+            className={view === 'summary' ? 'is-on' : ''}
+            aria-pressed={view === 'summary'}
+            onClick={() => setView('summary')}
+          >
+            归属与摘要
           </button>
         </div>
       </div>
@@ -150,9 +163,17 @@ export default function Step34() {
       </div>
 
       {view === 'list' ? (
-        <Step3 onOpenMap={openMap} />
+        <Step3
+          onOpenMap={openMap}
+          onOpenSummary={() => setView('summary')}
+        />
+      ) : view === 'map' ? (
+        <Step4
+          onOpenList={() => setView('list')}
+          onOpenSummary={() => setView('summary')}
+        />
       ) : (
-        <Step4 onOpenList={() => setView('list')} />
+        <StepSummary onOpenList={() => setView('list')} />
       )}
     </>
   );

@@ -29,7 +29,7 @@ export interface LoopStation {
   desc: string;
 }
 
-/** 闭环的固定顺序：第 5 步的版面也按这个顺序排 */
+/** 闭环的固定顺序：第 4 步的版面也按这个顺序排 */
 export const LOOP_STATIONS: LoopStation[] = [
   {
     k: 'claim',
@@ -64,8 +64,8 @@ export const LOOP_STATIONS: LoopStation[] = [
   {
     k: 'map',
     name: '回看落点',
-    hint: '第 4 步',
-    desc: '回到归属与迁移，看新的处境与漂移',
+    hint: '第 3 步',
+    desc: '回到方向与推演，看新的归属与漂移',
   },
 ];
 

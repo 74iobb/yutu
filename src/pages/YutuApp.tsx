@@ -5,7 +5,6 @@ import { useKineticField, usePremiumMotion } from '@/lib/uiMotion';
 import Step1 from '@/components/Step1';
 const Step2 = lazy(() => import('@/components/Step2'));
 const Step34 = lazy(() => import('@/components/Step34'));
-const Step5 = lazy(() => import('@/components/Step5'));
 const Step6 = lazy(() => import('@/components/Step6'));
 import { useYutu, YutuProvider } from '@/store/YutuContext';
 
@@ -17,8 +16,7 @@ function Flow() {
         {state.step === 1 ? <Step1 /> : null}
         {state.step === 2 ? <Step2 /> : null}
         {state.step === 3 ? <Step34 /> : null}
-        {state.step === 4 ? <Step5 /> : null}
-        {state.step === 5 ? <Step6 /> : null}
+        {state.step === 4 ? <Step6 /> : null}
       </Suspense>
     </Shell>
   );
