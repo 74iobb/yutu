@@ -34,10 +34,12 @@
 
 | 文件 | 用途 | 说明 |
 |---|---|---|
-| `src/assets/yutu-button-glass.webp` | `.y-btn-main` 主按钮背景（优先） | 1600×403，q78 |
+| `src/assets/yutu-button-glass.webp` | `.y-btn-main` 主按钮 / 当前步骤背景（优先） | 1600×403，q78 |
 | `src/assets/yutu-button-glass.jpg` | 同上，JPEG fallback | 1600×403，q84 |
+| `src/assets/yutu-glass-bg.webp` | 全屏彩玻璃底色 / `#yutu2` 纸面彩光（优先） | 1600×900，深度模糊，q80 |
+| `src/assets/yutu-glass-bg.jpg` | 同上，JPEG fallback | 1600×900，q82 |
 
-按钮上叠加深色渐变层保证白字可读；底图缓慢横向流动（`yBtnFlow`），暗部叠层做 `yBtnDeepen` 明暗呼吸，悬停时加快并进一步加深。顶部步骤条中的「当前步骤」使用同一张底图与暗层，扫光与横向流动合并到 `yStepSheen`。`prefers-reduced-motion` / 「动效 关」下只保留静态底图与静态暗层。**图片由用户提供，仅限本项目使用；如需对外发布请确认授权。**
+按钮上叠加深色渐变层保证白字可读；底图缓慢横向流动（`yBtnFlow`），暗部叠层做 `yBtnDeepen` 明暗呼吸，悬停时加快并进一步加深。顶部步骤条中的「当前步骤」使用同一张底图与暗层，扫光与横向流动合并到 `yStepSheen`。页面底色使用 `yutu-glass-bg`：固定光场缓慢漂移 + 明暗呼吸，`#yutu2` 纸面再用 `color` 混合模式叠一层同源彩光，卡片保持暖白可读。`prefers-reduced-motion` / 「动效 关」下只保留静态底图与静态暗层。**图片由用户提供，仅限本项目使用；如需对外发布请确认授权。**
 
 ## 步骤背景候选图（2026-11-22）
 
