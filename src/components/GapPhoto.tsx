@@ -17,6 +17,8 @@ import ridge from '@/assets/scenery-ridge.jpg';
 import ridgeMotion from '@/assets/scenery-ridge-motion.webp';
 import sunrise from '@/assets/scenery-sunrise.jpg';
 import sunriseMotion from '@/assets/scenery-sunrise-motion.webp';
+import writing from '@/assets/scenery-writing.jpg';
+import writingMotion from '@/assets/scenery-writing-motion.webp';
 
 export type PhotoVariant =
   | 'hills'
@@ -27,7 +29,8 @@ export type PhotoVariant =
   | 'ridge'
   | 'pack'
   | 'plan'
-  | 'field';
+  | 'field'
+  | 'writing';
 
 const SOURCES: Record<PhotoVariant, { poster: string; motion: string }> = {
   hills: { poster: hills, motion: hillsMotion },
@@ -39,6 +42,7 @@ const SOURCES: Record<PhotoVariant, { poster: string; motion: string }> = {
   pack: { poster: pack, motion: packMotion },
   plan: { poster: plan, motion: planMotion },
   field: { poster: field, motion: fieldMotion },
+  writing: { poster: writing, motion: writingMotion },
 };
 
 interface Props {

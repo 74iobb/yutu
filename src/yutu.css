@@ -12534,3 +12534,15 @@ html.y-motion-off #yutu2 .y-step-stage.is-page-dragging {
   -webkit-backdrop-filter: blur(10px) saturate(120%);
   backdrop-filter: blur(10px) saturate(120%);
 }
+
+/* 第 1 步新图：钢笔书写，本身偏暗，暗色主题下保留更多细节 */
+#yutu2 .y-gap-photo--writing img {
+  filter: saturate(0.88) contrast(0.96) brightness(0.8);
+}
+#yutu2 .y-gap-photo--writing::after {
+  background: linear-gradient(
+    180deg,
+    rgba(4, 8, 18, 0.04) 0%,
+    rgba(4, 8, 18, 0.38) 100%
+  );
+}
