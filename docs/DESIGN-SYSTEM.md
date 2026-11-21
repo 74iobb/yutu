@@ -31,7 +31,7 @@
 
 ### 1.1 星空透入（V8）
 
-- 最底层是固定全屏鸢尾花星云（用户提供）：以 72s 缓慢平移、缩放、旋转，叠加上闪烁星层与核心蓝光呼吸；`yutu-starfield` 只作为图片加载失败时的 fallback。
+- 最底层是固定全屏鸢尾花星云（NOIRLab 公开图像，NGC 7023）：以 72s 缓慢平移、缩放、旋转，叠加上闪烁星层与核心蓝光呼吸；`yutu-starfield` 只作为图片加载失败时的 fallback。使用时必须在页脚与数据来源面板保留完整 credit：T.A. Rector/University of Alaska Anchorage, H. Schweiker/WIYN and NOIRLab/NSF/AURA。
 - `#yutu2` 是半透明深色玻璃（`rgba(7,13,28,.72)` 左右），星空会直接透过纸面进入应用内部；**不要在 `#yutu2` 上加 `backdrop-filter`**（会成为 fixed 后代的包含块，破坏数据面板 / toast / 聚焦层定位）。卡片是更实的深色玻璃（`rgba(16,26,48,.84)`），保证文字对比度。
 - 正文、标题、表单、标签统一改为浅色（`ink = #e9efff`），次级文字用 `ink-2 / muted`；主按钮与当前步骤保留彩玻璃作为唯一高饱和强调。
 - 二级按钮、输入框、下拉、textarea、chips、地图控件、同步/数据面板都使用深色玻璃表面；地图瓦片与图表绘图区可以保留亮色内嵌面。

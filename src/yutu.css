@@ -5477,7 +5477,7 @@ body {
   background-size: cover;
   background-position: 50% 48%;
   background-repeat: no-repeat;
-  filter: brightness(0.88) saturate(1.06);
+  filter: brightness(0.8) saturate(1.06);
   transform: scale(1.08) rotate(-0.6deg);
   animation: yNebulaDrift 72s ease-in-out infinite alternate;
   pointer-events: none;

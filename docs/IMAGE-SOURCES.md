@@ -37,14 +37,16 @@
 |---|---|---|
 | `src/assets/yutu-button-glass.webp` | `.y-btn-main` 主按钮 / 当前步骤背景（优先） | 1600×403，q78 |
 | `src/assets/yutu-button-glass.jpg` | 同上，JPEG fallback | 1600×403，q84 |
-| `src/assets/yutu-iris-nebula.webp` | **全屏鸢尾花星云主背景（优先）** | 用户提供，1280×1280，约 182 KB |
-| `src/assets/yutu-iris-nebula.jpg` | 同上，JPEG fallback | 1280×1280，约 254 KB |
+| `src/assets/yutu-iris-nebula.webp` | **全屏鸢尾花星云主背景（优先）** | NOIRLab 公开图像，1600×1469，约 148 KB |
+| `src/assets/yutu-iris-nebula.jpg` | 同上，JPEG fallback | 1600×1469，约 428 KB |
 | `src/assets/yutu-starfield.webp` | 鸢尾花星云加载失败时的星空 fallback（透明底，优先） | 1920×1080，约 1840 颗星，约 75 KB |
 | `src/assets/yutu-starfield.png` | 同上，PNG fallback | 同一星图，约 210 KB |
 | `src/assets/yutu-starfield-twinkle.webp` | 星空闪烁层（透明底，优先） | 1920×1080，约 220 颗亮星，约 15 KB |
 | `src/assets/yutu-starfield-twinkle.png` | 同上，PNG fallback | 约 46 KB |
 
-按钮上叠加深色渐变层保证白字可读；底图缓慢横向流动（`yBtnFlow`），暗部叠层做 `yBtnDeepen` 明暗呼吸，悬停时加快并进一步加深。顶部步骤条中的「当前步骤」使用同一张底图与暗层，扫光与横向流动合并到 `yStepSheen`。页面底色改为用户提供的鸢尾花星云（`yutu-iris-nebula`），整张图以 72s 缓慢平移、缩放与旋转，并叠加闪烁星层与核心蓝光呼吸；`yutu-starfield` 只作为加载失败时的 fallback，`#yutu2` 保持深色玻璃，卡片可读。`prefers-reduced-motion` / 「动效 关」下只保留静态星云与静态按钮底图。**鸢尾花星云与按钮底图由用户提供，仅限本项目使用；如对外发布请确认授权。其他星空图为程序生成，无外部版权。**
+按钮上叠加深色渐变层保证白字可读；底图缓慢横向流动（`yBtnFlow`），暗部叠层做 `yBtnDeepen` 明暗呼吸，悬停时加快并进一步加深。顶部步骤条中的「当前步骤」使用同一张底图与暗层，扫光与横向流动合并到 `yStepSheen`。页面底色使用 NOIRLab 公开的鸢尾花星云（`yutu-iris-nebula`），整张图以 72s 缓慢平移、缩放与旋转，并叠加闪烁星层与核心蓝光呼吸；`yutu-starfield` 只作为加载失败时的 fallback，`#yutu2` 保持深色玻璃，卡片可读。`prefers-reduced-motion` / 「动效 关」下只保留静态星云与静态按钮底图。
+
+**鸢尾花星云来源**：NOIRLab 公开图像 [NGC 7023: The Iris Nebula](https://noirlab.edu/public/images/noao-ngc7023/)（`noao-ngc7023`）。使用时必须保留完整 credit：**T.A. Rector/University of Alaska Anchorage, H. Schweiker/WIYN and NOIRLab/NSF/AURA**。界面页脚与「数据来源与口径」面板已展示该 credit；原用户上传版本已替换为这一公开版。主按钮彩玻璃底图仍由用户提供；其他星空图为程序生成，无外部版权。
 
 ## 步骤背景候选图（2026-11-22）
 
