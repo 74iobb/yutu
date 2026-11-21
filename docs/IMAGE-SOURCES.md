@@ -37,12 +37,14 @@
 |---|---|---|
 | `src/assets/yutu-button-glass.webp` | `.y-btn-main` 主按钮 / 当前步骤背景（优先） | 1600×403，q78 |
 | `src/assets/yutu-button-glass.jpg` | 同上，JPEG fallback | 1600×403，q84 |
-| `src/assets/yutu-starfield.webp` | 全屏星空主星层（透明底，优先） | 1920×1080，约 1840 颗星，约 75 KB |
+| `src/assets/yutu-iris-nebula.webp` | **全屏鸢尾花星云主背景（优先）** | 用户提供，1280×1280，约 182 KB |
+| `src/assets/yutu-iris-nebula.jpg` | 同上，JPEG fallback | 1280×1280，约 254 KB |
+| `src/assets/yutu-starfield.webp` | 鸢尾花星云加载失败时的星空 fallback（透明底，优先） | 1920×1080，约 1840 颗星，约 75 KB |
 | `src/assets/yutu-starfield.png` | 同上，PNG fallback | 同一星图，约 210 KB |
 | `src/assets/yutu-starfield-twinkle.webp` | 星空闪烁层（透明底，优先） | 1920×1080，约 220 颗亮星，约 15 KB |
 | `src/assets/yutu-starfield-twinkle.png` | 同上，PNG fallback | 约 46 KB |
 
-按钮上叠加深色渐变层保证白字可读；底图缓慢横向流动（`yBtnFlow`），暗部叠层做 `yBtnDeepen` 明暗呼吸，悬停时加快并进一步加深。顶部步骤条中的「当前步骤」使用同一张底图与暗层，扫光与横向流动合并到 `yStepSheen`。页面底色改为星空：`yutu-starfield` 叠在深空渐变与蓝/紫/青星云上，缓慢漂移 + 短周期闪烁；`#yutu2` 保持暖白纸面，卡片不透明，保证正文可读。`prefers-reduced-motion` / 「动效 关」下只保留静态星空与静态按钮底图。**按钮底图由用户提供，仅限本项目使用；如对外发布请确认授权。星空图为程序生成，无外部版权。**
+按钮上叠加深色渐变层保证白字可读；底图缓慢横向流动（`yBtnFlow`），暗部叠层做 `yBtnDeepen` 明暗呼吸，悬停时加快并进一步加深。顶部步骤条中的「当前步骤」使用同一张底图与暗层，扫光与横向流动合并到 `yStepSheen`。页面底色改为用户提供的鸢尾花星云（`yutu-iris-nebula`），整张图以 72s 缓慢平移、缩放与旋转，并叠加闪烁星层与核心蓝光呼吸；`yutu-starfield` 只作为加载失败时的 fallback，`#yutu2` 保持深色玻璃，卡片可读。`prefers-reduced-motion` / 「动效 关」下只保留静态星云与静态按钮底图。**鸢尾花星云与按钮底图由用户提供，仅限本项目使用；如对外发布请确认授权。其他星空图为程序生成，无外部版权。**
 
 ## 步骤背景候选图（2026-11-22）
 
