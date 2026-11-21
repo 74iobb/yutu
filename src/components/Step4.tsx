@@ -929,7 +929,7 @@ export default function Step4({ onOpenList }: Props = {}) {
           className='y-btn y-btn-main'
           onClick={() => setStep(4)}
         >
-          看你的处境与下一步 →
+          看你的处境与归属 →
         </button>
       </div>
     </section>

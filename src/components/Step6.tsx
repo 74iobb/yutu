@@ -2262,7 +2262,7 @@ export default function Step6() {
 
       <div className='y-nav'>
         <button type='button' className='y-btn' onClick={() => setStep(4)}>
-          ← 返回归属与下一步
+          ← 返回归属与迁移
         </button>
         <button type='button' className='y-btn' onClick={() => setStep(2)}>
           回第 2 步了解你所处的环境 →

@@ -65,7 +65,7 @@ export const LOOP_STATIONS: LoopStation[] = [
     k: 'map',
     name: '回看落点',
     hint: '第 4 步',
-    desc: '回到归属与下一步，看新的处境与漂移',
+    desc: '回到归属与迁移，看新的处境与漂移',
   },
 ];
 

@@ -96,7 +96,7 @@ export default function Step5() {
     <section id='y-p4' role='tabpanel' aria-labelledby='y-s4'>
       <header className='y-lead'>
         <p className='y-eyebrow'>04 / 归属</p>
-        <h2>你的处境、约束与下一步</h2>
+        <h2>你的处境、约束与迁移</h2>
       </header>
 
       <div className='y-vor-metrics'>
@@ -469,7 +469,7 @@ export default function Step5() {
           >
             <p className='y-eyebrow'>进入第 5 步前确认</p>
             <p>
-              <b>第 4 步「归属与下一步」已完成。</b>
+              <b>第 4 步「归属与迁移」已完成。</b>
               进入第 5 步后，页面会按闭环顺序展开：
               领取任务 → 去体验 → 标记完成 → 停靠自省 → 归档漂移 → 回看落点。
             </p>
