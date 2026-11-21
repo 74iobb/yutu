@@ -301,7 +301,7 @@
     border-color 0.14s;
 }
 #yutu2 .y-btn:hover:not(:disabled) {
-  background: var(--y-surface2);
+  background-color: var(--y-surface2);
   border-color: var(--y-muted);
 }
 #yutu2 .y-btn-main {
@@ -310,7 +310,7 @@
   color: #fff;
 }
 #yutu2 .y-btn-main:hover:not(:disabled) {
-  background: #1a5f99;
+  background-color: #1a5f99;
   border-color: #1a5f99;
 }
 #yutu2 .y-btn-s {
@@ -2068,11 +2068,11 @@ body {
     box-shadow var(--motion-fast) var(--ease-out);
 }
 #yutu2 .y-btn:hover:not(:disabled) {
-  background: var(--y-soft);
+  background-color: var(--y-soft);
   border-color: #b9cfe3;
 }
 #yutu2 .y-btn-main:hover:not(:disabled) {
-  background: #1a5f99;
+  background-color: #1a5f99;
   border-color: #1a5f99;
   color: #fff;
 }
@@ -5880,29 +5880,108 @@ body {
     translate 0.16s ease;
 }
 #yutu2 .y-btn:hover:not(:disabled) {
-  background: #fbf8f0;
+  background-color: #fbf8f0;
   border-color: rgba(14, 91, 76, 0.34);
   color: var(--y-ink);
 }
 #yutu2 .y-btn:active:not(:disabled) {
   translate: 0 1px;
 }
+/* 主按钮：彩绘玻璃底图 + 缓慢流动 + 明暗加深呼吸 */
 #yutu2 .y-btn-main {
-  background: linear-gradient(135deg, #12705d 0%, #0b5446 55%, #093f36 100%);
-  border: 1px solid rgba(255, 255, 255, 0.14);
+  isolation: isolate;
+  background-color: #3f1d24;
+  background-image:
+    url('./assets/yutu-button-glass.jpg'),
+    linear-gradient(
+      110deg,
+      #1f4f8f 0%,
+      #2b7a5a 30%,
+      #c9a12e 58%,
+      #d9562e 80%,
+      #8e1f2f 100%
+    );
+  background-image:
+    image-set(
+      url('./assets/yutu-button-glass.webp') type('image/webp'),
+      url('./assets/yutu-button-glass.jpg') type('image/jpeg')
+    ),
+    linear-gradient(
+      110deg,
+      #1f4f8f 0%,
+      #2b7a5a 30%,
+      #c9a12e 58%,
+      #d9562e 80%,
+      #8e1f2f 100%
+    );
+  background-repeat: no-repeat;
+  background-size: 180% 100%;
+  background-position: 0% 50%;
+  border: 1px solid rgba(255, 255, 255, 0.28);
   color: #fff;
+  font-weight: 600;
+  text-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.62),
+    0 0 10px rgba(0, 0, 0, 0.32);
   box-shadow:
-    0 10px 22px -12px rgba(14, 91, 76, 0.72),
-    inset 0 1px 0 rgba(255, 255, 255, 0.18);
+    0 10px 22px -12px rgba(62, 20, 24, 0.72),
+    inset 0 1px 0 rgba(255, 255, 255, 0.22);
+}
+/* 暗部叠层：不压住文字，只让玻璃纹理缓慢加深 */
+#yutu2 .y-btn-main::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(
+      92% 120% at 50% 48%,
+      rgba(8, 8, 12, 0.24),
+      transparent 70%
+    ),
+    radial-gradient(
+      130% 170% at 50% 50%,
+      transparent 12%,
+      rgba(8, 8, 12, 0.3) 100%
+    ),
+    linear-gradient(180deg, rgba(8, 8, 12, 0.22) 0%, rgba(8, 8, 12, 0.5) 100%);
+  opacity: 0.82;
+  animation: yBtnDeepen 6s ease-in-out infinite alternate;
 }
 #yutu2 .y-btn-main:hover:not(:disabled) {
-  background: linear-gradient(135deg, #157a65 0%, #0c5d4d 55%, #0a463b 100%);
-  border-color: rgba(255, 255, 255, 0.22);
+  border-color: rgba(255, 255, 255, 0.38);
   color: #fff;
   translate: 0 -1px;
+  /* 悬停时让玻璃流动更快，暗部叠层同步加深 */
+  animation-duration: 3.4s;
   box-shadow:
-    0 16px 30px -14px rgba(14, 91, 76, 0.8),
-    inset 0 1px 0 rgba(255, 255, 255, 0.26);
+    0 16px 30px -14px rgba(62, 20, 24, 0.8),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3),
+    inset 0 0 0 100px rgba(8, 8, 12, 0.14);
+}
+#yutu2 .y-btn-main:hover:not(:disabled)::after {
+  animation: yBtnDeepenHover 2s ease-in-out infinite alternate;
+}
+#yutu2 .y-btn-main:active:not(:disabled)::after {
+  animation: none;
+  opacity: 1;
+}
+@keyframes yBtnDeepen {
+  from {
+    opacity: 0.68;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes yBtnDeepenHover {
+  from {
+    opacity: 0.86;
+  }
+  to {
+    opacity: 1;
+  }
 }
 #yutu2 .y-btn-main::before {
   content: '';
@@ -6205,8 +6284,15 @@ html.y-motion-ready #yutu2 .y-in {
   #yutu2 .y-toast {
     animation: none !important;
   }
+  #yutu2 .y-btn-main {
+    animation: none !important;
+  }
   #yutu2 .y-btn-main::before {
     display: none;
+  }
+  #yutu2 .y-btn-main::after {
+    animation: none !important;
+    opacity: 0.82;
   }
   #yutu2 .y-btn,
   #yutu2 .y-card,

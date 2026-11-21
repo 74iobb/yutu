@@ -1,6 +1,6 @@
 # 图片来源
 
-页面「两栏布局空隙」中使用的照片来自 Unsplash，遵循 [Unsplash License](https://unsplash.com/license)（免费使用，无需署名；界面中已注明来源）。图片已下载并随项目打包，避免运行时依赖外部图床。
+页面「两栏布局空隙」中使用的照片来自 Unsplash，遵循 [Unsplash License](https://unsplash.com/license)（免费使用，无需署名；界面中已注明来源）。图片已下载并随项目打包，避免运行时依赖外部图床。主按钮底图由用户提供，见下文「主按钮彩绘玻璃底图」。
 
 | 文件 | 用途 | 原始地址 |
 |---|---|---|
@@ -27,6 +27,17 @@
 
 图片与板块的对应关系由 `src/components/GapPhoto.tsx` 中的 `PhotoVariant` 统一管理。  
 如后续换成正式商业图库，请同步替换本文件与界面中的来源标注。
+
+## 主按钮彩绘玻璃底图（2026-11-22）
+
+来自用户提供的彩绘玻璃图片（`.attachments/微信图片_20261122050644_394_2.jpg`）。已顺时针旋转 90° 并裁成横向色带，输出到 `src/assets/`：
+
+| 文件 | 用途 | 说明 |
+|---|---|---|
+| `src/assets/yutu-button-glass.webp` | `.y-btn-main` 主按钮背景（优先） | 1600×403，q78 |
+| `src/assets/yutu-button-glass.jpg` | 同上，JPEG fallback | 1600×403，q84 |
+
+按钮上叠加深色渐变层保证白字可读；底图缓慢横向流动（`yBtnFlow`），暗部叠层做 `yBtnDeepen` 明暗呼吸，悬停时加快并进一步加深。`prefers-reduced-motion` / 「动效 关」下只保留静态底图与静态暗层。**图片由用户提供，仅限本项目使用；如需对外发布请确认授权。**
 
 ## 步骤背景候选图（2026-11-22）
 
