@@ -19,7 +19,6 @@ const API_ENDPOINTS = {
   tasksDelete: '17950923425269592',
   archiveList: '17950924115269593',
   archiveAdd: '17950924125269594',
-  archiveChoiceStats: '17951789565269617',
   reviewsList: '17950923435269595',
   reviewsAdd: '17950923435269596',
   marksAdd: '17950923435269597',
@@ -254,24 +253,6 @@ export interface VictoryPayload {
 
 export async function apiLoadArchive(ownerKey: string) {
   return queryRows(API_ENDPOINTS.archiveList, { ownerKey });
-}
-
-/** 跨用户匿名聚合：每个阶段归档时选择的去向分布 */
-export interface ArchiveChoiceStatRow {
-  stage: string;
-  choice: string;
-  count: number;
-  latest: string;
-}
-
-export async function apiLoadArchiveChoiceStats(): Promise<ArchiveChoiceStatRow[]> {
-  const rows = await queryRows(API_ENDPOINTS.archiveChoiceStats);
-  return rows.map((r) => ({
-    stage: str(r.stage),
-    choice: str(r.choice),
-    count: num(r.cnt, 0),
-    latest: str(r.latest),
-  }));
 }
 
 export async function apiAddArchive(ownerKey: string, v: VictoryPayload): Promise<void> {

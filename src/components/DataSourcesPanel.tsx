@@ -71,7 +71,7 @@ export default function DataSourcesPanel({
 
       <p className='y-data-foot'>
         需要更新知乎内容时，请运行 `scripts/refresh-zhihu-snapshot.py` 重新生成快照；
-        同阶段归档选择由平台胜利档案实时聚合；成长河、档案墙只基于你自己的归档记录。
+        成长河、档案墙与经验星云只基于平台归档与复盘记录。
       </p>
     </div>
   );

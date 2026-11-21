@@ -14,12 +14,9 @@ import {
   CITY_MAP,
   currentStage,
   GEO,
-  CHOICE_LABEL,
-  nearestCityByLonLat,
 } from '@/lib/model';
 import { liveCityItemsDirect, type LiveItem } from '@/data/live';
 import { rankByField } from '@/lib/search';
-import { apiLoadArchiveChoiceStats } from '@/lib/yutuApi';
 import {
   collectCityMaterials,
   type CityMaterial,
@@ -32,34 +29,12 @@ import GisMap from './GisMap';
 import { Empty, Kv, LiveCard } from './bits';
 import DataSourceBadge from './DataSourceBadge';
 
-type GeoState = 'idle' | 'pending' | 'granted' | 'denied';
+type SideTab = 'city' | 'talk';
 
-type GeoPermission = 'granted' | 'denied' | 'prompt' | null;
-
-/** 浏览器定位失败原因：不同错误码的成因完全不同，分别给出可执行的建议 */
-function geoErrorText(err: { code: number; message?: string }, inFrame: boolean) {
-  if (err.code === 1) {
-    return inFrame
-      ? '浏览器拒绝了定位：当前页面在嵌入式 iframe 中，父页面没有授予 geolocation 权限。'
-      : '浏览器或平台权限策略拒绝了定位。可在地址栏的站点设置里检查，或直接在地图上点选位置。';
-  }
-  if (err.code === 2) {
-    return '设备暂时无法获取位置：可能没有 GPS、网络定位被关闭，或所在环境无法定位。';
-  }
-  if (err.code === 3) {
-    return '定位超时：浏览器在 8 秒内没有返回结果，可重试或直接在地图上点选位置。';
-  }
-  return err.message || `错误码 ${err.code}`;
-}
-
-type SideTab = 'city' | 'talk' | 'peer' | 'geo';
-
-const SIDE_TABS: SideTab[] = ['city', 'talk', 'peer', 'geo'];
+const SIDE_TABS: SideTab[] = ['city', 'talk'];
 const SIDE_TAB_LABEL: Record<SideTab, string> = {
   city: '城市',
   talk: '讨论',
-  peer: '同阶段',
-  geo: '定位',
 };
 const AUTO_ROTATE_MS = 3000;
 const AUTO_HOLD_MS = 8000;
@@ -84,23 +59,12 @@ export default function Step2() {
     mat: CityMaterial;
     item: MaterialItem;
   } | null>(null);
-  const [coords, setCoords] = useState<{
-    lon: number;
-    lat: number;
-    acc: number;
-    manual?: boolean;
-  } | null>(null);
-  const [geoState, setGeoState] = useState<GeoState>('idle');
-  const [geoError, setGeoError] = useState<string | null>(null);
-  const [recenterSignal, setRecenterSignal] = useState(0);
   const [showMaterials, setShowMaterials] = useState(true);
-  const [pickMode, setPickMode] = useState(false);
-  const [permState, setPermState] = useState<GeoPermission>(null);
   /** 聚焦模式：地图铺满视口，侧栏变成右侧玻璃抽屉 */
   const [focus, setFocus] = useState(false);
   useImmersive(focus, setFocus);
 
-  /* 侧栏四页签自动轮播：桌面精细指针下生效，鼠标在面板上时暂停 */
+  /* 侧栏两页签自动轮播：桌面精细指针下生效，鼠标在面板上时暂停 */
   const sideRef = useRef<HTMLElement>(null);
   const holdRef = useRef(0);
   const [autoOn, setAutoOn] = useState(false);
@@ -173,7 +137,7 @@ export default function Step2() {
       )
     );
 
-  /** 侧栏内部左右滑：只在「城市 / 讨论 / 同阶段 / 定位」之间切换 */
+  /** 侧栏内部左右滑：只在「城市 / 讨论」之间切换 */
   const switchSide = (delta: 1 | -1) => {
     setSideDir(delta > 0 ? 'next' : 'prev');
     setSideTab(prev => {
@@ -281,9 +245,7 @@ export default function Step2() {
     !sideVisible ||
     sideHovered ||
     manualHold ||
-    Boolean(focusMaterial) ||
-    pickMode ||
-    geoState === 'pending';
+    Boolean(focusMaterial);
 
   useEffect(() => {
     if (autoPaused) return;
@@ -300,37 +262,6 @@ export default function Step2() {
     return () => window.clearInterval(id);
   }, [autoPaused]);
 
-  /* 预览页常被平台嵌在 iframe 里，父页面没开 geolocation 时浏览器会直接拒绝，
-     这不是应用代码能绕过的；提前识别，给出“在地图上点选”的替代路径。 */
-  const inIframe = useMemo(() => {
-    try {
-      return window.self !== window.top;
-    } catch {
-      return true;
-    }
-  }, []);
-  const secureContext = typeof window !== 'undefined' && window.isSecureContext;
-
-  useEffect(() => {
-    if (!navigator.permissions?.query) return;
-    let alive = true;
-    let status: PermissionStatus | null = null;
-    navigator.permissions
-      .query({ name: 'geolocation' })
-      .then(s => {
-        if (!alive) return;
-        status = s;
-        setPermState(s.state);
-        s.onchange = () => setPermState(s.state);
-      })
-      .catch(() => {
-        /* 部分浏览器不支持查询 geolocation 权限，忽略即可 */
-      });
-    return () => {
-      alive = false;
-      if (status) status.onchange = null;
-    };
-  }, []);
   const cityMaterials = useMemo(() => collectCityMaterials(), []);
   const materialCount = cityMaterials.reduce((n, m) => n + m.count, 0);
 
@@ -389,145 +320,12 @@ export default function Step2() {
   }, [regionalPool, p.field, shownKey]);
   const regionalItems = regionalRanked.items.slice(0, 4);
 
-  const [choiceRows, setChoiceRows] = useState<
-    { choice: string; count: number }[]
-  >([]);
-  const [choiceTotal, setChoiceTotal] = useState(0);
-  const [choiceLatest, setChoiceLatest] = useState('');
-  const [choiceLoading, setChoiceLoading] = useState(true);
-  const [choiceError, setChoiceError] = useState<string | null>(null);
-  const [choiceTick, setChoiceTick] = useState(0);
-
-  useEffect(() => {
-    let alive = true;
-    setChoiceLoading(true);
-    setChoiceError(null);
-    apiLoadArchiveChoiceStats()
-      .then(rows => {
-        if (!alive) return;
-        const map = new Map<string, number>();
-        let sum = 0;
-        let latest = '';
-        rows
-          .filter(r => r.stage === stage.id && r.choice)
-          .forEach(r => {
-            map.set(r.choice, (map.get(r.choice) ?? 0) + r.count);
-            sum += r.count;
-            if (r.latest > latest) latest = r.latest;
-          });
-        setChoiceRows(
-          [...map]
-            .map(([choice, count]) => ({ choice, count }))
-            .sort((a, b) => b.count - a.count)
-        );
-        setChoiceTotal(sum);
-        setChoiceLatest(latest);
-      })
-      .catch(() => {
-        if (!alive) return;
-        setChoiceRows([]);
-        setChoiceTotal(0);
-        setChoiceLatest('');
-        setChoiceError('同阶段归档统计接口暂时不可用。');
-      })
-      .finally(() => {
-        if (alive) setChoiceLoading(false);
-      });
-    return () => {
-      alive = false;
-    };
-  }, [stage.id, choiceTick]);
-
-  const choiceSlices = choiceRows.map(r => ({
-    ...r,
-    pct: choiceTotal ? Math.round((r.count / choiceTotal) * 100) : 0,
-    label:
-      CHOICE_LABEL[r.choice as keyof typeof CHOICE_LABEL] ?? r.choice,
-  }));
-  const topChoice = choiceSlices[0];
-  const choiceReady = choiceTotal >= 5 && Boolean(topChoice);
-
   useEffect(() => {
     if (!focusMaterial) return;
     document
       .getElementById('y-map-focus')
       ?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   }, [focusMaterial]);
-
-  const near = coords ? nearestCityByLonLat(coords.lon, coords.lat) : null;
-  const displayLon = coords ? coords.lon : ll[0];
-  const displayLat = coords ? coords.lat : ll[1];
-
-  const geoStateText = coords
-    ? coords.manual
-      ? '已在地图上点选实际位置，落点按选中坐标显示。'
-      : '已授权，落点已细化到实际坐标。'
-    : geoState === 'pending'
-      ? '正在等待浏览器返回定位结果…'
-      : geoState === 'denied'
-        ? `定位被拒绝或不可用，已继续使用城市级落点。原因：${geoError || '未提供'}`
-        : '当前使用城市级落点。需要精确到实际地点时，再授权定位。';
-
-  const geoEnvNote = inIframe
-    ? '当前页面嵌在预览 iframe 中：浏览器通常不允许 iframe 申请定位，父页面未授权时会直接被拒绝。可在地图上点选位置，或在浏览器新窗口打开本页后再授权。'
-    : !secureContext
-      ? '当前页面不是 HTTPS 安全上下文，浏览器不会开放定位；请在地图上点选位置。'
-      : permState === 'denied'
-        ? '本站点的定位权限处于拒绝状态（可能来自浏览器站点设置，或平台预览的权限策略）。可在地图上点选位置。'
-        : permState === 'granted'
-          ? '本站点已允许定位，点击下方按钮即可获取位置。'
-          : '点击下方按钮时，浏览器会弹出定位权限询问。';
-
-  function requestGeo() {
-    if (!window.isSecureContext) {
-      setGeoState('denied');
-      setGeoError('当前页面不是 HTTPS 安全上下文，浏览器禁止定位。');
-      return;
-    }
-    if (!navigator.geolocation) {
-      setGeoState('denied');
-      setGeoError('该浏览器未提供 Geolocation 接口。');
-      return;
-    }
-    setGeoState('pending');
-    setGeoError(null);
-    navigator.geolocation.getCurrentPosition(
-      pos => {
-        setCoords({
-          lon: pos.coords.longitude,
-          lat: pos.coords.latitude,
-          acc: pos.coords.accuracy || 0,
-          manual: false,
-        });
-        setGeoState('granted');
-        setRecenterSignal(n => n + 1);
-      },
-      err => {
-        setGeoState('denied');
-        setGeoError(geoErrorText(err, inIframe));
-        setCoords(null);
-        setRecenterSignal(n => n + 1);
-      },
-      { enableHighAccuracy: true, timeout: 8000, maximumAge: 0 }
-    );
-  }
-
-  /** 定位被浏览器拒绝时，用户可以直接在地图上点选实际位置 */
-  function applyPickedPoint(lat: number, lon: number) {
-    setCoords({ lon, lat, acc: 0, manual: true });
-    setGeoState('granted');
-    setGeoError(null);
-    setPickMode(false);
-    setRecenterSignal(n => n + 1);
-  }
-
-  function revokeGeo() {
-    setCoords(null);
-    setGeoState('idle');
-    setGeoError(null);
-    setPickMode(false);
-    setRecenterSignal(n => n + 1);
-  }
 
   const baseLegend: [string, string][] =
     mode === 'net'
@@ -549,9 +347,6 @@ export default function Step2() {
       ? ([
           ['#7a5a86', `检索资料 ${materialCount} 条（飞线连回城市）`],
         ] as [string, string][])
-      : []),
-    ...(coords
-      ? ([['#e8764a', '实际位置 → 城市飞线']] as [string, string][])
       : []),
   ];
 
@@ -590,20 +385,6 @@ export default function Step2() {
           {nearby.length
             ? `蓝圈内还有 ${nearby.length} 个城市。`
             : '蓝圈内暂无其他样本城市。'}
-          {choiceReady && topChoice ? (
-            <>
-              同阶段已归档用户中，选择最多的是{' '}
-              <b>「{topChoice.label}」</b>（{topChoice.pct}%，n={choiceTotal}）。
-            </>
-          ) : choiceLoading ? (
-            '正在读取同阶段归档统计。'
-          ) : (
-            <>
-              同阶段归档记录
-              {choiceTotal ? `已有 ${choiceTotal} 条` : '还没有'}
-              ，暂时不足以给出占比。
-            </>
-          )}
         </p>
       </div>
 
@@ -619,7 +400,7 @@ export default function Step2() {
         <div className='y-globe-panel y-focus-card'>
           <div className='y-globe-head'>
             <div>
-              <p className='y-eyebrow'>01 / 定位 <DataSourceBadge source='geo' showLabel={false} /></p>
+              <p className='y-eyebrow'>01 / 地图 <DataSourceBadge source='geo' showLabel={false} /></p>
               <h3>
                 {city.name}
                 <span className='y-mini'>
@@ -661,18 +442,16 @@ export default function Step2() {
           <div className='y-globe'>
             <GisMap
               city={p.city}
-              coords={coords}
+              coords={null}
               mode={mode}
-              recenterSignal={recenterSignal}
+              recenterSignal={0}
               onSelectCity={id => {
-                if (!pickMode) {
-                  applyCity(id);
-                  setSideDir(null);
-                  setSideTab('city');
-                  setFocusMaterial(null);
-                  /* 选完城市先停住轮播，避免 3s 后城市内容被切走 */
-                  holdManual();
-                }
+                applyCity(id);
+                setSideDir(null);
+                setSideTab('city');
+                setFocusMaterial(null);
+                /* 选完城市先停住轮播，避免 3s 后城市内容被切走 */
+                holdManual();
               }}
               materials={cityMaterials}
               showMaterials={showMaterials}
@@ -681,25 +460,7 @@ export default function Step2() {
                 setSideTab('talk');
                 setFocusMaterial({ mat, item });
               }}
-              onPickPoint={pickMode ? applyPickedPoint : undefined}
-              picking={pickMode}
             />
-            <div className='y-globe-hud y-hud-tl'>
-              <b>
-                {coords
-                  ? coords.manual
-                    ? '点选坐标'
-                    : '实际坐标'
-                  : pickMode
-                    ? '点选位置中'
-                    : '城市级落点'}
-              </b>
-              <span>
-                {Math.abs(displayLat).toFixed(1)}°{displayLat >= 0 ? 'N' : 'S'}{' '}
-                · {Math.abs(displayLon).toFixed(1)}°
-                {displayLon >= 0 ? 'E' : 'W'}
-              </span>
-            </div>
             <div className='y-globe-hud y-hud-bl'>
               {legend.map(([color, label]) => (
                 <span key={label}>
@@ -721,24 +482,6 @@ export default function Step2() {
           </div>
 
           <div className='y-globe-toolbar'>
-            <button
-              type='button'
-              className='y-btn y-btn-s'
-              onClick={() => setRecenterSignal(n => n + 1)}
-            >
-              回到我的位置
-            </button>
-            <button
-              type='button'
-              className='y-btn y-btn-s'
-              onClick={() => {
-                setGeoState('idle');
-                setCoords(null);
-                setGeoError(null);
-              }}
-            >
-              重置定位
-            </button>
             <label className='y-toggle'>
               <input
                 type='checkbox'
@@ -971,156 +714,6 @@ export default function Step2() {
           </div>
         ) : null}
 
-        {sideTab === 'peer' ? (
-          <div className='y-side-body'>
-            <div className='y-card'>
-              <h3>
-                同阶段的下一步选择
-                <DataSourceBadge source='archiveChoice' showLabel={false} />
-                <span className='y-mini'>平台归档 · 匿名聚合</span>
-              </h3>
-              <p className='y-note'>统计归档时的决定，不代表日常行为。</p>
-              {choiceLoading ? (
-                <p className='y-note'>正在读取同阶段归档统计…</p>
-              ) : choiceError ? (
-                <>
-                  <p className='y-warn'>{choiceError}</p>
-                  <button
-                    type='button'
-                    className='y-btn y-btn-s'
-                    onClick={() => setChoiceTick(t => t + 1)}
-                  >
-                    重试
-                  </button>
-                </>
-              ) : choiceReady ? (
-                <>
-                  {choiceSlices.map(s => (
-                    <div className='y-peer' key={s.choice}>
-                      <div className='y-peer-top'>
-                        <b>{s.label}</b>
-                        <span>{s.pct}%</span>
-                      </div>
-                      <div className='y-bar'>
-                        <i style={{ width: `${Math.max(2, s.pct)}%` }} />
-                      </div>
-                    </div>
-                  ))}
-                  <p className='y-note'>
-                    样本 n={choiceTotal}
-                    {choiceLatest
-                      ? ` · 最近更新 ${choiceLatest.slice(0, 10)}`
-                      : ''}
-                    {' · '}来自平台胜利档案，非人群抽样；同一用户多次归档会多次计入。
-                  </p>
-                </>
-              ) : (
-                <p className='y-note'>
-                  {choiceTotal
-                    ? `已有 ${choiceTotal} 条同阶段归档，少于 5 条，暂不展示占比。`
-                    : '当前阶段还没有归档记录。完成一次体验并归档后，这里会出现同阶段的选择分布。'}
-                </p>
-              )}
-              <p className='y-note'>
-                仅统计带阶段的归档记录；本次更新前的历史归档未记录阶段，暂不计入。
-              </p>
-              <button
-                type='button'
-                className='y-btn y-btn-s'
-                style={{ marginTop: 7 }}
-                onClick={() => setChoiceTick(t => t + 1)}
-              >
-                刷新
-              </button>
-            </div>
-          </div>
-        ) : null}
-
-        {sideTab === 'geo' ? (
-          <div className='y-side-body'>
-            <div className='y-card y-geo-card'>
-              <p className='y-eyebrow'>精确定位</p>
-              <p className='y-note'>{geoStateText}</p>
-              {coords && near ? (
-                <Kv
-                  rows={[
-                    [
-                      '经纬度',
-                      `${coords.lon.toFixed(4)}°E, ${coords.lat.toFixed(4)}°N`,
-                    ],
-                    [
-                      '定位精度',
-                      coords.manual
-                        ? '手动点选（未校核）'
-                        : `±${Math.round(coords.acc)} 米`,
-                    ],
-                    [
-                      '最近样本城市',
-                      `${near.city.name}（约 ${Math.round(near.km)} 公里）`,
-                    ],
-                    [
-                      '对模型的影响',
-                      near.city.id === p.city
-                        ? '与你填写的城市一致，地理维度不变。'
-                        : `与填写的「${city.name}」不同；是否改用${near.city.name}由你决定。`,
-                    ],
-                  ]}
-                />
-              ) : geoState === 'denied' ? (
-                <Kv
-                  rows={[
-                    ['当前精度', '城市级（由城市与城乡属性导出）'],
-                    [
-                      '恢复方式',
-                      '在浏览器站点权限中允许定位后，再点一次「授权定位」；若页面嵌在预览 iframe 中，父页面未授权时浏览器仍会拒绝，可改用地图点选。',
-                    ],
-                  ]}
-                />
-              ) : null}
-              <div className='y-row' style={{ marginTop: 7 }}>
-                <button
-                  type='button'
-                  className='y-btn y-btn-s'
-                  onClick={requestGeo}
-                  disabled={geoState === 'pending'}
-                >
-                  {geoState === 'pending'
-                    ? '定位中…'
-                    : coords && !coords.manual
-                      ? '重新定位'
-                      : '授权定位'}
-                </button>
-                <button
-                  type='button'
-                  className='y-btn y-btn-s'
-                  onClick={() => setPickMode(v => !v)}
-                  aria-pressed={pickMode}
-                >
-                  {pickMode ? '取消点选' : '在地图上点选'}
-                </button>
-                {coords ? (
-                  <button
-                    type='button'
-                    className='y-btn y-btn-s'
-                    onClick={revokeGeo}
-                  >
-                    撤销
-                  </button>
-                ) : null}
-              </div>
-              {pickMode ? (
-                <p className='y-note y-pick-hint'>
-                  在地图上点击你的实际位置，点选后会自动缩放过去；点选结果只保存在本次会话。
-                </p>
-              ) : (
-                <p className='y-note'>{geoEnvNote}</p>
-              )}
-              <p className='y-note'>
-                坐标仅保存在本次会话内存，不上传、不写入档案。
-              </p>
-            </div>
-          </div>
-        ) : null}
       </aside>
       </div>
 

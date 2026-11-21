@@ -48,13 +48,6 @@ export const PROVENANCE = {
     kind: 'real',
     detail: '案例、城市讨论与区域证据均来自同一份知乎快照，正文链接可自行核对。',
   },
-  archiveChoice: {
-    label: '同阶段归档选择',
-    kind: 'real',
-    detail:
-      '平台胜利档案的跨用户匿名聚合，按归档时的阶段与下一步选择计数。',
-    meta: '同阶段满 5 条才显示占比；同一用户多次归档会多次计入',
-  },
   city: {
     label: '城市属性',
     kind: 'approx',

@@ -242,7 +242,7 @@ export default function Step1() {
             <div style={{ marginTop: 10 }}>
               <Say>
                 按你填的情况，你处在「{stage.name}」。下一步会显示{city.name}
-                与你所在区域里同阶段的人、讨论和去向。
+                与你所在区域里的城市信息与真实讨论。
               </Say>
             </div>
           </div>
