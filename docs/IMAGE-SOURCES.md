@@ -37,7 +37,7 @@
 | `src/assets/yutu-button-glass.webp` | `.y-btn-main` 主按钮背景（优先） | 1600×403，q78 |
 | `src/assets/yutu-button-glass.jpg` | 同上，JPEG fallback | 1600×403，q84 |
 
-按钮上叠加深色渐变层保证白字可读；底图缓慢横向流动（`yBtnFlow`），暗部叠层做 `yBtnDeepen` 明暗呼吸，悬停时加快并进一步加深。`prefers-reduced-motion` / 「动效 关」下只保留静态底图与静态暗层。**图片由用户提供，仅限本项目使用；如需对外发布请确认授权。**
+按钮上叠加深色渐变层保证白字可读；底图缓慢横向流动（`yBtnFlow`），暗部叠层做 `yBtnDeepen` 明暗呼吸，悬停时加快并进一步加深。顶部步骤条中的「当前步骤」使用同一张底图与暗层，扫光与横向流动合并到 `yStepSheen`。`prefers-reduced-motion` / 「动效 关」下只保留静态底图与静态暗层。**图片由用户提供，仅限本项目使用；如需对外发布请确认授权。**
 
 ## 步骤背景候选图（2026-11-22）
 

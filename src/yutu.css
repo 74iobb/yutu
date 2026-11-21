@@ -5647,7 +5647,7 @@ body {
     translate 0.18s ease;
 }
 #yutu2 .y-step:hover:not(:disabled) {
-  background: rgba(14, 91, 76, 0.06);
+  background-color: rgba(14, 91, 76, 0.06);
 }
 #yutu2 .y-step:active:not(:disabled) {
   translate: 0 1px;
@@ -7892,23 +7892,92 @@ html.y-motion-ready #yutu2 .y-card.y-in {
 #yutu2 .y-step {
   position: relative;
 }
+/* 当前步骤：与主按钮同一套彩绘玻璃底图与暗部呼吸 */
 #yutu2 .y-step[aria-current='step'] {
+  isolation: isolate;
+  background-color: #3f1d24;
   background-image:
     linear-gradient(
       110deg,
       transparent 28%,
-      rgba(255, 255, 255, 0.22) 44%,
+      rgba(255, 255, 255, 0.2) 44%,
       transparent 62%
     ),
-    linear-gradient(135deg, #126b59 0%, #0a4a3f 100%);
+    url('./assets/yutu-button-glass.jpg'),
+    linear-gradient(
+      110deg,
+      #1f4f8f 0%,
+      #2b7a5a 30%,
+      #c9a12e 58%,
+      #d9562e 80%,
+      #8e1f2f 100%
+    );
+  background-image:
+    linear-gradient(
+      110deg,
+      transparent 28%,
+      rgba(255, 255, 255, 0.2) 44%,
+      transparent 62%
+    ),
+    image-set(
+      url('./assets/yutu-button-glass.webp') type('image/webp'),
+      url('./assets/yutu-button-glass.jpg') type('image/jpeg')
+    ),
+    linear-gradient(
+      110deg,
+      #1f4f8f 0%,
+      #2b7a5a 30%,
+      #c9a12e 58%,
+      #d9562e 80%,
+      #8e1f2f 100%
+    );
   background-size:
     240% 100%,
-    100% 100%;
+    180% 100%,
+    180% 100%;
+  background-position:
+    130% 0,
+    0% 50%,
+    0% 50%;
   background-repeat: no-repeat;
+  color: #fff;
+  text-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.62),
+    0 0 10px rgba(0, 0, 0, 0.28);
+  box-shadow:
+    0 10px 22px -12px rgba(62, 20, 24, 0.75),
+    inset 0 1px 0 rgba(255, 255, 255, 0.18);
   animation: yStepSheen 5.6s ease-in-out infinite;
+}
+/* 暗部叠层放在文字下方，让彩绘玻璃随呼吸加深 */
+#yutu2 .y-step[aria-current='step']::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  border-radius: inherit;
+  background:
+    radial-gradient(
+      92% 120% at 50% 48%,
+      rgba(8, 8, 12, 0.24),
+      transparent 70%
+    ),
+    radial-gradient(
+      130% 170% at 50% 50%,
+      transparent 12%,
+      rgba(8, 8, 12, 0.3) 100%
+    ),
+    linear-gradient(180deg, rgba(8, 8, 12, 0.22) 0%, rgba(8, 8, 12, 0.5) 100%);
+  opacity: 0.82;
+  animation: yBtnDeepen 6s ease-in-out infinite alternate;
 }
 #yutu2 .y-step[aria-current='step'] .y-step-n {
   position: relative;
+}
+#yutu2 .y-step[aria-current='step'] .y-step-d {
+  color: rgba(255, 255, 255, 0.84);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
 }
 #yutu2 .y-step[aria-current='step'] .y-step-n::after {
   content: '';
@@ -7924,13 +7993,15 @@ html.y-motion-ready #yutu2 .y-card.y-in {
   58% {
     background-position:
       130% 0,
-      0 0;
+      0% 50%,
+      0% 50%;
   }
   86%,
   100% {
     background-position:
       -130% 0,
-      0 0;
+      100% 50%,
+      100% 50%;
   }
 }
 @keyframes yStepRing {
@@ -8324,6 +8395,7 @@ html.y-motion-ready #yutu2 .y-loop-current.y-in {
   #yutu2 .y-chrome::after,
   #yutu2 .y-title,
   #yutu2 .y-step[aria-current='step'],
+  #yutu2 .y-step[aria-current='step']::after,
   #yutu2 .y-step[aria-current='step'] .y-step-n::after,
   #yutu2 .y-eyebrow::before,
   #yutu2 .y-glance::after,
