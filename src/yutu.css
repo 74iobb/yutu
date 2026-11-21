@@ -11880,3 +11880,480 @@ html.y-motion-off #yutu2 .y-step-stage.is-page-dragging {
     animation: none;
   }
 }
+
+/* ==========================================================================
+   V8 星空透入：暗色玻璃主题
+   目标：星空透过半透明深色玻璃进入应用内部；标题、卡片、表单保持可读。
+   本段为最后的覆盖层，只改颜色与表面，不动布局与业务逻辑。
+   ========================================================================== */
+
+#yutu2 {
+  /* V6 令牌 */
+  --paper: #081226;
+  --surface: #0d1830;
+  --surface-2: #111f3c;
+  --ink: #e9efff;
+  --ink-2: #b7c5e4;
+  --muted-2: #8393b3;
+  --line-2: rgba(160, 190, 255, 0.16);
+  --brand-3: #9fc4ff;
+  --brand-4: #c2d8ff;
+  --accent-2: #f5c15a;
+  --danger: #ff9b8b;
+  --night: #040610;
+
+  /* V2 / V4 令牌 */
+  --y-bg: #081226;
+  --y-surface: #0d1830;
+  --y-surface2: #111f3c;
+  --y-ink: #e9efff;
+  --y-ink2: #b7c5e4;
+  --y-muted: #8393b3;
+  --y-line: rgba(160, 190, 255, 0.16);
+  --y-line2: rgba(170, 200, 255, 0.26);
+  --y-soft: rgba(110, 150, 255, 0.12);
+  --y-accent: #6fa8ff;
+  --y-brand: #9fc4ff;
+  --y-brand-2: #c2d8ff;
+  --y-amber: #f5c15a;
+  --y-warm: #f0bd6e;
+  --y-calm: #8fd6c0;
+  --y-red: #ff9b8b;
+
+  color: var(--y-ink);
+  background:
+    radial-gradient(
+      100% 70% at 100% 0%,
+      rgba(88, 120, 220, 0.16),
+      transparent 60%
+    ),
+    linear-gradient(
+      180deg,
+      rgba(7, 13, 28, 0.74),
+      rgba(8, 16, 34, 0.68)
+    );
+  border-color: rgba(150, 185, 255, 0.18);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.08) inset,
+    0 30px 90px -40px rgba(0, 0, 0, 0.9),
+    0 0 0 1px rgba(150, 180, 255, 0.08);
+}
+
+/* 头部与步骤条 */
+#yutu2 .y-head {
+  background: transparent;
+}
+#yutu2 .y-chrome {
+  background: linear-gradient(
+    180deg,
+    rgba(7, 13, 28, 0.84),
+    rgba(8, 15, 32, 0.76)
+  );
+  border-bottom-color: var(--y-line);
+  box-shadow: 0 12px 32px -28px rgba(0, 0, 0, 0.85);
+}
+#yutu2 .y-chrome.is-scrolled {
+  box-shadow: 0 20px 44px -30px rgba(0, 0, 0, 0.95);
+}
+#yutu2 .y-title {
+  background: linear-gradient(118deg, #f6f9ff 0%, #cfe0ff 55%, #9fc4ff 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+#yutu2 .y-slogan,
+#yutu2 .y-sub {
+  color: var(--y-muted);
+}
+#yutu2 .y-sub i {
+  color: #cfe0ff;
+}
+#yutu2 .y-meta-trigger {
+  color: var(--y-ink2);
+}
+#yutu2 .y-meta-trigger:hover {
+  color: #fff;
+}
+#yutu2 .y-read-progress {
+  background: rgba(120, 160, 255, 0.12);
+}
+#yutu2 .y-read-progress i {
+  background: linear-gradient(90deg, #f5c15a, #7fb6ff 72%);
+}
+#yutu2 .y-glance {
+  background: linear-gradient(
+    90deg,
+    rgba(12, 22, 44, 0.8),
+    rgba(9, 17, 34, 0.72)
+  );
+  border-bottom-color: var(--y-line);
+}
+#yutu2 .y-glance-item span {
+  color: var(--y-muted);
+}
+#yutu2 .y-glance-item b {
+  color: var(--y-ink);
+}
+#yutu2 .y-fingerprint i {
+  background: linear-gradient(180deg, #8fdcff, #4f8bff);
+}
+#yutu2 .y-step-progress {
+  color: var(--y-muted);
+}
+#yutu2 .y-step-progress > i {
+  background: rgba(150, 185, 255, 0.14);
+}
+#yutu2 .y-step-progress > i > em {
+  background: linear-gradient(90deg, #7fb59a, #5f9bff);
+}
+#yutu2 .y-step {
+  color: var(--y-ink2);
+}
+#yutu2 .y-step:hover:not(:disabled) {
+  background-color: rgba(120, 160, 255, 0.1);
+}
+#yutu2 .y-step-d {
+  color: var(--y-muted);
+}
+#yutu2 .y-step.is-done .y-step-n {
+  background: #5f9bff;
+}
+#yutu2 .y-realm {
+  color: var(--y-ink2);
+}
+#yutu2 .y-realm:hover:not(.is-locked) {
+  background-color: rgba(120, 160, 255, 0.1);
+}
+#yutu2 .y-realm.is-on {
+  background: linear-gradient(
+    180deg,
+    rgba(110, 150, 255, 0.2),
+    rgba(110, 150, 255, 0.06)
+  );
+  border-color: rgba(150, 190, 255, 0.32);
+  color: #f3f7ff;
+}
+#yutu2 .y-realm-t em {
+  color: var(--y-muted);
+}
+#yutu2 .y-realm.is-on .y-realm-t em {
+  color: var(--y-ink2);
+}
+#yutu2 .y-realm-i {
+  color: var(--y-brand);
+  background: rgba(120, 160, 255, 0.14);
+}
+#yutu2 .y-eyebrow {
+  background: rgba(120, 160, 255, 0.14);
+  color: #dbe6ff;
+}
+#yutu2 .y-eyebrow::before {
+  background: var(--y-amber);
+  box-shadow: 0 0 0 3px rgba(245, 193, 90, 0.16);
+}
+
+/* 卡片 / 面板 / 表单表面 */
+#yutu2 .y-card,
+#yutu2 .y-insight,
+#yutu2 .y-subview,
+#yutu2 .y-globe-panel,
+#yutu2 .y-campaign-card,
+#yutu2 .y-city-card,
+#yutu2 .y-focus-material,
+#yutu2 .y-search-basis,
+#yutu2 .y-cand-dock,
+#yutu2 .y-loop-current,
+#yutu2 .y-loop-review-card,
+#yutu2 .y-loop-done,
+#yutu2 .y-loop-step,
+#yutu2 .y-wall-card,
+#yutu2 .y-sync-panel,
+#yutu2 .y-data-panel,
+#yutu2 .y-confirm,
+#yutu2 .y-measure > summary,
+#yutu2 .y-measure-body,
+#yutu2 .y-measure-result,
+#yutu2 .y-measure-live,
+#yutu2 .y-companion-answer,
+#yutu2 .y-detail > summary,
+#yutu2 .y-data-group li,
+#yutu2 .y-card--data,
+#yutu2 .y-card--evidence,
+#yutu2 .y-chart-frame,
+#yutu2 .y-stage.is-focus .y-globe-panel,
+#yutu2 .y-stage.is-focus .y-side,
+#yutu2 .y-stage.is-focus .y-side-tabs,
+#yutu2 .y-campaign-card.is-focus {
+  background: linear-gradient(
+    180deg,
+    rgba(16, 26, 48, 0.86),
+    rgba(12, 20, 38, 0.82)
+  );
+  border-color: var(--y-line);
+  box-shadow: 0 18px 40px -32px rgba(0, 0, 0, 0.9);
+}
+#yutu2 .y-insight {
+  border-color: rgba(120, 160, 255, 0.26);
+}
+#yutu2 .y-side-tabs {
+  background: var(--y-surface2);
+  border-color: var(--y-line);
+}
+#yutu2 .y-side-tabs button {
+  color: var(--y-ink2);
+}
+#yutu2 .y-side-tabs button:hover {
+  background: rgba(120, 160, 255, 0.1);
+}
+#yutu2 .y-side-tabs button.is-on {
+  background: rgba(120, 160, 255, 0.16);
+  color: #dbe6ff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.24);
+}
+#yutu2 .y-opt-card {
+  background: var(--y-surface);
+  border-color: var(--y-line2);
+}
+#yutu2 .y-opt-card:hover {
+  background: var(--y-surface2);
+}
+#yutu2 .y-opt-card.is-on,
+#yutu2 .y-dir.is-picked,
+#yutu2 .y-cand-chip.is-picked,
+#yutu2 .y-campaign-pick-chip.is-picked {
+  background: linear-gradient(
+    180deg,
+    rgba(60, 100, 200, 0.28),
+    rgba(20, 34, 66, 0.86)
+  );
+  border-color: rgba(130, 175, 255, 0.45);
+}
+#yutu2 .y-campaign-picks {
+  background: rgba(12, 20, 38, 0.8);
+  border-color: var(--y-line);
+}
+#yutu2 .y-stat-grid > div,
+#yutu2 .y-metrics > div,
+#yutu2 .y-contrib-grid > div,
+#yutu2 .y-vor-metrics > div,
+#yutu2 .y-loop-metrics > div,
+#yutu2 .y-round,
+#yutu2 .y-dock-stats > div,
+#yutu2 .y-lead-facts > div {
+  background: linear-gradient(
+    180deg,
+    rgba(20, 32, 58, 0.82),
+    rgba(13, 22, 42, 0.82)
+  );
+  border-color: var(--y-line);
+}
+
+/* 表单 */
+#yutu2 input:not([type='range']):not([type='checkbox']):not([type='radio']),
+#yutu2 select,
+#yutu2 textarea {
+  background: rgba(10, 18, 34, 0.86);
+  border-color: var(--y-line2);
+  color: var(--y-ink);
+}
+#yutu2 input::placeholder,
+#yutu2 textarea::placeholder {
+  color: var(--y-muted);
+}
+#yutu2 select option {
+  background: #0d1730;
+  color: #e9efff;
+}
+#yutu2 textarea:focus,
+#yutu2 input:focus,
+#yutu2 select:focus {
+  background: rgba(14, 24, 46, 0.92);
+  border-color: rgba(130, 175, 255, 0.55);
+}
+
+/* 按钮：彩色主按钮保留，其余改为深色玻璃 */
+#yutu2 .y-btn:not(.y-btn-main) {
+  background: rgba(18, 30, 56, 0.72);
+  border-color: var(--y-line2);
+  color: var(--y-ink);
+}
+#yutu2 .y-btn:not(.y-btn-main):hover:not(:disabled) {
+  background-color: rgba(30, 48, 86, 0.85);
+  border-color: rgba(140, 180, 255, 0.45);
+  color: #fff;
+}
+#yutu2 .y-btn.y-btn-danger {
+  background: rgba(255, 120, 100, 0.12);
+  border-color: rgba(255, 120, 100, 0.3);
+  color: #ffb4a8;
+}
+#yutu2 .y-btn.y-btn-danger:hover:not(:disabled) {
+  background: rgba(255, 120, 100, 0.2);
+  border-color: rgba(255, 140, 120, 0.45);
+  color: #ffd1c8;
+}
+
+/* 标签与提示 */
+#yutu2 .y-chip {
+  background: rgba(18, 30, 56, 0.72);
+  border-color: var(--y-line2);
+  color: var(--y-ink2);
+}
+#yutu2 .y-chip-c {
+  background: rgba(110, 220, 170, 0.12);
+  border-color: rgba(110, 220, 170, 0.28);
+  color: #a8e6cc;
+}
+#yutu2 .y-chip-w {
+  background: rgba(245, 193, 90, 0.14);
+  border-color: rgba(245, 193, 90, 0.3);
+  color: #f3d79a;
+}
+#yutu2 .y-chip-r {
+  background: rgba(255, 130, 110, 0.12);
+  border-color: rgba(255, 130, 110, 0.28);
+  color: #ffb4a8;
+}
+#yutu2 .y-chip-loop {
+  background: rgba(110, 150, 255, 0.14);
+  border-color: rgba(130, 170, 255, 0.3);
+  color: #cfe0ff;
+}
+#yutu2 .y-motion-chip.is-off {
+  background: rgba(18, 30, 56, 0.6);
+  color: var(--y-muted);
+}
+#yutu2 .y-warn {
+  background: rgba(245, 193, 90, 0.12);
+  border-color: rgba(245, 193, 90, 0.28);
+  color: #f3d79a;
+}
+#yutu2 .y-prov-approx {
+  background: rgba(245, 193, 90, 0.14);
+  color: #f3d79a;
+}
+#yutu2 .y-prov-heuristic {
+  background: rgba(170, 130, 255, 0.14);
+  color: #d8c7ff;
+}
+#yutu2 .y-data-group.is-approx h4 span {
+  background: rgba(245, 193, 90, 0.14);
+  color: #f3d79a;
+}
+#yutu2 .y-data-group.is-heuristic h4 span {
+  background: rgba(170, 130, 255, 0.14);
+  color: #d8c7ff;
+}
+#yutu2 .y-gap-photo.is-on {
+  background: #0c1830;
+}
+#yutu2 .y-companion-fab {
+  background: rgba(12, 20, 38, 0.86);
+}
+
+/* 地图与图表内的深色控制件 */
+#yutu2 .y-gis {
+  background: #071022;
+}
+#yutu2 .y-gis .leaflet-control-zoom a,
+#yutu2 .y-campaign-leaflet .leaflet-control-zoom a {
+  background: rgba(12, 20, 38, 0.92);
+  color: var(--y-ink);
+  border-color: var(--y-line2);
+}
+#yutu2 .y-gis .leaflet-control-attribution {
+  background: rgba(8, 14, 28, 0.8);
+  color: var(--y-muted);
+}
+#yutu2 .camp-ring-label,
+#yutu2 .camp-depot,
+#yutu2 .leaflet-tooltip.camp-label {
+  background: rgba(12, 20, 38, 0.92);
+  color: var(--y-ink);
+  border-color: var(--y-line2);
+}
+#yutu2 .leaflet-tooltip.camp-label.is-candidate {
+  background: rgba(80, 58, 18, 0.92);
+  color: #f3d79a;
+}
+#yutu2 .camp-ring-label span {
+  color: var(--y-ink2);
+}
+#yutu2 .camp-depot i {
+  background: rgba(120, 160, 255, 0.22);
+}
+#yutu2 .y-gis-offline {
+  background: rgba(40, 30, 14, 0.92);
+  color: #f3d79a;
+}
+#yutu2 .y-river-guide {
+  stroke: rgba(160, 190, 255, 0.25);
+}
+#yutu2 .y-river-now-line {
+  stroke: rgba(140, 190, 255, 0.32);
+}
+#yutu2 .y-river-band {
+  stroke: rgba(205, 222, 255, 0.35);
+}
+#yutu2 .y-kv li {
+  border-bottom-color: var(--y-line);
+}
+#yutu2 .y-page-foot,
+#yutu2 .y-fatal {
+  color: #b7c5e4;
+}
+#yutu2 .y-fatal {
+  background: #0d1730;
+}
+
+/* 吉祥物：暗色头部下用一圈月光承接 multiply 视频 */
+#yutu2 .y-brand-mascot {
+  background: radial-gradient(
+    circle,
+    rgba(235, 245, 255, 0.9) 0%,
+    rgba(190, 215, 255, 0.45) 52%,
+    transparent 74%
+  );
+  border-radius: 50%;
+}
+
+/* 闭环补充面 + 错误兜底（错误页在 #yutu2 之外） */
+#yutu2 .y-loop-next {
+  background: linear-gradient(
+    180deg,
+    rgba(20, 34, 60, 0.84),
+    rgba(13, 22, 42, 0.82)
+  );
+  border-color: rgba(130, 175, 255, 0.26);
+}
+#yutu2 .y-loop-next h4 {
+  color: #cfe0ff;
+}
+#yutu2 .y-loop-step.is-passed,
+#yutu2 .y-loop-step.is-active {
+  background: linear-gradient(
+    180deg,
+    rgba(30, 48, 86, 0.84),
+    rgba(13, 22, 42, 0.82)
+  );
+}
+#yutu2 .y-loop-step.is-active {
+  border-color: rgba(130, 175, 255, 0.5);
+  border-left-color: #6fa8ff;
+  box-shadow:
+    0 0 0 2px rgba(110, 150, 255, 0.14),
+    0 4px 12px rgba(0, 0, 0, 0.24);
+}
+#yutu2 .y-loop-step.is-passed {
+  border-left-color: #8fd6c0;
+}
+.y-fatal {
+  background: #0d1730;
+  border-color: rgba(160, 190, 255, 0.18);
+  color: #e9efff;
+}
+.y-fatal h3 {
+  color: #f3f7ff;
+}
+.y-fatal p {
+  color: #b7c5e4;
+}
