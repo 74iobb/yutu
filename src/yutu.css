@@ -12404,3 +12404,92 @@ html.y-motion-off #yutu2 .y-step-stage.is-page-dragging {
 .y-fatal p {
   color: #b7c5e4;
 }
+
+/* 第 1 步补充：成长变化条 / 提示气泡 / 照片 / 子标签在暗色玻璃下的可读性 */
+#yutu2 .y-growth-delta {
+  background:
+    radial-gradient(
+      130% 170% at 0% 0%,
+      rgba(110, 150, 255, 0.16),
+      transparent 55%
+    ),
+    linear-gradient(
+      180deg,
+      rgba(18, 30, 56, 0.9),
+      rgba(12, 20, 38, 0.86)
+    );
+  border-color: rgba(120, 160, 255, 0.26);
+  box-shadow:
+    0 18px 40px -32px rgba(0, 0, 0, 0.9),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+#yutu2 .y-growth-delta::before {
+  background: linear-gradient(180deg, #8fd6c0, #6fa8ff);
+}
+#yutu2 .y-gd-badge {
+  color: #cfe0ff;
+  background: rgba(110, 150, 255, 0.16);
+  border-color: rgba(130, 175, 255, 0.3);
+}
+#yutu2 .y-gd-head strong {
+  color: var(--y-ink);
+}
+#yutu2 .y-gd-head em {
+  color: #f3d79a;
+  background: rgba(245, 193, 90, 0.14);
+}
+#yutu2 .y-gd-dims li {
+  background: rgba(120, 160, 255, 0.08);
+  border-color: rgba(160, 190, 255, 0.14);
+}
+#yutu2 .y-gd-dims li.is-up b {
+  color: #8fd6c0;
+}
+#yutu2 .y-gd-dims li.is-down b {
+  color: #ff9b8b;
+}
+#yutu2 .y-say {
+  background: rgba(110, 150, 255, 0.12);
+  border-color: rgba(120, 160, 255, 0.28);
+  color: #cfe0ff;
+}
+#yutu2 .y-sub-rail {
+  border-bottom-color: var(--y-line);
+}
+#yutu2 .y-sub-tab[aria-selected='true'] {
+  background: linear-gradient(
+    135deg,
+    rgba(110, 150, 255, 0.4),
+    rgba(50, 80, 160, 0.5)
+  );
+  box-shadow: 0 10px 20px -14px rgba(0, 0, 0, 0.7);
+}
+
+/* 暗色主题下把照片压成夜里的窗，sunrise 再额外压暗太阳 */
+#yutu2 .y-gap-photo img {
+  filter: saturate(0.78) contrast(0.92) brightness(0.62);
+}
+#yutu2 .y-gap-photo::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  background: linear-gradient(
+    180deg,
+    rgba(4, 8, 18, 0.08) 0%,
+    rgba(4, 8, 18, 0.45) 100%
+  );
+}
+#yutu2 .y-gap-photo--sunrise img {
+  filter: saturate(0.68) contrast(0.9) brightness(0.48);
+}
+#yutu2 .y-gap-photo--sunrise::after {
+  background:
+    radial-gradient(
+      42% 42% at 66% 44%,
+      rgba(3, 7, 16, 0.62),
+      transparent 68%
+    ),
+    linear-gradient(180deg, rgba(4, 8, 18, 0.12) 0%, rgba(4, 8, 18, 0.55) 100%);
+}

@@ -130,7 +130,7 @@ export default function GapPhoto({
   return (
     <div
       ref={boxRef}
-      className={`y-gap-photo${filled ? ' is-on' : ''}`}
+      className={`y-gap-photo y-gap-photo--${variant}${filled ? ' is-on' : ''}`}
       aria-hidden={filled ? 'false' : 'true'}
       onPointerEnter={hoverable ? () => setHovered(true) : undefined}
       onPointerLeave={hoverable ? () => setHovered(false) : undefined}
