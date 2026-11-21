@@ -11956,8 +11956,8 @@ html.y-motion-off #yutu2 .y-step-stage.is-page-dragging {
     ),
     linear-gradient(
       180deg,
-      rgba(7, 13, 28, 0.62),
-      rgba(8, 16, 34, 0.54)
+      rgba(5, 10, 22, 0.28),
+      rgba(6, 12, 26, 0.18)
     );
   border-color: rgba(150, 185, 255, 0.18);
   box-shadow:
@@ -11979,8 +11979,8 @@ html.y-motion-off #yutu2 .y-step-stage.is-page-dragging {
 #yutu2 .y-chrome {
   background: linear-gradient(
     180deg,
-    rgba(7, 13, 28, 0.78),
-    rgba(8, 15, 32, 0.7)
+    rgba(5, 10, 22, 0.62),
+    rgba(6, 12, 26, 0.5)
   );
   border-bottom-color: var(--y-line);
   box-shadow: 0 12px 32px -28px rgba(0, 0, 0, 0.85);
@@ -12118,14 +12118,29 @@ html.y-motion-off #yutu2 .y-step-stage.is-page-dragging {
 #yutu2 .y-campaign-card.is-focus {
   background: linear-gradient(
     180deg,
-    rgba(8, 14, 28, 0.74),
-    rgba(10, 16, 30, 0.68)
+    rgba(6, 12, 24, 0.5),
+    rgba(8, 14, 28, 0.42)
   );
-  border-color: var(--y-line);
-  box-shadow: 0 18px 40px -32px rgba(0, 0, 0, 0.9);
+  border-color: rgba(160, 190, 255, 0.2);
+  box-shadow: 0 18px 40px -32px rgba(0, 0, 0, 0.85);
 }
 #yutu2 .y-insight {
   border-color: rgba(120, 160, 255, 0.26);
+}
+/* 主要容器做磨砂玻璃；嵌套小面不再重复 blur，避免性能开销 */
+#yutu2 .y-card,
+#yutu2 .y-insight,
+#yutu2 .y-subview,
+#yutu2 .y-globe-panel,
+#yutu2 .y-campaign-card,
+#yutu2 .y-loop-board-card,
+#yutu2 .y-data-panel,
+#yutu2 .y-sync-panel,
+#yutu2 .y-confirm,
+#yutu2 .y-measure-body,
+#yutu2 .y-measure-result {
+  -webkit-backdrop-filter: blur(12px) saturate(125%);
+  backdrop-filter: blur(12px) saturate(125%);
 }
 #yutu2 .y-side-tabs {
   background: var(--y-surface2);
@@ -12495,4 +12510,27 @@ html.y-motion-off #yutu2 .y-step-stage.is-page-dragging {
   background: #6fd6a8;
   box-shadow: 0 0 0 2px rgba(111, 214, 168, 0.16);
   animation: none;
+}
+
+/* 页脚与概览条也保持透光，同时给 NOIRLab credit 一个可读的底 */
+.y-page > .y-page-foot {
+  width: fit-content;
+  max-width: calc(100% - 24px);
+  padding: 6px 14px;
+  border-radius: 10px;
+  border: 1px solid rgba(160, 190, 255, 0.14);
+  background: rgba(4, 8, 18, 0.46);
+  color: rgba(225, 235, 255, 0.86);
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.6);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+}
+#yutu2 .y-glance {
+  background: linear-gradient(
+    90deg,
+    rgba(6, 12, 26, 0.55),
+    rgba(8, 14, 28, 0.45)
+  );
+  -webkit-backdrop-filter: blur(10px) saturate(120%);
+  backdrop-filter: blur(10px) saturate(120%);
 }
