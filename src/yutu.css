@@ -5461,7 +5461,33 @@ body {
   inset: -6%;
   background-color: #040815;
   background-image:
-    url('./assets/yutu-starfield.webp'),
+    url('./assets/yutu-starfield.png'),
+    radial-gradient(
+      60% 55% at 22% 28%,
+      rgba(47, 90, 168, 0.42),
+      transparent 66%
+    ),
+    radial-gradient(
+      55% 50% at 78% 72%,
+      rgba(106, 60, 148, 0.3),
+      transparent 70%
+    ),
+    radial-gradient(
+      45% 45% at 62% 16%,
+      rgba(31, 122, 134, 0.24),
+      transparent 68%
+    ),
+    radial-gradient(
+      40% 40% at 8% 86%,
+      rgba(181, 122, 58, 0.16),
+      transparent 70%
+    ),
+    linear-gradient(160deg, #040815 0%, #0a1226 42%, #131f3c 72%, #070b18 100%);
+  background-image:
+    image-set(
+      url('./assets/yutu-starfield.webp') type('image/webp'),
+      url('./assets/yutu-starfield.png') type('image/png')
+    ),
     radial-gradient(
       60% 55% at 22% 28%,
       rgba(47, 90, 168, 0.42),
@@ -5496,7 +5522,22 @@ body {
   position: absolute;
   inset: 0;
   background-image:
-    url('./assets/yutu-starfield-twinkle.webp'),
+    url('./assets/yutu-starfield-twinkle.png'),
+    radial-gradient(
+      50% 46% at 24% 30%,
+      rgba(88, 126, 224, 0.2),
+      transparent 70%
+    ),
+    radial-gradient(
+      46% 44% at 80% 74%,
+      rgba(128, 76, 180, 0.18),
+      transparent 72%
+    );
+  background-image:
+    image-set(
+      url('./assets/yutu-starfield-twinkle.webp') type('image/webp'),
+      url('./assets/yutu-starfield-twinkle.png') type('image/png')
+    ),
     radial-gradient(
       50% 46% at 24% 30%,
       rgba(88, 126, 224, 0.2),
@@ -11929,14 +11970,20 @@ html.y-motion-off #yutu2 .y-step-stage.is-page-dragging {
     ),
     linear-gradient(
       180deg,
-      rgba(7, 13, 28, 0.74),
-      rgba(8, 16, 34, 0.68)
+      rgba(7, 13, 28, 0.68),
+      rgba(8, 16, 34, 0.6)
     );
   border-color: rgba(150, 185, 255, 0.18);
   box-shadow:
     0 1px 0 rgba(255, 255, 255, 0.08) inset,
     0 30px 90px -40px rgba(0, 0, 0, 0.9),
     0 0 0 1px rgba(150, 180, 255, 0.08);
+}
+
+#yutu2 .y-lead h2,
+#yutu2 .y-zone-head h3,
+#yutu2 .y-card h3 {
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.45);
 }
 
 /* 头部与步骤条 */
