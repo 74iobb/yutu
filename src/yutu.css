@@ -12322,11 +12322,47 @@ html.y-motion-off #yutu2 .y-step-stage.is-page-dragging {
   background: rgba(80, 58, 18, 0.92);
   color: #f3d79a;
 }
+/* 圈层公里的 pill（近/中/外圈 3 个）在暗色底图上仍有浅底，统一改成深色玻璃 */
 #yutu2 .camp-ring-label span {
+  background: rgba(12, 20, 38, 0.92);
+  border-color: var(--y-line2);
   color: var(--y-ink2);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.45);
+}
+/* Leaflet 比例尺（第 4 个公里标识）默认白底黑字，暗色地图上是明显的过曝块 */
+#yutu2 .y-gis .leaflet-control-scale-line,
+#yutu2 .y-campaign-leaflet .leaflet-control-scale-line {
+  background: rgba(12, 20, 38, 0.9);
+  border-color: rgba(150, 190, 255, 0.42);
+  color: #cfe0ff;
+  text-shadow: none;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+}
+#yutu2 .y-gis .leaflet-control-scale-line:not(:first-child),
+#yutu2 .y-campaign-leaflet .leaflet-control-scale-line:not(:first-child) {
+  border-top-color: rgba(150, 190, 255, 0.42);
+  border-bottom-color: rgba(150, 190, 255, 0.42);
 }
 #yutu2 .camp-depot i {
   background: rgba(120, 160, 255, 0.22);
+}
+/* 全局滚动条仍是浅米色，候选对比表横向滚动时会在暗色卡片底部出现亮条 */
+#yutu2 ::-webkit-scrollbar-thumb {
+  background: rgba(120, 160, 255, 0.26);
+  border-color: rgba(8, 14, 28, 0.6);
+}
+#yutu2 ::-webkit-scrollbar-thumb:hover {
+  background: rgba(120, 160, 255, 0.42);
+}
+/* 空状态（代价明细 / 我的候选对比等）之前仍是暖白渐变，暗色下像一块过曝区域 */
+#yutu2 .y-empty {
+  background: linear-gradient(
+    180deg,
+    rgba(12, 20, 38, 0.5),
+    rgba(8, 14, 28, 0.42)
+  );
+  border-color: rgba(160, 190, 255, 0.22);
+  color: var(--y-muted);
 }
 #yutu2 .y-gis-offline {
   background: rgba(40, 30, 14, 0.92);
