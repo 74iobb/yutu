@@ -59,6 +59,13 @@ pnpm preview
 - 平台没有工作流删除接口，**禁止创建测试 SQL 工作流**（如 `SELECT 1`）来探测连通性，会永久残留。
 - 数据表位于项目空间 `DEV_SPACE_ID`；建表/查表必须带 `spaceId`（由平台环境变量注入，不要改用个人空间）。
 
+### 2.5 密钥与知乎内容授权
+
+- **知乎 Access Secret 未随包提供**：打包环境未注入 `ZHIHU_ACCESS_SECRET`，也没有 `~/.config/zhihu-cli/secret.env` / `zhihu-cli`。应用运行**不需要**它——256 条快照已内置；只有「刷新快照」才需要。
+- 需要刷新时按 **`secrets/README.md`** 注入：可参考 `secrets/zhihu.env.example` 创建本地 `secrets/zhihu.env`（已被 `.gitignore` 忽略），或临时 `export ZHIHU_ACCESS_SECRET=...`。**不要把真实密钥写进代码、前端、提交记录或公开 zip。**
+- 知乎内容的展示/再分发边界与发布前检查清单：**`docs/ZHIHU-RIGHTS.md`**。核心口径：访问密钥只证明「能查」，不等于获得「可对外转载/商用」的授权。
+- 平台 12 个工作流端点 token 不是密钥，已在 `.project.md` 第 3 节与 `src/lib/yutuApi.ts` 中随包提供。
+
 ---
 
 ## 3. 目录与关键文件
@@ -151,7 +158,7 @@ pnpm build          # 期望 ✓ built
 
 ## 8. 包内包含 / 排除
 
-**包含**：全部源码、配置、锁文件（`pnpm-lock.yaml`）、`.npmrc`、`docs/`、`legacy/`、`scripts/`、`.project.md`、`README.md`、本文件、`AGENTS.md`、`.claude/.agents/.codex/.opencode` 的 skills、预构建 `dist/`。
+**包含**：全部源码、配置、锁文件（`pnpm-lock.yaml`）、`.npmrc`、`docs/`（含 `docs/ZHIHU-RIGHTS.md`）、`legacy/`、`scripts/`、`secrets/README.md` 与 `secrets/zhihu.env.example`（**不含真实密钥**）、`.project.md`、`README.md`、本文件、`AGENTS.md`、`.claude/.agents/.codex/.opencode` 的 skills、预构建 `dist/`。
 
 **排除**：`node_modules/`、`.git/`、`.attachments/`（用户截图）、`dist-packages/`、`*.zip`、临时日志与 `vite.config.ts.timestamp-*`。
 

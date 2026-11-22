@@ -26,6 +26,7 @@ pnpm preview                    # 预览 dist/
 - token / 表结构一律从 `.project.md` 取；改数据层后必须同步更新 `.project.md`。
 - **不要创建测试 SQL 工作流**（平台无删除接口，会永久残留）；不要用假数据探测连通性。
 - 不硬编码密钥、Access Secret、内网 IP；不访问 localhost / 内网服务。
+- 知乎 Access Secret 只通过环境变量或本地 `secrets/*.env`（已 gitignore）注入；真实值绝不入库 / 进前端 / 进公开制品。知乎内容的对外展示与再分发边界见 `docs/ZHIHU-RIGHTS.md`，密钥说明见 `secrets/README.md`。
 - 保留 `vite.config.ts` 中 `DEV-INJECT-START` / `DEV-INJECT-END` 之间的全部内容。
 - `legacy/` 原始原型勿删；不要手工编辑 `cpage_config.json`。
 - 新数据表/接口顺序：建表 → 建 SQL API → 登记 `.project.md` → `yutuApi.ts` → `YutuContext` → 组件。
