@@ -1,5 +1,6 @@
 import { HashRouter, Navigate, Route, Routes } from 'react-router-dom';
 import YutuApp from '@/pages/YutuApp';
+import ElectricalLab from '@/pages/ElectricalLab';
 
 /**
  * 根应用：使用 HashRouter，保证静态托管下路由可用。
@@ -10,6 +11,7 @@ function App() {
     <HashRouter>
       <Routes>
         <Route path="/" element={<YutuApp />} />
+        <Route path="/electrical" element={<ElectricalLab />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </HashRouter>

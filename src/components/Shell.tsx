@@ -490,6 +490,16 @@ export function Shell({ children }: { children: ReactNode }) {
         </div>
         <div className='y-head-side'>
           <div className='y-chip-row'>
+            <a
+              className='y-chip y-chip-elab'
+              href='#/electrical'
+              title='电气控制 · 交互题解'
+            >
+              <span className='y-elab-bolt' aria-hidden='true'>
+                ⚡
+              </span>
+              电气实训
+            </a>
             <span className='y-sync-wrap'>
               <button
                 type='button'
