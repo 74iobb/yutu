@@ -187,3 +187,7 @@ pnpm build          # 期望 ✓ built
 > 2026-11-24 V9.4 对齐平台新表：当前生效表为 8766–8771、工作流 5269644–5269660，端点 token 未变。`LS_KEY` 升到 `yutu.state.v3` 并删除旧 `v2`，旧本地历史不再参与合并；`.project.md` 已同步新表/工作流 ID。
 >
 > 2026-11-24 V9.6 接完 5 个去向接口：`peer_samples_*` + `archive_choice_stats` 已接入「同伴经验域」的「同阶段的人后来去哪了」卡片；自填样本提交前脱敏，离线存本机。另修复预览 `useYutu must be used inside YutuProvider`：Context 挂 `globalThis` 复用，避免 Vite 热更新重建实例。`readRemote()` 现为 8 个查询。
+>
+> 2026-11-24 V9.7 第 2 步网络模式可见性：`GisMap` 增加城市兜底（无效 id → 中文名 → 成都），暗色陆地提亮，飞线目标常驻标签 + 模式徽标，减弱四周渐晕；地理/网络来回切换实测稳定。仍无新增表 / 工作流。
+>
+> 2026-11-24 V10 动图升级：`GapPhoto` 加 Ken Burns + 扫光，Step1/Step6 三张主图自动播放 WebP；雷达加 10s 扫描线、趋势图加 3.4s 沿线流光、成长河加 9s 横扫柔光；全部尊重 `prefers-reduced-motion` 与「动效 关」。仍无新增表 / 工作流。

@@ -246,7 +246,11 @@ export default function Step1() {
               </Say>
             </div>
           </div>
-          <GapPhoto variant='writing' quote='先把脚下这一步填清楚。' />
+          <GapPhoto
+            variant='writing'
+            quote='先把脚下这一步填清楚。'
+            autoMotion
+          />
         </aside>
       </div>
 

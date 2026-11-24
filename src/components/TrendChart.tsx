@@ -210,6 +210,16 @@ export default function TrendChart({ victories, current }: Props) {
               strokeLinejoin='round'
               filter={`url(#${uid}-glow)`}
             />
+            {/* 沿线流动的细光点，表达“数据在往后走” */}
+            <path
+              key={`flow-${dim}`}
+              className='y-trend-flow'
+              d={line}
+              fill='none'
+              stroke='#dff2ff'
+              strokeWidth={1.2}
+              strokeLinecap='round'
+            />
           </>
         ) : null}
 

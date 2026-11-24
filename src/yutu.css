@@ -3026,7 +3026,10 @@ body {
   z-index: 400;
   pointer-events: none;
   border-radius: 8px;
-  box-shadow: inset 0 0 70px 12px rgba(4, 8, 18, 0.55);
+  box-shadow: inset 0 0 40px 4px rgba(4, 8, 18, 0.35);
+}
+#yutu2 .y-gis.is-net::after {
+  box-shadow: inset 0 0 28px 2px rgba(4, 8, 18, 0.26);
 }
 @media (max-width: 640px) {
   #yutu2 .y-gis {
@@ -13229,4 +13232,213 @@ html.y-motion-off #yutu2 .y-step-stage.is-page-dragging {
   #yutu2 .y-peer-samples-grid {
     grid-template-columns: minmax(0, 1fr);
   }
+}
+
+/* ---------- V9.7 网络模式可见性：模式徽标 / 城市回落 / 目标常驻标签 ---------- */
+#yutu2 .y-gis-net-badge {
+  position: absolute;
+  left: 10px;
+  top: 10px;
+  z-index: 900;
+  padding: 3px 9px;
+  border-radius: 999px;
+  border: 1px solid rgba(126, 200, 255, 0.35);
+  background: rgba(8, 20, 36, 0.84);
+  color: #cfe9ff;
+  font-size: 10.5px;
+  font-weight: 600;
+  pointer-events: none;
+}
+#yutu2 .y-gis-fallback {
+  position: absolute;
+  left: 10px;
+  top: 38px;
+  z-index: 900;
+  padding: 3px 9px;
+  border-radius: 6px;
+  border: 1px solid rgba(240, 178, 90, 0.4);
+  background: rgba(40, 30, 14, 0.9);
+  color: #f3d79a;
+  font-size: 10.5px;
+  pointer-events: none;
+}
+#yutu2 .leaflet-tooltip.gis-tip-target {
+  background: rgba(8, 20, 36, 0.92);
+  color: #dff2ff;
+  border-color: rgba(126, 200, 255, 0.5);
+  font-weight: 600;
+}
+
+/* ---------- V10 动图升级：照片推拉/扫光、雷达扫描、趋势流光、成长河扫光 ---------- */
+
+/* 静态照片常驻缓慢推拉（Ken Burns）；WebP 动图播放时覆盖其上 */
+#yutu2 .y-gap-photo-poster {
+  transform-origin: 52% 46%;
+  animation: yPhotoKenBurns 26s var(--ease-in-out, ease-in-out) infinite
+    alternate;
+  will-change: transform;
+}
+@keyframes yPhotoKenBurns {
+  from {
+    transform: scale(1.03) translate3d(0, 0, 0);
+  }
+  to {
+    transform: scale(1.13) translate3d(-1.6%, -1.2%, 0);
+  }
+}
+#yutu2 .y-gap-photo.is-on:hover .y-gap-photo-poster {
+  animation-duration: 14s;
+}
+
+/* 照片上的缓慢扫光 */
+#yutu2 .y-gap-photo-sheen {
+  position: absolute;
+  inset: -20% -35%;
+  z-index: 2;
+  pointer-events: none;
+  background: linear-gradient(
+    105deg,
+    transparent 40%,
+    rgba(220, 240, 255, 0.18) 50%,
+    transparent 60%
+  );
+  transform: translateX(-70%);
+  animation: yPhotoSheen 10s ease-in-out infinite;
+  mix-blend-mode: screen;
+}
+@keyframes yPhotoSheen {
+  0%,
+  58% {
+    transform: translateX(-75%);
+    opacity: 0;
+  }
+  66% {
+    opacity: 0.85;
+  }
+  100% {
+    transform: translateX(75%);
+    opacity: 0;
+  }
+}
+
+/* 雷达扫描线：一圈 10s */
+#yutu2 .y-radar-sweep {
+  transform-box: view-box;
+  transform-origin: 170px 150px;
+  animation: yRadarSweep 10s linear infinite;
+  opacity: 0.6;
+}
+#yutu2 .y-radar-sweep-line {
+  stroke: #7ec8ff;
+  stroke-width: 1.1;
+  stroke-dasharray: 2 5;
+}
+#yutu2 .y-radar-sweep-dot {
+  fill: #eaf5ff;
+}
+@keyframes yRadarSweep {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* 趋势图：沿折线流动的细光点 */
+#yutu2 .y-trend-flow {
+  stroke-dasharray: 2 16;
+  opacity: 0.75;
+  pointer-events: none;
+  animation: yTrendFlow 3.4s linear infinite;
+}
+@keyframes yTrendFlow {
+  to {
+    stroke-dashoffset: -72;
+  }
+}
+
+/* 成长河：缓慢横扫的柔光 */
+#yutu2 .y-river-sheen {
+  position: absolute;
+  left: 3%;
+  right: 3%;
+  top: 4%;
+  height: 72%;
+  z-index: 1;
+  pointer-events: none;
+  border-radius: 12px;
+  background: linear-gradient(
+    100deg,
+    transparent 35%,
+    rgba(170, 225, 255, 0.13) 50%,
+    transparent 65%
+  );
+  background-size: 220% 100%;
+  animation: yRiverSheen 9s ease-in-out infinite;
+}
+@keyframes yRiverSheen {
+  0%,
+  55% {
+    background-position: 140% 0;
+  }
+  100% {
+    background-position: -40% 0;
+  }
+}
+
+/* 关闭动效：系统 prefers-reduced-motion 与顶栏「动效 关」双重降级 */
+@media (prefers-reduced-motion: reduce) {
+  #yutu2 .y-gap-photo-poster,
+  #yutu2 .y-gap-photo-sheen,
+  #yutu2 .y-radar-sweep,
+  #yutu2 .y-trend-flow,
+  #yutu2 .y-river-sheen {
+    animation: none;
+  }
+  #yutu2 .y-gap-photo-poster {
+    transform: none;
+  }
+  #yutu2 .y-gap-photo-sheen,
+  #yutu2 .y-radar-sweep,
+  #yutu2 .y-trend-flow,
+  #yutu2 .y-river-sheen {
+    opacity: 0;
+  }
+}
+html.y-motion-off #yutu2 .y-gap-photo-poster,
+html.y-motion-off #yutu2 .y-gap-photo-sheen,
+html.y-motion-off #yutu2 .y-radar-sweep,
+html.y-motion-off #yutu2 .y-trend-flow,
+html.y-motion-off #yutu2 .y-river-sheen {
+  animation: none;
+  opacity: 0;
+}
+html.y-motion-off #yutu2 .y-gap-photo-poster {
+  transform: none;
+}
+
+/* 当前城市呼吸光晕（地理/网络模式共用） */
+#yutu2 .gis-me-halo {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: yGisHalo 3.8s ease-in-out infinite;
+}
+@keyframes yGisHalo {
+  0%,
+  100% {
+    opacity: 0.55;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.35);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  #yutu2 .gis-me-halo {
+    animation: none;
+    opacity: 0.75;
+  }
+}
+html.y-motion-off #yutu2 .gis-me-halo {
+  animation: none;
+  opacity: 0.75;
 }

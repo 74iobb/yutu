@@ -36,6 +36,15 @@ function distanceDeg(a: Point, b: Point) {
   return Math.sqrt(dLon * dLon + dLat * dLat);
 }
 
+/** 城市 id 可能来自旧数据 / 中文名；统一解析到一个有效城市，避免地图整块空白 */
+function resolveCity(idOrName: string) {
+  return (
+    CITY_MAP[idOrName] ??
+    CITIES.find((c) => c.id === idOrName || c.name === idOrName) ??
+    CITY_MAP.chengdu
+  );
+}
+
 function flightTargets(meId: string) {
   const me = CITY_MAP[meId];
   const ll = GEO[meId];
@@ -87,6 +96,10 @@ export default function GisMap({
   const [offline, setOffline] = useState(false);
   const [failed, setFailed] = useState(false);
   const [tileRetry, setTileRetry] = useState(0);
+  const activeCity = resolveCity(city);
+  const cityFallback = activeCity.id !== city;
+  const netTargetCount =
+    mode === 'net' ? flightTargets(activeCity.id).length : 0;
 
   useEffect(() => {
     const el = boxRef.current;
@@ -139,9 +152,9 @@ export default function GisMap({
 
   useEffect(() => {
     const map = mapRef.current;
-    const me = CITY_MAP[city];
-    const ll = GEO[city];
-    if (!map || !me || !ll) return;
+    const me = resolveCity(city);
+    const ll = GEO[me.id];
+    if (!map || !ll) return;
 
     /* 只有城市 / 模式 / 外部重定位信号 / 实际坐标变化时才重置视野；
        资料层开关、底图重试、父组件重渲染都不应打断用户正在看的区域 */
@@ -208,7 +221,7 @@ export default function GisMap({
       /* 地理模式：用细虚线连接蓝圈内的邻近城市，强化区域感 */
       if (mode === 'geo') {
         CITIES.forEach(c => {
-          if (c.id === city) return;
+          if (c.id === me.id) return;
           const g = GEO[c.id];
           if (!g || distanceDeg(ll, g) > AREA_SPAN) return;
           L.polyline(curvedLatLng([ll[1], ll[0]], [g[1], g[0]], 0.16), {
@@ -228,6 +241,7 @@ export default function GisMap({
         fillColor: mode === 'net' ? '#78d6d0' : '#1f6fb2',
         fillOpacity: 0.18,
         interactive: false,
+        className: 'gis-me-halo',
       }).addTo(group);
       const meMarker = L.circleMarker([ll[1], ll[0]], {
         radius: 8,
@@ -245,10 +259,10 @@ export default function GisMap({
         });
       meMarker.on('click', () => selectCityRef.current(me.id));
 
-      const targets = mode === 'net' ? flightTargets(city) : [];
+      const targets = mode === 'net' ? flightTargets(me.id) : [];
 
       CITIES.forEach(c => {
-        if (c.id === city) return;
+        if (c.id === me.id) return;
         const g = GEO[c.id];
         if (!g) return;
         const near = distanceDeg(ll, g) <= AREA_SPAN;
@@ -256,7 +270,8 @@ export default function GisMap({
         let fill = mode === 'net' ? '#426d7a' : '#8a979f';
         if (target) fill = target.diff > 0 ? '#7ed4c4' : '#c4a678';
         else if (near) fill = mode === 'net' ? '#4aa3a0' : '#a9762f';
-        const radius = 2.4 + (c.jobs / 100) * 3.6;
+        const isTarget = !!target;
+        const radius = 2.4 + (c.jobs / 100) * 3.6 + (isTarget ? 1.2 : 0);
         const marker = L.circleMarker([g[1], g[0]], {
           radius,
           color: mode === 'net' ? '#0b1c22' : '#fffefb',
@@ -265,10 +280,15 @@ export default function GisMap({
           fillOpacity: 0.96,
         })
           .addTo(group)
-          .bindTooltip(`${c.name} · 岗位 ${bandOf(c.jobs)} · 成本 ${bandOf(c.cost)}`, {
-            direction: 'top',
-            className: 'gis-tip',
-          });
+          .bindTooltip(
+            `${c.name} · 岗位 ${bandOf(c.jobs)} · 成本 ${bandOf(c.cost)}`,
+            {
+              direction: 'top',
+              className: isTarget ? 'gis-tip gis-tip-target' : 'gis-tip',
+              /* 网络模式给飞线目标常驻标签，避免暗色底图上看起来“什么都没有” */
+              permanent: mode === 'net' && isTarget,
+            }
+          );
         marker.on('click', () => selectCityRef.current(c.id));
       });
 
@@ -278,7 +298,7 @@ export default function GisMap({
         materials.forEach(mat => {
           const g = GEO[mat.cityId];
           if (!g) return;
-          const isMe = mat.cityId === city;
+          const isMe = mat.cityId === me.id;
           mat.items.forEach((item, index) => {
             const angle =
               ((index * 137.508 + mat.cityId.length * 19) * Math.PI) / 180;
@@ -328,8 +348,8 @@ export default function GisMap({
           const color = t.diff > 0 ? '#7ed4c4' : '#c4a678';
           L.polyline(points, {
             color,
-            weight: 1.3 + Math.min(2.2, (Math.abs(t.diff) / 100) * 3.2),
-            opacity: 0.8,
+            weight: 1.7 + Math.min(2.2, (Math.abs(t.diff) / 100) * 3.2),
+            opacity: 0.92,
             className: 'gis-arc',
           }).addTo(group);
         });
@@ -370,6 +390,16 @@ export default function GisMap({
       }`}
       ref={boxRef}
     >
+      {mode === 'net' && !failed ? (
+        <div className='y-gis-net-badge' role='status'>
+          网络模式 · {netTargetCount} 条飞线
+        </div>
+      ) : null}
+      {cityFallback && !failed ? (
+        <div className='y-gis-fallback' role='status'>
+          未识别城市「{city}」，已回落到 {activeCity.name}
+        </div>
+      ) : null}
       {failed ? (
         <div className='y-map-fallback' role='alert'>
           <b>地图初始化失败</b>

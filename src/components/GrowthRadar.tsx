@@ -130,6 +130,27 @@ export default function GrowthRadar({
           );
         })}
 
+        {/* 扫描线：一圈 10s，纯装饰，关闭动效后隐藏 */}
+        <g
+          className='y-radar-sweep'
+          aria-hidden='true'
+          filter={`url(#${uid}-glow)`}
+        >
+          <line
+            x1={CX}
+            y1={CY}
+            x2={CX}
+            y2={CY - R}
+            className='y-radar-sweep-line'
+          />
+          <circle
+            cx={CX}
+            cy={CY - R}
+            r={2.6}
+            className='y-radar-sweep-dot'
+          />
+        </g>
+
         <circle cx={CX} cy={CY} r={26} fill={`url(#${uid}-core)`} opacity={0.5} />
         <circle cx={CX} cy={CY} r={2.4} className='y-radar-core' />
 

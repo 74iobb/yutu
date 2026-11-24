@@ -300,6 +300,8 @@ export default function GrowthRiver({ victories, current }: Props) {
         )}
       </svg>
 
+      <span className='y-river-sheen' aria-hidden='true' />
+
       <div
         className='y-river-values'
         aria-live='polite'

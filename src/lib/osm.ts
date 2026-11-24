@@ -38,10 +38,10 @@ export function addLandBase(map: L.Map, group: L.LayerGroup, dark: boolean) {
   L.geoJSON(LAND_GEO as never, {
     pane: 'landBasePane',
     style: {
-      color: dark ? '#2f6f63' : '#5b876f',
-      weight: dark ? 0.6 : 0.8,
-      fillColor: dark ? '#0f2a27' : '#8fb79b',
-      fillOpacity: dark ? 0.92 : 0.38,
+      color: dark ? '#4aa597' : '#5b876f',
+      weight: dark ? 0.7 : 0.8,
+      fillColor: dark ? '#123a34' : '#8fb79b',
+      fillOpacity: dark ? 0.96 : 0.38,
       interactive: false,
     },
   }).addTo(group);

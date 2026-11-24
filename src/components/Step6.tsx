@@ -1001,7 +1001,11 @@ function StationTab({
               驿站不催促——等真的完成一段再回来。
             </p>
           ) : null}
-          <GapPhoto variant='sunrise' quote='休息也是路线的一部分。' />
+          <GapPhoto
+            variant='sunrise'
+            quote='休息也是路线的一部分。'
+            autoMotion
+          />
         </div>
 
         <div className='y-card y-gap-card'>
@@ -1649,7 +1653,11 @@ function PeersTab() {
         <p className='y-note' style={{ paddingTop: 6 }}>
           自己的复盘不参与自己的归属计算，只对他人可见。
         </p>
-        <GapPhoto variant='people' quote='被别人照亮，也照亮别人。' />
+        <GapPhoto
+          variant='people'
+          quote='被别人照亮，也照亮别人。'
+          autoMotion
+        />
       </div>
 
       <div className='y-card' style={{ gridColumn: '1 / -1' }}>
