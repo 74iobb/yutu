@@ -14221,3 +14221,44 @@ html.y-motion-off #yutu2 .gis-me-halo {
   font-weight: 600;
   font-variant-numeric: tabular-nums;
 }
+
+/* ---------- V11.4 第 1 步页内快速定位 ---------- */
+#yutu2 .y-anchor-nav {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin: 2px 0 12px;
+  padding: 6px 8px;
+  border: 1px solid var(--y-line);
+  border-radius: 10px;
+  background: rgba(8, 15, 32, 0.4);
+}
+#yutu2 .y-anchor-nav > span {
+  margin-right: 4px;
+  font-size: 10.5px;
+  letter-spacing: 0.04em;
+  color: var(--y-muted);
+}
+#yutu2 .y-anchor-nav button {
+  padding: 3px 9px;
+  border: 1px solid rgba(160, 190, 255, 0.16);
+  border-radius: 999px;
+  background: rgba(8, 15, 32, 0.5);
+  color: var(--y-ink2);
+  font-size: 10.5px;
+  cursor: pointer;
+  transition:
+    color 160ms ease,
+    border-color 160ms ease;
+}
+#yutu2 .y-anchor-nav button:hover {
+  color: var(--y-ink);
+  border-color: rgba(126, 200, 255, 0.35);
+}
+#yutu2 #y-p1-basic,
+#yutu2 #y-p1-measure,
+#yutu2 #y-p1-calibrate,
+#yutu2 #y-p1-result {
+  scroll-margin-top: 120px;
+}

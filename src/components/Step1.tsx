@@ -33,6 +33,19 @@ export default function Step1() {
     requestAnimationFrame(() => setShake(true));
   }
 
+  /** 页内快速定位：滚动到对应区块，留给吸顶头部一点余量 */
+  function jumpTo(id: string) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const reduce = window.matchMedia?.(
+      '(prefers-reduced-motion: reduce)'
+    ).matches;
+    el.scrollIntoView({
+      behavior: reduce ? 'auto' : 'smooth',
+      block: 'start',
+    });
+  }
+
   return (
     <section id='y-p1' role='tabpanel' aria-labelledby='y-s1'>
       <header className='y-lead'>
@@ -42,9 +55,25 @@ export default function Step1() {
 
       <GrowthDelta />
 
+      <nav className='y-anchor-nav' aria-label='填写信息分区'>
+        <span>快速定位</span>
+        <button type='button' onClick={() => jumpTo('y-p1-basic')}>
+          基本事实
+        </button>
+        <button type='button' onClick={() => jumpTo('y-p1-measure')}>
+          结构化测量
+        </button>
+        <button type='button' onClick={() => jumpTo('y-p1-calibrate')}>
+          校准量表
+        </button>
+        <button type='button' onClick={() => jumpTo('y-p1-result')}>
+          判定结果
+        </button>
+      </nav>
+
       <div className='y-layout-main'>
         <div className='y-layout-col'>
-          <div className='y-card'>
+          <div className='y-card' id='y-p1-basic'>
             <p className='y-eyebrow'>01 / 基本事实</p>
             <h3>
               基本信息<span className='y-mini'>必填</span>
@@ -166,13 +195,13 @@ export default function Step1() {
             </div>
           </div>
 
-          <div className='y-card'>
+          <div className='y-card' id='y-p1-measure'>
             <p className='y-eyebrow'>02 / 结构化测量</p>
             <h3>结构化处境测量</h3>
             <StructuredScale />
           </div>
 
-          <details className='y-detail'>
+          <details className='y-detail' id='y-p1-calibrate'>
             <summary>校准量表（可选 · 手动微调）</summary>
             <div className='y-detail-body'>
               <p className='y-note' style={{ paddingBottom: 8 }}>
@@ -213,7 +242,7 @@ export default function Step1() {
         </div>
 
         <aside className='y-aside'>
-          <div className='y-card y-focus-card'>
+          <div className='y-card y-focus-card' id='y-p1-result'>
             <p className='y-eyebrow'>判定结果</p>
             <p className='y-stage-name'>
               {stage.name} <DataSourceBadge source='stage' showLabel={false} />
