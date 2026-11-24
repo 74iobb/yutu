@@ -193,3 +193,5 @@ pnpm build          # 期望 ✓ built
 > 2026-11-24 V10 动图升级：`GapPhoto` 加 Ken Burns + 扫光，Step1/Step6 三张主图自动播放 WebP；雷达加 10s 扫描线、趋势图加 3.4s 沿线流光、成长河加 9s 横扫柔光；全部尊重 `prefers-reduced-motion` 与「动效 关」。仍无新增表 / 工作流。
 >
 > 2026-11-24 V10.1 接入「高级阳光早晨」照片：`scenery-morning.jpg`（Unsplash License，1100×700）+ 16 帧 `scenery-morning-motion.webp`；`GapPhoto` 新增 `morning` 变体，第一步右侧「判定结果」下方的图位替换为它并自动播放；来源与授权已登记 `docs/IMAGE-SOURCES.md`。
+>
+> 2026-11-24 V10.2 新增 `taste` skill（审美与体验门禁）：`.claude/skills/taste/SKILL.md`，并镜像到四个技能目录。交付前用它做六维审查（层级 / 一致性 / 数据诚实 / 动效 / 状态 / 响应式），P0 必须为 0。
