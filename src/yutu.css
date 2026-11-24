@@ -13153,3 +13153,80 @@ html.y-motion-off #yutu2 .y-step-stage.is-page-dragging {
     grid-template-columns: minmax(0, 1fr);
   }
 }
+
+/* ---------- V9.6 同阶段去向：自填样本 + 归档去向 ---------- */
+#yutu2 .y-peer-samples {
+  grid-column: 1 / -1;
+}
+#yutu2 .y-peer-samples-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+#yutu2 .y-peer-samples h4 {
+  margin: 0 0 7px;
+  font-size: 12.5px;
+  font-weight: 650;
+  color: var(--y-ink);
+}
+#yutu2 .y-peer-samples h4 .y-mini {
+  margin-left: 7px;
+  font-weight: 400;
+  color: var(--y-muted);
+}
+#yutu2 .y-peer-bars {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 6px;
+}
+#yutu2 .y-peer-bars li {
+  display: grid;
+  grid-template-columns: 76px minmax(0, 1fr) 54px;
+  align-items: center;
+  gap: 8px;
+  font-size: 11.5px;
+}
+#yutu2 .y-peer-bar-label {
+  color: var(--y-ink2);
+  white-space: nowrap;
+}
+#yutu2 .y-peer-bar-track {
+  height: 7px;
+  border-radius: 999px;
+  background: rgba(160, 190, 255, 0.12);
+  overflow: hidden;
+}
+#yutu2 .y-peer-bar-track i {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, rgba(126, 200, 255, 0.5), #7ec8ff);
+  box-shadow: 0 0 10px rgba(126, 200, 255, 0.25);
+}
+#yutu2 .y-peer-bars b {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  color: var(--y-ink);
+}
+#yutu2 .y-peer-bars b em {
+  margin-left: 4px;
+  font-style: normal;
+  font-size: 10px;
+  color: var(--y-muted);
+}
+#yutu2 .y-peer-form {
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px dashed rgba(160, 190, 255, 0.16);
+}
+#yutu2 .y-peer-form textarea {
+  width: 100%;
+  margin-top: 8px;
+}
+@media (max-width: 640px) {
+  #yutu2 .y-peer-samples-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

@@ -6,7 +6,17 @@
  * token 一律从 .project.md 取，更新 SQL 后 token 可能变化，需同步此处。
  */
 import type { StageId } from '@/data/catalog';
-import type { Choice, Profile, Review, Scores, TaskStatus, Victory } from '@/types';
+import type {
+  Choice,
+  ChoiceStat,
+  PeerSample,
+  PeerStat,
+  Profile,
+  Review,
+  Scores,
+  TaskStatus,
+  Victory,
+} from '@/types';
 
 const API_PATH_PREFIX = '/api/page/w';
 
@@ -23,6 +33,11 @@ const API_ENDPOINTS = {
   reviewsAdd: '17950923435269596',
   marksAdd: '17950923435269597',
   marksList: '17950923435269598',
+  peerSamplesStats: '17951749605269613',
+  peerSamplesMine: '17951749625269614',
+  peerSamplesAdd: '17951749645269615',
+  peerSamplesUpdate: '17951749655269616',
+  archiveChoiceStats: '17951789565269617',
 } as const;
 
 export type ApiEndpointKey = keyof typeof API_ENDPOINTS;
@@ -341,4 +356,78 @@ export async function apiLoadMarkCounts(): Promise<Record<string, number>> {
 
 export async function apiAddMark(reviewId: string, markerKey: string): Promise<void> {
   await callAPI(API_ENDPOINTS.marksAdd, { reviewId, markerKey });
+}
+
+/* -------------------------------- 去向样本 -------------------------------- */
+
+const CHOICES: Choice[] = ['keep', 'revise', 'rest', 'switch'];
+
+function toChoice(v: unknown): Choice {
+  const s = str(v, 'keep');
+  return (CHOICES.includes(s as Choice) ? s : 'keep') as Choice;
+}
+
+export function mapPeerSampleRow(r: Record<string, unknown>): PeerSample {
+  return {
+    id: str(r.id),
+    stage: str(r.stage, 'explore') as StageId,
+    city: str(r.city),
+    choice: toChoice(r.choice),
+    note: str(r.note),
+    createdAt: str(r.created ?? r.created_at ?? r.modified)
+      .replace('T', ' ')
+      .slice(0, 16),
+  };
+}
+
+export function mapPeerStatRow(r: Record<string, unknown>): PeerStat {
+  return {
+    stage: str(r.stage),
+    choice: toChoice(r.choice),
+    count: num(r.cnt ?? r.count ?? r.num, 0),
+  };
+}
+
+export function mapChoiceStatRow(r: Record<string, unknown>): ChoiceStat {
+  return {
+    stage: str(r.stage),
+    choice: toChoice(r.choice),
+    count: num(r.cnt ?? r.count ?? r.num, 0),
+    latest: str(r.latest ?? r.created),
+  };
+}
+
+export async function apiLoadPeerStats(): Promise<PeerStat[]> {
+  const rows = await queryRows(API_ENDPOINTS.peerSamplesStats);
+  return rows.map(mapPeerStatRow);
+}
+
+export async function apiLoadPeerMine(ownerKey: string): Promise<PeerSample[]> {
+  const rows = await queryRows(API_ENDPOINTS.peerSamplesMine, { ownerKey });
+  return rows.map(mapPeerSampleRow);
+}
+
+export async function apiAddPeerSample(p: {
+  ownerKey: string;
+  stage: string;
+  city: string;
+  choice: Choice;
+  note: string;
+}): Promise<void> {
+  await callAPI(API_ENDPOINTS.peerSamplesAdd, p);
+}
+
+export async function apiUpdatePeerSample(p: {
+  id: string;
+  ownerKey: string;
+  city: string;
+  choice: Choice;
+  note: string;
+}): Promise<void> {
+  await callAPI(API_ENDPOINTS.peerSamplesUpdate, p);
+}
+
+export async function apiLoadChoiceStats(): Promise<ChoiceStat[]> {
+  const rows = await queryRows(API_ENDPOINTS.archiveChoiceStats);
+  return rows.map(mapChoiceStatRow);
 }

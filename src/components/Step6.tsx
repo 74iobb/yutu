@@ -31,6 +31,7 @@ import ChartFrame from './ChartFrame';
 import GrowthRiver from './GrowthRiver';
 import GrowthRadar from './GrowthRadar';
 import PeerNebula from './PeerNebula';
+import PeerSamples from './PeerSamples';
 import SoulCard from './SoulCard';
 import type {
   Choice,
@@ -1460,6 +1461,8 @@ function PeersTab() {
               : `距离最近一条升级为公共节点还差 ${nextGap} 个有效标记。`}
         </p>
       </div>
+
+      <PeerSamples />
 
       <div className='y-card y-gap-card'>
         <h3>

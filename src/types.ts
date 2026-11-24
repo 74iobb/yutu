@@ -129,3 +129,28 @@ export interface AssetLevel {
   tone: 'full' | 'part' | 'none';
   why: string;
 }
+
+/** 去向样本：用户按阶段自填「下一步去哪」，可按阶段做匿名聚合 */
+export interface PeerSample {
+  id: string;
+  stage: StageId;
+  city: string;
+  choice: Choice;
+  note: string;
+  createdAt?: string;
+}
+
+/** 同阶段去向样本的匿名计数 */
+export interface PeerStat {
+  stage: string;
+  choice: Choice;
+  count: number;
+}
+
+/** 同阶段「阶段性胜利归档」的去向计数（来自真实归档记录） */
+export interface ChoiceStat {
+  stage: string;
+  choice: Choice;
+  count: number;
+  latest?: string;
+}

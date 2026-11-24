@@ -6,6 +6,7 @@ import {
   useMemo,
   useRef,
   useState,
+  type Context,
   type ReactNode,
 } from 'react';
 import { STAGES, type StageId } from '@/data/catalog';
@@ -42,13 +43,21 @@ import {
   mapReviewRow,
   mapTaskRow,
   mapVictoryRow,
+  apiLoadPeerStats,
+  apiLoadPeerMine,
+  apiAddPeerSample,
+  apiUpdatePeerSample,
+  apiLoadChoiceStats,
   type ApiEndpointKey,
   type ApiProbe,
 } from '@/lib/yutuApi';
 import type {
   Choice,
+  ChoiceStat,
   DimensionKey,
   LoopArchive,
+  PeerSample,
+  PeerStat,
   Profile,
   PrototypeNode,
   Review,
@@ -97,6 +106,8 @@ interface PersistShape {
   pool: PoolItem[];
   reviews: Review[];
   markCounts: Record<string, number>;
+  /** 本机用户按阶段提交的去向样本（离线时也保留） */
+  peerMine: PeerSample[];
   /** 方向候选短名单（最多 4 条） */
   shortlist: string[];
   /** 方向与推演（作战图）当前点选的方向 */
@@ -132,6 +143,10 @@ export interface YutuState extends PersistShape {
   lastSyncAt: number;
   /** 是否正在执行「重新同步」 */
   syncing: boolean;
+  /** 平台按阶段聚合的自填去向样本 */
+  peerStats: PeerStat[];
+  /** 平台按阶段聚合的归档去向（真实归档记录） */
+  choiceStats: ChoiceStat[];
 }
 
 const INITIAL: YutuState = {
@@ -151,6 +166,9 @@ const INITIAL: YutuState = {
   pool: [],
   reviews: [],
   markCounts: {},
+  peerMine: [],
+  peerStats: [],
+  choiceStats: [],
   shortlist: [],
   backendOnline: false,
   hydrated: false,
@@ -347,6 +365,9 @@ interface RemoteRead {
   archiveRows: Record<string, unknown>[];
   reviewRows: Record<string, unknown>[];
   markCounts: Record<string, number>;
+  peerStats: PeerStat[];
+  peerMine: PeerSample[];
+  choiceStats: ChoiceStat[];
   online: boolean;
   okCount: number;
 }
@@ -362,6 +383,17 @@ async function readRemote(ownerKey: string): Promise<RemoteRead> {
     { key: 'archiveList', label: '胜利档案', run: () => apiLoadArchive(ownerKey) },
     { key: 'reviewsList', label: '同伴复盘', run: () => apiLoadReviews() },
     { key: 'marksList', label: '有效标记', run: () => apiLoadMarkCounts() },
+    { key: 'peerSamplesStats', label: '同阶段去向', run: () => apiLoadPeerStats() },
+    {
+      key: 'peerSamplesMine',
+      label: '我的去向',
+      run: () => apiLoadPeerMine(ownerKey),
+    },
+    {
+      key: 'archiveChoiceStats',
+      label: '归档去向',
+      run: () => apiLoadChoiceStats(),
+    },
   ];
   const settled = await Promise.allSettled(defs.map((d) => d.run()));
   const probes: ApiProbe[] = defs.map((d, i) => {
@@ -387,6 +419,9 @@ async function readRemote(ownerKey: string): Promise<RemoteRead> {
     archiveRows: val<Record<string, unknown>[]>(2, []),
     reviewRows: val<Record<string, unknown>[]>(3, []),
     markCounts: val<Record<string, number>>(4, {}),
+    peerStats: val<PeerStat[]>(5, []),
+    peerMine: val<PeerSample[]>(6, []),
+    choiceStats: val<ChoiceStat[]>(7, []),
     online: probes.some((p) => p.ok),
     okCount: probes.filter((p) => p.ok).length,
   };
@@ -416,6 +451,7 @@ interface YutuContextValue {
   archive: (choice: Choice, answers: Victory['answers']) => Victory | null;
   submitVictoryReview: (v: Victory) => void;
   submitExperienceCard: (text: string) => void;
+  submitPeerSample: (choice: Choice, note: string) => void;
   markReview: (reviewId: string) => void;
   refreshReviews: () => void;
   resync: () => void;
@@ -426,7 +462,20 @@ interface YutuContextValue {
   currentRank: () => ReturnType<typeof ranked>;
 }
 
-const YutuContext = createContext<YutuContextValue | null>(null);
+/**
+ * Vite 热更新本模块时会重新执行 createContext：已挂载的 Provider 仍持有旧对象，
+ * 新加载的 useYutu 却读新对象，于是报 "useYutu must be used inside YutuProvider"。
+ * 把 Context 挂到 globalThis 复用，保证热更新前后始终是同一个实例。
+ */
+const CONTEXT_GLOBAL_KEY = '__yutu_context_v1__';
+const globalContextStore = globalThis as unknown as Record<
+  string,
+  Context<YutuContextValue | null> | undefined
+>;
+const YutuContext: Context<YutuContextValue | null> =
+  globalContextStore[CONTEXT_GLOBAL_KEY] ??
+  createContext<YutuContextValue | null>(null);
+globalContextStore[CONTEXT_GLOBAL_KEY] = YutuContext;
 
 export function YutuProvider({ children }: { children: ReactNode }) {
   const [state, setState] = useState<YutuState>(INITIAL);
@@ -469,6 +518,7 @@ export function YutuProvider({ children }: { children: ReactNode }) {
         pool: local.pool ?? [],
         reviews: local.reviews ?? [],
         markCounts: local.markCounts ?? {},
+        peerMine: local.peerMine ?? [],
       }));
     }
 
@@ -489,6 +539,9 @@ export function YutuProvider({ children }: { children: ReactNode }) {
             { key: 'archiveList', label: '胜利档案', ok: false, message: '读取失败' },
             { key: 'reviewsList', label: '同伴复盘', ok: false, message: '读取失败' },
             { key: 'marksList', label: '有效标记', ok: false, message: '读取失败' },
+            { key: 'peerSamplesStats', label: '同阶段去向', ok: false, message: '读取失败' },
+            { key: 'peerSamplesMine', label: '我的去向', ok: false, message: '读取失败' },
+            { key: 'archiveChoiceStats', label: '归档去向', ok: false, message: '读取失败' },
           ],
         }));
         return;
@@ -512,6 +565,8 @@ export function YutuProvider({ children }: { children: ReactNode }) {
         return;
       }
 
+      const peerMineOk =
+        remote.probes.find((p) => p.key === 'peerSamplesMine')?.ok ?? false;
       setState((s) => {
         let profile = remote.profile ?? s.profile;
         let inactive: YutuState['inactive'] = s.inactive;
@@ -526,6 +581,12 @@ export function YutuProvider({ children }: { children: ReactNode }) {
           remote.taskRows,
           archivedIdsFromVictories(mergedVictories)
         );
+        /* 平台还没回读到、但本机已经填过的去向样本，保留下来等下次同步 */
+        const localOnlyPeer = s.peerMine.filter(
+          (p) =>
+            p.id.startsWith('local-peer-') &&
+            !remote.peerMine.some((r) => r.stage === p.stage)
+        );
         return {
           ...s,
           profile,
@@ -535,6 +596,11 @@ export function YutuProvider({ children }: { children: ReactNode }) {
           snapshot0: s.snapshot0 ?? mergedVictories[0]?.snap ?? null,
           reviews,
           markCounts: remote.markCounts,
+          peerMine: peerMineOk
+            ? [...remote.peerMine, ...localOnlyPeer]
+            : s.peerMine,
+          peerStats: remote.peerStats,
+          choiceStats: remote.choiceStats,
           backendOnline: true,
           hydrated: true,
           inactive,
@@ -563,6 +629,7 @@ export function YutuProvider({ children }: { children: ReactNode }) {
         pool: state.pool,
         reviews: state.reviews,
         markCounts: state.markCounts,
+        peerMine: state.peerMine,
         shortlist: state.shortlist,
         pick: state.pick,
         intent: state.intent,
@@ -581,6 +648,7 @@ export function YutuProvider({ children }: { children: ReactNode }) {
     state.pool,
     state.reviews,
     state.markCounts,
+    state.peerMine,
     state.shortlist,
     state.pick,
     state.intent,
@@ -1084,6 +1152,60 @@ export function YutuProvider({ children }: { children: ReactNode }) {
     [flash, state.profile.s, submitReviewCommon]
   );
 
+  /** 提交 / 更新「同阶段去向样本」；公共文本先脱敏 */
+  const submitPeerSample = useCallback(
+    (choice: Choice, note: string) => {
+      const stage = currentStage(state.profile);
+      const city = state.profile.city;
+      const masked = desensitize(note).text.trim();
+      if (masked.length < 4) {
+        flash('用一句话写清你下一步去了哪里（至少 4 个字）。');
+        return;
+      }
+      const existing = state.peerMine.find((p) => p.stage === stage.id);
+      const temp: PeerSample = {
+        id: existing?.id ?? `local-peer-${Date.now()}`,
+        stage: stage.id,
+        city,
+        choice,
+        note: masked,
+        createdAt: fmtTime(new Date()),
+      };
+      setState((s) => ({
+        ...s,
+        peerMine: [...s.peerMine.filter((p) => p.stage !== stage.id), temp],
+      }));
+
+      if (!state.backendOnline) {
+        flash('去向样本已保存在本机。平台恢复后可在顶部「重新同步」。');
+        return;
+      }
+      const req =
+        existing && !existing.id.startsWith('local-peer-')
+          ? apiUpdatePeerSample({
+              id: existing.id,
+              ownerKey,
+              city,
+              choice,
+              note: masked,
+            })
+          : apiAddPeerSample({
+              ownerKey,
+              stage: stage.id,
+              city,
+              choice,
+              note: masked,
+            });
+      void req
+        .then(() => apiLoadPeerStats())
+        .then((rows) => setState((s) => ({ ...s, peerStats: rows })))
+        .catch(() =>
+          flash('去向样本已保存在本机，但写平台失败；稍后再试或在顶部重新同步。')
+        );
+    },
+    [flash, ownerKey, state.backendOnline, state.peerMine, state.profile]
+  );
+
   const markReview = useCallback(
     (reviewId: string) => {
       if (markedIds.includes(reviewId)) return;
@@ -1224,6 +1346,7 @@ export function YutuProvider({ children }: { children: ReactNode }) {
       archive,
       submitVictoryReview,
       submitExperienceCard,
+      submitPeerSample,
       markReview,
       refreshReviews,
       resync,
@@ -1257,6 +1380,7 @@ export function YutuProvider({ children }: { children: ReactNode }) {
       archive,
       submitVictoryReview,
       submitExperienceCard,
+      submitPeerSample,
       markReview,
       refreshReviews,
       resync,

@@ -185,3 +185,5 @@ pnpm build          # 期望 ✓ built
 > 2026-11-24 V9.3 第 2 步地理模式修复：`GisMap` 用 `selectCityRef` 稳定回调、用 `viewKeyRef` 只在城市/模式/重定位变化时 `setView`，解决「放大后被父组件重渲染拽回」；地理模式 OSM 瓦片反相为暗色、离线陆地同步深色，并加四周渐晕。仍无新增表 / 工作流。
 >
 > 2026-11-24 V9.4 对齐平台新表：当前生效表为 8766–8771、工作流 5269644–5269660，端点 token 未变。`LS_KEY` 升到 `yutu.state.v3` 并删除旧 `v2`，旧本地历史不再参与合并；`.project.md` 已同步新表/工作流 ID。
+>
+> 2026-11-24 V9.6 接完 5 个去向接口：`peer_samples_*` + `archive_choice_stats` 已接入「同伴经验域」的「同阶段的人后来去哪了」卡片；自填样本提交前脱敏，离线存本机。另修复预览 `useYutu must be used inside YutuProvider`：Context 挂 `globalThis` 复用，避免 Vite 热更新重建实例。`readRemote()` 现为 8 个查询。
