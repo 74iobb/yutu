@@ -43,6 +43,9 @@ export default function Step3({ onOpenMap, onOpenSummary }: Props = {}) {
   /** 沉浸式方向星图：铺满视口，中心是你，三层环按可行性排列 */
   const [sky, setSky] = useState(false);
   useImmersive(sky, setSky);
+  /** 二阶检索抽屉：不再把结果埋在页面最底部 */
+  const [deepOpen, setDeepOpen] = useState(false);
+  useImmersive(deepOpen, setDeepOpen);
   const deferredIntent = useDeferredValue(state.intent);
   const query = [p.field, deferredIntent].filter(Boolean).join(' ').trim();
   const all = useMemo(
@@ -83,11 +86,8 @@ export default function Step3({ onOpenMap, onOpenSummary }: Props = {}) {
   );
   const pickAndDeep = (name: string) => {
     setPick(name);
-    window.requestAnimationFrame(() => {
-      document
-        .getElementById('y-second')
-        ?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    });
+    setSky(false);
+    setDeepOpen(true);
   };
 
   return (
@@ -367,22 +367,6 @@ export default function Step3({ onOpenMap, onOpenSummary }: Props = {}) {
         </aside>
       </div>
 
-      <div className='y-zone' id='y-second'>
-        <div className='y-zone-head'>
-          <span className='y-zone-n'>03 / 二阶检索</span>
-          <h3>选定一条方向，再深挖一次</h3>
-          <p>一阶给方向；二阶用「方向 + 你的想法 + 专业」缩小范围</p>
-        </div>
-        <SecondStageSearch
-          direction={picked?.dir ?? null}
-          field={p.field}
-          intent={state.intent}
-          stageId={stage.id}
-          excludeUrls={stage1Urls}
-          onOpenMap={() => onOpenMap?.(picked?.dir.name)}
-        />
-      </div>
-
       <div className='y-nav'>
         <button type='button' className='y-btn' onClick={() => setStep(2)}>
           ← 返回了解环境
@@ -402,6 +386,47 @@ export default function Step3({ onOpenMap, onOpenSummary }: Props = {}) {
           看归属与摘要 →
         </button>
       </div>
+
+      {deepOpen ? (
+        <>
+          <button
+            type='button'
+            className='y-focus-backdrop'
+            aria-label='关闭二阶检索'
+            onClick={() => setDeepOpen(false)}
+          />
+          <div
+            className='y-deep-drawer'
+            role='dialog'
+            aria-modal='true'
+            aria-label='二阶检索'
+          >
+            <div className='y-deep-head'>
+              <p className='y-eyebrow'>02 / 二阶深挖</p>
+              <button
+                type='button'
+                className='y-btn y-btn-s'
+                onClick={() => setDeepOpen(false)}
+              >
+                关闭 ×
+              </button>
+            </div>
+            <div className='y-deep-body'>
+              <SecondStageSearch
+                direction={picked?.dir ?? null}
+                field={p.field}
+                intent={state.intent}
+                stageId={stage.id}
+                excludeUrls={stage1Urls}
+                onOpenMap={() => {
+                  setDeepOpen(false);
+                  onOpenMap?.(picked?.dir.name);
+                }}
+              />
+            </div>
+          </div>
+        </>
+      ) : null}
 
       {sky ? (
         <DirectionSky
