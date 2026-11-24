@@ -17,6 +17,7 @@ import { SNAPSHOT_AT } from '@/data/snapshot-meta';
 import { useImmersive } from '@/lib/uiMotion';
 import { useYutu } from '@/store/YutuContext';
 import DirectionSky from './DirectionSky';
+import SecondStageSearch from './SecondStageSearch';
 import { Chip, Empty, Kv, LiveCard, SourceCard } from './bits';
 import DataSourceBadge from './DataSourceBadge';
 
@@ -70,6 +71,24 @@ export default function Step3({ onOpenMap, onOpenSummary }: Props = {}) {
   const liveLabel = livePack.category
     ? `${livePack.category.label}（按「${p.field}」匹配）`
     : `「${query || p.field || '未填写'}」关键词检索`;
+  /** 当前选定的方向（二阶检索的输入） */
+  const picked = useMemo(
+    () => all.find(x => x.dir.name === state.pick) ?? null,
+    [all, state.pick]
+  );
+  /** 一阶已经展示过的链接，二阶去重 */
+  const stage1Urls = useMemo(
+    () => [...cases.items.map(c => c.url), ...live.map(l => l.url)],
+    [cases.items, live]
+  );
+  const pickAndDeep = (name: string) => {
+    setPick(name);
+    window.requestAnimationFrame(() => {
+      document
+        .getElementById('y-second')
+        ?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  };
 
   return (
     <section id='y-p3' role='tabpanel' aria-labelledby='y-s3'>
@@ -232,6 +251,13 @@ export default function Step3({ onOpenMap, onOpenSummary }: Props = {}) {
                       <button
                         type='button'
                         className='y-btn y-btn-s'
+                        onClick={() => pickAndDeep(dir.name)}
+                      >
+                        {state.pick === dir.name ? '继续深挖' : '选它 · 二阶深挖'}
+                      </button>
+                      <button
+                        type='button'
+                        className='y-btn y-btn-s'
                         onClick={() => {
                           setPick(dir.name);
                           onOpenMap?.(dir.name);
@@ -339,6 +365,22 @@ export default function Step3({ onOpenMap, onOpenSummary }: Props = {}) {
             ) : null}
           </div>
         </aside>
+      </div>
+
+      <div className='y-zone' id='y-second'>
+        <div className='y-zone-head'>
+          <span className='y-zone-n'>03 / 二阶检索</span>
+          <h3>选定一条方向，再深挖一次</h3>
+          <p>一阶给方向；二阶用「方向 + 你的想法 + 专业」缩小范围</p>
+        </div>
+        <SecondStageSearch
+          direction={picked?.dir ?? null}
+          field={p.field}
+          intent={state.intent}
+          stageId={stage.id}
+          excludeUrls={stage1Urls}
+          onOpenMap={() => onOpenMap?.(picked?.dir.name)}
+        />
       </div>
 
       <div className='y-nav'>

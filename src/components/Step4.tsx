@@ -18,6 +18,7 @@ import {
 } from '@/lib/materials';
 import { useYutu } from '@/store/YutuContext';
 import CampaignMap from './CampaignMap';
+import DirectionChecklist from './DirectionChecklist';
 import { Chip, Empty, Kv } from './bits';
 import DataSourceBadge from './DataSourceBadge';
 
@@ -657,6 +658,15 @@ export default function Step4({ onOpenList, onOpenSummary }: Props = {}) {
                   />
                   <p className='y-note' style={{ paddingTop: 7 }}>
                     以上是代价，不是建议。系统不判定这条路线会不会成功，也不替你排序。
+                  </p>
+                  <DirectionChecklist
+                    dir={hit.dir}
+                    profile={p}
+                    city={CITY_MAP[p.city]}
+                    stage={stage.id}
+                  />
+                  <p className='y-note' style={{ paddingTop: 7 }}>
+                    清单由方向条件与你的处境推导；具体薪资、通过率等信息请以二阶检索到的原文为准。
                   </p>
                   {showMaterials && dirMaterials[hit.dir.name] ? (
                     <div className='y-material-list'>
