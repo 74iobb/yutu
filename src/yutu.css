@@ -14347,3 +14347,62 @@ html.y-motion-off #yutu2 .gis-me-halo {
 html.y-motion-off #yutu2 .y-deep-drawer {
   animation: none;
 }
+
+/* ---------- V11.6 第 3 步三段式路径 ---------- */
+#yutu2 .y-flow-steps {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin: 2px 0 12px;
+  padding: 7px 10px;
+  border: 1px solid var(--y-line);
+  border-radius: 10px;
+  background: rgba(8, 15, 32, 0.42);
+}
+#yutu2 .y-flow-steps em {
+  font-style: normal;
+  margin-right: 4px;
+  font-size: 9.5px;
+  color: #9fd8ff;
+}
+#yutu2 .y-flow-steps > span.is-on {
+  padding: 4px 11px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 650;
+  color: #04121f;
+  background: linear-gradient(180deg, #bfe3ff, #7ec8ff);
+}
+#yutu2 .y-flow-steps > span.is-on em {
+  color: rgba(4, 18, 31, 0.68);
+}
+#yutu2 .y-flow-steps button {
+  padding: 4px 11px;
+  border: 1px solid rgba(160, 190, 255, 0.16);
+  border-radius: 999px;
+  background: rgba(8, 15, 32, 0.5);
+  color: var(--y-muted);
+  font-size: 11px;
+  cursor: pointer;
+  transition:
+    color 160ms ease,
+    border-color 160ms ease;
+}
+#yutu2 .y-flow-steps button.is-ready {
+  color: var(--y-ink2);
+  border-color: rgba(126, 200, 255, 0.32);
+}
+#yutu2 .y-flow-steps button:hover {
+  color: var(--y-ink);
+  border-color: rgba(126, 200, 255, 0.45);
+}
+#yutu2 .y-flow-arrow {
+  font-size: 11px;
+  color: var(--y-muted);
+}
+@media (max-width: 640px) {
+  #yutu2 .y-flow-arrow {
+    display: none;
+  }
+}

@@ -36,6 +36,7 @@ export default function Step3({ onOpenMap, onOpenSummary }: Props = {}) {
     toggleShortlist,
     setPick,
     setIntent,
+    flash,
   } = useYutu();
   const p = state.profile;
   const stage = currentStage(p);
@@ -97,6 +98,44 @@ export default function Step3({ onOpenMap, onOpenSummary }: Props = {}) {
         <h2>这一阶段的所有方向，以及你当下能走的那些</h2>
         <p>可行性看条件是否就位，不代表对你的评价。</p>
       </header>
+
+      <div className='y-flow-steps' aria-label='方向推演三步'>
+        <span className='is-on'>
+          <em>01</em> 方向清单
+        </span>
+        <span className='y-flow-arrow' aria-hidden='true'>
+          →
+        </span>
+        <button
+          type='button'
+          className={picked ? 'is-ready' : undefined}
+          onClick={() => {
+            if (!picked) {
+              flash('先在方向清单里选一条方向。');
+              return;
+            }
+            setDeepOpen(true);
+          }}
+        >
+          <em>02</em> 二阶深挖
+        </button>
+        <span className='y-flow-arrow' aria-hidden='true'>
+          →
+        </span>
+        <button
+          type='button'
+          className={picked ? 'is-ready' : undefined}
+          onClick={() => {
+            if (!picked) {
+              flash('先选一条方向，再看代价。');
+              return;
+            }
+            onOpenMap?.(picked.dir.name);
+          }}
+        >
+          <em>03</em> 代价与清单
+        </button>
+      </div>
 
       <div className='y-insight'>
         <span className='y-insight-tag'>本步结论</span>
