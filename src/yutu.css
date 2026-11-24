@@ -13454,3 +13454,12 @@ html.y-motion-off #yutu2 .gis-me-halo {
 #yutu2 .y-loop-orbit-fast {
   pointer-events: none;
 }
+
+/* 弹珠右下边缘反光 */
+#yutu2 .y-loop-marble-rim {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.55);
+  stroke-width: 1.2;
+  stroke-linecap: round;
+  filter: drop-shadow(0 0 2px rgba(255, 255, 255, 0.35));
+}

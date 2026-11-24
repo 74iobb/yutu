@@ -74,6 +74,21 @@ const CX = 200;
 const CY = 200;
 const R = 100;
 
+/** 弹珠贴内沿滚动，避开站点编号 */
+const MARBLE_Y = CY - R + 24;
+
+/** 弹珠右下边缘的弧形反光（20° → 110°） */
+const MARBLE_RIM_PATH = (() => {
+  const rr = 13;
+  const a1 = (20 * Math.PI) / 180;
+  const a2 = (110 * Math.PI) / 180;
+  const p1 = { x: CX + rr * Math.cos(a1), y: MARBLE_Y + rr * Math.sin(a1) };
+  const p2 = { x: CX + rr * Math.cos(a2), y: MARBLE_Y + rr * Math.sin(a2) };
+  return `M${p1.x.toFixed(1)},${p1.y.toFixed(1)} A${rr},${rr} 0 0 1 ${p2.x.toFixed(
+    1
+  )},${p2.y.toFixed(1)}`;
+})();
+
 function stationPoint(i: number) {
   const a = ((-90 + i * 60) * Math.PI) / 180;
   return { x: CX + R * Math.cos(a), y: CY + R * Math.sin(a), a };
@@ -155,8 +170,45 @@ export default function LoopMap({
 
         <defs>
           <clipPath id='y-loop-marble-clip'>
-            <circle cx={CX} cy={CY - R} r={14} />
+            <circle cx={CX} cy={MARBLE_Y} r={14} />
           </clipPath>
+          {/* 球面明暗：左上亮、边缘压暗，制造体积 */}
+          <radialGradient
+            id='y-loop-marble-shade'
+            cx='34%'
+            cy='28%'
+            r='72%'
+          >
+            <stop offset='0%' stopColor='#ffffff' stopOpacity='0' />
+            <stop offset='52%' stopColor='#000000' stopOpacity='0.05' />
+            <stop offset='82%' stopColor='#000000' stopOpacity='0.34' />
+            <stop offset='100%' stopColor='#000000' stopOpacity='0.72' />
+          </radialGradient>
+          {/* 右下反光，补一层环境光 */}
+          <radialGradient
+            id='y-loop-marble-bounce'
+            cx='72%'
+            cy='80%'
+            r='46%'
+          >
+            <stop offset='0%' stopColor='#cfe9ff' stopOpacity='0.28' />
+            <stop offset='100%' stopColor='#cfe9ff' stopOpacity='0' />
+          </radialGradient>
+          {/* 镜面高光 */}
+          <radialGradient id='y-loop-marble-spec' cx='50%' cy='50%' r='50%'>
+            <stop offset='0%' stopColor='#ffffff' stopOpacity='0.95' />
+            <stop offset='45%' stopColor='#ffffff' stopOpacity='0.35' />
+            <stop offset='100%' stopColor='#ffffff' stopOpacity='0' />
+          </radialGradient>
+          <filter
+            id='y-loop-marble-shadow'
+            x='-80%'
+            y='-80%'
+            width='260%'
+            height='260%'
+          >
+            <feGaussianBlur stdDeviation='2.4' />
+          </filter>
         </defs>
 
         <circle cx={CX} cy={CY} r={R + 15} className='y-loop-track2' />
@@ -233,36 +285,56 @@ export default function LoopMap({
         <g className='y-loop-orbit' aria-hidden='true'>
           <ellipse
             cx={CX}
-            cy={CY - R + 4}
-            rx={12}
+            cy={MARBLE_Y + 5}
+            rx={13}
             ry={8}
-            fill='rgba(0,0,0,0.32)'
+            fill='rgba(0,0,0,0.45)'
+            filter='url(#y-loop-marble-shadow)'
           />
           <image
             href={marble}
             x={CX - 14}
-            y={CY - R - 14}
+            y={MARBLE_Y - 14}
             width={28}
             height={28}
             preserveAspectRatio='xMidYMid slice'
             clipPath='url(#y-loop-marble-clip)'
             className='y-loop-marble'
           />
+          {/* 球面明暗 + 右下环境反光（用 ellipse 绕开 .y-loop-orbit circle 的橙色填充） */}
           <ellipse
             cx={CX}
-            cy={CY - R}
+            cy={MARBLE_Y}
+            rx={14}
+            ry={14}
+            fill='url(#y-loop-marble-shade)'
+          />
+          <ellipse
+            cx={CX}
+            cy={MARBLE_Y}
+            rx={14}
+            ry={14}
+            fill='url(#y-loop-marble-bounce)'
+          />
+          {/* 右下边缘反光 */}
+          <path d={MARBLE_RIM_PATH} className='y-loop-marble-rim' />
+          {/* 左上镜面高光 */}
+          <ellipse
+            cx={CX - 4.5}
+            cy={MARBLE_Y - 5.5}
+            rx={5}
+            ry={3.2}
+            fill='url(#y-loop-marble-spec)'
+          />
+          {/* 最外圈极细白边，收住轮廓 */}
+          <ellipse
+            cx={CX}
+            cy={MARBLE_Y}
             rx={14}
             ry={14}
             fill='none'
-            stroke='rgba(255,255,255,0.55)'
-            strokeWidth={1.3}
-          />
-          <ellipse
-            cx={CX - 4.2}
-            cy={CY - R - 5}
-            rx={4.2}
-            ry={2.5}
-            fill='rgba(255,255,255,0.55)'
+            stroke='rgba(255,255,255,0.38)'
+            strokeWidth={0.8}
           />
         </g>
 
