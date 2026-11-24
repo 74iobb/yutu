@@ -1134,6 +1134,10 @@ function WallTab({ nodes }: { nodes: PrototypeNode[] }) {
   /** 成长画廊：把对比、成长曲线与时间轴铺成一屏，便于回看 */
   const [focus, setFocus] = useState(false);
   const [chartView, setChartView] = useState<'river' | 'line'>('river');
+  /** 档案墙内部视图：记忆 / 曲线 / 档案 */
+  const [wallView, setWallView] = useState<'memory' | 'curve' | 'archive'>(
+    'memory'
+  );
   useImmersive(focus, setFocus);
   const options = useMemo(
     () => [
@@ -1185,9 +1189,38 @@ function WallTab({ nodes }: { nodes: PrototypeNode[] }) {
             </button>
           </div>
         ) : null}
-        <div className='y-wall-grid'>
+        <div className='y-wall-viewbar' role='tablist' aria-label='胜利档案墙视图'>
+          <button
+            type='button'
+            role='tab'
+            aria-selected={wallView === 'memory'}
+            className={wallView === 'memory' ? 'is-on' : undefined}
+            onClick={() => setWallView('memory')}
+          >
+            记忆
+          </button>
+          <button
+            type='button'
+            role='tab'
+            aria-selected={wallView === 'curve'}
+            className={wallView === 'curve' ? 'is-on' : undefined}
+            onClick={() => setWallView('curve')}
+          >
+            曲线
+          </button>
+          <button
+            type='button'
+            role='tab'
+            aria-selected={wallView === 'archive'}
+            className={wallView === 'archive' ? 'is-on' : undefined}
+            onClick={() => setWallView('archive')}
+          >
+            档案 <em>{state.victories.length}</em>
+          </button>
+        </div>
+        <div className='y-wall-grid' data-view={wallView}>
       <MemoryPanel />
-      <div className='y-card y-card--data'>
+      <div className='y-card y-card--data y-wall-curve'>
         <h3>两点对比</h3>
         <div className='y-cmp-pick'>
           <div className='y-cmp-f'>
@@ -1242,6 +1275,7 @@ function WallTab({ nodes }: { nodes: PrototypeNode[] }) {
         {oa && ob ? <DiffBars before={oa.snap} after={ob.snap} /> : null}
       </div>
       <ChartFrame
+        className='y-wall-curve'
         eyebrow='成长图表'
         title={chartView === 'river' ? '成长河' : '成长曲线'}
         subtitle={
@@ -1286,7 +1320,7 @@ function WallTab({ nodes }: { nodes: PrototypeNode[] }) {
         )}
       </ChartFrame>
 
-      <div className='y-card y-card--evidence'>
+      <div className='y-card y-card--evidence y-wall-archive'>
         <h3>
           阶段性胜利时间轴 <DataSourceBadge source='archive' showLabel={false} />
           {state.victories.length && !focus ? (

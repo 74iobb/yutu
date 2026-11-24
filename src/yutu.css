@@ -10068,7 +10068,7 @@ html.y-motion-off #yutu2 input.y-shake {
 #yutu2 .y-wall-tab.is-focus .y-wall-grid > .y-card {
   margin-top: 0;
 }
-#yutu2 .y-wall-tab.is-focus .y-wall-grid > .y-card:nth-child(3) {
+#yutu2 .y-wall-tab.is-focus .y-wall-grid > .y-wall-archive {
   grid-column: 1 / -1;
 }
 #yutu2 .y-wall-focus-head {
@@ -10124,7 +10124,7 @@ html.y-motion-off #yutu2 input.y-shake {
   #yutu2 .y-wall-tab.is-focus .y-wall-grid {
     grid-template-columns: minmax(0, 1fr);
   }
-  #yutu2 .y-wall-tab.is-focus .y-wall-grid > .y-card:nth-child(3) {
+  #yutu2 .y-wall-tab.is-focus .y-wall-grid > .y-wall-archive {
     grid-column: auto;
   }
   #yutu2 .y-wall-focus-head {
@@ -14028,6 +14028,63 @@ html.y-motion-off #yutu2 .gis-me-halo {
 }
 @media (max-width: 640px) {
   #yutu2 .y-peer-viewbar {
+    width: 100%;
+    justify-content: space-between;
+  }
+}
+
+/* ---------- V11.1 档案墙内部视图：记忆 / 曲线 / 档案 ---------- */
+#yutu2 .y-wall-viewbar {
+  display: inline-flex;
+  gap: 4px;
+  width: fit-content;
+  margin-bottom: 10px;
+  padding: 4px;
+  border: 1px solid var(--y-line);
+  border-radius: 999px;
+  background: rgba(8, 15, 32, 0.55);
+}
+#yutu2 .y-wall-viewbar button {
+  border: 0;
+  border-radius: 999px;
+  padding: 5px 14px;
+  background: transparent;
+  color: var(--y-muted);
+  font-size: 12px;
+  cursor: pointer;
+  transition:
+    color 160ms ease,
+    background-color 160ms ease;
+}
+#yutu2 .y-wall-viewbar button[aria-selected='true'] {
+  color: #04121f;
+  background: linear-gradient(180deg, #bfe3ff, #7ec8ff);
+  font-weight: 650;
+}
+#yutu2 .y-wall-viewbar em {
+  margin-left: 4px;
+  font-style: normal;
+  font-size: 10px;
+  opacity: 0.6;
+}
+#yutu2 .y-wall-grid[data-view='memory'] .y-wall-curve,
+#yutu2 .y-wall-grid[data-view='memory'] .y-wall-archive,
+#yutu2 .y-wall-grid[data-view='curve'] .y-memory-panel,
+#yutu2 .y-wall-grid[data-view='curve'] .y-wall-archive,
+#yutu2 .y-wall-grid[data-view='archive'] .y-memory-panel,
+#yutu2 .y-wall-grid[data-view='archive'] .y-wall-curve {
+  display: none;
+}
+#yutu2 .y-wall-tab.is-focus .y-wall-viewbar {
+  display: none;
+}
+#yutu2 .y-wall-tab.is-focus .y-wall-grid .y-memory-panel,
+#yutu2 .y-wall-tab.is-focus .y-wall-grid .y-wall-curve,
+#yutu2 .y-wall-tab.is-focus .y-wall-grid .y-wall-archive {
+  display: block;
+}
+@media (max-width: 640px) {
+  #yutu2 .y-wall-viewbar {
     width: 100%;
     justify-content: space-between;
   }
