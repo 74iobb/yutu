@@ -6,6 +6,40 @@ import { Empty } from './bits';
 import DiscussionThread, { ReviewDiscussion } from './DiscussionThread';
 import { ReviewMediaPanel } from './MediaGallery';
 
+/** 以命中词为中心截取摘要，保证高亮一定出现在可见范围里 */
+function snippetAround(text: string, term: string, max = 180) {
+  const clean = text.replace(/\s+/g, ' ').trim();
+  if (!term) return clean.slice(0, max);
+  const idx = clean.toLowerCase().indexOf(term.toLowerCase());
+  if (idx < 0) {
+    return clean.length > max ? `${clean.slice(0, max)}…` : clean;
+  }
+  const start = Math.max(0, idx - Math.floor(max / 3));
+  const end = Math.min(clean.length, start + max);
+  return `${start > 0 ? '…' : ''}${clean.slice(start, end)}${
+    end < clean.length ? '…' : ''
+  }`;
+}
+
+/** 安全高亮：不用 dangerouslySetInnerHTML；正则特殊字符会转义 */
+function Highlight({ text, term }: { text: string; term: string }) {
+  if (!term) return <>{text}</>;
+  const escaped = term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const parts = text.split(new RegExp(`(${escaped})`, 'gi'));
+  const lower = term.toLowerCase();
+  return (
+    <>
+      {parts.map((part, i) =>
+        part.toLowerCase() === lower ? (
+          <mark key={`${part}-${i}`}>{part}</mark>
+        ) : (
+          <span key={`${part}-${i}`}>{part}</span>
+        )
+      )}
+    </>
+  );
+}
+
 /**
  * 复盘 / 讨论搜索。
  *
@@ -108,7 +142,15 @@ export default function PeerSearch() {
                     <span>{CHOICE_LABEL[r.choice]}</span>
                     <span>有效标记 {state.markCounts[r.id] ?? 0}</span>
                   </div>
-                  <p>{r.content.replace('[经验卡] ', '').slice(0, 180)}</p>
+                  <p>
+                    <Highlight
+                      text={snippetAround(
+                        r.content.replace('[经验卡] ', ''),
+                        term
+                      )}
+                      term={term}
+                    />
+                  </p>
                   <ReviewDiscussion reviewId={r.id} />
                   <ReviewMediaPanel reviewId={r.id} />
                 </div>
@@ -120,7 +162,7 @@ export default function PeerSearch() {
             <section>
               <h4>讨论</h4>
               {hits.map((d) => (
-                <DiscussionHit key={d.id} d={d} />
+                <DiscussionHit key={d.id} d={d} term={term} />
               ))}
             </section>
           ) : null}
@@ -140,7 +182,7 @@ export default function PeerSearch() {
   );
 }
 
-function DiscussionHit({ d }: { d: Discussion }) {
+function DiscussionHit({ d, term }: { d: Discussion; term: string }) {
   const [open, setOpen] = useState(false);
   return (
     <div className='y-search-item'>
@@ -148,7 +190,9 @@ function DiscussionHit({ d }: { d: Discussion }) {
         <b>{d.authorName}</b>
         <span>{d.createdAt}</span>
       </div>
-      <p>{d.content}</p>
+      <p>
+        <Highlight text={snippetAround(d.content, term, 220)} term={term} />
+      </p>
       <button
         type='button'
         className='y-btn y-btn-s'

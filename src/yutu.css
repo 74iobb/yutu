@@ -13967,3 +13967,12 @@ html.y-motion-off #yutu2 .gis-me-halo {
   line-height: 1.6;
   color: var(--y-ink2);
 }
+
+/* 搜索结果关键词高亮 */
+#yutu2 .y-search-item mark {
+  padding: 0 2px;
+  border-radius: 3px;
+  color: #ffe2b0;
+  background: rgba(240, 178, 90, 0.28);
+  box-shadow: inset 0 0 0 1px rgba(240, 178, 90, 0.18);
+}
