@@ -72,12 +72,18 @@ export default function GisMap({
   const layersRef = useRef<L.LayerGroup | null>(null);
   const pickRef = useRef(onPickPoint);
   const materialPickRef = useRef(onSelectMaterial);
+  const selectCityRef = useRef(onSelectCity);
+  /** 记住「上次真正需要重置视野」的键，避免父组件重渲染时把用户的缩放/平移拽回去 */
+  const viewKeyRef = useRef('');
   useEffect(() => {
     pickRef.current = onPickPoint;
   }, [onPickPoint]);
   useEffect(() => {
     materialPickRef.current = onSelectMaterial;
   }, [onSelectMaterial]);
+  useEffect(() => {
+    selectCityRef.current = onSelectCity;
+  }, [onSelectCity]);
   const [offline, setOffline] = useState(false);
   const [failed, setFailed] = useState(false);
   const [tileRetry, setTileRetry] = useState(0);
@@ -137,6 +143,14 @@ export default function GisMap({
     const ll = GEO[city];
     if (!map || !me || !ll) return;
 
+    /* 只有城市 / 模式 / 外部重定位信号 / 实际坐标变化时才重置视野；
+       资料层开关、底图重试、父组件重渲染都不应打断用户正在看的区域 */
+    const viewKey = `${city}|${mode}|${recenterSignal}|${
+      coords ? `${coords.lat.toFixed(3)},${coords.lon.toFixed(3)}` : 'none'
+    }`;
+    const resetView = viewKeyRef.current !== viewKey;
+    viewKeyRef.current = viewKey;
+
     try {
       layersRef.current?.remove();
       const group = L.layerGroup().addTo(map);
@@ -147,7 +161,8 @@ export default function GisMap({
       if (mode === 'geo') {
         // 先放离线矢量陆地作为即时底图，避免切回地理模式时瓦片尚未加载出现空白；
         // 瓦片加载后会覆盖它，瓦片失败时它就是回退底图。
-        addLandBase(map, group, false);
+        /* 底图统一走暗色：OSM 瓦片由 CSS 反相处理，失败时回落的矢量陆地也保持深色 */
+        addLandBase(map, group, true);
         addOsmBase(map, group, setOffline, true);
       } else {
         addLandBase(map, group, true);
@@ -228,7 +243,7 @@ export default function GisMap({
           className: 'gis-tip gis-tip-me',
           offset: [0, -9],
         });
-      meMarker.on('click', () => onSelectCity(me.id));
+      meMarker.on('click', () => selectCityRef.current(me.id));
 
       const targets = mode === 'net' ? flightTargets(city) : [];
 
@@ -254,7 +269,7 @@ export default function GisMap({
             direction: 'top',
             className: 'gis-tip',
           });
-        marker.on('click', () => onSelectCity(c.id));
+        marker.on('click', () => selectCityRef.current(c.id));
       });
 
       /* 资料层：每条检索内容落在其所属城市坐标附近，点开可看原文；
@@ -320,18 +335,20 @@ export default function GisMap({
         });
       }
 
-      const center: [number, number] = coords
-        ? [coords.lat, coords.lon]
-        : [ll[1], ll[0]];
-      const zoom = coords ? 8 : mode === 'net' ? 4 : 6;
-      map.setView(center, zoom, { animate: true });
-      window.setTimeout(() => {
-        try {
-          map.invalidateSize();
-        } catch {
-          /* map already removed */
-        }
-      }, 30);
+      if (resetView) {
+        const center: [number, number] = coords
+          ? [coords.lat, coords.lon]
+          : [ll[1], ll[0]];
+        const zoom = coords ? 8 : mode === 'net' ? 4 : 6;
+        map.setView(center, zoom, { animate: true });
+        window.setTimeout(() => {
+          try {
+            map.invalidateSize();
+          } catch {
+            /* map already removed */
+          }
+        }, 30);
+      }
     } catch (error) {
       console.error('[GisMap] render layers failed', error);
       setFailed(true);
@@ -341,7 +358,6 @@ export default function GisMap({
     coords,
     mode,
     recenterSignal,
-    onSelectCity,
     materials,
     showMaterials,
     tileRetry,
