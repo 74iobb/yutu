@@ -34,6 +34,24 @@ export function Shell({ children }: { children: ReactNode }) {
   /** 头部「更多」：把知乎快照 / 数据口径 / 电气实训收口 */
   const [moreOpen, setMoreOpen] = useState(false);
   const moreRef = useRef<HTMLSpanElement>(null);
+  /** 长页面回到顶部 */
+  const [showTop, setShowTop] = useState(false);
+  useEffect(() => {
+    let raf = 0;
+    const onScroll = () => {
+      if (raf) return;
+      raf = window.requestAnimationFrame(() => {
+        raf = 0;
+        setShowTop(window.scrollY > 520);
+      });
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+    return () => {
+      window.removeEventListener('scroll', onScroll);
+      if (raf) window.cancelAnimationFrame(raf);
+    };
+  }, []);
   useEffect(() => {
     if (!moreOpen) return;
     const onDoc = (e: MouseEvent) => {
@@ -839,6 +857,23 @@ export function Shell({ children }: { children: ReactNode }) {
           <DataSourcesPanel onClose={() => setDataOpen(false)} />
         </>
       ) : null}
+      <button
+        type='button'
+        className={`y-top-btn${showTop ? ' is-on' : ''}`}
+        aria-label='回到顶部'
+        title='回到顶部'
+        onClick={() => {
+          const reduce = window.matchMedia?.(
+            '(prefers-reduced-motion: reduce)'
+          ).matches;
+          window.scrollTo({
+            top: 0,
+            behavior: reduce ? 'auto' : 'smooth',
+          });
+        }}
+      >
+        ↑
+      </button>
       <Companion />
     </div>
   );
