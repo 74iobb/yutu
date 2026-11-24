@@ -9,6 +9,7 @@ import {
   type ReactNode,
 } from 'react';
 import { STAGES, type StageId } from '@/data/catalog';
+import { desensitize } from '@/lib/desensitize';
 import { BASE_NODES } from '@/data/nodes';
 import {
   applyDrift,
@@ -103,6 +104,8 @@ interface PersistShape {
   maxStep: number;
   /** 最近一次归档结果（闭环完成卡与漂移动画） */
   lastArchive: LoopArchive | null;
+  /** 起点快照：首次进入第 2 步时的七维，用于「起点 → 现在」对比 */
+  snapshot0: Scores | null;
 }
 
 export interface YutuState extends PersistShape {
@@ -138,6 +141,7 @@ const INITIAL: YutuState = {
   tasks: [],
   victories: [],
   lastArchive: null,
+  snapshot0: null,
   pool: [],
   reviews: [],
   markCounts: {},
@@ -450,6 +454,10 @@ export function YutuProvider({ children }: { children: ReactNode }) {
         tasks: local.tasks ?? [],
         victories: local.victories ?? [],
         lastArchive: local.lastArchive ?? null,
+        /* 老快照没有起点字段：已经走到第 2 步的，用当前处境补一个基准 */
+        snapshot0:
+          local.snapshot0 ??
+          (step >= 2 ? { ...(local.profile ?? s.profile).s } : null),
         pool: local.pool ?? [],
         reviews: local.reviews ?? [],
         markCounts: local.markCounts ?? {},
@@ -515,6 +523,8 @@ export function YutuProvider({ children }: { children: ReactNode }) {
           profile,
           tasks: tasks.length ? tasks : s.tasks,
           victories: mergedVictories,
+          /* 老用户没有本地起点快照时，用最早一次归档前的向量兜底 */
+          snapshot0: s.snapshot0 ?? mergedVictories[0]?.snap ?? null,
           reviews,
           markCounts: remote.markCounts,
           backendOnline: true,
@@ -541,6 +551,7 @@ export function YutuProvider({ children }: { children: ReactNode }) {
         tasks: state.tasks,
         victories: state.victories,
         lastArchive: state.lastArchive,
+        snapshot0: state.snapshot0,
         pool: state.pool,
         reviews: state.reviews,
         markCounts: state.markCounts,
@@ -568,6 +579,7 @@ export function YutuProvider({ children }: { children: ReactNode }) {
     state.onlyFeasible,
     state.step,
     state.maxStep,
+    state.snapshot0,
   ]);
 
   // 档案变化后合并保存（仅在线时）
@@ -616,6 +628,8 @@ export function YutuProvider({ children }: { children: ReactNode }) {
       ...s,
       step: next,
       maxStep: Math.max(s.maxStep, next),
+      /* 首次离开「填写信息」时固定起点快照；之后处境怎么漂移，都拿它作基准 */
+      snapshot0: s.snapshot0 ?? (next >= 2 ? { ...s.profile.s } : null),
     }));
   }, []);
 
@@ -949,13 +963,16 @@ export function YutuProvider({ children }: { children: ReactNode }) {
     }) => {
       const stage = currentStage(state.profile);
       const authorName = `同处境者 · ${stage.name}`;
+      /* 进入公共池前统一脱敏：金额 / 公司 / 联系方式；本地归档原文不受影响 */
+      const masked = desensitize(params.content);
+      const content = masked.text;
       const payload = {
         authorKey: ownerKey,
         authorName,
         stage: stage.id,
         city: state.profile.city,
         choice: params.choice,
-        content: params.content,
+        content,
         vectorJson: JSON.stringify(params.vector),
         status: 'pool',
       };
@@ -966,7 +983,7 @@ export function YutuProvider({ children }: { children: ReactNode }) {
         stage: stage.id as StageId,
         city: state.profile.city,
         choice: params.choice,
-        content: params.content,
+        content,
         vector: params.vector,
         createdAt: fmtTime(new Date()),
       };
@@ -996,7 +1013,7 @@ export function YutuProvider({ children }: { children: ReactNode }) {
           const rows = await apiLoadReviews();
           const reviews = rows.map((r) => mapReviewRow(r));
           const mine = reviews.find(
-            (r) => r.authorKey === ownerKey && r.content === params.content
+            (r) => r.authorKey === ownerKey && r.content === content
           );
           setState((s) => ({
             ...s,
@@ -1032,7 +1049,9 @@ export function YutuProvider({ children }: { children: ReactNode }) {
         .filter(Boolean)
         .join(' ／ ');
       void submitReviewCommon({ content, choice: v.choice, vector: v.snap, victory: v });
-      flash('已提交。当前仅本人可见，需 3 位同处境用户标记有效后升级为公共节点。');
+      flash(
+        '已提交。公共文本已自动脱敏（金额 / 公司 / 联系方式），当前仅本人可见；需 3 位同处境用户标记有效后升级为公共节点。'
+      );
     },
     [flash, submitReviewCommon]
   );
@@ -1050,7 +1069,9 @@ export function YutuProvider({ children }: { children: ReactNode }) {
         choice: 'keep',
         vector: state.profile.s,
       });
-      flash('经验卡已提交到校验池。它比整条复盘更轻，也可以被同处境者标记有效。');
+      flash(
+        '经验卡已提交到校验池（金额 / 公司 / 联系方式会自动脱敏）。它比整条复盘更轻，也可以被同处境者标记有效。'
+      );
     },
     [flash, state.profile.s, submitReviewCommon]
   );
@@ -1146,6 +1167,7 @@ export function YutuProvider({ children }: { children: ReactNode }) {
       tasks: [],
       victories: [],
       lastArchive: null,
+      snapshot0: null,
       pool: [],
       step: 1,
       maxStep: 1,

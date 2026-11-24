@@ -1,5 +1,6 @@
 import { CHOICE_LABEL, DIMS } from '@/lib/model';
 import { useYutu } from '@/store/YutuContext';
+import GrowthRadar from './GrowthRadar';
 
 /**
  * 「成长 → 处境」回写条。
@@ -57,6 +58,17 @@ export default function GrowthDelta() {
           </li>
         )}
       </ul>
+      {state.snapshot0 ? (
+        <div className='y-gd-radar'>
+          <GrowthRadar
+            before={state.snapshot0}
+            after={after}
+            beforeLabel='起点'
+            afterLabel={`第 ${no} 次归档后`}
+            compact
+          />
+        </div>
+      ) : null}
       <div className='y-gd-foot'>
         <button
           type='button'

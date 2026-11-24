@@ -29,7 +29,9 @@ import LoopMap, {
 import TrendChart from './TrendChart';
 import ChartFrame from './ChartFrame';
 import GrowthRiver from './GrowthRiver';
+import GrowthRadar from './GrowthRadar';
 import PeerNebula from './PeerNebula';
+import SoulCard from './SoulCard';
 import type {
   Choice,
   DimensionKey,
@@ -148,6 +150,7 @@ function LoopDone({
   onContinue: () => void;
   onClose: () => void;
 }) {
+  const { state } = useYutu();
   const resting = data.choice === 'rest';
   return (
     <div className='y-loop-done' role='status'>
@@ -176,6 +179,17 @@ function LoopDone({
         </button>
       </div>
       <DriftPanel before={data.before} after={data.after} choice={data.choice} />
+      {state.snapshot0 ? (
+        <div className='y-loop-radar'>
+          <GrowthRadar
+            before={state.snapshot0}
+            after={data.after}
+            beforeLabel='起点'
+            afterLabel={`第 ${data.no} 次归档后`}
+            compact
+          />
+        </div>
+      ) : null}
       {data.domain ? (
         <p className='y-loop-new'>
           新落点：<b>{data.domain.split(' · ')[0]}</b> · 接近度{' '}
@@ -845,6 +859,16 @@ function StationTab({
               岁。现在变了没有？
             </Say>
           </div>
+
+          {active.length || state.victories.length ? (
+            <SoulCard
+              snapshot0={state.snapshot0}
+              current={state.profile.s}
+              tasks={state.tasks}
+              victories={state.victories}
+              compact
+            />
+          ) : null}
           <div style={{ marginBottom: 11 }}>
             <label htmlFor='y-q1'>这段体验带给我的真实感受是什么</label>
             <textarea
@@ -1006,6 +1030,17 @@ function StationTab({
             after={preview}
             choice={choice}
           />
+          {state.snapshot0 ? (
+            <div style={{ marginTop: 10 }}>
+              <GrowthRadar
+                before={state.snapshot0}
+                after={preview}
+                beforeLabel='起点'
+                afterLabel='本轮归档后（预估）'
+                compact
+              />
+            </div>
+          ) : null}
           <p className='y-note' style={{ paddingTop: 5 }}>
             所有更新都是小幅调整，不做跳变；地图上的移动呈现为缓慢漂移而非瞬间跳转。
           </p>
