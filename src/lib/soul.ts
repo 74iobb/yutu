@@ -101,7 +101,11 @@ export function buildSoulQuestions({
     out.push({
       id: 'memory',
       basis: `历史记忆 · ${
-        mem.kind === 'victory' ? `第 ${mem.no} 次归档` : '你的复盘'
+        mem.kind === 'victory'
+          ? `第 ${mem.no} 次归档`
+          : mem.kind === 'review'
+            ? '你的复盘'
+            : '你的讨论'
       } · ${mem.when} · 接近度 ${pct}%`,
       text: `${mem.when}你写过：「${mem.text}」。这次的处境和当时接近度 ${pct}%——那句话现在还成立吗？`,
     });

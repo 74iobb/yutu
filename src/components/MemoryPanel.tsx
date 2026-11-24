@@ -17,10 +17,17 @@ export default function MemoryPanel() {
         state.profile.s,
         state.victories,
         state.reviews,
+        state.discussions,
         ownerKey,
         4
       ),
-    [state.profile.s, state.victories, state.reviews, ownerKey]
+    [
+      state.profile.s,
+      state.victories,
+      state.reviews,
+      state.discussions,
+      ownerKey,
+    ]
   );
 
   return (
@@ -41,7 +48,11 @@ export default function MemoryPanel() {
               <li key={m.id}>
                 <div className='y-memory-meta'>
                   <span>
-                    {m.kind === 'victory' ? `第 ${m.no} 次归档` : '你的复盘'}
+                    {m.kind === 'victory'
+                      ? `第 ${m.no} 次归档`
+                      : m.kind === 'review'
+                        ? '你的复盘'
+                        : '你的讨论'}
                   </span>
                   <span>{m.when}</span>
                   <b>接近度 {pct}%</b>
@@ -58,7 +69,7 @@ export default function MemoryPanel() {
         </ul>
       ) : (
         <Empty>
-          完成第一次归档、并写下几句自省后，这里会开始积累你的记忆。
+          完成第一次归档、写下自省，或参与一次复盘讨论后，这里会开始积累你的记忆。
         </Empty>
       )}
 

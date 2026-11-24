@@ -1,5 +1,5 @@
 import { pairSimilarity } from '@/lib/model';
-import type { Review, Scores, Victory } from '@/types';
+import type { Discussion, Review, Scores, Victory } from '@/types';
 
 /**
  * 本地长期记忆检索。
@@ -11,7 +11,7 @@ import type { Review, Scores, Victory } from '@/types';
 
 export interface MemoryItem {
   id: string;
-  kind: 'victory' | 'review';
+  kind: 'victory' | 'review' | 'discussion';
   /** 原始时间字符串 */
   at: string;
   /** 第几次阶段性胜利（仅归档） */
@@ -73,11 +73,14 @@ export function retrieveMemories(
   current: Scores,
   victories: Victory[],
   reviews: Review[],
+  discussions: Discussion[],
   ownerKey: string,
   limit = 4
 ): MemoryItem[] {
   const out: MemoryItem[] = [];
   const seen = new Set<string>();
+  const reviewVector = new Map<string, Scores | null>();
+  reviews.forEach((r) => reviewVector.set(r.id, r.vector));
 
   victories.forEach((v) => {
     const full = victoryText(v);
@@ -115,6 +118,28 @@ export function retrieveMemories(
         full,
         vector: r.vector,
         sim: r.vector ? pairSimilarity(current, r.vector) : 0.35,
+      });
+    });
+
+  /* 自己参与的讨论：以所属复盘的向量作为情境近似 */
+  discussions
+    .filter((d) => d.authorKey === ownerKey)
+    .forEach((d) => {
+      const full = d.content.trim();
+      if (full.length < 6) return;
+      const key = dedupeKey(full);
+      if (seen.has(key)) return;
+      seen.add(key);
+      const vec = reviewVector.get(d.reviewId) ?? null;
+      out.push({
+        id: `d-${d.id}`,
+        kind: 'discussion',
+        at: d.createdAt,
+        when: whenLabel(d.createdAt),
+        text: clip(full),
+        full,
+        vector: vec,
+        sim: vec ? pairSimilarity(current, vec) : 0.35,
       });
     });
 

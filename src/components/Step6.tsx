@@ -871,6 +871,7 @@ function StationTab({
               tasks={state.tasks}
               victories={state.victories}
               reviews={state.reviews}
+              discussions={state.discussions}
               ownerKey={ownerKey}
               compact
             />
@@ -1439,6 +1440,14 @@ function PeersTab() {
     0
   );
   const nextGap = Math.max(0, NEED - bestMarks);
+  /* 讨论贡献：自己参与的讨论数，以及别人对自己讨论的回复数 */
+  const myDiscussions = state.discussions.filter(
+    d => d.authorKey === ownerKey
+  );
+  const myDiscussionIds = new Set(myDiscussions.map(d => d.id));
+  const repliesToMe = state.discussions.filter(
+    d => myDiscussionIds.has(d.parentId) && d.authorKey !== ownerKey
+  ).length;
 
   return (
     <>
@@ -1469,6 +1478,9 @@ function PeersTab() {
             : myPublic.length
               ? `已有 ${myPublic.length} 条复盘进入知识网络，供处境相近的人参考。`
               : `距离最近一条升级为公共节点还差 ${nextGap} 个有效标记。`}
+        </p>
+        <p className='y-note' style={{ paddingTop: 4 }}>
+          你参与了 {myDiscussions.length} 条讨论，收到 {repliesToMe} 条回复。
         </p>
       </div>
 
@@ -1712,7 +1724,7 @@ function PeersTab() {
           </button>
         </div>
         <p className='y-note' style={{ paddingTop: 6 }}>
-          备份包含：个人档案、体验任务、阶段性胜利、自己提交的复盘、有效标记记录与方向候选。
+          备份包含：个人档案与起点快照、体验任务、阶段性胜利、自己提交的复盘、自己参与的讨论、去向样本、有效标记记录与方向候选。
           云端记录不会因下载或清理本机缓存而改变。
         </p>
       </div>

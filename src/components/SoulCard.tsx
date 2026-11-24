@@ -1,7 +1,13 @@
 import { useMemo } from 'react';
 import { retrieveMemories } from '@/lib/memory';
 import { biggestShift, buildSoulQuestions } from '@/lib/soul';
-import type { Review, Scores, TaskItem, Victory } from '@/types';
+import type {
+  Discussion,
+  Review,
+  Scores,
+  TaskItem,
+  Victory,
+} from '@/types';
 
 interface SoulCardProps {
   snapshot0: Scores | null;
@@ -9,6 +15,7 @@ interface SoulCardProps {
   tasks: TaskItem[];
   victories: Victory[];
   reviews: Review[];
+  discussions: Discussion[];
   ownerKey: string;
   /** 只显示前两个问题（用于空间紧张的卡片） */
   compact?: boolean;
@@ -24,12 +31,20 @@ export default function SoulCard({
   tasks,
   victories,
   reviews,
+  discussions,
   ownerKey,
   compact = false,
 }: SoulCardProps) {
   const memories = useMemo(
-    () => retrieveMemories(current, victories, reviews, ownerKey),
-    [current, victories, reviews, ownerKey]
+    () =>
+      retrieveMemories(
+        current,
+        victories,
+        reviews,
+        discussions,
+        ownerKey
+      ),
+    [current, victories, reviews, discussions, ownerKey]
   );
   const questions = useMemo(
     () =>

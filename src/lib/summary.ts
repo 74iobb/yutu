@@ -99,9 +99,14 @@ export function buildBackupJson(
       exportedAt: new Date().toISOString(),
       ownerKey,
       profile: state.profile,
+      snapshot0: state.snapshot0,
       tasks: state.tasks,
       victories: state.victories,
       myReviews: state.reviews.filter((r) => r.authorKey === ownerKey),
+      myDiscussions: state.discussions.filter(
+        (d) => d.authorKey === ownerKey
+      ),
+      peerSamples: state.peerMine,
       markCounts: state.markCounts,
       markedIds,
       shortlist: state.shortlist,
