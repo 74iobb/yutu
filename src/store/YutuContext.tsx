@@ -67,7 +67,13 @@ export const DEFAULT_PROFILE: Profile = {
   s: { place: 34, econ: 68, family: 55, age: 22, cycle: 25, inertia: 55, history: 18 },
 };
 
-const LS_KEY = 'yutu.state.v2';
+/**
+ * V9.4：平台已切到新的 `_1_1` 表（8766–8771）与工作流 5269644–5269660。
+ * 本地缓存随之换到 v3，旧 v2 里的任务 / 胜利档案 / 校验池不再参与渲染，
+ * 避免「平台已经是新表空数据、界面还挂着旧历史」。
+ */
+const LS_KEY = 'yutu.state.v3';
+const LEGACY_LS_KEYS = ['yutu.state.v2'];
 const LS_LAST = 'yutu.lastActive';
 const LS_MARKED = 'yutu.marked';
 const LS_DROP = 'yutu.dropApplied';
@@ -164,6 +170,8 @@ function migrateStep(n: unknown): number {
 
 function readLocal(): Partial<PersistShape> | null {
   try {
+    /* 一次性丢弃旧版本缓存，保证界面与新的平台表一致 */
+    LEGACY_LS_KEYS.forEach((k) => localStorage.removeItem(k));
     const raw = localStorage.getItem(LS_KEY);
     if (!raw) return null;
     return JSON.parse(raw) as Partial<PersistShape>;
