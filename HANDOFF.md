@@ -50,7 +50,7 @@ pnpm preview
 
 ## 2. 平台数据与接口
 
-- 启用中的 **20 个 SQL 操作 API（实为工作流）**：`profile_get/save`、`tasks_list/add/update_status/delete`、`archive_list/add`、`reviews_list/add`、`marks_add/list`，V9.6 接入的 `peer_samples_stats/mine/add/update`、`archive_choice_stats`，以及 V10.9 新增的 `discussions_list/add/delete`（绑定表 8778）。
+- 启用中的 **21 个 SQL 操作 API（实为工作流）**：`profile_get/save`、`tasks_list/add/update_status/delete`、`archive_list/add`、`reviews_list/add`、`marks_add/list`，V9.6 接入的 `peer_samples_stats/mine/add/update`、`archive_choice_stats`，V10.9 新增的 `discussions_list/add/delete`，以及 V10.12 新增的 `discussions_stats`（绑定表 8778）。
 - **端点 token、绑定表、入参、SQL 要点**：见 `.project.md` 第 2、3 节；前端映射在 `src/lib/yutuApi.ts` 的 `API_ENDPOINTS`。
 - `peer_samples_*` 与 `archive_choice_stats` 已在「同伴经验域」的「同阶段的人后来去哪了」卡片中使用；写样本前会脱敏，离线只存本机。
 - 请求路径：`POST /api/page/w/{token}`；查询数据在 `data.outputList`，写操作只回 `success`。
@@ -65,7 +65,7 @@ pnpm preview
 - **知乎 Access Secret 未随包提供**：打包环境未注入 `ZHIHU_ACCESS_SECRET`，也没有 `~/.config/zhihu-cli/secret.env` / `zhihu-cli`。应用运行**不需要**它——256 条快照已内置；只有「刷新快照」才需要。
 - 需要刷新时按 **`secrets/README.md`** 注入：可参考 `secrets/zhihu.env.example` 创建本地 `secrets/zhihu.env`（已被 `.gitignore` 忽略），或临时 `export ZHIHU_ACCESS_SECRET=...`。**不要把真实密钥写进代码、前端、提交记录或公开 zip。**
 - 知乎内容的展示/再分发边界与发布前检查清单：**`docs/ZHIHU-RIGHTS.md`**。核心口径：访问密钥只证明「能查」，不等于获得「可对外转载/商用」的授权。
-- 平台 20 个工作流端点 token 不是密钥，已在 `.project.md` 第 3 节与 `src/lib/yutuApi.ts` 中随包提供。
+- 平台 21 个工作流端点 token 不是密钥，已在 `.project.md` 第 3 节与 `src/lib/yutuApi.ts` 中随包提供。
 
 ---
 
@@ -213,3 +213,5 @@ pnpm build          # 期望 ✓ built
 > 2026-11-24 V10.10 讨论进入长期记忆：`retrieveMemories` 接收 discussions，自己参与的讨论以所属复盘向量参与相似度排序；记忆面板与灵魂拷问会显示「你的讨论」。「我的贡献」新增参与讨论/收到回复计数；本地备份新增起点快照、讨论与去向样本。
 >
 > 2026-11-24 V10.11 记忆时间线：`MemoryPanel` 升级为「时间 × 相似度」SVG 时间线（最多 24 条），点击/键盘选择记忆，右侧显示原文与「当时 vs 现在」七维雷达；现在标记在 100%。纯本机计算。
+>
+> 2026-11-24 V10.12 社区讨论热度：新增 `discussions_stats`（5269688 / token `17955298285269688`），复盘卡片显示「讨论 N · M 人参与」，≥3 人显示「热议」；`readRemote()` 扩到 9 项；离线用本机讨论兜底。另修复旧 HMR 状态缺少 `discussionStats` 导致的 PeersTab 崩溃。

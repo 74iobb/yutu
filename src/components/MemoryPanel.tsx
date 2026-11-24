@@ -45,7 +45,7 @@ export default function MemoryPanel() {
         state.profile.s,
         state.victories,
         state.reviews,
-        state.discussions,
+        state.discussions ?? [],
         ownerKey,
         24
       ),

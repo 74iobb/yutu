@@ -51,6 +51,7 @@ import {
   apiLoadDiscussions,
   apiAddDiscussion,
   apiDeleteDiscussion,
+  apiLoadDiscussionStats,
   type ApiEndpointKey,
   type ApiProbe,
 } from '@/lib/yutuApi';
@@ -59,6 +60,7 @@ import type {
   ChoiceStat,
   DimensionKey,
   Discussion,
+  DiscussionStat,
   LoopArchive,
   PeerSample,
   PeerStat,
@@ -155,6 +157,8 @@ export interface YutuState extends PersistShape {
   choiceStats: ChoiceStat[];
   /** 已尝试加载过讨论的复盘 id */
   discussionLoaded: string[];
+  /** 按复盘聚合的讨论热度 */
+  discussionStats: DiscussionStat[];
 }
 
 const INITIAL: YutuState = {
@@ -179,6 +183,7 @@ const INITIAL: YutuState = {
   choiceStats: [],
   discussions: [],
   discussionLoaded: [],
+  discussionStats: [],
   shortlist: [],
   backendOnline: false,
   hydrated: false,
@@ -378,6 +383,7 @@ interface RemoteRead {
   peerStats: PeerStat[];
   peerMine: PeerSample[];
   choiceStats: ChoiceStat[];
+  discussionStats: DiscussionStat[];
   online: boolean;
   okCount: number;
 }
@@ -403,6 +409,11 @@ async function readRemote(ownerKey: string): Promise<RemoteRead> {
       key: 'archiveChoiceStats',
       label: '归档去向',
       run: () => apiLoadChoiceStats(),
+    },
+    {
+      key: 'discussionsStats',
+      label: '讨论热度',
+      run: () => apiLoadDiscussionStats(),
     },
   ];
   const settled = await Promise.allSettled(defs.map((d) => d.run()));
@@ -432,6 +443,7 @@ async function readRemote(ownerKey: string): Promise<RemoteRead> {
     peerStats: val<PeerStat[]>(5, []),
     peerMine: val<PeerSample[]>(6, []),
     choiceStats: val<ChoiceStat[]>(7, []),
+    discussionStats: val<DiscussionStat[]>(8, []),
     online: probes.some((p) => p.ok),
     okCount: probes.filter((p) => p.ok).length,
   };
@@ -560,6 +572,7 @@ export function YutuProvider({ children }: { children: ReactNode }) {
             { key: 'peerSamplesStats', label: '同阶段去向', ok: false, message: '读取失败' },
             { key: 'peerSamplesMine', label: '我的去向', ok: false, message: '读取失败' },
             { key: 'archiveChoiceStats', label: '归档去向', ok: false, message: '读取失败' },
+            { key: 'discussionsStats', label: '讨论热度', ok: false, message: '读取失败' },
           ],
         }));
         return;
@@ -619,6 +632,7 @@ export function YutuProvider({ children }: { children: ReactNode }) {
             : s.peerMine,
           peerStats: remote.peerStats,
           choiceStats: remote.choiceStats,
+          discussionStats: remote.discussionStats,
           backendOnline: true,
           hydrated: true,
           inactive,

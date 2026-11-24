@@ -165,3 +165,10 @@ export interface Discussion {
   content: string;
   createdAt: string;
 }
+
+/** 按复盘聚合的讨论热度 */
+export interface DiscussionStat {
+  reviewId: string;
+  count: number;
+  people: number;
+}

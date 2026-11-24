@@ -40,7 +40,7 @@ export default function DiscussionThread({ reviewId }: Props) {
   const [text, setText] = useState('');
 
   const items = useMemo(
-    () => state.discussions.filter((d) => d.reviewId === reviewId),
+    () => (state.discussions ?? []).filter((d) => d.reviewId === reviewId),
     [state.discussions, reviewId]
   );
   const tree = useMemo(() => buildTree(items), [items]);

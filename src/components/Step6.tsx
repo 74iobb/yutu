@@ -871,7 +871,7 @@ function StationTab({
               tasks={state.tasks}
               victories={state.victories}
               reviews={state.reviews}
-              discussions={state.discussions}
+              discussions={state.discussions ?? []}
               ownerKey={ownerKey}
               compact
             />
@@ -1441,12 +1441,31 @@ function PeersTab() {
   );
   const nextGap = Math.max(0, NEED - bestMarks);
   /* 讨论贡献：自己参与的讨论数，以及别人对自己讨论的回复数 */
-  const myDiscussions = state.discussions.filter(
+  const allDiscussions = state.discussions ?? [];
+  const myDiscussions = allDiscussions.filter(
     d => d.authorKey === ownerKey
   );
   const myDiscussionIds = new Set(myDiscussions.map(d => d.id));
-  const repliesToMe = state.discussions.filter(
+  const repliesToMe = allDiscussions.filter(
     d => myDiscussionIds.has(d.parentId) && d.authorKey !== ownerKey
+  ).length;
+  /* 讨论热度：平台聚合优先，离线时用本机讨论兜底 */
+  const statFor = (reviewId: string) => {
+    const remote = (state.discussionStats ?? []).find(
+      s => s.reviewId === reviewId
+    );
+    const local = allDiscussions.filter(d => d.reviewId === reviewId);
+    const localPeople = new Set(local.map(d => d.authorKey)).size;
+    if (remote && remote.count > 0) {
+      return {
+        count: Math.max(remote.count, local.length),
+        people: Math.max(remote.people, localPeople),
+      };
+    }
+    return { count: local.length, people: localPeople };
+  };
+  const hotCount = publicReviews.filter(
+    r => statFor(r.id).people >= 3
   ).length;
 
   return (
@@ -1571,6 +1590,7 @@ function PeersTab() {
 
         {ownReviews.map(r => {
           const marks = state.markCounts[r.id] ?? 0;
+          const ds = statFor(r.id);
           return (
             <div className='y-pool' key={r.id}>
               <div className='y-vic-top'>
@@ -1590,6 +1610,11 @@ function PeersTab() {
               <p className='y-vic-ts'>
                 有效标记 {marks} / {NEED}
               </p>
+              <div className='y-disc-heat'>
+                <span>讨论 {ds.count}</span>
+                <span>{ds.people} 人参与</span>
+                {ds.people >= 3 ? <em>热议</em> : null}
+              </div>
               <ReviewDiscussion reviewId={r.id} />
             </div>
           );
@@ -1617,9 +1642,15 @@ function PeersTab() {
             <p className='y-note' style={{ paddingBottom: 6 }}>
               按提交时间倒序；满 3 个有效标记才参与归属计算。
             </p>
+            {hotCount ? (
+              <p className='y-note' style={{ paddingBottom: 6 }}>
+                有 {hotCount} 条复盘进入热议（≥3 人参与讨论）。
+              </p>
+            ) : null}
             {publicReviews.slice(0, 8).map(r => {
               const marks = state.markCounts[r.id] ?? 0;
               const marked = markedIds.includes(r.id);
+              const ds = statFor(r.id);
               const text = r.content.replace('[经验卡] ', '');
               const short =
                 text.length > 72 ? `${text.slice(0, 72)}…` : text;
@@ -1658,6 +1689,11 @@ function PeersTab() {
                     >
                       {marked ? '已标记' : '标记为有效'}
                     </button>
+                  </div>
+                  <div className='y-disc-heat'>
+                    <span>讨论 {ds.count}</span>
+                    <span>{ds.people} 人参与</span>
+                    {ds.people >= 3 ? <em>热议</em> : null}
                   </div>
                   <ReviewDiscussion reviewId={r.id} />
                 </div>

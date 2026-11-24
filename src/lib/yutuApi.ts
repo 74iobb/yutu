@@ -10,6 +10,7 @@ import type {
   Choice,
   ChoiceStat,
   Discussion,
+  DiscussionStat,
   PeerSample,
   PeerStat,
   Profile,
@@ -42,6 +43,7 @@ const API_ENDPOINTS = {
   discussionsList: '17955291545269685',
   discussionsAdd: '17955291545269686',
   discussionsDelete: '17955291545269687',
+  discussionsStats: '17955298285269688',
 } as const;
 
 export type ApiEndpointKey = keyof typeof API_ENDPOINTS;
@@ -475,4 +477,19 @@ export async function apiDeleteDiscussion(p: {
   authorKey: string;
 }): Promise<void> {
   await callAPI(API_ENDPOINTS.discussionsDelete, p);
+}
+
+export function mapDiscussionStatRow(
+  r: Record<string, unknown>
+): DiscussionStat {
+  return {
+    reviewId: str(r.review_id),
+    count: num(r.cnt ?? r.count, 0),
+    people: num(r.people ?? r.users, 0),
+  };
+}
+
+export async function apiLoadDiscussionStats(): Promise<DiscussionStat[]> {
+  const rows = await queryRows(API_ENDPOINTS.discussionsStats);
+  return rows.map(mapDiscussionStatRow);
 }
