@@ -1,4 +1,5 @@
 import type { KeyboardEvent } from 'react';
+import marble from '@/assets/loop-marble.webp';
 
 export type LoopStationKey =
   | 'claim'
@@ -152,6 +153,12 @@ export default function LoopMap({
           六个站点依次为领取任务、去体验、标记完成、停靠自省、归档漂移、回看落点。点击任意站点可直接前往。
         </desc>
 
+        <defs>
+          <clipPath id='y-loop-marble-clip'>
+            <circle cx={CX} cy={CY - R} r={14} />
+          </clipPath>
+        </defs>
+
         <circle cx={CX} cy={CY} r={R + 15} className='y-loop-track2' />
         <circle cx={CX} cy={CY} r={R} className='y-loop-track' />
         <circle
@@ -164,10 +171,6 @@ export default function LoopMap({
           strokeDashoffset={C * (1 - progress)}
         />
 
-        {/* 环绕的小光点：让闭环一直「在走」 */}
-        <g className='y-loop-orbit' aria-hidden='true'>
-          <circle cx={CX} cy={CY - R} r={3.2} />
-        </g>
         <g className='y-loop-orbit y-loop-orbit-b' aria-hidden='true'>
           <circle cx={CX} cy={CY - R} r={2.1} />
         </g>
@@ -225,6 +228,43 @@ export default function LoopMap({
             </g>
           );
         })}
+
+        {/* 弹珠：彩绘玻璃纹理，沿闭环滚动；画在站点之上，避免被节点盖住 */}
+        <g className='y-loop-orbit' aria-hidden='true'>
+          <ellipse
+            cx={CX}
+            cy={CY - R + 4}
+            rx={12}
+            ry={8}
+            fill='rgba(0,0,0,0.32)'
+          />
+          <image
+            href={marble}
+            x={CX - 14}
+            y={CY - R - 14}
+            width={28}
+            height={28}
+            preserveAspectRatio='xMidYMid slice'
+            clipPath='url(#y-loop-marble-clip)'
+            className='y-loop-marble'
+          />
+          <ellipse
+            cx={CX}
+            cy={CY - R}
+            rx={14}
+            ry={14}
+            fill='none'
+            stroke='rgba(255,255,255,0.55)'
+            strokeWidth={1.3}
+          />
+          <ellipse
+            cx={CX - 4.2}
+            cy={CY - R - 5}
+            rx={4.2}
+            ry={2.5}
+            fill='rgba(255,255,255,0.55)'
+          />
+        </g>
 
         <text x={CX} y={CY - 24} textAnchor='middle' className='y-loop-round'>
           第 {round} 轮

@@ -13442,3 +13442,15 @@ html.y-motion-off #yutu2 .gis-me-halo {
   animation: none;
   opacity: 0.75;
 }
+
+/* 成长闭环弹珠：彩绘玻璃纹理，沿环滚动 */
+#yutu2 .y-loop-marble {
+  pointer-events: none;
+  filter: drop-shadow(0 3px 5px rgba(0, 0, 0, 0.55)) saturate(1.12);
+}
+
+/* 弹珠/光点都是装饰层，不拦截站点点击 */
+#yutu2 .y-loop-orbit,
+#yutu2 .y-loop-orbit-fast {
+  pointer-events: none;
+}

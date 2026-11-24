@@ -195,3 +195,5 @@ pnpm build          # 期望 ✓ built
 > 2026-11-24 V10.1 接入「高级阳光早晨」照片：`scenery-morning.jpg`（Unsplash License，1100×700）+ 16 帧 `scenery-morning-motion.webp`；`GapPhoto` 新增 `morning` 变体，第一步右侧「判定结果」下方的图位替换为它并自动播放；来源与授权已登记 `docs/IMAGE-SOURCES.md`。
 >
 > 2026-11-24 V10.2 新增 `taste` skill（审美与体验门禁）：`.claude/skills/taste/SKILL.md`，并镜像到四个技能目录。交付前用它做六维审查（层级 / 一致性 / 数据诚实 / 动效 / 状态 / 响应式），P0 必须为 0。
+>
+> 2026-11-24 V10.3 成长闭环弹珠：用用户上传的彩绘玻璃图生成 `loop-marble.webp`（256×256 圆形透明），`LoopMap` 把主环绕光点替换为弹珠（阴影 + 白边 + 高光，16s 绕环，画在站点之上、不挡点击）。来源已登记 `docs/IMAGE-SOURCES.md`。
