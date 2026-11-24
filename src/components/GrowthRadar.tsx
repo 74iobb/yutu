@@ -1,3 +1,4 @@
+import { useId } from 'react';
 import { DIMS } from '@/lib/model';
 import type { Scores } from '@/types';
 
@@ -47,9 +48,7 @@ function labelAnchor(x: number) {
 
 /**
  * 「起点 → 现在」七维雷达对比。
- *
- * 科研图风格：细网格、轴线刻度、单色细描边、低饱和填充；
- * 不发光、不扫描、不做持续动画。越靠外表示该维数值越高。
+ * 越靠外表示该维数值越高；颜色不表示好坏，只区分两个时间点。
  */
 export default function GrowthRadar({
   before,
@@ -58,12 +57,13 @@ export default function GrowthRadar({
   afterLabel = '现在',
   compact = false,
 }: GrowthRadarProps) {
+  const uid = useId().replace(/:/g, '');
   const changed = DIMS.filter((d) => before[d.k] !== after[d.k]);
   const deltaText = DIMS.map((d) => ({
     ...d,
     delta: after[d.k] - before[d.k],
   })).filter((d) => d.delta !== 0);
-  /* 变化最大的一维：轴线与标签加粗，作为图内注记 */
+  /* 变化最大的一维：轴线和标签加亮，让视线先落在它上面 */
   let shiftIndex = -1;
   let shiftAbs = 0;
   DIMS.forEach((d, i) => {
@@ -81,20 +81,40 @@ export default function GrowthRadar({
         role='img'
         aria-label={`${beforeLabel}与${afterLabel}的七维雷达对比，${changed.length} 个维度发生变化`}
       >
-        {/* 同心网格 */}
+        <defs>
+          <radialGradient id={`${uid}-after`} cx='50%' cy='50%' r='62%'>
+            <stop offset='0%' stopColor='#7ec8ff' stopOpacity='0.34' />
+            <stop offset='70%' stopColor='#7ec8ff' stopOpacity='0.12' />
+            <stop offset='100%' stopColor='#b9a8ff' stopOpacity='0.05' />
+          </radialGradient>
+          <linearGradient id={`${uid}-before`} x1='0' y1='0' x2='0' y2='1'>
+            <stop offset='0%' stopColor='#f0b25a' stopOpacity='0.16' />
+            <stop offset='100%' stopColor='#f0b25a' stopOpacity='0.02' />
+          </linearGradient>
+          <filter id={`${uid}-glow`} x='-40%' y='-40%' width='180%' height='180%'>
+            <feGaussianBlur stdDeviation='2.6' result='blur' />
+            <feMerge>
+              <feMergeNode in='blur' />
+              <feMergeNode in='SourceGraphic' />
+            </feMerge>
+          </filter>
+          <radialGradient id={`${uid}-core`} cx='50%' cy='50%' r='50%'>
+            <stop offset='0%' stopColor='#bfe3ff' stopOpacity='0.85' />
+            <stop offset='100%' stopColor='#7ec8ff' stopOpacity='0' />
+          </radialGradient>
+        </defs>
+
+        {/* 网格 */}
         {LEVELS.map((lv) => (
           <path
             key={lv}
-            d={
-              DIMS.map((_, i) => {
-                const p = pointAt(i, lv);
-                return `${i === 0 ? 'M' : 'L'}${p.x.toFixed(1)},${p.y.toFixed(1)}`;
-              }).join(' ') + ' Z'
-            }
+            d={DIMS.map((_, i) => {
+              const p = pointAt(i, lv);
+              return `${i === 0 ? 'M' : 'L'}${p.x.toFixed(1)},${p.y.toFixed(1)}`;
+            }).join(' ') + ' Z'}
             className='y-radar-grid'
           />
         ))}
-
         {/* 轴线 */}
         {DIMS.map((d, i) => {
           const p = pointAt(i, 1);
@@ -110,24 +130,44 @@ export default function GrowthRadar({
           );
         })}
 
-        {/* 刻度：沿上方纵轴 25 / 50 / 75 / 100 */}
-        {LEVELS.map((lv) => (
-          <text
-            key={`tick-${lv}`}
-            x={CX + 5}
-            y={CY - R * lv + 3}
-            className='y-radar-tick'
-          >
-            {Math.round(lv * 100)}
-          </text>
-        ))}
+        {/* 扫描线：一圈 10s，纯装饰，关闭动效后隐藏 */}
+        <g
+          className='y-radar-sweep'
+          aria-hidden='true'
+          filter={`url(#${uid}-glow)`}
+        >
+          <line
+            x1={CX}
+            y1={CY}
+            x2={CX}
+            y2={CY - R}
+            className='y-radar-sweep-line'
+          />
+          <circle
+            cx={CX}
+            cy={CY - R}
+            r={2.6}
+            className='y-radar-sweep-dot'
+          />
+        </g>
 
-        <circle cx={CX} cy={CY} r={1.6} className='y-radar-core' />
+        <circle cx={CX} cy={CY} r={26} fill={`url(#${uid}-core)`} opacity={0.5} />
+        <circle cx={CX} cy={CY} r={2.4} className='y-radar-core' />
 
         {/* 起点 */}
-        <path d={polygonPath(before)} className='y-radar-area is-before' />
+        <path
+          d={polygonPath(before)}
+          className='y-radar-area is-before'
+          style={{ fill: `url(#${uid}-before)` }}
+        />
         {/* 现在 */}
-        <path d={polygonPath(after)} className='y-radar-area is-after' />
+        <path
+          d={polygonPath(after)}
+          pathLength={1}
+          className='y-radar-area is-after y-radar-draw'
+          style={{ fill: `url(#${uid}-after)` }}
+          filter={`url(#${uid}-glow)`}
+        />
 
         {/* 顶点 */}
         {DIMS.map((d, i) => {
@@ -135,19 +175,12 @@ export default function GrowthRadar({
           const b = pointAt(i, norm(before[d.k], d.min, d.max));
           return (
             <g key={d.k}>
-              <circle
-                cx={b.x}
-                cy={b.y}
-                r={2.2}
-                className='y-radar-dot is-before'
-              />
+              <circle cx={b.x} cy={b.y} r={2.6} className='y-radar-dot is-before' />
               <circle
                 cx={a.x}
                 cy={a.y}
-                r={i === shiftIndex ? 3.2 : 2.6}
-                className={`y-radar-dot is-after${
-                  i === shiftIndex ? ' is-shift' : ''
-                }`}
+                r={i === shiftIndex ? 3.6 : 2.8}
+                className={`y-radar-dot is-after${i === shiftIndex ? ' is-shift' : ''}`}
               />
             </g>
           );
@@ -163,9 +196,7 @@ export default function GrowthRadar({
                 x={p.x}
                 y={p.y}
                 textAnchor={labelAnchor(p.x)}
-                className={`y-radar-label${
-                  i === shiftIndex ? ' is-shift' : ''
-                }`}
+                className={`y-radar-label${i === shiftIndex ? ' is-shift' : ''}`}
               >
                 {d.n}
               </text>
@@ -212,7 +243,8 @@ export default function GrowthRadar({
         )}
         {!compact ? (
           <p className='y-radar-note'>
-            七维原始值；年龄按 18–45 归一。n = 1，图内无统计推断。
+            越靠外表示该维数值越高；颜色只区分时间点，不代表好坏。起点在首次进入第 2
+            步时固定，之后不随修改回填。
           </p>
         ) : null}
       </figcaption>

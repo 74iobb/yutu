@@ -2121,16 +2121,11 @@ export default function Step6() {
     { n: 4 as const, label: '同伴经验域', flag: 0 },
   ];
 
+  const idx = loopStationIndex(active, doing, ready);
   const lastArchive = state.lastArchive;
   const pendingDirectionReview = Boolean(
     lastArchive && reviewedAt !== lastArchive.at
   );
-  /* 状态机：归档后先停在「回看落点」，答完方向确认再回到下一轮的「领取任务」 */
-  const idx = pendingDirectionReview
-    ? 5
-    : loopStationIndex(active, doing, ready);
-  /* 四阶段飞轮：0 推演（已完成）→ 1 执行 → 2 复盘 → 3 再推演 */
-  const flowStage = idx <= 2 ? 1 : idx <= 4 ? 2 : 3;
 
   function markDirectionReviewed(at: number) {
     setReviewedAt(at);
@@ -2262,60 +2257,6 @@ export default function Step6() {
           <p>
             当前步骤会展开操作入口；走完 6 步、归档之后，才会出现方向确认与下一轮
           </p>
-        </div>
-
-        <div className='y-loop-stages' aria-label='闭环四阶段'>
-          {[
-            {
-              key: 'infer',
-              label: '推演',
-              hint: '方向与代价',
-              run: () => {
-                openStep34('list');
-                setStep(3);
-              },
-            },
-            {
-              key: 'act',
-              label: '执行',
-              hint: '领取 / 体验 / 标记',
-              run: () => setSub(1),
-            },
-            {
-              key: 'review',
-              label: '复盘',
-              hint: '停靠 / 归档',
-              run: () => setSub(2),
-            },
-            {
-              key: 'again',
-              label: '再推演',
-              hint: '回看落点',
-              run: () => goLanding(setStep),
-            },
-          ].map((s, i) => {
-            const passed = i < flowStage;
-            const on = i === flowStage;
-            return (
-              <button
-                key={s.key}
-                type='button'
-                className={`y-loop-stage${on ? ' is-on' : ''}${
-                  passed ? ' is-passed' : ''
-                }`}
-                aria-current={on ? 'step' : undefined}
-                onClick={s.run}
-              >
-                <span className='y-loop-stage-mark' aria-hidden='true'>
-                  {passed ? '✓' : i + 1}
-                </span>
-                <span>
-                  {s.label}
-                  <em>{s.hint}</em>
-                </span>
-              </button>
-            );
-          })}
         </div>
 
         <div className='y-loop-current'>

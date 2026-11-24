@@ -11,9 +11,9 @@ const KIND_LABEL: Record<MemoryItem['kind'], string> = {
 };
 
 const KIND_COLOR: Record<MemoryItem['kind'], string> = {
-  victory: '#b08d5a',
-  review: '#79a7c9',
-  discussion: '#9b8bb8',
+  victory: '#f0b25a',
+  review: '#7ec8ff',
+  discussion: '#b9a8ff',
 };
 
 const W = 720;
@@ -170,20 +170,17 @@ export default function MemoryPanel() {
                     }}
                     className='y-mt-dot'
                   >
-                    {active ? (
-                      <circle
-                        cx={x}
-                        cy={y}
-                        r={7.5}
-                        fill='none'
-                        stroke={KIND_COLOR[m.kind]}
-                        strokeWidth={1.1}
-                      />
-                    ) : null}
                     <circle
                       cx={x}
                       cy={y}
-                      r={3.2}
+                      r={active ? 13 : 10}
+                      className='y-mt-dot-halo'
+                      style={{ fill: KIND_COLOR[m.kind] }}
+                    />
+                    <circle
+                      cx={x}
+                      cy={y}
+                      r={active ? 5.5 : 4}
                       className='y-mt-dot-core'
                       style={{ fill: KIND_COLOR[m.kind] }}
                     />
@@ -219,24 +216,6 @@ export default function MemoryPanel() {
                   ) : null}
                 </>
               ) : null}
-
-              <text
-                x={(L + R) / 2}
-                y={H - 3}
-                textAnchor='middle'
-                className='y-mt-axis-title'
-              >
-                时间
-              </text>
-              <text
-                x={14}
-                y={(TOP + BOTTOM) / 2}
-                textAnchor='middle'
-                transform={`rotate(-90 14 ${(TOP + BOTTOM) / 2})`}
-                className='y-mt-axis-title'
-              >
-                接近度
-              </text>
             </svg>
 
             <div className='y-mt-legend'>

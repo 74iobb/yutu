@@ -3,30 +3,30 @@ import { DIMS, norm } from '@/lib/model';
 import type { DimensionKey, Scores, Victory } from '@/types';
 
 const W = 720;
-const H = 286;
+const H = 270;
 const M = { l: 26, r: 26, t: 28, b: 34 };
 const INNER_W = W - M.l - M.r;
 const INNER_H = H - M.t - M.b;
 
 const COLOR: Record<DimensionKey, string> = {
-  place: '#5f9ea0',
-  econ: '#c9a66b',
-  family: '#b2736a',
-  age: '#9b8bb8',
-  cycle: '#6f8faf',
-  inertia: '#7fa58f',
-  history: '#a89b7a',
+  place: '#4fd1b5',
+  econ: '#f3b45f',
+  family: '#e07a63',
+  age: '#b9a6f0',
+  cycle: '#5aa9e8',
+  inertia: '#7fd6a8',
+  history: '#f0c05a',
 };
 
 /** SVG gradient stop 用实际色值，避免 presentation attribute 对 CSS 变量的兼容问题 */
 const COLOR_HEX: Record<DimensionKey, string> = {
-  place: '#5f9ea0',
-  econ: '#c9a66b',
-  family: '#b2736a',
-  age: '#9b8bb8',
-  cycle: '#6f8faf',
-  inertia: '#7fa58f',
-  history: '#a89b7a',
+  place: '#4fd1b5',
+  econ: '#f3b45f',
+  family: '#e07a63',
+  age: '#b9a6f0',
+  cycle: '#5aa9e8',
+  inertia: '#7fd6a8',
+  history: '#f0c05a',
 };
 
 const SHORT: Record<DimensionKey, string> = {
@@ -174,6 +174,17 @@ export default function GrowthRiver({ victories, current }: Props) {
         </desc>
 
         <defs>
+          <radialGradient id={`${uid}-ambient`} cx='50%' cy='42%' r='62%'>
+            <stop offset='0%' stopColor='#7ec8ff' stopOpacity='0.16' />
+            <stop offset='100%' stopColor='#7ec8ff' stopOpacity='0' />
+          </radialGradient>
+          <filter id={`${uid}-soft`} x='-20%' y='-40%' width='140%' height='180%'>
+            <feGaussianBlur stdDeviation='2.4' result='blur' />
+            <feMerge>
+              <feMergeNode in='blur' />
+              <feMergeNode in='SourceGraphic' />
+            </feMerge>
+          </filter>
           {DIMS.map(d => (
             <linearGradient
               key={d.k}
@@ -190,6 +201,14 @@ export default function GrowthRiver({ victories, current }: Props) {
           ))}
         </defs>
 
+        <rect
+          x={M.l}
+          y={M.t}
+          width={INNER_W}
+          height={INNER_H}
+          rx={10}
+          fill={`url(#${uid}-ambient)`}
+        />
 
         {[0.25, 0.5, 0.75].map(f => (
           <line
@@ -215,6 +234,7 @@ export default function GrowthRiver({ victories, current }: Props) {
           x2={nowX}
           y2={M.t + INNER_H}
           className='y-river-now-line'
+          filter={`url(#${uid}-soft)`}
         />
 
         {bands.map((band, i) => (
@@ -278,25 +298,9 @@ export default function GrowthRiver({ victories, current }: Props) {
             </text>
           ) : null
         )}
-
-        <text
-          x={M.l + INNER_W / 2}
-          y={H - 1}
-          textAnchor='middle'
-          className='y-river-axis-title'
-        >
-          归档次数
-        </text>
-        <text
-          x={10}
-          y={M.t + INNER_H / 2}
-          textAnchor='middle'
-          transform={`rotate(-90 10 ${M.t + INNER_H / 2})`}
-          className='y-river-axis-title'
-        >
-          七维归一化
-        </text>
       </svg>
+
+      <span className='y-river-sheen' aria-hidden='true' />
 
       <div
         className='y-river-values'
