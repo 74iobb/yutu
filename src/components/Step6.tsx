@@ -1451,23 +1451,55 @@ function PeersTab() {
     d => myDiscussionIds.has(d.parentId) && d.authorKey !== ownerKey
   ).length;
   /* 讨论热度：平台聚合优先，离线时用本机讨论兜底 */
-  const statFor = (reviewId: string) => {
-    const remote = (state.discussionStats ?? []).find(
-      s => s.reviewId === reviewId
+  const [reviewSort, setReviewSort] = useState<'recent' | 'hot'>('recent');
+  const statsMap = useMemo(() => {
+    const map = new Map<string, { count: number; people: number }>();
+    (state.discussionStats ?? []).forEach(s =>
+      map.set(s.reviewId, { count: s.count, people: s.people })
     );
-    const local = allDiscussions.filter(d => d.reviewId === reviewId);
-    const localPeople = new Set(local.map(d => d.authorKey)).size;
-    if (remote && remote.count > 0) {
-      return {
-        count: Math.max(remote.count, local.length),
-        people: Math.max(remote.people, localPeople),
+    const local = new Map<string, { count: number; authors: Set<string> }>();
+    allDiscussions.forEach(d => {
+      const cur = local.get(d.reviewId) ?? {
+        count: 0,
+        authors: new Set<string>(),
       };
-    }
-    return { count: local.length, people: localPeople };
-  };
+      cur.count += 1;
+      cur.authors.add(d.authorKey);
+      local.set(d.reviewId, cur);
+    });
+    local.forEach((g, id) => {
+      const remote = map.get(id);
+      map.set(id, {
+        count: Math.max(remote?.count ?? 0, g.count),
+        people: Math.max(remote?.people ?? 0, g.authors.size),
+      });
+    });
+    return map;
+  }, [state.discussionStats, allDiscussions]);
+  const statFor = (reviewId: string) =>
+    statsMap.get(reviewId) ?? { count: 0, people: 0 };
   const hotCount = publicReviews.filter(
     r => statFor(r.id).people >= 3
   ).length;
+  const sortedPublic = useMemo(() => {
+    const list = [...publicReviews];
+    if (reviewSort === 'hot') {
+      list.sort((a, b) => {
+        const sa = statsMap.get(a.id) ?? { count: 0, people: 0 };
+        const sb = statsMap.get(b.id) ?? { count: 0, people: 0 };
+        const ha = (state.markCounts[a.id] ?? 0) + sa.people;
+        const hb = (state.markCounts[b.id] ?? 0) + sb.people;
+        return (
+          hb - ha ||
+          sb.count - sa.count ||
+          b.createdAt.localeCompare(a.createdAt)
+        );
+      });
+    } else {
+      list.sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+    }
+    return list;
+  }, [publicReviews, reviewSort, state.markCounts, statsMap]);
 
   return (
     <>
@@ -1614,6 +1646,7 @@ function PeersTab() {
               <div className='y-disc-heat'>
                 <span>讨论 {ds.count}</span>
                 <span>{ds.people} 人参与</span>
+                <b className='y-heat-score'>热度 {marks + ds.people}</b>
                 {ds.people >= 3 ? <em>热议</em> : null}
               </div>
               <ReviewDiscussion reviewId={r.id} />
@@ -1637,19 +1670,41 @@ function PeersTab() {
           >
             经验星云
           </button>
+          {publicReviews.length ? (
+            <div className='y-review-sort' role='group' aria-label='复盘排序'>
+              <button
+                type='button'
+                className={reviewSort === 'recent' ? 'is-on' : undefined}
+                aria-pressed={reviewSort === 'recent'}
+                onClick={() => setReviewSort('recent')}
+              >
+                最新
+              </button>
+              <button
+                type='button'
+                className={reviewSort === 'hot' ? 'is-on' : undefined}
+                aria-pressed={reviewSort === 'hot'}
+                onClick={() => setReviewSort('hot')}
+              >
+                热议
+              </button>
+            </div>
+          ) : null}
         </h3>
 
         {publicReviews.length ? (
           <>
             <p className='y-note' style={{ paddingBottom: 6 }}>
-              按提交时间倒序；满 3 个有效标记才参与归属计算。
+              {reviewSort === 'hot'
+                ? '按热度排序：有效标记 + 参与讨论人数（1 人 1 分）；同分按讨论数与时间。排序不改变公共节点判定。'
+                : '按提交时间倒序；满 3 个有效标记才参与归属计算。'}
             </p>
             {hotCount ? (
               <p className='y-note' style={{ paddingBottom: 6 }}>
                 有 {hotCount} 条复盘进入热议（≥3 人参与讨论）。
               </p>
             ) : null}
-            {publicReviews.slice(0, 8).map(r => {
+            {sortedPublic.slice(0, 8).map(r => {
               const marks = state.markCounts[r.id] ?? 0;
               const marked = markedIds.includes(r.id);
               const ds = statFor(r.id);
@@ -1695,6 +1750,7 @@ function PeersTab() {
                   <div className='y-disc-heat'>
                     <span>讨论 {ds.count}</span>
                     <span>{ds.people} 人参与</span>
+                    <b className='y-heat-score'>热度 {marks + ds.people}</b>
                     {ds.people >= 3 ? <em>热议</em> : null}
                   </div>
                   <ReviewDiscussion reviewId={r.id} />

@@ -13871,3 +13871,35 @@ html.y-motion-off #yutu2 .gis-me-halo {
     grid-template-columns: minmax(0, 1fr);
   }
 }
+
+/* 复盘排序：最新 / 热议 */
+#yutu2 .y-review-sort {
+  display: inline-flex;
+  gap: 4px;
+  margin-left: auto;
+  vertical-align: middle;
+}
+#yutu2 .y-review-sort button {
+  padding: 2px 8px;
+  border-radius: 999px;
+  border: 1px solid rgba(160, 190, 255, 0.2);
+  background: rgba(8, 15, 32, 0.5);
+  color: var(--y-muted);
+  font-size: 10.5px;
+  cursor: pointer;
+  transition:
+    color 160ms ease,
+    background-color 160ms ease,
+    border-color 160ms ease;
+}
+#yutu2 .y-review-sort button.is-on {
+  color: #04121f;
+  background: linear-gradient(180deg, #bfe3ff, #7ec8ff);
+  border-color: transparent;
+  font-weight: 650;
+}
+#yutu2 .y-heat-score {
+  color: #f3d79a;
+  font-weight: 650;
+  font-variant-numeric: tabular-nums;
+}
