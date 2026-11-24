@@ -31,6 +31,24 @@ export function Shell({ children }: { children: ReactNode }) {
   const [syncOpen, setSyncOpen] = useState(false);
   const [dataOpen, setDataOpen] = useState(false);
   useImmersive(dataOpen, setDataOpen);
+  /** 头部「更多」：把知乎快照 / 数据口径 / 电气实训收口 */
+  const [moreOpen, setMoreOpen] = useState(false);
+  const moreRef = useRef<HTMLSpanElement>(null);
+  useEffect(() => {
+    if (!moreOpen) return;
+    const onDoc = (e: MouseEvent) => {
+      if (!moreRef.current?.contains(e.target as Node)) setMoreOpen(false);
+    };
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setMoreOpen(false);
+    };
+    document.addEventListener('mousedown', onDoc);
+    window.addEventListener('keydown', onKey);
+    return () => {
+      document.removeEventListener('mousedown', onDoc);
+      window.removeEventListener('keydown', onKey);
+    };
+  }, [moreOpen]);
   /** 手动动效开关：跟随系统之外的第二层降级，适合低性能设备 */
   const [motionOff, setMotionOff] = useState(() => {
     try {
@@ -490,16 +508,6 @@ export function Shell({ children }: { children: ReactNode }) {
         </div>
         <div className='y-head-side'>
           <div className='y-chip-row'>
-            <a
-              className='y-chip y-chip-elab'
-              href='#/electrical'
-              title='电气控制 · 交互题解'
-            >
-              <span className='y-elab-bolt' aria-hidden='true'>
-                ⚡
-              </span>
-              电气实训
-            </a>
             <span className='y-sync-wrap'>
               <button
                 type='button'
@@ -590,7 +598,6 @@ export function Shell({ children }: { children: ReactNode }) {
                     : ''}
               </button>
             ) : null}
-            <span className='y-chip'>知乎快照 {SNAPSHOT_AT}</span>
             <button
               type='button'
               className={`y-chip y-motion-chip${motionOff ? ' is-off' : ''}`}
@@ -605,19 +612,56 @@ export function Shell({ children }: { children: ReactNode }) {
               <i className='y-motion-dot' />
               动效 {motionOff ? '关' : '开'}
             </button>
+            <span className='y-more-wrap' ref={moreRef}>
+              <button
+                type='button'
+                className='y-chip y-more-trigger'
+                aria-expanded={moreOpen}
+                aria-controls='y-more-panel'
+                onClick={() => setMoreOpen((v) => !v)}
+                title='更多入口'
+              >
+                更多 <em className='y-more-caret'>{moreOpen ? '▴' : '▾'}</em>
+              </button>
+              {moreOpen ? (
+                <div
+                  className='y-more-panel'
+                  id='y-more-panel'
+                  role='dialog'
+                  aria-label='更多入口'
+                >
+                  <button
+                    type='button'
+                    className='y-more-item'
+                    onClick={() => {
+                      setDataOpen(true);
+                      setMoreOpen(false);
+                    }}
+                  >
+                    <span>数据来源与口径</span>
+                    <span aria-hidden='true'>↗</span>
+                  </button>
+                  <div className='y-more-info'>
+                    <span>知乎快照</span>
+                    <b>{SNAPSHOT_AT}</b>
+                  </div>
+                  <a
+                    className='y-more-item'
+                    href='#/electrical'
+                    onClick={() => setMoreOpen(false)}
+                  >
+                    <span>电气实训</span>
+                    <span aria-hidden='true'>→</span>
+                  </a>
+                </div>
+              ) : null}
+            </span>
             {state.inactive?.applied ? (
               <span className='y-chip y-chip-w'>
                 已按 {state.inactive.days} 天未活跃小幅衰减
               </span>
             ) : null}
           </div>
-          <button
-            type='button'
-            className='y-meta-trigger'
-            onClick={() => setDataOpen(true)}
-          >
-            数据来源与口径 ↗
-          </button>
         </div>
       </div>
 
