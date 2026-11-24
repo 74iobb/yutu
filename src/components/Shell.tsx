@@ -9,21 +9,6 @@ import Companion from './Companion';
 import MascotVisual from './MascotVisual';
 import DataSourcesPanel from './DataSourcesPanel';
 
-type BgKind = 'nebula' | 'ocean' | 'leaves';
-const BG_ORDER: BgKind[] = ['nebula', 'ocean', 'leaves'];
-const BG_LABEL: Record<BgKind, string> = {
-  nebula: '星云',
-  ocean: '海',
-  leaves: '叶面',
-};
-const BG_TITLE: Record<BgKind, string> = {
-  nebula: 'NGC 7023 鸢尾花星云',
-  ocean: '水下海洋照片',
-  leaves: '叶面水珠照片',
-};
-const nextBg = (v: BgKind) =>
-  BG_ORDER[(BG_ORDER.indexOf(v) + 1) % BG_ORDER.length];
-
 const STEP_META = [
   { t: '填写信息', d: '城市、年龄与处境' },
   { t: '了解你所处的环境', d: '城市、区域与真实讨论' },
@@ -54,23 +39,6 @@ export function Shell({ children }: { children: ReactNode }) {
       return false;
     }
   });
-  /** 全屏背景：星云 / 海 / 叶面，记住上次选择 */
-  const [bg, setBg] = useState<BgKind>(() => {
-    try {
-      const v = window.localStorage.getItem('yutu.bg');
-      return v === 'ocean' || v === 'leaves' ? v : 'nebula';
-    } catch {
-      return 'nebula';
-    }
-  });
-  useEffect(() => {
-    document.documentElement.dataset.bg = bg;
-    try {
-      window.localStorage.setItem('yutu.bg', bg);
-    } catch {
-      /* 本地存储不可用时只影响本次会话 */
-    }
-  }, [bg]);
   useEffect(() => {
     const root = document.documentElement;
     root.classList.toggle('y-motion-off', motionOff);
@@ -636,17 +604,6 @@ export function Shell({ children }: { children: ReactNode }) {
             >
               <i className='y-motion-dot' />
               动效 {motionOff ? '关' : '开'}
-            </button>
-            <button
-              type='button'
-              className='y-chip y-bg-chip'
-              onClick={() => setBg((v) => nextBg(v))}
-              title={`当前背景：${BG_TITLE[bg]}；点击切换到${
-                BG_LABEL[nextBg(bg)]
-              }`}
-            >
-              <i className='y-bg-dot' />
-              背景 {BG_LABEL[bg]}
             </button>
             {state.inactive?.applied ? (
               <span className='y-chip y-chip-w'>

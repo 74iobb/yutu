@@ -43,20 +43,6 @@ export const PROVENANCE = {
       '由官方 zhihu-cli 一次性检索取得，保留原文链接；不是运行时实时检索。',
     meta: `快照时间 ${SNAPSHOT_AT}`,
   },
-  nebula: {
-    label: '背景：NGC 7023 鸢尾花星云',
-    kind: 'real',
-    detail:
-      'NOIRLab 公开图像 noao-ngc7023；T.A. Rector/University of Alaska Anchorage、H. Schweiker/WIYN、NOIRLab/NSF/AURA。',
-    meta: 'https://noirlab.edu/public/images/noao-ngc7023/',
-  },
-  ocean: {
-    label: '背景：水下海洋照片',
-    kind: 'real',
-    detail:
-      'Unsplash 真实水下照片，Unsplash License；用于「海」背景，含光束、焦散与气泡动效。',
-    meta: 'https://images.unsplash.com/photo-1530053969600-caed2596d242',
-  },
   zhihuCases: {
     label: '知乎案例/讨论',
     kind: 'real',

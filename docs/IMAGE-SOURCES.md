@@ -46,42 +46,18 @@
 
 按钮上叠加深色渐变层保证白字可读；底图缓慢横向流动（`yBtnFlow`），暗部叠层做 `yBtnDeepen` 明暗呼吸，悬停时加快并进一步加深。顶部步骤条中的「当前步骤」和闭环选中的子页签使用同一张底图；`prefers-reduced-motion` / 「动效 关」下只保留静态底图。
 
-### 全屏页面背景（可切换）
+### 全屏页面背景
 
-默认使用 NOIRLab 公开的 **NGC 7023 鸢尾花星云**；页头「背景 星云 / 叶面」可切换回叶面水珠，选择写入 `localStorage: yutu.bg`。两款背景都以 72s 缓慢平移、缩放与旋转，叠加淡蓝/淡紫呼吸光晕；`#yutu2` 保持半透明磨砂玻璃，卡片可读。`prefers-reduced-motion` / 「动效 关」下只保留静态背景。
-
-**星云（默认）**
+来自用户提供的叶面水珠照片（`.attachments/微信图片_20261122064702_400_2.jpg`），输出到 `src/assets/`：
 
 | 文件 | 用途 | 说明 |
 |---|---|---|
-| `src/assets/yutu-iris-nebula.webp` | 全屏背景（优先） | NOIRLab `noao-ngc7023`，以核心为中心重裁为 1600×900 并轻微调色，约 94 KB |
-| `src/assets/yutu-iris-nebula.jpg` | 同上，JPEG fallback | 1600×900，约 140 KB |
-
-- 来源：https://noirlab.edu/public/images/noao-ngc7023/
-- Credit（NOIRLab 要求保留完整署名）：T.A. Rector/University of Alaska Anchorage, H. Schweiker/WIYN and NOIRLab/NSF/AURA
-- 已在页脚、`PROVENANCE.nebula` 与「数据来源与口径」面板登记。
-
-**叶面水珠（备选）**
-
-来自用户提供的叶面水珠照片（`.attachments/微信图片_20261122064702_400_2.jpg`）：
-
-| 文件 | 用途 | 说明 |
-|---|---|---|
-| `src/assets/yutu-bg-leaves.webp` | 全屏背景备选（优先） | 用户提供，1600×1200，约 327 KB |
+| `src/assets/yutu-bg-leaves.webp` | **全屏页面背景（优先）** | 用户提供，1600×1200，约 327 KB |
 | `src/assets/yutu-bg-leaves.jpg` | 同上，JPEG fallback | 1600×1200，约 470 KB |
 
-**背景照片由用户提供，仅限本项目使用；如需对外发布请确认授权。**
+背景图以 72s 缓慢平移、缩放与旋转，叠加一层淡蓝/淡紫呼吸光晕；`#yutu2` 保持半透明磨砂玻璃，卡片可读。`prefers-reduced-motion` / 「动效 关」下只保留静态背景。**背景照片由用户提供，仅限本项目使用；如需对外发布请确认授权。**
 
-**水下（备选）**
-
-| 文件 | 用途 | 说明 |
-|---|---|---|
-| `src/assets/yutu-bg-ocean.webp` | 全屏背景备选（优先） | Unsplash，1600×900，约 87 KB |
-| `src/assets/yutu-bg-ocean.jpg` | 同上，JPEG fallback | 1600×900，约 166 KB |
-
-- 来源：https://images.unsplash.com/photo-1530053969600-caed2596d242
-- 授权：Unsplash License（免费使用，界面已注明来源）
-- 动效：`yOceanDrift` 96s 缓慢上浮/缩放；`yOceanRays` 18s 体积光束；`yOceanCaustics` 28s 焦散；6 个气泡 `yBubbleRise` 16–28s。减动效 / 「动效 关」时停止，保留静态海面。
+> 2026-11-24 V10.7 回退：全屏背景恢复为上述叶面水珠，移除星云/水下/背景切换。`yutu-iris-nebula.*` 与 `yutu-bg-ocean.*` 仍保留在 `src/assets/` 作为备选素材，但当前未被引用。
 
 ## 成长闭环弹珠（2026-11-24）
 
