@@ -1,4 +1,5 @@
 import { DIMS } from '@/lib/model';
+import type { MemoryItem } from '@/lib/memory';
 import type { Scores, TaskItem, Victory } from '@/types';
 
 export interface SoulQuestion {
@@ -15,6 +16,8 @@ interface SoulInput {
   current: Scores;
   tasks: TaskItem[];
   victories: Victory[];
+  /** 本地长期记忆检索结果（最接近当前处境的旧记录） */
+  memories?: MemoryItem[];
 }
 
 /** 截断引文，避免整段复盘把卡片撑爆 */
@@ -36,6 +39,7 @@ export function buildSoulQuestions({
   current,
   tasks,
   victories,
+  memories = [],
 }: SoulInput): SoulQuestion[] {
   const out: SoulQuestion[] = [];
   const active = tasks.filter((t) => !t.archived);
@@ -90,16 +94,28 @@ export function buildSoulQuestions({
     }
   }
 
-  /* 4. 引用上一轮原话：制造「AI 记得你」的感觉 */
-  const latest = victories[victories.length - 1];
-  const quote =
-    clip(latest?.answers.vision ?? '') || clip(latest?.answers.feel ?? '');
-  if (quote) {
+  /* 4. 长期记忆：引用与当前处境最接近的那条旧记录 */
+  const mem = memories[0];
+  if (mem) {
+    const pct = Math.round(mem.sim * 100);
     out.push({
       id: 'memory',
-      basis: '上一轮的自省原文',
-      text: `上一轮你写过：「${quote}」。今天再读一遍，这句话还成立吗？如果不成立，是哪一部分变了？`,
+      basis: `历史记忆 · ${
+        mem.kind === 'victory' ? `第 ${mem.no} 次归档` : '你的复盘'
+      } · ${mem.when} · 接近度 ${pct}%`,
+      text: `${mem.when}你写过：「${mem.text}」。这次的处境和当时接近度 ${pct}%——那句话现在还成立吗？`,
     });
+  } else {
+    const latest = victories[victories.length - 1];
+    const quote =
+      clip(latest?.answers.vision ?? '') || clip(latest?.answers.feel ?? '');
+    if (quote) {
+      out.push({
+        id: 'memory',
+        basis: '上一轮的自省原文',
+        text: `上一轮你写过：「${quote}」。今天再读一遍，这句话还成立吗？如果不成立，是哪一部分变了？`,
+      });
+    }
   }
 
   /* 5. 兜底：没有任何可对比数据时也给一个真问题 */

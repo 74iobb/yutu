@@ -30,6 +30,7 @@ import TrendChart from './TrendChart';
 import ChartFrame from './ChartFrame';
 import GrowthRiver from './GrowthRiver';
 import GrowthRadar from './GrowthRadar';
+import MemoryPanel from './MemoryPanel';
 import PeerNebula from './PeerNebula';
 import PeerSamples from './PeerSamples';
 import SoulCard from './SoulCard';
@@ -771,7 +772,8 @@ function StationTab({
   onDirectionChoice: (changed: boolean, resting: boolean) => void;
   onContinue: () => void;
 }) {
-  const { state, archive, submitExperienceCard, setStep, setSub } = useYutu();
+  const { state, ownerKey, archive, submitExperienceCard, setStep, setSub } =
+    useYutu();
   const [q1, setQ1] = useState('');
   const [q2, setQ2] = useState('');
   const [q3, setQ3] = useState('');
@@ -867,6 +869,8 @@ function StationTab({
               current={state.profile.s}
               tasks={state.tasks}
               victories={state.victories}
+              reviews={state.reviews}
+              ownerKey={ownerKey}
               compact
             />
           ) : null}
@@ -1178,6 +1182,7 @@ function WallTab({ nodes }: { nodes: PrototypeNode[] }) {
           </div>
         ) : null}
         <div className='y-wall-grid'>
+      <MemoryPanel />
       <div className='y-card y-card--data'>
         <h3>两点对比</h3>
         <div className='y-cmp-pick'>

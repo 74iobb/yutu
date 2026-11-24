@@ -1,12 +1,15 @@
 import { useMemo } from 'react';
+import { retrieveMemories } from '@/lib/memory';
 import { biggestShift, buildSoulQuestions } from '@/lib/soul';
-import type { Scores, TaskItem, Victory } from '@/types';
+import type { Review, Scores, TaskItem, Victory } from '@/types';
 
 interface SoulCardProps {
   snapshot0: Scores | null;
   current: Scores;
   tasks: TaskItem[];
   victories: Victory[];
+  reviews: Review[];
+  ownerKey: string;
   /** 只显示前两个问题（用于空间紧张的卡片） */
   compact?: boolean;
 }
@@ -20,11 +23,24 @@ export default function SoulCard({
   current,
   tasks,
   victories,
+  reviews,
+  ownerKey,
   compact = false,
 }: SoulCardProps) {
+  const memories = useMemo(
+    () => retrieveMemories(current, victories, reviews, ownerKey),
+    [current, victories, reviews, ownerKey]
+  );
   const questions = useMemo(
-    () => buildSoulQuestions({ snapshot0, current, tasks, victories }),
-    [snapshot0, current, tasks, victories]
+    () =>
+      buildSoulQuestions({
+        snapshot0,
+        current,
+        tasks,
+        victories,
+        memories,
+      }),
+    [snapshot0, current, tasks, victories, memories]
   );
   const list = compact ? questions.slice(0, 2) : questions;
   const shift = useMemo(() => biggestShift(snapshot0, current), [snapshot0, current]);
@@ -37,6 +53,7 @@ export default function SoulCard({
           {shift
             ? `最大变化：${shift.name} ${shift.delta > 0 ? '+' : ''}${shift.delta}${shift.unit}`
             : '问题来自你自己的数据，不是随机文案'}
+          {memories.length ? ` · 记忆 ${memories.length} 条` : ''}
         </span>
       </div>
       <ol className='y-soul-list'>

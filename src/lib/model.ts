@@ -123,10 +123,10 @@ export function mag(s: Scores): number {
  * - 强度：两边模长的接近程度，缓解“方向相同但处境严峻度差异大”
  * - 收缩：自身接近中性（信息不足）时整体变小，表达“尚未落定”
  */
-export function similarityOf(s: Scores, node: PrototypeNode): number {
-  const cos = cosSim(vec(s), vec(node.s));
-  const ma = mag(s);
-  const mb = mag(node.s);
+export function pairSimilarity(a: Scores, b: Scores): number {
+  const cos = cosSim(vec(a), vec(b));
+  const ma = mag(a);
+  const mb = mag(b);
   const maxM = Math.max(ma, mb);
   const strength =
     maxM < 1e-9 ? 0 : Math.max(0, 1 - Math.abs(ma - mb) / maxM);
@@ -136,6 +136,10 @@ export function similarityOf(s: Scores, node: PrototypeNode): number {
   /* 收缩用平方根，避免中性用户直接被压到“看起来毫无相似”的极低值 */
   const shrink = Math.min(1, Math.sqrt(ma / MODEL_PARAMS.simMagRef));
   return blended * shrink;
+}
+
+export function similarityOf(s: Scores, node: PrototypeNode): number {
+  return pairSimilarity(s, node.s);
 }
 
 export function cityById(id: string): City {
