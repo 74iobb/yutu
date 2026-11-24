@@ -247,8 +247,8 @@ export default function Step1() {
             </div>
           </div>
           <GapPhoto
-            variant='writing'
-            quote='先把脚下这一步填清楚。'
+            variant='morning'
+            quote='先给自己一个安静的早晨，再把这一步写实。'
             autoMotion
           />
         </aside>

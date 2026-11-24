@@ -191,3 +191,5 @@ pnpm build          # 期望 ✓ built
 > 2026-11-24 V9.7 第 2 步网络模式可见性：`GisMap` 增加城市兜底（无效 id → 中文名 → 成都），暗色陆地提亮，飞线目标常驻标签 + 模式徽标，减弱四周渐晕；地理/网络来回切换实测稳定。仍无新增表 / 工作流。
 >
 > 2026-11-24 V10 动图升级：`GapPhoto` 加 Ken Burns + 扫光，Step1/Step6 三张主图自动播放 WebP；雷达加 10s 扫描线、趋势图加 3.4s 沿线流光、成长河加 9s 横扫柔光；全部尊重 `prefers-reduced-motion` 与「动效 关」。仍无新增表 / 工作流。
+>
+> 2026-11-24 V10.1 接入「高级阳光早晨」照片：`scenery-morning.jpg`（Unsplash License，1100×700）+ 16 帧 `scenery-morning-motion.webp`；`GapPhoto` 新增 `morning` 变体，第一步右侧「判定结果」下方的图位替换为它并自动播放；来源与授权已登记 `docs/IMAGE-SOURCES.md`。

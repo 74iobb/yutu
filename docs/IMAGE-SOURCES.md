@@ -14,8 +14,11 @@
 | `src/assets/scenery-plan.jpg` | 第四步「点选方向代价」侧栏空隙（手账计划） | https://images.unsplash.com/photo-1484480974693-6ca0a78fb36b |
 | `src/assets/scenery-field.jpg` | 第五步「归属与周边域」空隙（田野） | https://images.unsplash.com/photo-1500382017468-9049fed747ef |
 | `src/assets/scenery-writing.jpg` | 第一步「先把脚下这一步填清楚」空隙（钢笔书写，替换原日出图） | https://images.unsplash.com/photo-1455390582262-044cdead277a |
+| `src/assets/scenery-morning.jpg` | 第一步右侧「判定结果」下方（晨光极简客厅，V10.1；替换原 writing 图位） | https://images.unsplash.com/photo-1493809842364-78817add7ffb |
 
-下载参数统一为 `fm=jpg&fit=crop&w=1100&h=700&q=72`；下载日期：2026-11-20；`scenery-writing` 于 2026-11-22 追加。`scenery-sunrise` 仍用于第六步驿站休息，第一步不再使用。
+下载参数统一为 `fm=jpg&fit=crop&w=1100&h=700&q=72`；下载日期：2026-11-20；`scenery-writing` 于 2026-11-22 追加，`scenery-morning` 于 2026-11-24 追加（q=80）。`scenery-sunrise` 仍用于第六步驿站休息，第一步不再使用。
+
+> `scenery-morning` 的命名对应「高级阳光早晨」：极简客厅、落地窗、木地板、柔和晨光。它不是 Midjourney 生成图，而是 Unsplash 的真实照片（Unsplash License，免费使用）。同名 `-motion.webp` 由静态图按现有规格生成：640×400、16 帧、5% 缓慢推进再回位、`-delay 7 -quality 55`。
 
 ## 悬停动效
 
