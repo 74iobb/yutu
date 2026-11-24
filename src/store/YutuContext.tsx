@@ -52,6 +52,9 @@ import {
   apiAddDiscussion,
   apiDeleteDiscussion,
   apiLoadDiscussionStats,
+  apiLoadMedia,
+  apiAddMedia,
+  apiDeleteMedia,
   type ApiEndpointKey,
   type ApiProbe,
 } from '@/lib/yutuApi';
@@ -67,6 +70,7 @@ import type {
   Profile,
   PrototypeNode,
   Review,
+  ReviewMedia,
   Scores,
   TaskItem,
   TaskStatus,
@@ -116,6 +120,8 @@ interface PersistShape {
   peerMine: PeerSample[];
   /** 复盘讨论（本机缓存 + 平台回读） */
   discussions: Discussion[];
+  /** 复盘素材（公开图片/语音链接） */
+  media: ReviewMedia[];
   /** 方向候选短名单（最多 4 条） */
   shortlist: string[];
   /** 方向与推演（作战图）当前点选的方向 */
@@ -159,6 +165,8 @@ export interface YutuState extends PersistShape {
   discussionLoaded: string[];
   /** 按复盘聚合的讨论热度 */
   discussionStats: DiscussionStat[];
+  /** 已尝试加载过素材的复盘 id */
+  mediaLoaded: string[];
 }
 
 const INITIAL: YutuState = {
@@ -184,6 +192,8 @@ const INITIAL: YutuState = {
   discussions: [],
   discussionLoaded: [],
   discussionStats: [],
+  media: [],
+  mediaLoaded: [],
   shortlist: [],
   backendOnline: false,
   hydrated: false,
@@ -481,6 +491,14 @@ interface YutuContextValue {
     content: string
   ) => void;
   removeDiscussion: (id: string) => void;
+  loadMedia: (reviewId: string) => Promise<void>;
+  submitMedia: (
+    reviewId: string,
+    kind: 'image' | 'audio',
+    url: string,
+    caption: string
+  ) => void;
+  removeMedia: (id: string) => void;
   markReview: (reviewId: string) => void;
   refreshReviews: () => void;
   resync: () => void;
@@ -549,6 +567,7 @@ export function YutuProvider({ children }: { children: ReactNode }) {
         markCounts: local.markCounts ?? {},
         peerMine: local.peerMine ?? [],
         discussions: local.discussions ?? [],
+        media: local.media ?? [],
       }));
     }
 
@@ -663,6 +682,7 @@ export function YutuProvider({ children }: { children: ReactNode }) {
         markCounts: state.markCounts,
         peerMine: state.peerMine,
         discussions: state.discussions,
+        media: state.media,
         shortlist: state.shortlist,
         pick: state.pick,
         intent: state.intent,
@@ -683,6 +703,7 @@ export function YutuProvider({ children }: { children: ReactNode }) {
     state.markCounts,
     state.peerMine,
     state.discussions,
+    state.media,
     state.shortlist,
     state.pick,
     state.intent,
@@ -1247,9 +1268,7 @@ export function YutuProvider({ children }: { children: ReactNode }) {
       const markLoaded = () =>
         setState((s) => ({
           ...s,
-          discussionLoaded: s.discussionLoaded.includes(reviewId)
-            ? s.discussionLoaded
-            : [...s.discussionLoaded, reviewId],
+          discussionLoaded: (s.discussionLoaded ?? []).includes(reviewId) ? (s.discussionLoaded ?? []) : [...(s.discussionLoaded ?? []), reviewId],
         }));
       if (!state.backendOnline) {
         markLoaded();
@@ -1274,9 +1293,7 @@ export function YutuProvider({ children }: { children: ReactNode }) {
               ...items,
               ...localOnly,
             ],
-            discussionLoaded: s.discussionLoaded.includes(reviewId)
-              ? s.discussionLoaded
-              : [...s.discussionLoaded, reviewId],
+            discussionLoaded: (s.discussionLoaded ?? []).includes(reviewId) ? (s.discussionLoaded ?? []) : [...(s.discussionLoaded ?? []), reviewId],
           };
         });
       } catch {
@@ -1356,6 +1373,114 @@ export function YutuProvider({ children }: { children: ReactNode }) {
       state.discussions,
       loadDiscussions,
     ]
+  );
+
+  /** 拉取某条复盘下的素材；离线时使用本机缓存 */
+  const loadMedia = useCallback(
+    async (reviewId: string) => {
+      if (!reviewId) return;
+      const markLoaded = () =>
+        setState((s) => ({
+          ...s,
+          mediaLoaded: (s.mediaLoaded ?? []).includes(reviewId) ? (s.mediaLoaded ?? []) : [...(s.mediaLoaded ?? []), reviewId],
+        }));
+      if (!state.backendOnline) {
+        markLoaded();
+        return;
+      }
+      try {
+        const items = await apiLoadMedia(reviewId);
+        setState((s) => {
+          const localOnly = s.media.filter(
+            (m) =>
+              m.reviewId === reviewId &&
+              m.id.startsWith('local-m-') &&
+              !items.some(
+                (it) => it.url === m.url && it.caption === m.caption
+              )
+          );
+          return {
+            ...s,
+            media: [
+              ...s.media.filter((m) => m.reviewId !== reviewId),
+              ...items,
+              ...localOnly,
+            ],
+            mediaLoaded: (s.mediaLoaded ?? []).includes(reviewId) ? (s.mediaLoaded ?? []) : [...(s.mediaLoaded ?? []), reviewId],
+          };
+        });
+      } catch {
+        flash('素材加载失败；先显示本机记录。');
+        markLoaded();
+      }
+    },
+    [flash, state.backendOnline]
+  );
+
+  /** 提交素材：只接受 http(s) 公开链接，说明文字先脱敏 */
+  const submitMedia = useCallback(
+    (reviewId: string, kind: 'image' | 'audio', url: string, caption: string) => {
+      const clean = url.trim();
+      if (!/^https?:\/\//i.test(clean)) {
+        flash('只支持 http(s) 公开图片 / 语音链接。');
+        return;
+      }
+      if (clean.length > 500) {
+        flash('链接太长，请使用更短的公开地址。');
+        return;
+      }
+      const masked = desensitize(caption).text.trim().slice(0, 280);
+      const isLocalReview = reviewId.startsWith('local-');
+      const temp: ReviewMedia = {
+        id: `local-m-${Date.now()}`,
+        reviewId,
+        ownerKey,
+        kind,
+        url: clean,
+        caption: masked,
+        createdAt: fmtTime(new Date()),
+      };
+      setState((s) => ({ ...s, media: [...s.media, temp] }));
+
+      if (!state.backendOnline || isLocalReview) {
+        flash(
+          isLocalReview
+            ? '这条复盘还没同步到平台，素材先保存在本机。'
+            : '素材已保存在本机。平台恢复后再同步。'
+        );
+        return;
+      }
+      void apiAddMedia({
+        reviewId,
+        ownerKey,
+        kind,
+        url: clean,
+        caption: masked,
+        status: 'public',
+      })
+        .then(() => loadMedia(reviewId))
+        .catch(() => flash('素材已保存在本机，但写平台失败。'));
+    },
+    [flash, ownerKey, state.backendOnline, loadMedia]
+  );
+
+  /** 删除自己的一条素材 */
+  const removeMedia = useCallback(
+    (id: string) => {
+      const item = state.media.find((m) => m.id === id);
+      if (!item || item.ownerKey !== ownerKey) return;
+      setState((s) => ({
+        ...s,
+        media: s.media.filter((m) => m.id !== id),
+      }));
+      if (state.backendOnline && !id.startsWith('local-m-')) {
+        void apiDeleteMedia({ id, ownerKey }).catch(() => {
+          flash('删除失败；刷新后会恢复。');
+          void loadMedia(item.reviewId);
+        });
+      }
+    },
+    [flash, ownerKey, state.backendOnline, state.media, loadMedia]
   );
 
   const markReview = useCallback(
@@ -1452,6 +1577,9 @@ export function YutuProvider({ children }: { children: ReactNode }) {
       snapshot0: null,
       discussions: [],
       discussionLoaded: [],
+      discussionStats: [],
+      media: [],
+      mediaLoaded: [],
       pool: [],
       step: 1,
       maxStep: 1,
@@ -1504,6 +1632,9 @@ export function YutuProvider({ children }: { children: ReactNode }) {
       loadDiscussions,
       submitDiscussion,
       removeDiscussion,
+      loadMedia,
+      submitMedia,
+      removeMedia,
       markReview,
       refreshReviews,
       resync,
@@ -1541,6 +1672,9 @@ export function YutuProvider({ children }: { children: ReactNode }) {
       loadDiscussions,
       submitDiscussion,
       removeDiscussion,
+      loadMedia,
+      submitMedia,
+      removeMedia,
       markReview,
       refreshReviews,
       resync,

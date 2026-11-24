@@ -15,6 +15,7 @@ import type {
   PeerStat,
   Profile,
   Review,
+  ReviewMedia,
   Scores,
   TaskStatus,
   Victory,
@@ -44,6 +45,9 @@ const API_ENDPOINTS = {
   discussionsAdd: '17955291545269686',
   discussionsDelete: '17955291545269687',
   discussionsStats: '17955298285269688',
+  mediaList: '17955300235269689',
+  mediaAdd: '17955300235269690',
+  mediaDelete: '17955300235269691',
 } as const;
 
 export type ApiEndpointKey = keyof typeof API_ENDPOINTS;
@@ -492,4 +496,41 @@ export function mapDiscussionStatRow(
 export async function apiLoadDiscussionStats(): Promise<DiscussionStat[]> {
   const rows = await queryRows(API_ENDPOINTS.discussionsStats);
   return rows.map(mapDiscussionStatRow);
+}
+
+/* -------------------------------- 复盘素材 -------------------------------- */
+
+export function mapMediaRow(r: Record<string, unknown>): ReviewMedia {
+  return {
+    id: str(r.id),
+    reviewId: str(r.review_id),
+    ownerKey: str(r.owner_key),
+    kind: str(r.kind) === 'audio' ? 'audio' : 'image',
+    url: str(r.url),
+    caption: str(r.caption),
+    createdAt: str(r.created).replace('T', ' ').slice(0, 16),
+  };
+}
+
+export async function apiLoadMedia(reviewId: string): Promise<ReviewMedia[]> {
+  const rows = await queryRows(API_ENDPOINTS.mediaList, { reviewId });
+  return rows.map(mapMediaRow);
+}
+
+export async function apiAddMedia(p: {
+  reviewId: string;
+  ownerKey: string;
+  kind: 'image' | 'audio';
+  url: string;
+  caption: string;
+  status: string;
+}): Promise<void> {
+  await callAPI(API_ENDPOINTS.mediaAdd, p);
+}
+
+export async function apiDeleteMedia(p: {
+  id: string;
+  ownerKey: string;
+}): Promise<void> {
+  await callAPI(API_ENDPOINTS.mediaDelete, p);
 }

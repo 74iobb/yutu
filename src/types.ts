@@ -172,3 +172,14 @@ export interface DiscussionStat {
   count: number;
   people: number;
 }
+
+/** 复盘素材：平台无文件存储，只保存公开图片/语音链接 */
+export interface ReviewMedia {
+  id: string;
+  reviewId: string;
+  ownerKey: string;
+  kind: 'image' | 'audio';
+  url: string;
+  caption: string;
+  createdAt: string;
+}

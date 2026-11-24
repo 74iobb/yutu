@@ -32,6 +32,7 @@ import GrowthRiver from './GrowthRiver';
 import GrowthRadar from './GrowthRadar';
 import MemoryPanel from './MemoryPanel';
 import { ReviewDiscussion } from './DiscussionThread';
+import { ReviewMediaPanel } from './MediaGallery';
 import PeerNebula from './PeerNebula';
 import PeerSamples from './PeerSamples';
 import SoulCard from './SoulCard';
@@ -1616,6 +1617,7 @@ function PeersTab() {
                 {ds.people >= 3 ? <em>热议</em> : null}
               </div>
               <ReviewDiscussion reviewId={r.id} />
+              <ReviewMediaPanel reviewId={r.id} />
             </div>
           );
         })}
@@ -1696,6 +1698,7 @@ function PeersTab() {
                     {ds.people >= 3 ? <em>热议</em> : null}
                   </div>
                   <ReviewDiscussion reviewId={r.id} />
+                  <ReviewMediaPanel reviewId={r.id} />
                 </div>
               );
             })}
@@ -1760,7 +1763,7 @@ function PeersTab() {
           </button>
         </div>
         <p className='y-note' style={{ paddingTop: 6 }}>
-          备份包含：个人档案与起点快照、体验任务、阶段性胜利、自己提交的复盘、自己参与的讨论、去向样本、有效标记记录与方向候选。
+          备份包含：个人档案与起点快照、体验任务、阶段性胜利、自己提交的复盘、自己参与的讨论、素材链接、去向样本、有效标记记录与方向候选。
           云端记录不会因下载或清理本机缓存而改变。
         </p>
       </div>

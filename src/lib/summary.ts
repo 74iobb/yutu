@@ -106,6 +106,7 @@ export function buildBackupJson(
       myDiscussions: state.discussions.filter(
         (d) => d.authorKey === ownerKey
       ),
+      myMedia: state.media.filter((m) => m.ownerKey === ownerKey),
       peerSamples: state.peerMine,
       markCounts: state.markCounts,
       markedIds,
