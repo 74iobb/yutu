@@ -14089,3 +14089,73 @@ html.y-motion-off #yutu2 .gis-me-halo {
     justify-content: space-between;
   }
 }
+
+/* ---------- V11.2 停靠驿站三步：拷问 / 回答三问 / 归档 ---------- */
+#yutu2 .y-station-steps {
+  display: flex;
+  gap: 6px;
+  margin: 2px 0 12px;
+}
+#yutu2 .y-station-steps button {
+  flex: 1;
+  padding: 6px 8px;
+  border: 1px solid rgba(160, 190, 255, 0.18);
+  border-radius: 8px;
+  background: rgba(8, 15, 32, 0.5);
+  color: var(--y-muted);
+  font-size: 11px;
+  cursor: pointer;
+  transition:
+    color 160ms ease,
+    background-color 160ms ease,
+    border-color 160ms ease;
+}
+#yutu2 .y-station-steps button em {
+  display: inline-block;
+  margin-right: 3px;
+  font-style: normal;
+  font-size: 9.5px;
+  color: #9fd8ff;
+}
+#yutu2 .y-station-steps button[aria-selected='true'] {
+  color: #04121f;
+  background: linear-gradient(180deg, #bfe3ff, #7ec8ff);
+  border-color: transparent;
+  font-weight: 650;
+}
+#yutu2 .y-station-steps button[aria-selected='true'] em {
+  color: rgba(4, 18, 31, 0.68);
+}
+#yutu2 [data-station-step='1'] .y-station-pane:not(.is-ask),
+#yutu2 [data-station-step='2'] .y-station-pane:not(.is-answer),
+#yutu2 [data-station-step='3'] .y-station-pane:not(.is-archive) {
+  display: none;
+}
+#yutu2 .y-station-summary {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 8px;
+}
+#yutu2 .y-station-summary > div {
+  padding: 8px 10px;
+  border: 1px solid rgba(160, 190, 255, 0.16);
+  border-radius: 8px;
+  background: rgba(8, 15, 32, 0.45);
+}
+#yutu2 .y-station-summary span {
+  display: block;
+  font-size: 10px;
+  color: var(--y-muted);
+}
+#yutu2 .y-station-summary b {
+  display: block;
+  margin-top: 2px;
+  font-size: 13px;
+  color: var(--y-ink);
+}
+@media (max-width: 640px) {
+  #yutu2 .y-station-summary {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

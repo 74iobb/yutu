@@ -783,6 +783,8 @@ function StationTab({
   const [choice, setChoice] = useState<Choice>('keep');
   const [card, setCard] = useState('');
   const [busy, setBusy] = useState(false);
+  /** 停靠三步：拷问 → 回答三问 → 归档 */
+  const [stationStep, setStationStep] = useState<1 | 2 | 3>(1);
   /** 仅仅收起这张结果卡；“方向是否变化”仍留在总览里，直到真正回答 */
   const [hiddenAt, setHiddenAt] = useState<number | null>(null);
 
@@ -815,6 +817,7 @@ function StationTab({
       setQ1('');
       setQ2('');
       setQ3('');
+      setStationStep(1);
     }
     window.setTimeout(() => setBusy(false), 800);
   }
@@ -835,7 +838,7 @@ function StationTab({
       ) : null}
 
       <div className='y-g2 y-g2-stretch'>
-        <div className='y-card y-gap-card'>
+        <div className='y-card y-gap-card' data-station-step={stationStep}>
           <h3>
             停靠驿站
             <span className='y-mini'>
@@ -858,6 +861,26 @@ function StationTab({
             </div>
           </div>
 
+          <div className='y-station-steps' role='tablist' aria-label='停靠步骤'>
+            {[
+              { n: 1 as const, label: '拷问' },
+              { n: 2 as const, label: '回答三问' },
+              { n: 3 as const, label: '归档' },
+            ].map((s) => (
+              <button
+                key={s.n}
+                type='button'
+                role='tab'
+                aria-selected={stationStep === s.n}
+                className={stationStep === s.n ? 'is-on' : undefined}
+                onClick={() => setStationStep(s.n)}
+              >
+                <em>0{s.n}</em> {s.label}
+              </button>
+            ))}
+          </div>
+
+          <div className='y-station-pane is-ask'>
           <div style={{ marginBottom: 12 }}>
             <Say>
               先回到你出发时的处境：经济压力 {state.profile.s.econ}，家庭负担{' '}
@@ -878,6 +901,32 @@ function StationTab({
               compact
             />
           ) : null}
+          <div className='y-row' style={{ marginTop: 12 }}>
+            <button
+              type='button'
+              className='y-btn y-btn-main'
+              onClick={() => setStationStep(2)}
+            >
+              去回答三问 →
+            </button>
+            {!archivable.length ? (
+              <button
+                type='button'
+                className='y-btn y-btn-s'
+                onClick={() => setSub(1)}
+              >
+                去工作台标记完成
+              </button>
+            ) : null}
+          </div>
+          <p className='y-note' style={{ paddingTop: 6 }}>
+            {archivable.length
+              ? '三问可以留空；但无有效内容的记录不会进入校验池。'
+              : '本轮还没有标记完成的体验。可以先去工作台标记完成，或先记一张经验卡。'}
+          </p>
+          </div>
+
+          <div className='y-station-pane is-answer'>
           <div style={{ marginBottom: 11 }}>
             <label htmlFor='y-q1'>这段体验带给我的真实感受是什么</label>
             <textarea
@@ -945,6 +994,50 @@ function StationTab({
           <div className='y-row' style={{ marginTop: 13 }}>
             <button
               type='button'
+              className='y-btn y-btn-s'
+              onClick={() => setStationStep(1)}
+            >
+              ← 回到拷问
+            </button>
+            <button
+              type='button'
+              className='y-btn y-btn-main'
+              onClick={() => setStationStep(3)}
+            >
+              去归档 →
+            </button>
+          </div>
+          <p className='y-note'>
+            三问可以留空；但无有效内容的记录不会进入校验池。
+          </p>
+          </div>
+
+          <div className='y-station-pane is-archive'>
+          <div className='y-station-summary'>
+            <div>
+              <span>可归档</span>
+              <b>{archivable.length} 条</b>
+            </div>
+            <div>
+              <span>下一步</span>
+              <b>{CHOICE_LABEL[choice]}</b>
+            </div>
+            <div>
+              <span>自省</span>
+              <b>{[q1, q2, q3].filter((x) => x.trim()).length} / 3</b>
+            </div>
+          </div>
+
+          <div className='y-row' style={{ marginTop: 13 }}>
+            <button
+              type='button'
+              className='y-btn y-btn-s'
+              onClick={() => setStationStep(2)}
+            >
+              ← 回到三问
+            </button>
+            <button
+              type='button'
               className='y-btn y-btn-main'
               disabled={!archivable.length || busy}
               onClick={doArchive}
@@ -1002,6 +1095,7 @@ function StationTab({
             <p className='y-note' style={{ paddingTop: 5 }}>
               经验卡不改变向量，也不要求先完成整段体验；它和完整复盘一样进入同一个校验池。
             </p>
+          </div>
           </div>
           {state.notice ? <p className='y-flash'>{state.notice}</p> : null}
           {!archivable.length ? (
