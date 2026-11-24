@@ -12802,3 +12802,169 @@ html.y-motion-off #yutu2 .y-step-stage.is-page-dragging {
   font-style: normal;
   color: var(--y-muted);
 }
+
+/* ---------- V9.2 数据图视觉升级：暗色渐变 / 辉光 / 平滑曲线 ---------- */
+
+/* 图表卡片顶部一条冷光，和暗色玻璃拉开层次 */
+#yutu2 .y-chart-frame {
+  position: relative;
+}
+#yutu2 .y-chart-frame::before {
+  content: '';
+  position: absolute;
+  inset: 0 12% auto;
+  height: 1px;
+  pointer-events: none;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(126, 200, 255, 0.55),
+    rgba(185, 168, 255, 0.35),
+    transparent
+  );
+}
+
+/* 趋势图 */
+#yutu2 .y-trend-bg {
+  fill: rgba(8, 15, 32, 0.5);
+  stroke: rgba(160, 190, 255, 0.16);
+  stroke-width: 1;
+}
+#yutu2 .y-trend-grid {
+  stroke: rgba(160, 190, 255, 0.13);
+  stroke-width: 0.9;
+  stroke-dasharray: 3 5;
+}
+#yutu2 .y-trend-tick {
+  fill: var(--y-muted);
+  font-size: 9.5px;
+  font-variant-numeric: tabular-nums;
+}
+#yutu2 .y-trend-base {
+  stroke: rgba(240, 178, 90, 0.42);
+  stroke-width: 1;
+  stroke-dasharray: 2 5;
+}
+#yutu2 .y-trend-base-label {
+  fill: rgba(240, 178, 90, 0.9);
+  font-size: 9px;
+  font-weight: 600;
+}
+#yutu2 .y-trend-cursor {
+  stroke: rgba(126, 200, 255, 0.3);
+  stroke-width: 1;
+  stroke-dasharray: 2 4;
+}
+#yutu2 .y-trend-dot {
+  fill: #0a1224;
+  stroke: #7ec8ff;
+  stroke-width: 1.6;
+}
+#yutu2 .y-trend-dot.is-now {
+  fill: #cfe9ff;
+  stroke: #7ec8ff;
+  stroke-width: 2;
+}
+#yutu2 .y-trend-tip {
+  fill: rgba(8, 16, 34, 0.94);
+  stroke: rgba(126, 200, 255, 0.4);
+  stroke-width: 0.8;
+}
+#yutu2 .y-trend-tip-text {
+  fill: #dceaff;
+  font-size: 9.5px;
+  font-weight: 650;
+  font-variant-numeric: tabular-nums;
+}
+#yutu2 .y-trend-x {
+  fill: var(--y-muted);
+  font-size: 9.5px;
+  transition: fill var(--motion-fast, 180ms) ease;
+}
+#yutu2 .y-trend-x.is-on {
+  fill: var(--y-ink);
+  font-weight: 650;
+}
+#yutu2 .y-trend-caption {
+  fill: rgba(131, 147, 179, 0.75);
+  font-size: 9.5px;
+}
+#yutu2 .y-trend-line {
+  filter: drop-shadow(0 0 6px rgba(126, 200, 255, 0.35));
+}
+
+/* 雷达：变化最大的轴与点加亮 */
+#yutu2 .y-radar-axis.is-shift {
+  stroke: rgba(126, 200, 255, 0.6);
+  stroke-width: 1.4;
+}
+#yutu2 .y-radar-label.is-shift {
+  fill: #dceaff;
+}
+#yutu2 .y-radar-dot.is-shift {
+  fill: #eaf5ff;
+  stroke: #7ec8ff;
+  stroke-width: 1.5;
+}
+#yutu2 .y-radar-core {
+  fill: #cfe9ff;
+}
+#yutu2 .y-radar-draw {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: yRadarDraw 1.15s var(--ease-out, ease) 0.1s forwards;
+}
+@keyframes yRadarDraw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+/* 成长河 */
+#yutu2 .y-river svg {
+  filter: drop-shadow(0 16px 26px rgba(0, 0, 0, 0.45));
+}
+#yutu2 .y-river-band {
+  stroke: rgba(255, 255, 255, 0.24);
+  stroke-width: 0.6;
+}
+#yutu2 .y-river-grid {
+  stroke: rgba(160, 190, 255, 0.12);
+  stroke-width: 0.9;
+  stroke-dasharray: 3 6;
+}
+#yutu2 .y-river-guide {
+  stroke: rgba(126, 200, 255, 0.4);
+  stroke-width: 1;
+  stroke-dasharray: 3 4;
+}
+#yutu2 .y-river-now-line {
+  stroke: rgba(126, 200, 255, 0.75);
+  stroke-width: 1.4;
+  stroke-dasharray: 2 5;
+}
+#yutu2 .y-river-now {
+  fill: #cfe9ff;
+}
+#yutu2 .y-river-x {
+  fill: var(--y-muted);
+}
+#yutu2 .y-river-x.is-on {
+  fill: var(--y-ink);
+}
+#yutu2 .y-river-values {
+  color: var(--y-ink2);
+}
+#yutu2 .y-river-when {
+  color: #9fd8ff;
+}
+#yutu2 .y-river-val b {
+  color: var(--y-ink);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #yutu2 .y-radar-draw {
+    animation: none;
+    stroke-dashoffset: 0;
+  }
+}

@@ -9,24 +9,24 @@ const INNER_W = W - M.l - M.r;
 const INNER_H = H - M.t - M.b;
 
 const COLOR: Record<DimensionKey, string> = {
-  place: 'var(--data-teal)',
-  econ: 'var(--accent)',
-  family: 'var(--danger)',
-  age: 'var(--data-violet)',
-  cycle: 'var(--data-blue)',
-  inertia: '#6faf8e',
-  history: '#c08b2e',
+  place: '#4fd1b5',
+  econ: '#f3b45f',
+  family: '#e07a63',
+  age: '#b9a6f0',
+  cycle: '#5aa9e8',
+  inertia: '#7fd6a8',
+  history: '#f0c05a',
 };
 
 /** SVG gradient stop 用实际色值，避免 presentation attribute 对 CSS 变量的兼容问题 */
 const COLOR_HEX: Record<DimensionKey, string> = {
-  place: '#3c9a86',
-  econ: '#e29a37',
-  family: '#a14c3d',
-  age: '#8b7bb8',
-  cycle: '#2e6fa3',
-  inertia: '#6faf8e',
-  history: '#c08b2e',
+  place: '#4fd1b5',
+  econ: '#f3b45f',
+  family: '#e07a63',
+  age: '#b9a6f0',
+  cycle: '#5aa9e8',
+  inertia: '#7fd6a8',
+  history: '#f0c05a',
 };
 
 const SHORT: Record<DimensionKey, string> = {
@@ -174,6 +174,17 @@ export default function GrowthRiver({ victories, current }: Props) {
         </desc>
 
         <defs>
+          <radialGradient id={`${uid}-ambient`} cx='50%' cy='42%' r='62%'>
+            <stop offset='0%' stopColor='#7ec8ff' stopOpacity='0.16' />
+            <stop offset='100%' stopColor='#7ec8ff' stopOpacity='0' />
+          </radialGradient>
+          <filter id={`${uid}-soft`} x='-20%' y='-40%' width='140%' height='180%'>
+            <feGaussianBlur stdDeviation='2.4' result='blur' />
+            <feMerge>
+              <feMergeNode in='blur' />
+              <feMergeNode in='SourceGraphic' />
+            </feMerge>
+          </filter>
           {DIMS.map(d => (
             <linearGradient
               key={d.k}
@@ -183,11 +194,32 @@ export default function GrowthRiver({ victories, current }: Props) {
               x2='0'
               y2='1'
             >
-              <stop offset='0%' stopColor={COLOR_HEX[d.k]} stopOpacity='0.82' />
-              <stop offset='100%' stopColor={COLOR_HEX[d.k]} stopOpacity='0.48' />
+              <stop offset='0%' stopColor={COLOR_HEX[d.k]} stopOpacity='0.92' />
+              <stop offset='55%' stopColor={COLOR_HEX[d.k]} stopOpacity='0.7' />
+              <stop offset='100%' stopColor={COLOR_HEX[d.k]} stopOpacity='0.42' />
             </linearGradient>
           ))}
         </defs>
+
+        <rect
+          x={M.l}
+          y={M.t}
+          width={INNER_W}
+          height={INNER_H}
+          rx={10}
+          fill={`url(#${uid}-ambient)`}
+        />
+
+        {[0.25, 0.5, 0.75].map(f => (
+          <line
+            key={f}
+            x1={M.l}
+            y1={M.t + INNER_H * f}
+            x2={M.l + INNER_W}
+            y2={M.t + INNER_H * f}
+            className='y-river-grid'
+          />
+        ))}
 
         <line
           x1={guideX}
@@ -202,6 +234,7 @@ export default function GrowthRiver({ victories, current }: Props) {
           x2={nowX}
           y2={M.t + INNER_H}
           className='y-river-now-line'
+          filter={`url(#${uid}-soft)`}
         />
 
         {bands.map((band, i) => (
