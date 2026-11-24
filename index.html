@@ -7,7 +7,7 @@
       name="description"
       content="域途：多维沃罗诺伊体验式生涯陪伴系统。远方是方向，不是终点；计划是草稿，由你改写。"
     />
-    <meta name="theme-color" content="#f2efe8" />
+    <meta name="theme-color" content="#0b0a14" />
     <script>
       /* 在首帧前标记动效就绪，避免「先显示再隐藏」的闪烁；尊重系统减弱动效设置 */
       try {
@@ -17,6 +17,11 @@
         if (window.localStorage.getItem('yutu.motionOff') === '1') {
           document.documentElement.classList.add('y-motion-off');
         }
+        /* 首帧前确定背景，避免默认星云闪一下再切到叶面 */
+        document.documentElement.dataset.bg =
+          window.localStorage.getItem('yutu.bg') === 'leaves'
+            ? 'leaves'
+            : 'nebula';
       } catch (e) {}
     </script>
     <noscript>

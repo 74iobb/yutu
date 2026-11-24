@@ -46,16 +46,31 @@
 
 按钮上叠加深色渐变层保证白字可读；底图缓慢横向流动（`yBtnFlow`），暗部叠层做 `yBtnDeepen` 明暗呼吸，悬停时加快并进一步加深。顶部步骤条中的「当前步骤」和闭环选中的子页签使用同一张底图；`prefers-reduced-motion` / 「动效 关」下只保留静态底图。
 
-### 全屏页面背景
+### 全屏页面背景（可切换）
 
-来自用户提供的叶面水珠照片（`.attachments/微信图片_20261122064702_400_2.jpg`），输出到 `src/assets/`：
+默认使用 NOIRLab 公开的 **NGC 7023 鸢尾花星云**；页头「背景 星云 / 叶面」可切换回叶面水珠，选择写入 `localStorage: yutu.bg`。两款背景都以 72s 缓慢平移、缩放与旋转，叠加淡蓝/淡紫呼吸光晕；`#yutu2` 保持半透明磨砂玻璃，卡片可读。`prefers-reduced-motion` / 「动效 关」下只保留静态背景。
+
+**星云（默认）**
 
 | 文件 | 用途 | 说明 |
 |---|---|---|
-| `src/assets/yutu-bg-leaves.webp` | **全屏页面背景（优先）** | 用户提供，1600×1200，约 327 KB |
+| `src/assets/yutu-iris-nebula.webp` | 全屏背景（优先） | NOIRLab `noao-ngc7023`，1600×1469，约 148 KB |
+| `src/assets/yutu-iris-nebula.jpg` | 同上，JPEG fallback | 1600×1469，约 428 KB |
+
+- 来源：https://noirlab.edu/public/images/noao-ngc7023/
+- Credit（NOIRLab 要求保留完整署名）：T.A. Rector/University of Alaska Anchorage, H. Schweiker/WIYN and NOIRLab/NSF/AURA
+- 已在页脚、`PROVENANCE.nebula` 与「数据来源与口径」面板登记。
+
+**叶面水珠（备选）**
+
+来自用户提供的叶面水珠照片（`.attachments/微信图片_20261122064702_400_2.jpg`）：
+
+| 文件 | 用途 | 说明 |
+|---|---|---|
+| `src/assets/yutu-bg-leaves.webp` | 全屏背景备选（优先） | 用户提供，1600×1200，约 327 KB |
 | `src/assets/yutu-bg-leaves.jpg` | 同上，JPEG fallback | 1600×1200，约 470 KB |
 
-背景图以 72s 缓慢平移、缩放与旋转，叠加一层淡蓝/淡紫呼吸光晕；`#yutu2` 保持半透明磨砂玻璃，卡片可读。`prefers-reduced-motion` / 「动效 关」下只保留静态背景。**背景照片由用户提供，仅限本项目使用；如需对外发布请确认授权。** 原鸢尾花星云背景与程序星空层已移除。
+**背景照片由用户提供，仅限本项目使用；如需对外发布请确认授权。**
 
 ## 成长闭环弹珠（2026-11-24）
 

@@ -39,6 +39,24 @@ export function Shell({ children }: { children: ReactNode }) {
       return false;
     }
   });
+  /** 全屏背景：鸢尾花星云（默认）或叶面水珠，记住上次选择 */
+  const [bg, setBg] = useState<'nebula' | 'leaves'>(() => {
+    try {
+      return window.localStorage.getItem('yutu.bg') === 'leaves'
+        ? 'leaves'
+        : 'nebula';
+    } catch {
+      return 'nebula';
+    }
+  });
+  useEffect(() => {
+    document.documentElement.dataset.bg = bg;
+    try {
+      window.localStorage.setItem('yutu.bg', bg);
+    } catch {
+      /* 本地存储不可用时只影响本次会话 */
+    }
+  }, [bg]);
   useEffect(() => {
     const root = document.documentElement;
     root.classList.toggle('y-motion-off', motionOff);
@@ -512,7 +530,7 @@ export function Shell({ children }: { children: ReactNode }) {
                   className={`y-sync-dot${state.backendOnline ? ' is-on' : ''}`}
                 />
                 {state.backendOnline
-                  ? `平台数据表 ${okCount}/5`
+                  ? `平台数据表 ${okCount}/${state.apiProbes.length || 8}`
                   : '本地存储模式'}
                 <em className='y-sync-caret'>{syncOpen ? '▴' : '▾'}</em>
               </button>
@@ -604,6 +622,21 @@ export function Shell({ children }: { children: ReactNode }) {
             >
               <i className='y-motion-dot' />
               动效 {motionOff ? '关' : '开'}
+            </button>
+            <button
+              type='button'
+              className='y-chip y-bg-chip'
+              onClick={() =>
+                setBg((v) => (v === 'nebula' ? 'leaves' : 'nebula'))
+              }
+              title={
+                bg === 'nebula'
+                  ? '当前背景：NGC 7023 鸢尾花星云；点击切换到叶面水珠'
+                  : '当前背景：叶面水珠；点击切换到鸢尾花星云'
+              }
+            >
+              <i className='y-bg-dot' />
+              背景 {bg === 'nebula' ? '星云' : '叶面'}
             </button>
             {state.inactive?.applied ? (
               <span className='y-chip y-chip-w'>
