@@ -13,7 +13,7 @@
 - **模板**：`react-vite`（系统预设，**不可改成 Vue / 其他模板**）。
 - **路由**：`HashRouter`，`/#/` 直接进入四步主流程。
 - **四步**：填写信息 → 了解环境 → 方向与推演（方向清单 / 作战图 / 归属摘要）→ 成长闭环。
-- **当前视觉**：V10 暗色玻璃 + 叶面水珠背景（已回退到最初）；新增起点雷达、规则版灵魂拷问、二阶检索、方向执行清单、同伴去向样本、3D 弹珠与图表动效；最近一次改动为 V10.7（背景回退）。
+- **当前视觉**：V10 暗色玻璃 + 叶面水珠背景（已回退到最初）；新增起点雷达、规则版灵魂拷问、二阶检索、方向执行清单、同伴去向样本、本地长期记忆、复盘树状讨论、3D 弹珠与图表动效；最近一次改动为 V10.9（树状讨论）。
 - **附加页面**：`/#/electrical`「电气实训」交互题解（Y-△ 降压启动 / 小车自动往返），入口在页头「⚡ 电气实训」chip；纯前端演示，不改四步主流程。
 
 ---
@@ -50,7 +50,7 @@ pnpm preview
 
 ## 2. 平台数据与接口
 
-- 启用中的 **17 个 SQL 操作 API（实为工作流）**：`profile_get/save`、`tasks_list/add/update_status/delete`、`archive_list/add`、`reviews_list/add`、`marks_add/list`，以及 V9.6 接入的 `peer_samples_stats/mine/add/update`、`archive_choice_stats`。
+- 启用中的 **20 个 SQL 操作 API（实为工作流）**：`profile_get/save`、`tasks_list/add/update_status/delete`、`archive_list/add`、`reviews_list/add`、`marks_add/list`，V9.6 接入的 `peer_samples_stats/mine/add/update`、`archive_choice_stats`，以及 V10.9 新增的 `discussions_list/add/delete`（绑定表 8778）。
 - **端点 token、绑定表、入参、SQL 要点**：见 `.project.md` 第 2、3 节；前端映射在 `src/lib/yutuApi.ts` 的 `API_ENDPOINTS`。
 - `peer_samples_*` 与 `archive_choice_stats` 已在「同伴经验域」的「同阶段的人后来去哪了」卡片中使用；写样本前会脱敏，离线只存本机。
 - 请求路径：`POST /api/page/w/{token}`；查询数据在 `data.outputList`，写操作只回 `success`。
@@ -65,7 +65,7 @@ pnpm preview
 - **知乎 Access Secret 未随包提供**：打包环境未注入 `ZHIHU_ACCESS_SECRET`，也没有 `~/.config/zhihu-cli/secret.env` / `zhihu-cli`。应用运行**不需要**它——256 条快照已内置；只有「刷新快照」才需要。
 - 需要刷新时按 **`secrets/README.md`** 注入：可参考 `secrets/zhihu.env.example` 创建本地 `secrets/zhihu.env`（已被 `.gitignore` 忽略），或临时 `export ZHIHU_ACCESS_SECRET=...`。**不要把真实密钥写进代码、前端、提交记录或公开 zip。**
 - 知乎内容的展示/再分发边界与发布前检查清单：**`docs/ZHIHU-RIGHTS.md`**。核心口径：访问密钥只证明「能查」，不等于获得「可对外转载/商用」的授权。
-- 平台 17 个工作流端点 token 不是密钥，已在 `.project.md` 第 3 节与 `src/lib/yutuApi.ts` 中随包提供。
+- 平台 20 个工作流端点 token 不是密钥，已在 `.project.md` 第 3 节与 `src/lib/yutuApi.ts` 中随包提供。
 
 ---
 
@@ -207,3 +207,5 @@ pnpm build          # 期望 ✓ built
 > 2026-11-24 V10.7 背景回退：按「改回最初的时候」恢复叶面水珠为唯一全屏背景，移除星云/水下/背景切换；`theme-color` 与页脚也恢复原状。星云/水下素材保留在 `src/assets` 但未引用。其他功能不变。
 >
 > 2026-11-24 V10.8 本地长期记忆：`memory.ts` 用归档/复盘向量做相似度检索，灵魂拷问引用最接近当前处境的旧记录；胜利档案墙新增「系统记得你」面板（最多 4 条、接近度条）。纯本机计算，无新增表 / 工作流。
+>
+> 2026-11-24 V10.9 复盘树状讨论：新增表 8778（`custom_table_8778`）与 `discussions_list/add/delete` 三个工作流（token 已登记 `.project.md`）。复盘卡片下可展开讨论，支持逐级回复、删除自己的；发布前脱敏，离线写本机。注意：新增 3 个工作流会永久保留。

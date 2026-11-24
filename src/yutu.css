@@ -13520,3 +13520,105 @@ html.y-motion-off #yutu2 .gis-me-halo {
     grid-template-columns: minmax(0, 1fr);
   }
 }
+
+/* ---------- V10.9 复盘树状讨论 ---------- */
+#yutu2 .y-disc {
+  margin-top: 8px;
+  padding-top: 7px;
+  border-top: 1px dashed rgba(160, 190, 255, 0.14);
+}
+#yutu2 .y-disc > summary {
+  cursor: pointer;
+  font-size: 11px;
+  color: var(--y-muted);
+  list-style: none;
+}
+#yutu2 .y-disc > summary::-webkit-details-marker {
+  display: none;
+}
+#yutu2 .y-disc > summary::before {
+  content: '▸ ';
+  color: #9fd8ff;
+}
+#yutu2 .y-disc[open] > summary::before {
+  content: '▾ ';
+}
+#yutu2 .y-disc-thread {
+  margin-top: 8px;
+}
+#yutu2 .y-disc-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 7px;
+}
+#yutu2 .y-disc-list li {
+  padding: 7px 9px;
+  border: 1px solid rgba(160, 190, 255, 0.14);
+  border-radius: 8px;
+  background: rgba(8, 15, 32, 0.42);
+}
+#yutu2 .y-disc-list li.is-reply {
+  border-left: 2px solid rgba(126, 200, 255, 0.35);
+}
+#yutu2 .y-disc-children {
+  list-style: none;
+  margin: 6px 0 0;
+  padding: 0;
+  display: grid;
+  gap: 6px;
+}
+#yutu2 .y-disc-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 10px;
+  font-size: 10px;
+  color: var(--y-muted);
+}
+#yutu2 .y-disc-meta b {
+  color: var(--y-ink2);
+  font-weight: 600;
+}
+#yutu2 .y-disc-content {
+  margin: 4px 0 5px;
+  font-size: 11.5px;
+  line-height: 1.6;
+  color: var(--y-ink2);
+}
+#yutu2 .y-disc-actions {
+  display: flex;
+  gap: 10px;
+}
+#yutu2 .y-disc-actions button {
+  background: none;
+  border: 0;
+  padding: 0;
+  color: #9fd8ff;
+  font-size: 10.5px;
+  cursor: pointer;
+}
+#yutu2 .y-disc-actions button:hover {
+  text-decoration: underline;
+}
+#yutu2 .y-disc-form {
+  margin-top: 8px;
+}
+#yutu2 .y-disc-form textarea {
+  width: 100%;
+  min-height: 44px;
+}
+#yutu2 .y-disc-reply-to {
+  display: inline-block;
+  margin-bottom: 4px;
+  font-size: 10.5px;
+  color: #f3d79a;
+}
+#yutu2 .y-disc-reply-to button {
+  background: none;
+  border: 0;
+  padding: 0 0 0 4px;
+  color: #9fd8ff;
+  font-size: 10.5px;
+  cursor: pointer;
+}

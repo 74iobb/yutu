@@ -48,6 +48,9 @@ import {
   apiAddPeerSample,
   apiUpdatePeerSample,
   apiLoadChoiceStats,
+  apiLoadDiscussions,
+  apiAddDiscussion,
+  apiDeleteDiscussion,
   type ApiEndpointKey,
   type ApiProbe,
 } from '@/lib/yutuApi';
@@ -55,6 +58,7 @@ import type {
   Choice,
   ChoiceStat,
   DimensionKey,
+  Discussion,
   LoopArchive,
   PeerSample,
   PeerStat,
@@ -108,6 +112,8 @@ interface PersistShape {
   markCounts: Record<string, number>;
   /** 本机用户按阶段提交的去向样本（离线时也保留） */
   peerMine: PeerSample[];
+  /** 复盘讨论（本机缓存 + 平台回读） */
+  discussions: Discussion[];
   /** 方向候选短名单（最多 4 条） */
   shortlist: string[];
   /** 方向与推演（作战图）当前点选的方向 */
@@ -147,6 +153,8 @@ export interface YutuState extends PersistShape {
   peerStats: PeerStat[];
   /** 平台按阶段聚合的归档去向（真实归档记录） */
   choiceStats: ChoiceStat[];
+  /** 已尝试加载过讨论的复盘 id */
+  discussionLoaded: string[];
 }
 
 const INITIAL: YutuState = {
@@ -169,6 +177,8 @@ const INITIAL: YutuState = {
   peerMine: [],
   peerStats: [],
   choiceStats: [],
+  discussions: [],
+  discussionLoaded: [],
   shortlist: [],
   backendOnline: false,
   hydrated: false,
@@ -452,6 +462,13 @@ interface YutuContextValue {
   submitVictoryReview: (v: Victory) => void;
   submitExperienceCard: (text: string) => void;
   submitPeerSample: (choice: Choice, note: string) => void;
+  loadDiscussions: (reviewId: string) => Promise<void>;
+  submitDiscussion: (
+    reviewId: string,
+    parentId: string,
+    content: string
+  ) => void;
+  removeDiscussion: (id: string) => void;
   markReview: (reviewId: string) => void;
   refreshReviews: () => void;
   resync: () => void;
@@ -519,6 +536,7 @@ export function YutuProvider({ children }: { children: ReactNode }) {
         reviews: local.reviews ?? [],
         markCounts: local.markCounts ?? {},
         peerMine: local.peerMine ?? [],
+        discussions: local.discussions ?? [],
       }));
     }
 
@@ -630,6 +648,7 @@ export function YutuProvider({ children }: { children: ReactNode }) {
         reviews: state.reviews,
         markCounts: state.markCounts,
         peerMine: state.peerMine,
+        discussions: state.discussions,
         shortlist: state.shortlist,
         pick: state.pick,
         intent: state.intent,
@@ -649,6 +668,7 @@ export function YutuProvider({ children }: { children: ReactNode }) {
     state.reviews,
     state.markCounts,
     state.peerMine,
+    state.discussions,
     state.shortlist,
     state.pick,
     state.intent,
@@ -1206,6 +1226,124 @@ export function YutuProvider({ children }: { children: ReactNode }) {
     [flash, ownerKey, state.backendOnline, state.peerMine, state.profile]
   );
 
+  /** 拉取某条复盘下的讨论；离线时只标记已加载，使用本机缓存 */
+  const loadDiscussions = useCallback(
+    async (reviewId: string) => {
+      if (!reviewId) return;
+      const markLoaded = () =>
+        setState((s) => ({
+          ...s,
+          discussionLoaded: s.discussionLoaded.includes(reviewId)
+            ? s.discussionLoaded
+            : [...s.discussionLoaded, reviewId],
+        }));
+      if (!state.backendOnline) {
+        markLoaded();
+        return;
+      }
+      try {
+        const items = await apiLoadDiscussions(reviewId);
+        setState((s) => {
+          /* 平台还没同步到的本机讨论保留下来，避免刷新即丢 */
+          const localOnly = s.discussions.filter(
+            (d) =>
+              d.reviewId === reviewId &&
+              d.id.startsWith('local-d-') &&
+              !items.some(
+                (it) => it.content === d.content && it.parentId === d.parentId
+              )
+          );
+          return {
+            ...s,
+            discussions: [
+              ...s.discussions.filter((d) => d.reviewId !== reviewId),
+              ...items,
+              ...localOnly,
+            ],
+            discussionLoaded: s.discussionLoaded.includes(reviewId)
+              ? s.discussionLoaded
+              : [...s.discussionLoaded, reviewId],
+          };
+        });
+      } catch {
+        flash('讨论加载失败；先显示本机记录。');
+        markLoaded();
+      }
+    },
+    [flash, state.backendOnline]
+  );
+
+  /** 提交讨论 / 回复；公共文本先脱敏 */
+  const submitDiscussion = useCallback(
+    (reviewId: string, parentId: string, content: string) => {
+      const masked = desensitize(content).text.trim().slice(0, 480);
+      if (masked.length < 2) {
+        flash('写一句能看懂的话再发。');
+        return;
+      }
+      const stage = currentStage(state.profile);
+      const authorName = `同处境者 · ${stage.name}`;
+      const isLocalReview = reviewId.startsWith('local-');
+      const temp: Discussion = {
+        id: `local-d-${Date.now()}`,
+        reviewId,
+        parentId: parentId || '0',
+        authorKey: ownerKey,
+        authorName,
+        content: masked,
+        createdAt: fmtTime(new Date()),
+      };
+      setState((s) => ({ ...s, discussions: [...s.discussions, temp] }));
+
+      if (!state.backendOnline || isLocalReview) {
+        flash(
+          isLocalReview
+            ? '这条复盘还没同步到平台，讨论先保存在本机。'
+            : '讨论已保存在本机。平台恢复后再同步。'
+        );
+        return;
+      }
+      void apiAddDiscussion({
+        reviewId,
+        parentId: parentId || '0',
+        authorKey: ownerKey,
+        authorName,
+        content: masked,
+        status: 'public',
+      })
+        .then(() => loadDiscussions(reviewId))
+        .catch(() =>
+          flash('讨论已保存在本机，但写平台失败；稍后可在顶部重新同步。')
+        );
+    },
+    [flash, ownerKey, state.backendOnline, state.profile, loadDiscussions]
+  );
+
+  /** 删除自己的一条讨论 */
+  const removeDiscussion = useCallback(
+    (id: string) => {
+      const item = state.discussions.find((d) => d.id === id);
+      if (!item || item.authorKey !== ownerKey) return;
+      setState((s) => ({
+        ...s,
+        discussions: s.discussions.filter((d) => d.id !== id),
+      }));
+      if (state.backendOnline && !id.startsWith('local-d-')) {
+        void apiDeleteDiscussion({ id, authorKey: ownerKey }).catch(() => {
+          flash('删除失败；刷新后会恢复。');
+          void loadDiscussions(item.reviewId);
+        });
+      }
+    },
+    [
+      flash,
+      ownerKey,
+      state.backendOnline,
+      state.discussions,
+      loadDiscussions,
+    ]
+  );
+
   const markReview = useCallback(
     (reviewId: string) => {
       if (markedIds.includes(reviewId)) return;
@@ -1298,6 +1436,8 @@ export function YutuProvider({ children }: { children: ReactNode }) {
       victories: [],
       lastArchive: null,
       snapshot0: null,
+      discussions: [],
+      discussionLoaded: [],
       pool: [],
       step: 1,
       maxStep: 1,
@@ -1347,6 +1487,9 @@ export function YutuProvider({ children }: { children: ReactNode }) {
       submitVictoryReview,
       submitExperienceCard,
       submitPeerSample,
+      loadDiscussions,
+      submitDiscussion,
+      removeDiscussion,
       markReview,
       refreshReviews,
       resync,
@@ -1381,6 +1524,9 @@ export function YutuProvider({ children }: { children: ReactNode }) {
       submitVictoryReview,
       submitExperienceCard,
       submitPeerSample,
+      loadDiscussions,
+      submitDiscussion,
+      removeDiscussion,
       markReview,
       refreshReviews,
       resync,

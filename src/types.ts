@@ -154,3 +154,14 @@ export interface ChoiceStat {
   count: number;
   latest?: string;
 }
+
+/** 复盘下的树状讨论；parentId 为 '0' 表示顶层 */
+export interface Discussion {
+  id: string;
+  reviewId: string;
+  parentId: string;
+  authorKey: string;
+  authorName: string;
+  content: string;
+  createdAt: string;
+}

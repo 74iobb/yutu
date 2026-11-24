@@ -31,6 +31,7 @@ import ChartFrame from './ChartFrame';
 import GrowthRiver from './GrowthRiver';
 import GrowthRadar from './GrowthRadar';
 import MemoryPanel from './MemoryPanel';
+import { ReviewDiscussion } from './DiscussionThread';
 import PeerNebula from './PeerNebula';
 import PeerSamples from './PeerSamples';
 import SoulCard from './SoulCard';
@@ -1577,6 +1578,7 @@ function PeersTab() {
               <p className='y-vic-ts'>
                 有效标记 {marks} / {NEED}
               </p>
+              <ReviewDiscussion reviewId={r.id} />
             </div>
           );
         })}
@@ -1645,6 +1647,7 @@ function PeersTab() {
                       {marked ? '已标记' : '标记为有效'}
                     </button>
                   </div>
+                  <ReviewDiscussion reviewId={r.id} />
                 </div>
               );
             })}

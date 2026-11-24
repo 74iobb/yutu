@@ -9,6 +9,7 @@ import type { StageId } from '@/data/catalog';
 import type {
   Choice,
   ChoiceStat,
+  Discussion,
   PeerSample,
   PeerStat,
   Profile,
@@ -38,6 +39,9 @@ const API_ENDPOINTS = {
   peerSamplesAdd: '17951749645269615',
   peerSamplesUpdate: '17951749655269616',
   archiveChoiceStats: '17951789565269617',
+  discussionsList: '17955291545269685',
+  discussionsAdd: '17955291545269686',
+  discussionsDelete: '17955291545269687',
 } as const;
 
 export type ApiEndpointKey = keyof typeof API_ENDPOINTS;
@@ -430,4 +434,45 @@ export async function apiUpdatePeerSample(p: {
 export async function apiLoadChoiceStats(): Promise<ChoiceStat[]> {
   const rows = await queryRows(API_ENDPOINTS.archiveChoiceStats);
   return rows.map(mapChoiceStatRow);
+}
+
+/* -------------------------------- 复盘讨论 -------------------------------- */
+
+export function mapDiscussionRow(r: Record<string, unknown>): Discussion {
+  return {
+    id: str(r.id),
+    reviewId: str(r.review_id),
+    parentId: str(r.parent_id, '0') || '0',
+    authorKey: str(r.author_key),
+    authorName: str(r.author_name, '同处境者'),
+    content: str(r.content),
+    createdAt: str(r.created ?? r.created_at)
+      .replace('T', ' ')
+      .slice(0, 16),
+  };
+}
+
+export async function apiLoadDiscussions(
+  reviewId: string
+): Promise<Discussion[]> {
+  const rows = await queryRows(API_ENDPOINTS.discussionsList, { reviewId });
+  return rows.map(mapDiscussionRow);
+}
+
+export async function apiAddDiscussion(p: {
+  reviewId: string;
+  parentId: string;
+  authorKey: string;
+  authorName: string;
+  content: string;
+  status: string;
+}): Promise<void> {
+  await callAPI(API_ENDPOINTS.discussionsAdd, p);
+}
+
+export async function apiDeleteDiscussion(p: {
+  id: string;
+  authorKey: string;
+}): Promise<void> {
+  await callAPI(API_ENDPOINTS.discussionsDelete, p);
 }
