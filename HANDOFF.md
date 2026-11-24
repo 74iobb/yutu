@@ -1,7 +1,7 @@
 # 域途 · 交接说明（给下一个智能体）
 
-> 交接时间：2026-11-22　交接版本：V8.13（四步版）
-> 请按顺序读：**本文件 → `.project.md` → `docs/MODEL.md` / `docs/DATA-SOURCES.md` / `docs/VERIFICATION.md`**，再动代码。
+> 交接时间：2026-11-24　交接版本：V10.7（四步版 + 完全体补全）
+> 请按顺序读：**本文件 → `.project.md` → `docs/MODEL.md` / `docs/DATA-SOURCES.md` / `docs/VERIFICATION.md`**，再动代码；交付前用 `.claude/skills/taste/SKILL.md` 做六维审查。
 > `.project.md` 是数据表、工作流 token、前端调用约定的**唯一事实来源**；本文件只补充「怎么跑、怎么验、别踩什么坑」。
 
 ---
@@ -13,7 +13,7 @@
 - **模板**：`react-vite`（系统预设，**不可改成 Vue / 其他模板**）。
 - **路由**：`HashRouter`，`/#/` 直接进入四步主流程。
 - **四步**：填写信息 → 了解环境 → 方向与推演（方向清单 / 作战图 / 归属摘要）→ 成长闭环。
-- **当前视觉**：V8 系列暗色玻璃 + 叶面水珠背景；最近一次改动为 V8.13（作战图公里标识与两处空状态去曝光）。
+- **当前视觉**：V10 暗色玻璃 + 叶面水珠背景（已回退到最初）；新增起点雷达、规则版灵魂拷问、二阶检索、方向执行清单、同伴去向样本、3D 弹珠与图表动效；最近一次改动为 V10.7（背景回退）。
 - **附加页面**：`/#/electrical`「电气实训」交互题解（Y-△ 降压启动 / 小车自动往返），入口在页头「⚡ 电气实训」chip；纯前端演示，不改四步主流程。
 
 ---
@@ -41,8 +41,8 @@ pnpm preview
 
 说明：
 
-- 包内附带 **`dist/` 预构建快照**（2026-11-22 构建），可直接 `pnpm preview`；**改源码后请重新 `pnpm build`**，不要直接改 `dist/`。
-- 本地 `vite dev` 没有平台的页面代理时，前端会**自动降级为 `localStorage`**（键 `yutu.state.v2`），页头显示「本地存储模式」。这是正常行为，不是 bug。
+- 包内附带 **`dist/` 预构建快照**（2026-11-24 构建），可直接 `pnpm preview`；**改源码后请重新 `pnpm build`**，不要直接改 `dist/`。
+- 本地 `vite dev` 没有平台的页面代理时，前端会**自动降级为 `localStorage`**（键 `yutu.state.v3`），页头显示「本地存储模式」。这是正常行为，不是 bug。
 - 平台内打开时自动使用数据表工作流；`POST /api/page/w/{token}` 为同源请求，浏览器自带登录态，**不要在请求头里加密钥**。
 - 依赖安装若遇到 `ERR_PNPM_ABORTED_REMOVE_MODULES_DIR_NO_TTY`：本项目 `.npmrc` 与 `pnpm-workspace.yaml` 已固定 `confirmModulesPurge: false`，再执行一次 `pnpm install --prefer-offline` 即可。
 
@@ -50,9 +50,9 @@ pnpm preview
 
 ## 2. 平台数据与接口
 
-- 启用中的 **12 个 SQL 操作 API（实为工作流）**：`profile_get/save`、`tasks_list/add/update_status/delete`、`archive_list/add`、`reviews_list/add`、`marks_add/list`。
+- 启用中的 **17 个 SQL 操作 API（实为工作流）**：`profile_get/save`、`tasks_list/add/update_status/delete`、`archive_list/add`、`reviews_list/add`、`marks_add/list`，以及 V9.6 接入的 `peer_samples_stats/mine/add/update`、`archive_choice_stats`。
 - **端点 token、绑定表、入参、SQL 要点**：见 `.project.md` 第 2、3 节；前端映射在 `src/lib/yutuApi.ts` 的 `API_ENDPOINTS`。
-- 已停用、**不要再接入**：`peer_samples_*`（5269613–5269616）、`archive_choice_stats`（5269617）。
+- `peer_samples_*` 与 `archive_choice_stats` 已在「同伴经验域」的「同阶段的人后来去哪了」卡片中使用；写样本前会脱敏，离线只存本机。
 - 请求路径：`POST /api/page/w/{token}`；查询数据在 `data.outputList`，写操作只回 `success`。
 - 用户隔离：`ownerKey` 由前端生成并保存在 `localStorage: yutu.ownerKey`，所有个人表按此过滤。
 - 新增接口的固定顺序：**建表 → 建 SQL 操作 API → 登记 `.project.md`（表 ID / 物理表名 / token / SQL / 入出参）→ `yutuApi.ts` → `YutuContext` → 组件**。
@@ -65,7 +65,7 @@ pnpm preview
 - **知乎 Access Secret 未随包提供**：打包环境未注入 `ZHIHU_ACCESS_SECRET`，也没有 `~/.config/zhihu-cli/secret.env` / `zhihu-cli`。应用运行**不需要**它——256 条快照已内置；只有「刷新快照」才需要。
 - 需要刷新时按 **`secrets/README.md`** 注入：可参考 `secrets/zhihu.env.example` 创建本地 `secrets/zhihu.env`（已被 `.gitignore` 忽略），或临时 `export ZHIHU_ACCESS_SECRET=...`。**不要把真实密钥写进代码、前端、提交记录或公开 zip。**
 - 知乎内容的展示/再分发边界与发布前检查清单：**`docs/ZHIHU-RIGHTS.md`**。核心口径：访问密钥只证明「能查」，不等于获得「可对外转载/商用」的授权。
-- 平台 12 个工作流端点 token 不是密钥，已在 `.project.md` 第 3 节与 `src/lib/yutuApi.ts` 中随包提供。
+- 平台 17 个工作流端点 token 不是密钥，已在 `.project.md` 第 3 节与 `src/lib/yutuApi.ts` 中随包提供。
 
 ---
 
