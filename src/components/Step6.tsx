@@ -1426,6 +1426,10 @@ function PeersTab() {
   /** 经验星云：把公开复盘按阶段排成星云，便于发现与标记 */
   const [nebula, setNebula] = useState(false);
   useImmersive(nebula, setNebula);
+  /** 同伴经验域内部视图：共建 / 我的 / 数据 */
+  const [peerView, setPeerView] = useState<'build' | 'mine' | 'data'>(
+    'build'
+  );
 
   // 贡献者影响力：只统计自己的复盘被同处境用户标记有效的次数，不排名
   const myReviews = state.reviews.filter(r => r.authorKey === ownerKey);
@@ -1504,8 +1508,38 @@ function PeersTab() {
 
   return (
     <>
-    <div className='y-g2 y-g2-stretch y-peers'>
-      <div className='y-card' style={{ gridColumn: '1 / -1' }}>
+    <div className='y-g2 y-g2-stretch y-peers' data-view={peerView}>
+      <div className='y-peer-viewbar' role='tablist' aria-label='同伴经验域视图'>
+        <button
+          type='button'
+          role='tab'
+          aria-selected={peerView === 'build'}
+          className={peerView === 'build' ? 'is-on' : undefined}
+          onClick={() => setPeerView('build')}
+        >
+          共建 <em>{publicReviews.length}</em>
+        </button>
+        <button
+          type='button'
+          role='tab'
+          aria-selected={peerView === 'mine'}
+          className={peerView === 'mine' ? 'is-on' : undefined}
+          onClick={() => setPeerView('mine')}
+        >
+          我的 <em>{myReviews.length}</em>
+        </button>
+        <button
+          type='button'
+          role='tab'
+          aria-selected={peerView === 'data'}
+          className={peerView === 'data' ? 'is-on' : undefined}
+          onClick={() => setPeerView('data')}
+        >
+          数据
+        </button>
+      </div>
+
+      <div className='y-card y-peer-mine' style={{ gridColumn: '1 / -1' }}>
         <h3>我的贡献</h3>
         <div className='y-contrib-grid'>
           <div>
@@ -1541,7 +1575,7 @@ function PeersTab() {
 
       <PeerSamples />
 
-      <div className='y-card y-gap-card'>
+      <div className='y-card y-gap-card y-peer-mine y-peer-full'>
         <h3>
           我的校验池
           <button
@@ -1661,7 +1695,7 @@ function PeersTab() {
         <GapPhoto variant='ridge' quote='每个人都在自己的路上。' />
       </div>
 
-      <div className='y-card y-gap-card'>
+      <div className='y-card y-gap-card y-peer-build y-peer-full'>
         <h3>
           同处境者的复盘
           <DataSourceBadge source='reviews' showLabel={false} />
@@ -1778,7 +1812,7 @@ function PeersTab() {
         />
       </div>
 
-      <div className='y-card' style={{ gridColumn: '1 / -1' }}>
+      <div className='y-card y-peer-data' style={{ gridColumn: '1 / -1' }}>
         <h3>
           我的数据<span className='y-mini'>备份在浏览器本地生成，不上传</span>
         </h3>

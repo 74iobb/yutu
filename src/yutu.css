@@ -13976,3 +13976,59 @@ html.y-motion-off #yutu2 .gis-me-halo {
   background: rgba(240, 178, 90, 0.28);
   box-shadow: inset 0 0 0 1px rgba(240, 178, 90, 0.18);
 }
+
+/* ---------- V11 同伴经验域内部视图：共建 / 我的 / 数据 ---------- */
+#yutu2 .y-peer-viewbar {
+  grid-column: 1 / -1;
+  display: inline-flex;
+  gap: 4px;
+  width: fit-content;
+  padding: 4px;
+  border: 1px solid var(--y-line);
+  border-radius: 999px;
+  background: rgba(8, 15, 32, 0.55);
+}
+#yutu2 .y-peer-viewbar button {
+  border: 0;
+  border-radius: 999px;
+  padding: 5px 14px;
+  background: transparent;
+  color: var(--y-muted);
+  font-size: 12px;
+  cursor: pointer;
+  transition:
+    color 160ms ease,
+    background-color 160ms ease;
+}
+#yutu2 .y-peer-viewbar button[aria-selected='true'] {
+  color: #04121f;
+  background: linear-gradient(180deg, #bfe3ff, #7ec8ff);
+  font-weight: 650;
+}
+#yutu2 .y-peer-viewbar em {
+  margin-left: 4px;
+  font-style: normal;
+  font-size: 10px;
+  opacity: 0.6;
+}
+#yutu2 .y-peer-full {
+  grid-column: 1 / -1;
+}
+#yutu2 .y-peers[data-view='build'] .y-peer-mine,
+#yutu2 .y-peers[data-view='build'] .y-peer-data,
+#yutu2 .y-peers[data-view='mine'] .y-peer-build,
+#yutu2 .y-peers[data-view='mine'] .y-peer-search,
+#yutu2 .y-peers[data-view='mine'] .y-peer-samples,
+#yutu2 .y-peers[data-view='mine'] .y-peer-data,
+#yutu2 .y-peers[data-view='data'] .y-peer-build,
+#yutu2 .y-peers[data-view='data'] .y-peer-search,
+#yutu2 .y-peers[data-view='data'] .y-peer-samples,
+#yutu2 .y-peers[data-view='data'] .y-peer-mine {
+  display: none;
+}
+@media (max-width: 640px) {
+  #yutu2 .y-peer-viewbar {
+    width: 100%;
+    justify-content: space-between;
+  }
+}
