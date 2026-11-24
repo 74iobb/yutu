@@ -17,11 +17,10 @@
         if (window.localStorage.getItem('yutu.motionOff') === '1') {
           document.documentElement.classList.add('y-motion-off');
         }
-        /* 首帧前确定背景，避免默认星云闪一下再切到叶面 */
+        /* 首帧前确定背景，避免默认星云闪一下再切到海/叶面 */
+        var savedBg = window.localStorage.getItem('yutu.bg');
         document.documentElement.dataset.bg =
-          window.localStorage.getItem('yutu.bg') === 'leaves'
-            ? 'leaves'
-            : 'nebula';
+          savedBg === 'leaves' || savedBg === 'ocean' ? savedBg : 'nebula';
       } catch (e) {}
     </script>
     <noscript>

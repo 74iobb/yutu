@@ -35,6 +35,15 @@ export default function YutuApp() {
         <span className="y-ambient-grid" />
         <span className="y-ambient-aura" />
         <span className="y-ambient-noise" />
+        {/* 水下背景专属：光束、焦散与气泡；其他背景自动隐藏 */}
+        <span className="y-ocean-layer" aria-hidden="true">
+          <b />
+          <b />
+          <b />
+          <b />
+          <b />
+          <b />
+        </span>
       </div>
       <ErrorBoundary>
         <YutuProvider>
@@ -46,7 +55,7 @@ export default function YutuApp() {
         <br />
         背景：NGC 7023 鸢尾花星云（T.A. Rector/University of Alaska
         Anchorage、H. Schweiker/WIYN、NOIRLab/NSF/AURA）；
-        可切换为叶面水珠照片（用户提供）。
+        可切换为水下照片（Unsplash）或叶面水珠照片（用户提供）。
       </p>
     </div>
   );

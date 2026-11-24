@@ -13486,3 +13486,209 @@ html[data-bg='leaves'] #yutu2 .y-bg-chip .y-bg-dot {
   background: radial-gradient(circle at 35% 30%, #eafff2, #7fd6a8 45%, #0e5b4c);
   box-shadow: 0 0 8px rgba(127, 214, 168, 0.5);
 }
+
+/* ---------- 第三种背景：水下海洋（缓慢流动 + 光束 + 焦散 + 气泡） ---------- */
+html[data-bg='ocean'] .y-ambient::before {
+  background-image: url('./assets/yutu-bg-ocean.jpg');
+  background-image:
+    image-set(
+      url('./assets/yutu-bg-ocean.webp') type('image/webp'),
+      url('./assets/yutu-bg-ocean.jpg') type('image/jpeg')
+    );
+  filter: brightness(0.8) saturate(1.12);
+  animation: yOceanDrift 96s ease-in-out infinite alternate;
+}
+@keyframes yOceanDrift {
+  from {
+    transform: scale(1.1) translate3d(-1.2%, 1.4%, 0) rotate(-0.4deg);
+  }
+  to {
+    transform: scale(1.2) translate3d(1.2%, -1.4%, 0) rotate(0.4deg);
+  }
+}
+
+/* 水下专属装饰层：只在 data-bg=ocean 时显示 */
+.y-ocean-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  overflow: hidden;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 600ms var(--ease-out, ease);
+}
+html[data-bg='ocean'] .y-ocean-layer {
+  opacity: 1;
+}
+/* 体积光束 */
+.y-ocean-layer::before {
+  content: '';
+  position: absolute;
+  inset: -20% -10%;
+  background:
+    linear-gradient(
+      112deg,
+      transparent 36%,
+      rgba(180, 240, 255, 0.11) 48%,
+      transparent 52%
+    ),
+    linear-gradient(
+      104deg,
+      transparent 50%,
+      rgba(200, 250, 255, 0.09) 59%,
+      transparent 63%
+    ),
+    linear-gradient(
+      68deg,
+      transparent 42%,
+      rgba(160, 230, 255, 0.08) 50%,
+      transparent 55%
+    );
+  filter: blur(12px);
+  mix-blend-mode: screen;
+  animation: yOceanRays 18s ease-in-out infinite alternate;
+}
+@keyframes yOceanRays {
+  from {
+    transform: translate3d(-1.5%, -1%, 0) scale(1.02);
+    opacity: 0.65;
+  }
+  to {
+    transform: translate3d(1.5%, 1.5%, 0) scale(1.06);
+    opacity: 1;
+  }
+}
+/* 焦散光斑 */
+.y-ocean-layer::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    repeating-radial-gradient(
+      circle at 30% 20%,
+      rgba(200, 250, 255, 0.055) 0 2px,
+      transparent 3px 20px
+    ),
+    repeating-radial-gradient(
+      circle at 70% 60%,
+      rgba(180, 240, 255, 0.045) 0 2px,
+      transparent 3px 24px
+    );
+  background-size:
+    220px 220px,
+    280px 280px;
+  filter: blur(1.5px);
+  mix-blend-mode: screen;
+  opacity: 0.55;
+  animation: yOceanCaustics 28s linear infinite;
+}
+@keyframes yOceanCaustics {
+  to {
+    background-position:
+      220px 110px,
+      -280px 140px;
+  }
+}
+/* 缓慢上升的气泡 */
+.y-ocean-layer b {
+  position: absolute;
+  bottom: -8vh;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle at 35% 30%,
+    rgba(240, 255, 255, 0.95),
+    rgba(200, 245, 255, 0.18) 55%,
+    transparent 72%
+  );
+  box-shadow: 0 0 8px rgba(200, 245, 255, 0.25);
+  opacity: 0;
+  animation: yBubbleRise 18s linear infinite;
+}
+.y-ocean-layer b:nth-child(1) {
+  left: 8%;
+  width: 5px;
+  height: 5px;
+  animation-duration: 20s;
+  animation-delay: 0s;
+}
+.y-ocean-layer b:nth-child(2) {
+  left: 22%;
+  width: 8px;
+  height: 8px;
+  animation-duration: 26s;
+  animation-delay: 4s;
+}
+.y-ocean-layer b:nth-child(3) {
+  left: 38%;
+  width: 4px;
+  height: 4px;
+  animation-duration: 16s;
+  animation-delay: 9s;
+}
+.y-ocean-layer b:nth-child(4) {
+  left: 57%;
+  width: 7px;
+  height: 7px;
+  animation-duration: 24s;
+  animation-delay: 2s;
+}
+.y-ocean-layer b:nth-child(5) {
+  left: 73%;
+  width: 5px;
+  height: 5px;
+  animation-duration: 19s;
+  animation-delay: 7s;
+}
+.y-ocean-layer b:nth-child(6) {
+  left: 88%;
+  width: 9px;
+  height: 9px;
+  animation-duration: 28s;
+  animation-delay: 12s;
+}
+@keyframes yBubbleRise {
+  0% {
+    transform: translate3d(0, 0, 0) scale(0.7);
+    opacity: 0;
+  }
+  12% {
+    opacity: 0.75;
+  }
+  80% {
+    opacity: 0.35;
+  }
+  100% {
+    transform: translate3d(24px, -112vh, 0) scale(1.1);
+    opacity: 0;
+  }
+}
+
+/* 海的 chip 圆点 */
+html[data-bg='ocean'] #yutu2 .y-bg-chip .y-bg-dot {
+  background: radial-gradient(circle at 35% 30%, #eaffff, #35c9e0 45%, #0a4a8a);
+  box-shadow: 0 0 8px rgba(53, 201, 224, 0.55);
+}
+
+/* 减动效：保留静态海面与光束，停止漂移/焦散/气泡 */
+@media (prefers-reduced-motion: reduce) {
+  html[data-bg='ocean'] .y-ambient::before,
+  .y-ocean-layer::before,
+  .y-ocean-layer::after,
+  .y-ocean-layer b {
+    animation: none;
+  }
+  .y-ocean-layer b {
+    opacity: 0;
+  }
+}
+html.y-motion-off .y-ambient::before,
+html.y-motion-off .y-ocean-layer::before,
+html.y-motion-off .y-ocean-layer::after,
+html.y-motion-off .y-ocean-layer b {
+  animation: none;
+}
+html.y-motion-off .y-ocean-layer b {
+  opacity: 0;
+}

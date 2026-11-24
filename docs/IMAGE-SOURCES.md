@@ -54,8 +54,8 @@
 
 | 文件 | 用途 | 说明 |
 |---|---|---|
-| `src/assets/yutu-iris-nebula.webp` | 全屏背景（优先） | NOIRLab `noao-ngc7023`，1600×1469，约 148 KB |
-| `src/assets/yutu-iris-nebula.jpg` | 同上，JPEG fallback | 1600×1469，约 428 KB |
+| `src/assets/yutu-iris-nebula.webp` | 全屏背景（优先） | NOIRLab `noao-ngc7023`，以核心为中心重裁为 1600×900 并轻微调色，约 94 KB |
+| `src/assets/yutu-iris-nebula.jpg` | 同上，JPEG fallback | 1600×900，约 140 KB |
 
 - 来源：https://noirlab.edu/public/images/noao-ngc7023/
 - Credit（NOIRLab 要求保留完整署名）：T.A. Rector/University of Alaska Anchorage, H. Schweiker/WIYN and NOIRLab/NSF/AURA
@@ -71,6 +71,17 @@
 | `src/assets/yutu-bg-leaves.jpg` | 同上，JPEG fallback | 1600×1200，约 470 KB |
 
 **背景照片由用户提供，仅限本项目使用；如需对外发布请确认授权。**
+
+**水下（备选）**
+
+| 文件 | 用途 | 说明 |
+|---|---|---|
+| `src/assets/yutu-bg-ocean.webp` | 全屏背景备选（优先） | Unsplash，1600×900，约 87 KB |
+| `src/assets/yutu-bg-ocean.jpg` | 同上，JPEG fallback | 1600×900，约 166 KB |
+
+- 来源：https://images.unsplash.com/photo-1530053969600-caed2596d242
+- 授权：Unsplash License（免费使用，界面已注明来源）
+- 动效：`yOceanDrift` 96s 缓慢上浮/缩放；`yOceanRays` 18s 体积光束；`yOceanCaustics` 28s 焦散；6 个气泡 `yBubbleRise` 16–28s。减动效 / 「动效 关」时停止，保留静态海面。
 
 ## 成长闭环弹珠（2026-11-24）
 

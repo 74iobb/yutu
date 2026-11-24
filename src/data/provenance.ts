@@ -50,6 +50,13 @@ export const PROVENANCE = {
       'NOIRLab 公开图像 noao-ngc7023；T.A. Rector/University of Alaska Anchorage、H. Schweiker/WIYN、NOIRLab/NSF/AURA。',
     meta: 'https://noirlab.edu/public/images/noao-ngc7023/',
   },
+  ocean: {
+    label: '背景：水下海洋照片',
+    kind: 'real',
+    detail:
+      'Unsplash 真实水下照片，Unsplash License；用于「海」背景，含光束、焦散与气泡动效。',
+    meta: 'https://images.unsplash.com/photo-1530053969600-caed2596d242',
+  },
   zhihuCases: {
     label: '知乎案例/讨论',
     kind: 'real',
