@@ -14456,3 +14456,60 @@ html.y-motion-off #yutu2 .y-deep-drawer {
     transition: none;
   }
 }
+
+/* ---------- V11.8 板块滚动与切换入场 ---------- */
+/* 滚动显现：主板块略微放大上浮，和卡片入场拉开层次 */
+html.y-motion-ready #yutu2 .y-zone {
+  opacity: 0;
+  transform: translateY(24px) scale(0.994);
+  transition:
+    opacity 0.58s var(--ease-out) var(--reveal-delay, 0ms),
+    transform 0.58s var(--ease-out) var(--reveal-delay, 0ms);
+}
+html.y-motion-ready #yutu2 .y-zone.y-in {
+  opacity: 1;
+  transform: none;
+}
+
+/* 内部视图 / 驿站步骤切换：当前板块上浮淡入 */
+@keyframes yPaneIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.996);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+#yutu2 .y-peers[data-view='build']
+  :is(.y-peer-build, .y-peer-search, .y-peer-samples),
+#yutu2 .y-peers[data-view='mine'] .y-peer-mine,
+#yutu2 .y-peers[data-view='data'] .y-peer-data,
+#yutu2 .y-wall-grid[data-view='memory'] .y-memory-panel,
+#yutu2 .y-wall-grid[data-view='curve'] .y-wall-curve,
+#yutu2 .y-wall-grid[data-view='archive'] .y-wall-archive,
+#yutu2 [data-station-step='1'] .y-station-pane.is-ask,
+#yutu2 [data-station-step='2'] .y-station-pane.is-answer,
+#yutu2 [data-station-step='3'] .y-station-pane.is-archive {
+  animation: yPaneIn 300ms var(--ease-out, ease) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html.y-motion-ready #yutu2 .y-zone {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+  #yutu2 .y-peers,
+  #yutu2 .y-wall-grid > *,
+  #yutu2 .y-station-pane {
+    animation: none !important;
+  }
+}
+html.y-motion-off #yutu2 .y-zone,
+html.y-motion-off #yutu2 .y-peers *,
+html.y-motion-off #yutu2 .y-wall-grid *,
+html.y-motion-off #yutu2 .y-station-pane {
+  animation: none !important;
+}
