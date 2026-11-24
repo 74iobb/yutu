@@ -52,6 +52,7 @@ import {
   apiAddDiscussion,
   apiDeleteDiscussion,
   apiLoadDiscussionStats,
+  apiSearchDiscussions,
   apiLoadMedia,
   apiAddMedia,
   apiDeleteMedia,
@@ -499,6 +500,7 @@ interface YutuContextValue {
     caption: string
   ) => void;
   removeMedia: (id: string) => void;
+  searchDiscussions: (term: string) => Promise<Discussion[]>;
   markReview: (reviewId: string) => void;
   refreshReviews: () => void;
   resync: () => void;
@@ -1483,6 +1485,25 @@ export function YutuProvider({ children }: { children: ReactNode }) {
     [flash, ownerKey, state.backendOnline, state.media, loadMedia]
   );
 
+  /** 讨论文字搜索；离线时只搜索本机已加载的讨论 */
+  const searchDiscussions = useCallback(
+    async (term: string): Promise<Discussion[]> => {
+      const q = term.trim();
+      if (!q) return [];
+      const local = (state.discussions ?? []).filter(
+        (d) => d.content.includes(q) || d.authorName.includes(q)
+      );
+      if (!state.backendOnline) return local;
+      try {
+        return await apiSearchDiscussions(`%${q}%`);
+      } catch {
+        flash('讨论搜索失败；先显示本机已加载的讨论。');
+        return local;
+      }
+    },
+    [flash, state.backendOnline, state.discussions]
+  );
+
   const markReview = useCallback(
     (reviewId: string) => {
       if (markedIds.includes(reviewId)) return;
@@ -1635,6 +1656,7 @@ export function YutuProvider({ children }: { children: ReactNode }) {
       loadMedia,
       submitMedia,
       removeMedia,
+      searchDiscussions,
       markReview,
       refreshReviews,
       resync,
@@ -1675,6 +1697,7 @@ export function YutuProvider({ children }: { children: ReactNode }) {
       loadMedia,
       submitMedia,
       removeMedia,
+      searchDiscussions,
       markReview,
       refreshReviews,
       resync,

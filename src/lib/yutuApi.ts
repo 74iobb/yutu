@@ -48,6 +48,7 @@ const API_ENDPOINTS = {
   mediaList: '17955300235269689',
   mediaAdd: '17955300235269690',
   mediaDelete: '17955300235269691',
+  discussionsSearch: '17955304695269692',
 } as const;
 
 export type ApiEndpointKey = keyof typeof API_ENDPOINTS;
@@ -462,6 +463,14 @@ export async function apiLoadDiscussions(
   reviewId: string
 ): Promise<Discussion[]> {
   const rows = await queryRows(API_ENDPOINTS.discussionsList, { reviewId });
+  return rows.map(mapDiscussionRow);
+}
+
+/** keyword 需由调用方包成 %关键词%（平台不自动加 %） */
+export async function apiSearchDiscussions(
+  keyword: string
+): Promise<Discussion[]> {
+  const rows = await queryRows(API_ENDPOINTS.discussionsSearch, { keyword });
   return rows.map(mapDiscussionRow);
 }
 

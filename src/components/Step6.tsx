@@ -35,6 +35,7 @@ import { ReviewDiscussion } from './DiscussionThread';
 import { ReviewMediaPanel } from './MediaGallery';
 import PeerNebula from './PeerNebula';
 import PeerSamples from './PeerSamples';
+import PeerSearch from './PeerSearch';
 import SoulCard from './SoulCard';
 import type {
   Choice,
@@ -1535,6 +1536,8 @@ function PeersTab() {
           你参与了 {myDiscussions.length} 条讨论，收到 {repliesToMe} 条回复。
         </p>
       </div>
+
+      <PeerSearch />
 
       <PeerSamples />
 

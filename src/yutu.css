@@ -13903,3 +13903,67 @@ html.y-motion-off #yutu2 .gis-me-halo {
   font-weight: 650;
   font-variant-numeric: tabular-nums;
 }
+
+/* ---------- V10.15 复盘 / 讨论搜索 ---------- */
+#yutu2 .y-peer-search {
+  grid-column: 1 / -1;
+}
+#yutu2 .y-peer-search-bar {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+#yutu2 .y-peer-search-bar input {
+  flex: 1;
+  min-width: 0;
+}
+#yutu2 .y-peer-search-results {
+  margin-top: 8px;
+}
+#yutu2 .y-search-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 5px 10px;
+  font-size: 11px;
+  color: var(--y-muted);
+}
+#yutu2 .y-search-head b {
+  color: var(--y-ink);
+}
+#yutu2 .y-search-head em {
+  font-style: normal;
+  color: #9fd8ff;
+}
+#yutu2 .y-peer-search-results section {
+  margin-top: 9px;
+}
+#yutu2 .y-peer-search-results h4 {
+  margin: 0 0 6px;
+  font-size: 11.5px;
+  color: #9fd8ff;
+}
+#yutu2 .y-search-item {
+  margin-bottom: 6px;
+  padding: 8px 9px;
+  border: 1px solid rgba(160, 190, 255, 0.16);
+  border-radius: 8px;
+  background: rgba(8, 15, 32, 0.45);
+}
+#yutu2 .y-search-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px 10px;
+  font-size: 10.5px;
+  color: var(--y-muted);
+}
+#yutu2 .y-search-meta b {
+  color: var(--y-ink2);
+  font-weight: 600;
+}
+#yutu2 .y-search-item p {
+  margin: 6px 0;
+  font-size: 11.5px;
+  line-height: 1.6;
+  color: var(--y-ink2);
+}

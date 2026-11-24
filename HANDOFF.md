@@ -50,7 +50,7 @@ pnpm preview
 
 ## 2. 平台数据与接口
 
-- 启用中的 **24 个 SQL 操作 API（实为工作流）**：`profile_get/save`、`tasks_list/add/update_status/delete`、`archive_list/add`、`reviews_list/add`、`marks_add/list`，V9.6 接入的 `peer_samples_stats/mine/add/update`、`archive_choice_stats`，V10.9 新增的 `discussions_list/add/delete`，V10.12 的 `discussions_stats`（绑定表 8778），以及 V10.13 的 `media_list/add/delete`（绑定表 8779）。
+- 启用中的 **25 个 SQL 操作 API（实为工作流）**：`profile_get/save`、`tasks_list/add/update_status/delete`、`archive_list/add`、`reviews_list/add`、`marks_add/list`，V9.6 接入的 `peer_samples_stats/mine/add/update`、`archive_choice_stats`，V10.9 新增的 `discussions_list/add/delete`，V10.12 的 `discussions_stats`、V10.15 的 `discussions_search`（绑定表 8778），以及 V10.13 的 `media_list/add/delete`（绑定表 8779）。
 - **端点 token、绑定表、入参、SQL 要点**：见 `.project.md` 第 2、3 节；前端映射在 `src/lib/yutuApi.ts` 的 `API_ENDPOINTS`。
 - `peer_samples_*` 与 `archive_choice_stats` 已在「同伴经验域」的「同阶段的人后来去哪了」卡片中使用；写样本前会脱敏，离线只存本机。
 - 请求路径：`POST /api/page/w/{token}`；查询数据在 `data.outputList`，写操作只回 `success`。
@@ -65,7 +65,7 @@ pnpm preview
 - **知乎 Access Secret 未随包提供**：打包环境未注入 `ZHIHU_ACCESS_SECRET`，也没有 `~/.config/zhihu-cli/secret.env` / `zhihu-cli`。应用运行**不需要**它——256 条快照已内置；只有「刷新快照」才需要。
 - 需要刷新时按 **`secrets/README.md`** 注入：可参考 `secrets/zhihu.env.example` 创建本地 `secrets/zhihu.env`（已被 `.gitignore` 忽略），或临时 `export ZHIHU_ACCESS_SECRET=...`。**不要把真实密钥写进代码、前端、提交记录或公开 zip。**
 - 知乎内容的展示/再分发边界与发布前检查清单：**`docs/ZHIHU-RIGHTS.md`**。核心口径：访问密钥只证明「能查」，不等于获得「可对外转载/商用」的授权。
-- 平台 24 个工作流端点 token 不是密钥，已在 `.project.md` 第 3 节与 `src/lib/yutuApi.ts` 中随包提供。
+- 平台 25 个工作流端点 token 不是密钥，已在 `.project.md` 第 3 节与 `src/lib/yutuApi.ts` 中随包提供。
 
 ---
 
@@ -219,3 +219,5 @@ pnpm build          # 期望 ✓ built
 > 2026-11-24 V10.13 多模态降级复盘：新增表 8779 与 `media_list/add/delete` 三个工作流（token 已登记 `.project.md`）。复盘卡片下可展开「素材」，支持公开图片预览、语音播放、说明、打开原链接、删除自己的；只接受 http(s) 链接，说明文字脱敏，平台不存文件、不做转写。新增 3 个工作流会永久保留。
 >
 > 2026-11-24 V10.14 复盘热议排序：「同处境者的复盘」可切「最新 / 热议」，热度 = 有效标记 + 参与讨论人数；卡片显示「热度 N」，排序不改变公共节点判定。无新增表 / 工作流。
+>
+> 2026-11-24 V10.15 复盘/讨论搜索：新增 `discussions_search`（5269692 / token `17955304695269692`，LIKE 包含匹配）；同伴经验域顶部新增搜索卡，复盘本地匹配 + 讨论在线/离线搜索，结果可直接展开所属讨论与素材。新增 1 个工作流（会永久保留）。
