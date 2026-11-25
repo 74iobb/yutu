@@ -101,7 +101,7 @@ export default function Step3({ onOpenMap, onOpenSummary }: Props = {}) {
 
       <div className='y-flow-steps' aria-label='方向推演三步'>
         <span className='is-on'>
-          <em>01</em> 方向清单
+          <em>①</em> 方向清单
         </span>
         <span className='y-flow-arrow' aria-hidden='true'>
           →
@@ -117,7 +117,7 @@ export default function Step3({ onOpenMap, onOpenSummary }: Props = {}) {
             setDeepOpen(true);
           }}
         >
-          <em>02</em> 二阶深挖
+          <em>②</em> 二阶深挖
         </button>
         <span className='y-flow-arrow' aria-hidden='true'>
           →
@@ -133,7 +133,7 @@ export default function Step3({ onOpenMap, onOpenSummary }: Props = {}) {
             onOpenMap?.(picked.dir.name);
           }}
         >
-          <em>03</em> 代价与清单
+          <em>③</em> 代价与清单
         </button>
       </div>
 
@@ -450,7 +450,7 @@ export default function Step3({ onOpenMap, onOpenSummary }: Props = {}) {
             aria-label='二阶检索'
           >
             <div className='y-deep-head'>
-              <p className='y-eyebrow'>02 / 二阶深挖</p>
+              <p className='y-eyebrow'>② 二阶深挖</p>
               <button
                 type='button'
                 className='y-btn y-btn-s'

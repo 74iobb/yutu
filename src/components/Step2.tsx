@@ -520,6 +520,9 @@ export default function Step2() {
           }
         }}
       >
+        <p className='y-side-kicker'>
+          <span>02</span> 城市与讨论
+        </p>
         <div className='y-side-tabs' role='tablist' aria-label='地图信息'>
           {SIDE_TABS.map(k => (
             <button

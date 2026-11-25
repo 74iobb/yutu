@@ -2083,6 +2083,16 @@ export default function Step6() {
     primary = { label: '去工作台继续本轮', run: () => setSub(1) };
   }
 
+  /** 唯一主操作：执行后把下方「本轮工作区」滚入视口 */
+  function runPrimary() {
+    primary.run();
+    window.setTimeout(() => {
+      document
+        .getElementById('y-loop-work')
+        ?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 80);
+  }
+
   function go(k: LoopStationKey) {
     if (k === 'map') {
       goLanding(setStep);
@@ -2213,23 +2223,6 @@ export default function Step6() {
     }
   }
 
-  function stationCta(k: LoopStationKey) {
-    switch (k) {
-      case 'claim':
-        return '去工作台领取任务';
-      case 'act':
-        return '去工作台看任务';
-      case 'mark':
-        return '去工作台标记完成';
-      case 'dock':
-        return '去驿站停靠自省';
-      case 'archive':
-        return '去驿站归档';
-      case 'map':
-        return '回第 3 步看落点';
-    }
-  }
-
   const currentStation = LOOP_STATIONS[idx];
 
   /* 进入第 4 步时只自动定位一次：
@@ -2248,9 +2241,6 @@ export default function Step6() {
       <header className='y-lead'>
         <p className='y-eyebrow'>STEP 04 · 闭环</p>
         <h2>成长闭环</h2>
-        <a className='y-btn y-btn-s' href='#/sandbox' style={{ marginTop: 10 }}>
-          先在沙盘里试走一轮 →
-        </a>
       </header>
 
       <div className='y-zone'>
@@ -2271,53 +2261,68 @@ export default function Step6() {
               {currentStation.name}
               <em>{currentStation.hint}</em>
             </h4>
-            <p>{stationStatus(currentStation.k)}</p>
+            <p className='y-loop-current-status'>
+              {stationStatus(currentStation.k)}
+            </p>
+            <a className='y-loop-sandbox-link' href='#/sandbox'>
+              先在沙盘里试走一轮 →
+            </a>
           </div>
           <button
             type='button'
             className='y-btn y-btn-main'
-            onClick={() => goAndFocus(currentStation.k)}
+            onClick={runPrimary}
           >
-            {stationCta(currentStation.k)} →
+            {primary.label} →
           </button>
         </div>
 
-        <div className='y-loop-steps'>
-          {LOOP_STATIONS.map((s, i) => {
-            const on = i === idx;
-            const passed = i < idx;
-            const locked = i > idx && !stationReady(s.k);
-            return (
-              <div
-                className={`y-loop-step${on ? ' is-active' : ''}${
-                  passed ? ' is-passed' : ''
-                }${locked ? ' is-locked' : ''}`}
-                key={s.k}
-                aria-current={on ? 'step' : undefined}
-              >
-                <span className='y-loop-step-n' aria-hidden='true'>
-                  {passed ? '✓' : i + 1}
-                </span>
-                <div className='y-loop-step-body'>
-                  <b>
-                    {s.name}
-                    <em>{s.hint}</em>
-                    {on ? <span className='y-loop-step-now'>当前</span> : null}
-                  </b>
-                  <p>{stationStatus(s.k)}</p>
-                </div>
-                <button
-                  type='button'
-                  className='y-btn y-btn-s'
-                  disabled={locked}
-                  onClick={() => goAndFocus(s.k)}
+        <details className='y-loop-steps-fold'>
+          <summary>
+            <span>完整六步</span>
+            <b>{currentStation.name}</b>
+            <em>
+              第 {idx + 1} / {LOOP_STATIONS.length} 步 · 展开查看顺序与入口
+            </em>
+            <i aria-hidden='true'>▾</i>
+          </summary>
+          <div className='y-loop-steps'>
+            {LOOP_STATIONS.map((s, i) => {
+              const on = i === idx;
+              const passed = i < idx;
+              const locked = i > idx && !stationReady(s.k);
+              return (
+                <div
+                  className={`y-loop-step${on ? ' is-active' : ''}${
+                    passed ? ' is-passed' : ''
+                  }${locked ? ' is-locked' : ''}`}
+                  key={s.k}
+                  aria-current={on ? 'step' : undefined}
                 >
-                  {locked ? '完成上一步后开放' : stationAction(s.k)}
-                </button>
-              </div>
-            );
-          })}
-        </div>
+                  <span className='y-loop-step-n' aria-hidden='true'>
+                    {passed ? '✓' : i + 1}
+                  </span>
+                  <div className='y-loop-step-body'>
+                    <b>
+                      {s.name}
+                      <em>{s.hint}</em>
+                      {on ? <span className='y-loop-step-now'>当前</span> : null}
+                    </b>
+                    <p>{stationStatus(s.k)}</p>
+                  </div>
+                  <button
+                    type='button'
+                    className='y-btn y-btn-s'
+                    disabled={locked}
+                    onClick={() => goAndFocus(s.k)}
+                  >
+                    {locked ? '完成上一步后开放' : stationAction(s.k)}
+                  </button>
+                </div>
+              );
+            })}
+          </div>
+        </details>
 
         <div className='y-zone-head y-zone-subhead'>
           <span className='y-zone-n'>02 / 闭环全貌</span>
@@ -2359,8 +2364,8 @@ export default function Step6() {
                 <div className='y-row' style={{ marginTop: 10 }}>
                   <button
                     type='button'
-                    className='y-btn y-btn-main'
-                    onClick={primary.run}
+                    className='y-btn y-btn-s'
+                    onClick={runPrimary}
                   >
                     {primary.label}
                   </button>

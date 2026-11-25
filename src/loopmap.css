@@ -47,6 +47,72 @@
   stroke-width: 1;
 }
 
+/* 当前步骤卡：状态文字 + 沙盘次级入口 */
+#yutu2 .y-loop-current-status {
+  font-size: 11.5px;
+  line-height: 1.6;
+  color: var(--y-ink2);
+}
+#yutu2 .y-loop-sandbox-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 6px;
+  font-size: 10.5px;
+  color: #9fc4ff;
+  text-decoration: none;
+}
+#yutu2 .y-loop-sandbox-link:hover {
+  color: #fff;
+  text-decoration: underline;
+}
+
+/* 完整六步：默认折叠，减少与螺旋图的重复 */
+#yutu2 .y-loop-steps-fold {
+  margin-top: 10px;
+  border: 1px solid var(--y-line);
+  border-radius: var(--y-r);
+  background: rgba(10, 20, 40, 0.36);
+}
+#yutu2 .y-loop-steps-fold > summary {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 10px 12px;
+  list-style: none;
+  cursor: pointer;
+}
+#yutu2 .y-loop-steps-fold > summary::-webkit-details-marker {
+  display: none;
+}
+#yutu2 .y-loop-steps-fold > summary span {
+  font-size: 10.5px;
+  letter-spacing: 0.1em;
+  color: var(--y-muted);
+}
+#yutu2 .y-loop-steps-fold > summary b {
+  font-size: 12.5px;
+  color: var(--y-ink);
+}
+#yutu2 .y-loop-steps-fold > summary em {
+  font-style: normal;
+  font-size: 10.5px;
+  color: var(--y-muted);
+}
+#yutu2 .y-loop-steps-fold > summary i {
+  margin-left: auto;
+  font-style: normal;
+  color: var(--y-muted);
+  transition: transform 0.18s ease;
+}
+#yutu2 .y-loop-steps-fold[open] > summary i {
+  transform: rotate(180deg);
+}
+#yutu2 .y-loop-steps-fold .y-loop-steps {
+  padding: 0 10px 10px;
+}
+
 /* 站点 */
 #yutu2 .y-loop-node {
   fill: rgba(8, 16, 32, 0.92);

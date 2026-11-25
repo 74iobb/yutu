@@ -6,6 +6,7 @@ import './electrical.css';
 import './sandbox.css';
 import './audit.css';
 import './loopmap.css';
+import './layout.css';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <App />
