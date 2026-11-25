@@ -19,6 +19,19 @@
   overflow: hidden;
   color: #e7f2ff;
   cursor: pointer;
+  /* 背景放在伪元素上，退潮时才能单独淡出、让系统显形 */
+  background: transparent;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* 沉浸底色：退潮时这一层先褪去 */
+.y-overture::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
   background:
     radial-gradient(
       120% 92% at 50% 42%,
@@ -26,16 +39,15 @@
       transparent 62%
     ),
     linear-gradient(180deg, #05070d 0%, #0a0d16 55%, #070a12 100%);
-  -webkit-user-select: none;
-  user-select: none;
-  -webkit-tap-highlight-color: transparent;
+  pointer-events: none;
 }
 
 /* 极淡噪点：压住大面积渐变的色带 */
-.y-overture::before {
+.y-overture::after {
   content: '';
   position: absolute;
   inset: 0;
+  z-index: 0;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.22'/%3E%3C/svg%3E");
   background-size: 140px 140px;
   opacity: 0.18;
@@ -43,13 +55,41 @@
   pointer-events: none;
 }
 
+/* 退潮：背景褪去、水面向四周散开，系统在下面显形 */
 .y-overture.is-leaving {
   pointer-events: none;
-  animation: yOvOut 0.35s ease forwards;
+}
+
+.y-overture.is-leaving::before,
+.y-overture.is-leaving::after {
+  animation: yOvBackdropOut 0.72s ease forwards;
+}
+
+.y-overture.is-leaving .y-ov-pool {
+  animation: yOvPoolOut 0.8s ease forwards;
+}
+
+.y-overture.is-leaving .y-ov-crust {
+  animation: yOvSink 0.85s var(--ov-ease) forwards;
+}
+
+.y-overture.is-leaving .y-ov-label {
+  animation: yOvDrift 0.9s var(--ov-ease) forwards;
+}
+
+.y-overture.is-leaving .y-ov-verse {
+  animation: yOvVerseOut 0.6s ease forwards;
+}
+
+.y-overture.is-leaving .y-ov-skip {
+  animation: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
 }
 
 .y-ov-scene {
   position: relative;
+  z-index: 1;
   width: min(1000px, 96vw, 102vh);
   aspect-ratio: 10 / 9;
 }
@@ -283,7 +323,7 @@
 
 .y-ov-label {
   opacity: 0;
-  animation: yOvLabel 0.55s var(--ov-ease) both;
+  animation: yOvLabel 0.55s var(--ov-ease) var(--ov-delay, 0ms) both;
 }
 
 .y-ov-label circle {
@@ -460,10 +500,65 @@
   }
 }
 
-@keyframes yOvOut {
+@keyframes yOvBackdropOut {
   to {
     opacity: 0;
-    transform: scale(1.015);
+  }
+}
+
+@keyframes yOvPoolOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes yOvSink {
+  from {
+    transform: rotate(0deg) scale(1);
+    opacity: 0.55;
+  }
+  to {
+    transform: rotate(0deg) scale(1.1) translateY(46px);
+    opacity: 0;
+  }
+}
+
+@keyframes yOvDrift {
+  from {
+    opacity: 1;
+    transform: translate(0, 0);
+  }
+  to {
+    opacity: 0;
+    transform: translate(var(--ov-dx, 0px), var(--ov-dy, 0px));
+  }
+}
+
+@keyframes yOvVerseOut {
+  from {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+  to {
+    opacity: 0;
+    transform: translate(-50%, -12px);
+  }
+}
+
+/* 系统从水下显影：由 Overture 在退潮时挂到 #yutu2 上，卸载即移除 */
+#yutu2.y-ov-reveal {
+  animation: yOvSystemIn 0.95s var(--ov-ease) both;
+}
+
+@keyframes yOvSystemIn {
+  from {
+    opacity: 0.22;
+  }
+  to {
+    opacity: 1;
   }
 }
 

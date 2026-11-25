@@ -13,8 +13,10 @@ import { Delaunay } from 'd3-delaunay';
 
 /** 会话级记录：开播即写入，刷新与切步都不会重复播放 */
 const SEEN_KEY = 'yutu.overture.v1';
-const PLAY_MS = 4650;
-const LEAVE_MS = 350;
+/** 名句落定后开始退潮 */
+const PLAY_MS = 4500;
+/** 退潮 + 系统显影的总时长 */
+const LEAVE_MS = 1150;
 
 type Phase = 'idle' | 'playing' | 'leaving';
 
@@ -63,11 +65,14 @@ function cellPath(index: number): string {
   );
 }
 
+/** 离场时四个板块「各自东西南北流」的方向，与各自所在象限一致 */
 const PLATES = PLATE_CENTERS.map(([cx, cy, label], i) => ({
   label,
   cx,
   cy,
   d: cellPath(i),
+  dx: [-190, 190, -190, 190][i],
+  dy: [-128, -128, 128, 128][i],
   fill: [
     'rgba(96, 196, 255, 0.17)',
     'rgba(245, 186, 96, 0.14)',
@@ -165,13 +170,21 @@ export default function Overture() {
     };
   }, [seq.id, seq.phase]);
 
-  /** 淡出结束，整体卸载 */
+  /**
+   * 退潮：水向四周散开、背景褪去，系统从下面显形。
+   * 给 #yutu2 加一次性显影动画；卸载时移除，避免影响之后的切步。
+   */
   useEffect(() => {
     if (seq.phase !== 'leaving') return;
+    const shell = document.getElementById('yutu2');
+    shell?.classList.add('y-ov-reveal');
     const timer = window.setTimeout(() => {
       setSeq((s) => (s.phase === 'leaving' ? { ...s, phase: 'idle' } : s));
     }, LEAVE_MS);
-    return () => window.clearTimeout(timer);
+    return () => {
+      window.clearTimeout(timer);
+      shell?.classList.remove('y-ov-reveal');
+    };
   }, [seq.id, seq.phase]);
 
   /** 任意键跳过；Tab 留给键盘导航 */
@@ -332,7 +345,13 @@ export default function Overture() {
               <g
                 key={plate.label}
                 className='y-ov-label'
-                style={{ animationDelay: `${2600 + i * 95}ms` }}
+                style={
+                  {
+                    '--ov-delay': `${2600 + i * 95}ms`,
+                    '--ov-dx': `${plate.dx}px`,
+                    '--ov-dy': `${plate.dy}px`,
+                  } as CSSProperties
+                }
               >
                 <circle cx={plate.cx} cy={plate.cy - 34} r='2.2' />
                 <text
