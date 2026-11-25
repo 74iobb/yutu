@@ -233,8 +233,8 @@ async function unlockAudio(): Promise<boolean> {
 
 /* ------------------------------ 真人录音 ------------------------------ */
 /**
- * 用户提供的朗诵录音，原声播放。
- * 按「完全换成这个声音」的要求：不降调、不做 EQ、不做滤波，只做音量归一化。
+ * 用户提供的朗诵录音，原样直出。
+ * 不降调、不做 EQ、不做滤波、不做音量归一化 —— 除了静音开关，不改变任何东西。
  */
 const VOICE_URL =
   'https://agent.nuwax.com/api/f/s3/app-dev/20261125/bc03df955ca040b8baba8d7d4fda42aa.m4a';
@@ -270,10 +270,7 @@ function stopVoice(): void {
   voiceSource = null;
 }
 
-/**
- * 原声播放这段录音：不降调、不做 EQ、不做滤波，只做音量归一化。
- * 用户要求「完全换成这个声音」，所以除音量外不改动音色。
- */
+/** 原样播放这段录音：不降调、不做 EQ、不做滤波、不做音量归一化 */
 async function playVoiceShifted(): Promise<boolean> {
   if (voiceSource) return true;
   try {
@@ -284,25 +281,10 @@ async function playVoiceShifted(): Promise<boolean> {
     const buffer = await loadVoiceBuffer();
     if (!buffer) return false;
 
-    const ctx = audio.ctx;
-    const src = ctx.createBufferSource();
+    const src = audio.ctx.createBufferSource();
     src.buffer = buffer;
-    src.playbackRate.value = 1;
-
-    const out = ctx.createGain();
-    let peak = 0;
-    for (let c = 0; c < buffer.numberOfChannels; c += 1) {
-      const data = buffer.getChannelData(c);
-      for (let i = 0; i < data.length; i += 1) {
-        const v = Math.abs(data[i]);
-        if (v > peak) peak = v;
-      }
-    }
-    /* 只做音量归一化：峰值拉到 0.92，上限 2.5 倍 */
-    out.gain.value = Math.min(2.5, Math.max(1, 0.92 / (peak || 0.4)));
-
-    src.connect(out);
-    out.connect(audio.master);
+    /* 直接接到总线上：除了右下角的静音开关，不改变任何东西 */
+    src.connect(audio.master);
 
     voiceSource = src;
     src.onended = () => {
