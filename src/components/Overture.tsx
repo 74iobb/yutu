@@ -302,7 +302,7 @@ function stopSpeech(): void {
  * 不降调、不做 EQ、不做滤波、不做音量归一化 —— 除了静音开关，不改变任何东西。
  */
 /** 默认使用系统语音；改回 `true` 恢复录音播放 */
-const USE_RECORDING = true;
+const USE_RECORDING = false;
 
 const VOICE_URL =
   'https://agent.nuwax.com/api/f/s3/app-dev/20261125/32d36e5a83aa4526bf7dcad9e50b738a.m4a';
