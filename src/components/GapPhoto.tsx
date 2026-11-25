@@ -169,6 +169,8 @@ export default function GapPhoto({
           ) : null}
           {/* 常驻扫光：即使没有播放 WebP，静态图也有缓慢的光带流动 */}
           <span className='y-gap-photo-sheen' aria-hidden='true' />
+          {/* 极淡胶片颗粒：让照片更像真实拍摄，而不是干净的渲染 */}
+          <span className='y-gap-photo-grain' aria-hidden='true' />
           <div className='y-gap-photo-copy'>
             {quote ? <span>{quote}</span> : null}
             <em>

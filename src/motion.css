@@ -1,0 +1,194 @@
+/* ==========================================================================
+   V11.15 自然运动层
+   - 衬线标题 + 整行揭幕
+   - 切步「等高线擦除」替代直线扫光
+   - 地图 / 螺旋图 / 作战图的焦点转移
+   - 第 1 步「你写得越多，图越清晰」的显影反馈
+   原则：一次只动一个焦点；全部可关闭。
+   ========================================================================== */
+
+#yutu2 {
+  --y-serif:
+    'Songti SC', 'Noto Serif CJK SC', 'Source Han Serif SC', 'STSong',
+    'SimSun', serif;
+}
+
+/* 1. 衬线标题：只动 h2，正文保持无衬线 */
+#yutu2 .y-lead h2,
+#yutu2 .y-sb-lead h2 {
+  font-family: var(--y-serif);
+  font-weight: 600;
+  letter-spacing: 0.005em;
+}
+
+/* 2. 整行揭幕：标题从一条线下露出，不逐字跳动 */
+@keyframes yLineReveal {
+  from {
+    clip-path: inset(0 0 100% 0);
+    transform: translateY(10px);
+  }
+  to {
+    clip-path: inset(-20% 0 -20% 0);
+    transform: translateY(0);
+  }
+}
+#yutu2 .y-step-stage .y-lead h2 {
+  animation: yLineReveal 0.72s var(--ease-out) both;
+}
+#yutu2 .y-sb-lead h2 {
+  animation: yLineReveal 0.72s var(--ease-out) both;
+}
+
+/* 3. 焦点转移：地图 / 螺旋图 / 作战图从轻微失焦对到清晰 */
+@keyframes yRackFocus {
+  from {
+    opacity: 0.45;
+    filter: blur(7px) saturate(0.85);
+  }
+  to {
+    opacity: 1;
+    filter: blur(0) saturate(1);
+  }
+}
+#yutu2 .y-step-stage .y-globe .leaflet-container,
+#yutu2 .y-step-stage .y-loop-map,
+#yutu2 .y-step-stage .y-campaign-card .leaflet-container {
+  animation: yRackFocus 0.8s var(--ease-out);
+}
+
+/* 4. 切步：等高线擦除 */
+#yutu2 .y-step-wipe {
+  inset: 0 auto 0 0;
+  width: 42vw;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(159, 196, 255, 0.08) 38%,
+    rgba(245, 193, 90, 0.05) 60%,
+    transparent 100%
+  );
+  transform: translateX(-130%);
+  animation: yContourWipe 0.95s var(--ease-out) both;
+  mix-blend-mode: screen;
+  pointer-events: none;
+}
+#yutu2 .y-step-wipe::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(207, 224, 255, 0.9) 42%,
+    rgba(245, 193, 90, 0.55) 62%,
+    transparent 100%
+  );
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='300' viewBox='0 0 180 300'%3E%3Cg fill='none' stroke='%23ffffff' stroke-width='1.4'%3E%3Cpath d='M-30 14 C 20 4 60 24 100 14 S 160 4 210 14'/%3E%3Cpath d='M-30 38 C 20 28 60 48 100 38 S 160 28 210 38'/%3E%3Cpath d='M-30 62 C 20 52 60 72 100 62 S 160 52 210 62'/%3E%3Cpath d='M-30 86 C 20 76 60 96 100 86 S 160 76 210 86'/%3E%3Cpath d='M-30 110 C 20 100 60 120 100 110 S 160 100 210 110'/%3E%3Cpath d='M-30 134 C 20 124 60 144 100 134 S 160 124 210 134'/%3E%3Cpath d='M-30 158 C 20 148 60 168 100 158 S 160 148 210 158'/%3E%3Cpath d='M-30 182 C 20 172 60 192 100 182 S 160 172 210 182'/%3E%3Cpath d='M-30 206 C 20 196 60 216 100 206 S 160 196 210 206'/%3E%3Cpath d='M-30 230 C 20 220 60 240 100 230 S 160 220 210 230'/%3E%3Cpath d='M-30 254 C 20 244 60 264 100 254 S 160 244 210 254'/%3E%3Cpath d='M-30 278 C 20 268 60 288 100 278 S 160 268 210 278'/%3E%3C/g%3E%3C/svg%3E");
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='300' viewBox='0 0 180 300'%3E%3Cg fill='none' stroke='%23ffffff' stroke-width='1.4'%3E%3Cpath d='M-30 14 C 20 4 60 24 100 14 S 160 4 210 14'/%3E%3Cpath d='M-30 38 C 20 28 60 48 100 38 S 160 28 210 38'/%3E%3Cpath d='M-30 62 C 20 52 60 72 100 62 S 160 52 210 62'/%3E%3Cpath d='M-30 86 C 20 76 60 96 100 86 S 160 76 210 86'/%3E%3Cpath d='M-30 110 C 20 100 60 120 100 110 S 160 100 210 110'/%3E%3Cpath d='M-30 134 C 20 124 60 144 100 134 S 160 124 210 134'/%3E%3Cpath d='M-30 158 C 20 148 60 168 100 158 S 160 148 210 158'/%3E%3Cpath d='M-30 182 C 20 172 60 192 100 182 S 160 172 210 182'/%3E%3Cpath d='M-30 206 C 20 196 60 216 100 206 S 160 196 210 206'/%3E%3Cpath d='M-30 230 C 20 220 60 240 100 230 S 160 220 210 230'/%3E%3Cpath d='M-30 254 C 20 244 60 264 100 254 S 160 244 210 254'/%3E%3Cpath d='M-30 278 C 20 268 60 288 100 278 S 160 268 210 278'/%3E%3C/g%3E%3C/svg%3E");
+  -webkit-mask-size: 100% 100%;
+  mask-size: 100% 100%;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+}
+@keyframes yContourWipe {
+  0% {
+    transform: translateX(-130%);
+    opacity: 0;
+  }
+  12% {
+    opacity: 0.95;
+  }
+  78% {
+    opacity: 0.95;
+  }
+  100% {
+    transform: translateX(340%);
+    opacity: 0;
+  }
+}
+
+/* 5. 照片更自然：更慢更小的推拉、克制的扫光、极淡胶片颗粒 */
+@keyframes yPhotoDrift {
+  from {
+    transform: scale(1.02) translate3d(0, 0, 0);
+  }
+  to {
+    transform: scale(1.06) translate3d(-0.8%, -0.6%, 0);
+  }
+}
+#yutu2 .y-gap-photo-poster {
+  animation: yPhotoDrift 32s var(--ease-in-out, ease-in-out) infinite
+    alternate;
+}
+#yutu2 .y-gap-photo.is-on:hover .y-gap-photo-poster {
+  animation-duration: 20s;
+}
+#yutu2 .y-gap-photo-sheen {
+  animation-duration: 24s;
+  opacity: 0.5;
+}
+#yutu2 .y-gap-photo-grain {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  opacity: 0.07;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)' opacity='0.55'/%3E%3C/svg%3E");
+  background-size: 180px 180px;
+}
+html.y-motion-off #yutu2 .y-gap-photo-grain {
+  display: none;
+}
+
+/* 6. 第 1 步显影：你一动笔，图就清晰一点 */
+#yutu2 .y-p1-develop .y-gap-photo {
+  opacity: 0.66;
+  filter: saturate(0.6) contrast(0.94) brightness(0.92);
+  transition:
+    opacity 1s var(--ease-out),
+    filter 1s var(--ease-out);
+}
+#yutu2 .y-p1-develop[data-develop='on'] .y-gap-photo {
+  opacity: 1;
+  filter: none;
+  transition:
+    opacity 1s var(--ease-out),
+    filter 1s var(--ease-out);
+}
+
+/* 性能与降级 */
+@media (max-width: 820px) {
+  #yutu2 .y-step-stage .y-globe .leaflet-container,
+  #yutu2 .y-step-stage .y-loop-map,
+  #yutu2 .y-step-stage .y-campaign-card .leaflet-container {
+    animation: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #yutu2 .y-step-stage .y-lead h2,
+  #yutu2 .y-sb-lead h2,
+  #yutu2 .y-step-stage .y-globe .leaflet-container,
+  #yutu2 .y-step-stage .y-loop-map,
+  #yutu2 .y-step-stage .y-campaign-card .leaflet-container {
+    animation: none !important;
+  }
+  #yutu2 .y-p1-develop .y-gap-photo {
+    transition: none;
+  }
+}
+
+html.y-motion-off #yutu2 .y-step-stage .y-lead h2,
+html.y-motion-off #yutu2 .y-sb-lead h2,
+html.y-motion-off #yutu2 .y-step-stage .y-globe .leaflet-container,
+html.y-motion-off #yutu2 .y-step-stage .y-loop-map,
+html.y-motion-off #yutu2 .y-step-stage .y-campaign-card .leaflet-container {
+  animation: none !important;
+}
+html.y-motion-off #yutu2 .y-step-wipe {
+  display: none;
+}
+html.y-motion-off #yutu2 .y-p1-develop .y-gap-photo {
+  transition: none;
+}

@@ -20,6 +20,10 @@ export default function Step1() {
   /** 方向为空时，主按钮不再只是弹 toast：聚焦输入框并给出一次短促反馈 */
   const fieldRef = useRef<HTMLInputElement>(null);
   const [shake, setShake] = useState(false);
+  /** 显影反馈：只要开始填写/校准，右侧配图就从低对比显影到清晰 */
+  const [touched, setTouched] = useState(
+    () => state.maxStep >= 2 || state.snapshot0 !== null
+  );
 
   useEffect(() => {
     if (!shake) return;
@@ -47,7 +51,16 @@ export default function Step1() {
   }
 
   return (
-    <section id='y-p1' role='tabpanel' aria-labelledby='y-s1'>
+    <section
+      id='y-p1'
+      role='tabpanel'
+      aria-labelledby='y-s1'
+      className='y-p1-develop'
+      data-develop={touched ? 'on' : 'off'}
+      onFocusCapture={() => setTouched(true)}
+      onPointerDownCapture={() => setTouched(true)}
+      onChangeCapture={() => setTouched(true)}
+    >
       <header className='y-lead'>
         <p className='y-eyebrow'>STEP 01 · 处境</p>
         <h2>先把你的情况填清楚</h2>
@@ -277,7 +290,7 @@ export default function Step1() {
           </div>
           <GapPhoto
             variant='morning'
-            quote='先给自己一个安静的早晨，再把这一步写实。'
+            quote='你每写下一项，这张图就清晰一点。'
             autoMotion
           />
         </aside>
