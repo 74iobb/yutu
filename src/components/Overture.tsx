@@ -107,6 +107,20 @@ function seenThisSession(): boolean {
   }
 }
 
+/**
+ * 演示开关：URL 上带 `?overture=1`（普通查询串或 hash 查询串均可）时，
+ * 每次刷新都播放，忽略会话记录。例如 `/#/?overture=1`。
+ */
+function forcedByUrl(): boolean {
+  if (typeof window === 'undefined') return false;
+  try {
+    const raw = `${window.location.search}${window.location.hash}`;
+    return /(?:^|[?&#])overture=1(?:&|$)/.test(raw);
+  } catch {
+    return false;
+  }
+}
+
 function markSeen(): void {
   try {
     window.sessionStorage.setItem(SEEN_KEY, '1');
@@ -117,7 +131,7 @@ function markSeen(): void {
 
 export default function Overture() {
   const [seq, setSeq] = useState<{ id: number; phase: Phase }>(() => {
-    const auto = motionAllowed() && !seenThisSession();
+    const auto = motionAllowed() && (forcedByUrl() || !seenThisSession());
     return { id: auto ? 1 : 0, phase: auto ? 'playing' : 'idle' };
   });
 
