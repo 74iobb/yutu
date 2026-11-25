@@ -17,8 +17,12 @@ import { Delaunay } from 'd3-delaunay';
  * 保证每次显影的板块几何完全一致。
  */
 
-/** 会话级记录：开播即写入，刷新与切步都不会重复播放 */
-const SEEN_KEY = 'yutu.overture.v1';
+/**
+ * 应用级记录：页面加载后第一次进入主流程时自动播一次。
+ * 用模块变量而不是 sessionStorage —— 刷新会重置、重新开场；
+ * 在 SPA 内从沙盘返回首页则不会重复打扰。
+ */
+let autoPlayed = false;
 /** 名句逐字读完、小字落定后再退潮（落水与铺开占前 3.3s） */
 const PLAY_MS = 7500;
 /** 退潮 + 系统显影的总时长 */
@@ -148,14 +152,6 @@ function motionAllowed(): boolean {
   }
 }
 
-function seenThisSession(): boolean {
-  try {
-    return window.sessionStorage.getItem(SEEN_KEY) === '1';
-  } catch {
-    return true;
-  }
-}
-
 /** 读取 URL 上的布尔开关（普通查询串或 hash 查询串均可） */
 function readFlag(name: string): boolean {
   if (typeof window === 'undefined') return false;
@@ -173,14 +169,6 @@ function readFlag(name: string): boolean {
  */
 function forcedByUrl(): boolean {
   return readFlag('overture') || readFlag('demo');
-}
-
-function markSeen(): void {
-  try {
-    window.sessionStorage.setItem(SEEN_KEY, '1');
-  } catch {
-    /* 存储不可用时只影响重复播放，不影响本次开篇 */
-  }
 }
 
 /** `?narrate=0` 可静音；默认朗读 */
@@ -267,7 +255,15 @@ function playImpact(): void {
 
 export default function Overture() {
   const [seq, setSeq] = useState<{ id: number; phase: Phase }>(() => {
-    const auto = motionAllowed() && (forcedByUrl() || !seenThisSession());
+    let auto = false;
+    if (motionAllowed()) {
+      if (forcedByUrl()) {
+        auto = true;
+      } else if (!autoPlayed) {
+        autoPlayed = true;
+        auto = true;
+      }
+    }
     return { id: auto ? 1 : 0, phase: auto ? 'playing' : 'idle' };
   });
 
@@ -330,7 +326,6 @@ export default function Overture() {
   /** 播放中：写会话记录、锁住页面滚动，到点收场 */
   useEffect(() => {
     if (seq.phase !== 'playing') return;
-    markSeen();
     const body = document.body;
     const prevOverflow = body.style.overflow;
     body.style.overflow = 'hidden';
