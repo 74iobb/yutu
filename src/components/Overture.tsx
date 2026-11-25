@@ -445,6 +445,97 @@ async function playVoiceShifted(): Promise<boolean> {
   }
 }
 
+/* ------------------------------ 环境音乐 ------------------------------ */
+/**
+ * 极简环境音乐：55/82.5Hz 低频铺底 + 五声音阶泛音 + 反馈延迟。
+ * 全部实时合成，不用外部音频；音量压在人声之下。
+ */
+type MusicNodes = {
+  bus: GainNode;
+  padA: OscillatorNode;
+  padB: OscillatorNode;
+  timer: number;
+};
+
+let musicNodes: MusicNodes | null = null;
+
+function startMusic(): void {
+  if (musicNodes) return;
+  const audio = getAudio();
+  if (!audio) return;
+  const { ctx, master } = audio;
+  void ctx.resume().catch(() => undefined);
+
+  const bus = ctx.createGain();
+  bus.gain.value = 0.0001;
+  bus.connect(master);
+  bus.gain.setTargetAtTime(0.2, ctx.currentTime, 1.6);
+
+  const padA = ctx.createOscillator();
+  padA.type = 'sine';
+  padA.frequency.value = 55;
+  const padB = ctx.createOscillator();
+  padB.type = 'sine';
+  padB.frequency.value = 82.5;
+  const padGain = ctx.createGain();
+  padGain.gain.value = 0.08;
+  padA.connect(padGain);
+  padB.connect(padGain);
+  padGain.connect(bus);
+  padA.start();
+  padB.start();
+
+  const delay = ctx.createDelay(1.2);
+  delay.delayTime.value = 0.46;
+  const feedback = ctx.createGain();
+  feedback.gain.value = 0.3;
+  const wet = ctx.createGain();
+  wet.gain.value = 0.35;
+  delay.connect(feedback);
+  feedback.connect(delay);
+  delay.connect(wet);
+  wet.connect(bus);
+
+  const notes = [261.63, 293.66, 329.63, 392.0, 440.0];
+  let index = 0;
+  const playNote = () => {
+    const t = ctx.currentTime;
+    const freq = notes[index % notes.length] * (index % 2 === 0 ? 2 : 1.5);
+    const osc = ctx.createOscillator();
+    osc.type = 'sine';
+    osc.frequency.value = freq;
+    const gain = ctx.createGain();
+    gain.gain.setValueAtTime(0.0001, t);
+    gain.gain.exponentialRampToValueAtTime(0.1, t + 0.03);
+    gain.gain.exponentialRampToValueAtTime(0.0001, t + 2.4);
+    osc.connect(gain);
+    gain.connect(bus);
+    gain.connect(delay);
+    osc.start(t);
+    osc.stop(t + 2.5);
+    index += 1;
+  };
+
+  playNote();
+  const timer = window.setInterval(playNote, 1900);
+  musicNodes = { bus, padA, padB, timer };
+}
+
+function stopMusic(): void {
+  if (!musicNodes) return;
+  const { bus, padA, padB, timer } = musicNodes;
+  musicNodes = null;
+  window.clearInterval(timer);
+  try {
+    const now = audioCtx ? audioCtx.currentTime : 0;
+    bus.gain.setTargetAtTime(0.0001, now, 0.5);
+    padA.stop(now + 1.6);
+    padB.stop(now + 1.6);
+  } catch {
+    /* 上下文已关闭 */
+  }
+}
+
 /** 静音 / 恢复所有合成声 */
 function setAudioMuted(muted: boolean): void {
   if (!audioCtx || !masterGain) return;
@@ -542,10 +633,12 @@ export default function Overture() {
     if (next) {
       void unlockAudio().then(markAudioReady);
       setAudioMuted(false);
+      if (seqRef.current.phase === 'playing') startMusic();
       startVoice();
     } else {
       stopVoice();
       stopSpeech();
+      stopMusic();
       setAudioMuted(true);
       /* 手动静音即退出「强制有声」，但路演标记保留 */
       demoRef.current = false;
@@ -555,6 +648,7 @@ export default function Overture() {
   const skip = useCallback(() => {
     stopVoice();
     stopSpeech();
+    stopMusic();
     setAudioMuted(true);
     setSeq((s) => (s.phase === 'playing' ? { ...s, phase: 'leaving' } : s));
   }, []);
@@ -640,6 +734,7 @@ export default function Overture() {
       window.removeEventListener('yutu:overture', onReplay);
       stopVoice();
       stopSpeech();
+      stopMusic();
     };
   }, []);
 
@@ -651,6 +746,7 @@ export default function Overture() {
     body.style.overflow = 'hidden';
     if (soundRef.current || demoRef.current) {
       setAudioMuted(false);
+      startMusic();
       /* 提前拉录音，名句出现时才能立刻出声 */
       void loadVoiceBuffer();
       /* 无手势时多半会被挂起，这里先试一次；失败由全局手势与提示按钮兜底 */
@@ -680,6 +776,7 @@ export default function Overture() {
    */
   useEffect(() => {
     if (seq.phase !== 'leaving') return;
+    stopMusic();
     const shell = document.getElementById('yutu2');
     shell?.classList.add('y-ov-reveal');
     const timer = window.setTimeout(() => {
