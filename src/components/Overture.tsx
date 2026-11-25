@@ -302,7 +302,7 @@ function stopSpeech(): void {
  * 不降调、不做 EQ、不做滤波、不做音量归一化 —— 除了静音开关，不改变任何东西。
  */
 /** 默认使用系统语音；改回 `true` 恢复录音播放 */
-const USE_RECORDING = false;
+const USE_RECORDING = true;
 
 const VOICE_URL =
   'https://agent.nuwax.com/api/f/s3/app-dev/20261125/32d36e5a83aa4526bf7dcad9e50b738a.m4a';
@@ -363,67 +363,14 @@ async function playVoiceShifted(): Promise<boolean> {
     const buffer = await loadVoiceBuffer();
     if (!buffer) return false;
 
-    const ctx = audio.ctx;
-    const src = ctx.createBufferSource();
+    const src = audio.ctx.createBufferSource();
     src.buffer = buffer;
-    src.playbackRate.value = 0.94;
-
-    const highpass = ctx.createBiquadFilter();
-    highpass.type = 'highpass';
-    highpass.frequency.value = 100;
-
-    const lowpass = ctx.createBiquadFilter();
-    lowpass.type = 'lowpass';
-    lowpass.frequency.value = 7500;
-
-    const gate = ctx.createGain();
-    gate.gain.value = 1;
-    const analyser = ctx.createAnalyser();
-    analyser.fftSize = 512;
-
-    const out = ctx.createGain();
-    let peak = 0;
-    for (let c = 0; c < buffer.numberOfChannels; c += 1) {
-      const data = buffer.getChannelData(c);
-      for (let i = 0; i < data.length; i += 1) {
-        const v = Math.abs(data[i]);
-        if (v > peak) peak = v;
-      }
-    }
-    out.gain.value = Math.min(2.5, Math.max(1, 0.9 / (peak || 0.4)));
-
-    src.connect(highpass);
-    highpass.connect(lowpass);
-    lowpass.connect(gate);
-    gate.connect(out);
-    out.connect(audio.master);
-    gate.connect(analyser);
-
-    /* 噪声门：说话时全开，停下 140ms 后压到 6%，句间底噪变轻但不切字 */
-    const samples = new Uint8Array(analyser.fftSize);
-    let lastLoud = 0;
-    const tick = () => {
-      const now = performance.now();
-      analyser.getByteTimeDomainData(samples);
-      let p2 = 0;
-      for (let i = 0; i < samples.length; i += 1) {
-        const v = Math.abs(samples[i] - 128) / 128;
-        if (v > p2) p2 = v;
-      }
-      if (p2 > 0.008) lastLoud = now;
-      const open = now - lastLoud < 140;
-      gate.gain.setTargetAtTime(open ? 1 : 0.06, ctx.currentTime, open ? 0.01 : 0.05);
-      voiceGateRaf = requestAnimationFrame(tick);
-    };
-    voiceGateRaf = requestAnimationFrame(tick);
+    /* 原声直出：不做降调 / EQ / 滤波 / 归一化，只保留静音开关 */
+    src.connect(audio.master);
 
     voiceSource = src;
     src.onended = () => {
       if (voiceSource === src) voiceSource = null;
-      if (voiceGateRaf) {
-        cancelAnimationFrame(voiceGateRaf);
-        voiceGateRaf = 0;
-      }
     };
     src.start();
     return true;
