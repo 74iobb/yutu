@@ -187,18 +187,6 @@ function forcedByUrl(): boolean {
   return readFlag('overture') || readFlag('demo');
 }
 
-/** `?narrate=0` 可静音；默认朗读 */
-function narrationAllowed(): boolean {
-  if (typeof window === 'undefined') return false;
-  try {
-    return !/[?&]narrate=0(?:&|$)/.test(
-      `${window.location.search}${window.location.hash}`
-    );
-  } catch {
-    return true;
-  }
-}
-
 /* ----------------------------- 合成音景 ----------------------------- */
 /**
  * 不用系统 TTS 朗读 —— 机械感太重。
@@ -218,7 +206,7 @@ function getAudio(): { ctx: AudioContext; master: GainNode } | null {
     if (!Ctor) return null;
     const ctx = new Ctor();
     const master = ctx.createGain();
-    master.gain.value = 0.85;
+    master.gain.value = 1;
     master.connect(ctx.destination);
     audioCtx = ctx;
     masterGain = master;
@@ -274,10 +262,11 @@ function playTone(
   }
 }
 
-/** 落水低频：给「砸到水面」一点重量 */
+/** 落水低频：给「砸到水面」一点重量（补 110Hz，手机扬声器才听得见） */
 function playImpact(): void {
-  playTone(56, 2.8, 0, 0.06, 'sine');
-  playTone(36, 3.1, 0.02, 0.04, 'sine');
+  playTone(110, 1.6, 0, 0.05, 'sine');
+  playTone(56, 2.8, 0, 0.09, 'sine');
+  playTone(36, 3.1, 0.02, 0.06, 'sine');
 }
 
 /** 五声音阶：宫商角徵羽（最初版音高） */
@@ -290,15 +279,15 @@ const PENTATONIC = [261.63, 293.66, 329.63, 392.0, 440.0];
 function playCharChime(index: number): void {
   const octave = index < 5 ? 1 : 0.5;
   const note = PENTATONIC[index % PENTATONIC.length] * octave;
-  playTone(note, 1.1, 0, 0.045, 'triangle');
-  playTone(note * 2, 0.6, 0.006, 0.018, 'sine');
+  playTone(note, 1.1, 0, 0.085, 'triangle');
+  playTone(note * 2, 0.6, 0.006, 0.03, 'sine');
 }
 
 /** 退潮钟声：低频钟体 + 三个泛音，余韵比开篇更长 */
 function playBell(): void {
   const base = 110;
   [1, 1.5, 2.02, 2.74].forEach((ratio, i) => {
-    playTone(base * ratio, 4.4 - i * 0.7, i * 0.012, 0.05 / (i + 1), 'sine');
+    playTone(base * ratio, 4.4 - i * 0.7, i * 0.012, 0.08 / (i + 1), 'sine');
   });
 }
 
@@ -307,7 +296,7 @@ function setAudioMuted(muted: boolean): void {
   if (!audioCtx || !masterGain) return;
   try {
     masterGain.gain.setTargetAtTime(
-      muted ? 0.0001 : 0.85,
+      muted ? 0.0001 : 1,
       audioCtx.currentTime,
       0.06
     );
@@ -356,15 +345,11 @@ export default function Overture() {
     return { id: auto ? 1 : 0, phase: auto ? 'playing' : 'idle' };
   });
 
-  /** 声音开关：默认开；浏览器拦截自动播放时，点一下即可补上朗诵 */
-  const [soundOn, setSoundOn] = useState(() => {
-    try {
-      if (!narrationAllowed()) return false;
-      return window.localStorage.getItem('yutu.overture.sound') !== '0';
-    } catch {
-      return narrationAllowed();
-    }
-  });
+  /**
+   * 声音默认开。关闭只影响本次开篇，不写本地存储 ——
+   * 避免之前点过「声音关」后，下次开篇莫名其妙没有声音。
+   */
+  const [soundOn, setSoundOn] = useState(true);
   const soundRef = useRef(soundOn);
   /** 路演模式：强制有声、并显示一枚小标签；由「更多 → 路演模式」或 `?demo=1` 触发 */
   const [demo, setDemo] = useState(() => readFlag('demo'));
@@ -392,11 +377,6 @@ export default function Overture() {
     const next = !soundRef.current;
     soundRef.current = next;
     setSoundOn(next);
-    try {
-      window.localStorage.setItem('yutu.overture.sound', next ? '1' : '0');
-    } catch {
-      /* 存储不可用时只影响下次打开 */
-    }
     if (next) {
       void unlockAudio().then(markAudioReady);
       setAudioMuted(false);
@@ -514,7 +494,6 @@ export default function Overture() {
     }, PLAY_MS);
     /* 名句浮现时：每个字一声合成磬音 */
     const voiceTimer = window.setTimeout(() => {
-      if (!narrationAllowed()) return;
       if (!soundRef.current && !demoRef.current) return;
       setAudioMuted(false);
       playImpact();
