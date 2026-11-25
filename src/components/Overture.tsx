@@ -1,4 +1,10 @@
-import { useCallback, useEffect, useState, type CSSProperties } from 'react';
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  type CSSProperties,
+} from 'react';
 import { Delaunay } from 'd3-delaunay';
 
 /**
@@ -255,6 +261,34 @@ export default function Overture() {
     return { id: auto ? 1 : 0, phase: auto ? 'playing' : 'idle' };
   });
 
+  /** 声音开关：默认开；浏览器拦截自动播放时，点一下即可补上朗诵 */
+  const [soundOn, setSoundOn] = useState(() => {
+    try {
+      if (!narrationAllowed()) return false;
+      return window.localStorage.getItem('yutu.overture.sound') !== '0';
+    } catch {
+      return narrationAllowed();
+    }
+  });
+  const soundRef = useRef(soundOn);
+
+  const toggleSound = useCallback(() => {
+    const next = !soundRef.current;
+    soundRef.current = next;
+    setSoundOn(next);
+    try {
+      window.localStorage.setItem('yutu.overture.sound', next ? '1' : '0');
+    } catch {
+      /* 存储不可用时只影响下次打开 */
+    }
+    if (next) {
+      playImpact();
+      speakVerse();
+    } else {
+      stopVerse();
+    }
+  }, []);
+
   const skip = useCallback(() => {
     stopVerse();
     setSeq((s) => (s.phase === 'playing' ? { ...s, phase: 'leaving' } : s));
@@ -285,7 +319,7 @@ export default function Overture() {
     }, PLAY_MS);
     /* 名句浮现前读诗；自然退潮不打断，留一点余音 */
     const voiceTimer = window.setTimeout(() => {
-      if (!narrationAllowed()) return;
+      if (!soundRef.current || !narrationAllowed()) return;
       playImpact();
       speakVerse();
     }, NARRATE_AT);
@@ -545,16 +579,34 @@ export default function Overture() {
         </section>
       </div>
 
-      <button
-        type='button'
-        className='y-ov-skip'
-        onClick={(e) => {
-          e.stopPropagation();
-          skip();
-        }}
-      >
-        跳过 <span aria-hidden='true'>›</span>
-      </button>
+      <div className='y-ov-controls'>
+        <button
+          type='button'
+          className='y-ov-sound'
+          aria-pressed={soundOn}
+          title={soundOn ? '关闭朗诵与低频' : '开启朗诵与低频'}
+          onClick={(e) => {
+            e.stopPropagation();
+            toggleSound();
+          }}
+        >
+          <i
+            className={`y-ov-sound-dot${soundOn ? ' is-on' : ''}`}
+            aria-hidden='true'
+          />
+          声音 {soundOn ? '开' : '关'}
+        </button>
+        <button
+          type='button'
+          className='y-ov-skip'
+          onClick={(e) => {
+            e.stopPropagation();
+            skip();
+          }}
+        >
+          跳过 <span aria-hidden='true'>›</span>
+        </button>
+      </div>
     </div>
   );
 }

@@ -81,7 +81,7 @@
   animation: yOvVerseOut 0.6s ease forwards;
 }
 
-.y-overture.is-leaving .y-ov-skip {
+.y-overture.is-leaving .y-ov-controls {
   animation: none;
   opacity: 0;
   transition: opacity 0.3s ease;
@@ -92,6 +92,7 @@
   z-index: 1;
   width: min(1000px, 96vw, 102vh);
   aspect-ratio: 10 / 9;
+  animation: yOvPush 9s var(--ov-ease) both;
 }
 
 .y-ov-art {
@@ -99,6 +100,8 @@
   inset: 0;
   width: 100%;
   height: 100%;
+  /* 水落到水面的那一下，整幅画面轻微一震 */
+  animation: yOvShake 0.36s ease-out 1.62s;
 }
 
 /* ------------------------------ 水束与水滴 ------------------------------ */
@@ -525,12 +528,23 @@
   }
 }
 
-/* -------------------------------- 跳过 -------------------------------- */
-.y-ov-skip {
+/* ------------------------------ 声音与跳过 ------------------------------ */
+.y-ov-controls {
   position: absolute;
   right: max(22px, env(safe-area-inset-right));
   bottom: max(20px, env(safe-area-inset-bottom));
   z-index: 3;
+  display: flex;
+  gap: 2px;
+  opacity: 0;
+  animation: yOvFadeIn 0.5s ease 1.2s both;
+}
+
+.y-ov-sound,
+.y-ov-skip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   padding: 8px 10px;
   border: 0;
   border-radius: 999px;
@@ -540,13 +554,13 @@
   font-size: 12px;
   letter-spacing: 0.12em;
   cursor: pointer;
-  opacity: 0;
-  animation: yOvFadeIn 0.5s ease 1.2s both;
   transition:
     color 0.2s ease,
     background 0.2s ease;
 }
 
+.y-ov-sound:hover,
+.y-ov-sound:focus-visible,
 .y-ov-skip:hover,
 .y-ov-skip:focus-visible {
   color: rgba(236, 246, 255, 0.92);
@@ -554,7 +568,50 @@
   outline: none;
 }
 
+.y-ov-sound-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: rgba(190, 216, 245, 0.32);
+  transition:
+    background 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.y-ov-sound-dot.is-on {
+  background: #f5c15a;
+  box-shadow: 0 0 8px rgba(245, 193, 90, 0.7);
+}
+
 /* ------------------------------ 通用关键帧 ------------------------------ */
+@keyframes yOvPush {
+  from {
+    transform: scale(1);
+  }
+  to {
+    transform: scale(1.045);
+  }
+}
+
+@keyframes yOvShake {
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+  18% {
+    transform: translate(-2px, 1.5px);
+  }
+  36% {
+    transform: translate(2px, -1px);
+  }
+  54% {
+    transform: translate(-1.5px, 1px);
+  }
+  72% {
+    transform: translate(1px, -0.5px);
+  }
+}
+
 @keyframes yOvFadeIn {
   from {
     opacity: 0;
@@ -655,7 +712,7 @@
     font-size: 11px;
     letter-spacing: 0.24em;
   }
-  .y-ov-skip {
+  .y-ov-controls {
     right: max(12px, env(safe-area-inset-right));
     bottom: max(12px, env(safe-area-inset-bottom));
   }
