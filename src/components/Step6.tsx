@@ -2246,7 +2246,7 @@ export default function Step6() {
   return (
     <section id='y-p4' role='tabpanel' aria-labelledby='y-s4'>
       <header className='y-lead'>
-        <p className='y-eyebrow'>04 / 闭环</p>
+        <p className='y-eyebrow'>STEP 04 · 闭环</p>
         <h2>成长闭环</h2>
         <a className='y-btn y-btn-s' href='#/sandbox' style={{ marginTop: 10 }}>
           先在沙盘里试走一轮 →

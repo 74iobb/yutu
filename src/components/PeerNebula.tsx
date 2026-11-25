@@ -131,7 +131,7 @@ export default function PeerNebula({
     >
       <div className='y-neb-head'>
         <div>
-          <p className='y-neb-eyebrow'>04 / 同伴经验域 · 经验星云</p>
+          <p className='y-neb-eyebrow'>STEP 04 · 同伴经验域 · 经验星云</p>
           <h3>把处境相近的人写下的经验摊开看</h3>
           <p className='y-neb-sub'>
             按阶段分列，节点大小表示有效标记数；共 3 个有效标记进入公共节点。自己的复盘不计入自己的归属。

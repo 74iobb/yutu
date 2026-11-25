@@ -94,7 +94,7 @@ export default function Step3({ onOpenMap, onOpenSummary }: Props = {}) {
   return (
     <section id='y-p3' role='tabpanel' aria-labelledby='y-s3'>
       <header className='y-lead'>
-        <p className='y-eyebrow'>03 / 方向清单</p>
+        <p className='y-eyebrow'>STEP 03 · 方向清单</p>
         <h2>这一阶段的所有方向，以及你当下能走的那些</h2>
         <p>可行性看条件是否就位，不代表对你的评价。</p>
       </header>
@@ -146,15 +146,24 @@ export default function Step3({ onOpenMap, onOpenSummary }: Props = {}) {
         </p>
       </div>
 
-      <div className='y-card y-intent'>
-        <p className='y-eyebrow'>你的想法</p>
+      <details className='y-card y-intent'>
+        <summary className='y-intent-summary'>
+          <span className='y-eyebrow'>你的想法</span>
+          <b>
+            {state.intent.trim()
+              ? '已填写，参与检索'
+              : '可选：补充你的想法，参与检索'}
+          </b>
+          <em>{state.intent.trim() ? '修改' : '填写'}</em>
+        </summary>
         <textarea
+          aria-label='你的想法（参与检索）'
           value={state.intent}
           onChange={e => setIntent(e.target.value)}
           placeholder='例如：想做数控编程，但担心学历不够；每周能投入 6 小时，希望半年内看到结果。'
           rows={2}
         />
-      </div>
+      </details>
 
       <details className='y-card y-search-basis'>
         <summary className='y-search-summary'>

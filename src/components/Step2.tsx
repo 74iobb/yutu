@@ -359,7 +359,7 @@ export default function Step2() {
     <section id='y-p2' role='tabpanel' aria-labelledby='y-s2'>
       <div className='y-lead y-lead-wide'>
         <div>
-          <p className='y-eyebrow'>02 / 了解环境</p>
+          <p className='y-eyebrow'>STEP 02 · 了解环境</p>
           <h2>了解你所处的环境</h2>
         </div>
         <div className='y-lead-facts'>

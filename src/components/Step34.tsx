@@ -46,7 +46,7 @@ export default function Step34() {
     <>
       <div className='y-subview' ref={topRef}>
         <div>
-          <p className='y-eyebrow'>03 / 方向与推演</p>
+          <p className='y-eyebrow'>STEP 03 · 方向与推演</p>
           <p className='y-subview-note'>
             方向清单、资源作战图与归属摘要属于同一步：在清单里点「看代价」或顶部候选标签，
             都会选中该方向并切到图上重高亮；确认归属与摘要后直接进入成长闭环。

@@ -126,7 +126,7 @@ export default function Step4({ onOpenList, onOpenSummary }: Props = {}) {
   return (
     <section id='y-p3b' aria-label='资源、代价与推进圈'>
       <header className='y-lead'>
-        <p className='y-eyebrow'>03 / 资源与推进圈</p>
+        <p className='y-eyebrow'>STEP 03 · 资源与推进圈</p>
         <h2>资源、代价与推进圈</h2>
         <p>近圈条件就位，中圈需补条件，外圈条件不足；点选方向看代价。</p>
       </header>

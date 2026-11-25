@@ -49,7 +49,7 @@ export default function Step1() {
   return (
     <section id='y-p1' role='tabpanel' aria-labelledby='y-s1'>
       <header className='y-lead'>
-        <p className='y-eyebrow'>01 / 处境</p>
+        <p className='y-eyebrow'>STEP 01 · 处境</p>
         <h2>先把你的情况填清楚</h2>
       </header>
 

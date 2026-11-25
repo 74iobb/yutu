@@ -153,7 +153,7 @@ export default function DirectionSky({
       <div className='y-sky-head'>
         <div>
           <p className='y-sky-eyebrow'>
-            03 / 方向星图 · {stageName}
+            STEP 03 · 方向星图 · {stageName}
             {field ? ` · ${field}` : ''}
           </p>
           <h3>中心是你，越靠内圈越接近「现在就能走」</h3>
