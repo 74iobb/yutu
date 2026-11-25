@@ -13,8 +13,8 @@ import { Delaunay } from 'd3-delaunay';
 
 /** 会话级记录：开播即写入，刷新与切步都不会重复播放 */
 const SEEN_KEY = 'yutu.overture.v1';
-/** 名句落定后开始退潮 */
-const PLAY_MS = 4500;
+/** 名句落定后开始退潮（落水与粒子占前 2.4s） */
+const PLAY_MS = 4950;
 /** 退潮 + 系统显影的总时长 */
 const LEAVE_MS = 1150;
 
@@ -81,14 +81,44 @@ const PLATES = PLATE_CENTERS.map(([cx, cy, label], i) => ({
   ][i],
 }));
 
-/** 五颗水珠：错峰下落，比主水束更像真实的倾泻 */
-const DROPS = [
-  { x: 492, r: 2.3, lift: 360, delay: 0 },
-  { x: 509, r: 1.7, lift: 420, delay: 70 },
-  { x: 482, r: 1.5, lift: 320, delay: 150 },
-  { x: 519, r: 1.6, lift: 470, delay: 235 },
-  { x: 500, r: 2, lift: 390, delay: 320 },
-];
+/**
+ * 确定性伪随机（固定公式，不调用 Math.random）：
+ * 同一序号每次得到同一个值，保证每次开场的水粒分布完全一致。
+ */
+function noise(seed: number): number {
+  const x = Math.sin(seed * 12.9898) * 43758.5453;
+  return x - Math.floor(x);
+}
+
+/** 下落粒子：每 5 颗里 1 条速度线，其余是水珠；错峰持续约 1.3s */
+const FALL_PARTICLES = Array.from({ length: 56 }, (_, i) => {
+  const a = noise(i * 3 + 1);
+  const b = noise(i * 3 + 2);
+  const c = noise(i * 3 + 3);
+  return {
+    x: 500 + (a - 0.5) * 86,
+    r: 0.55 + b * 1.9,
+    lift: 470 + c * 300,
+    drift: (a - 0.5) * 30,
+    delay: Math.round(b * 1250),
+    duration: Math.round(620 + c * 520),
+    line: i % 5 === 0,
+  };
+});
+
+/** 落点溅水：从水面向两侧上方抛起的水星 */
+const SPLASH_PARTICLES = Array.from({ length: 16 }, (_, i) => {
+  const a = noise(i * 5 + 100);
+  const b = noise(i * 5 + 101);
+  const dir = i % 2 === 0 ? -1 : 1;
+  return {
+    sx: dir * (22 + a * 96),
+    sy: -(16 + b * 62),
+    r: 0.6 + a * 1.3,
+    delay: Math.round(1180 + b * 780),
+    duration: Math.round(680 + a * 360),
+  };
+});
 
 function motionAllowed(): boolean {
   if (typeof window === 'undefined') return false;
@@ -243,37 +273,6 @@ export default function Overture() {
             </clipPath>
           </defs>
 
-          {/* 水束与水滴：从画面外落到水面中心 */}
-          <g className='y-ov-stream'>
-            <path
-              className='y-ov-fall'
-              d='M 500 -80 C 516 120, 484 330, 500 600'
-              pathLength={1}
-              stroke='url(#y-ov-stream)'
-            />
-            <path
-              className='y-ov-fall y-ov-fall-b'
-              d='M 486 -60 C 502 140, 470 330, 492 588'
-              pathLength={1}
-              stroke='url(#y-ov-stream)'
-            />
-            {DROPS.map((drop, i) => (
-              <circle
-                key={i}
-                className='y-ov-drop'
-                cx={drop.x}
-                cy={DISC.cy}
-                r={drop.r}
-                style={
-                  {
-                    animationDelay: `${drop.delay}ms`,
-                    '--ov-lift': `${drop.lift}px`,
-                  } as CSSProperties
-                }
-              />
-            ))}
-          </g>
-
           {/* 水面：圆盘、等高线、涟漪、落点 */}
           <g className='y-ov-pool' clipPath='url(#y-ov-disc)'>
             <circle
@@ -317,6 +316,12 @@ export default function Overture() {
               r='64'
             />
             <circle
+              className='y-ov-ripple y-ov-ripple-c'
+              cx={DISC.cx}
+              cy={DISC.cy}
+              r='64'
+            />
+            <circle
               className='y-ov-flash'
               cx={DISC.cx}
               cy={DISC.cy}
@@ -334,7 +339,74 @@ export default function Overture() {
                 className='y-ov-cell'
                 d={plate.d}
                 fill={plate.fill}
-                style={{ animationDelay: `${1700 + i * 130}ms` }}
+                style={{ animationDelay: `${2150 + i * 130}ms` }}
+              />
+            ))}
+          </g>
+
+          {/* 水束与粒子：从画面外持续落到水面，覆盖在板块表面 */}
+          <g className='y-ov-stream'>
+            <path
+              className='y-ov-fall'
+              d='M 500 -140 C 518 120, 482 340, 500 600'
+              pathLength={1}
+              stroke='url(#y-ov-stream)'
+            />
+            <path
+              className='y-ov-fall y-ov-fall-b'
+              d='M 486 -100 C 504 140, 468 340, 492 588'
+              pathLength={1}
+              stroke='url(#y-ov-stream)'
+            />
+            <path
+              className='y-ov-fall y-ov-fall-c'
+              d='M 514 -160 C 524 160, 486 360, 506 604'
+              pathLength={1}
+              stroke='url(#y-ov-stream)'
+            />
+            {FALL_PARTICLES.map((p, i) => {
+              const style = {
+                animationDelay: `${p.delay}ms`,
+                '--ov-lift': `${p.lift}px`,
+                '--ov-drift': `${p.drift}px`,
+                '--ov-dur': `${p.duration}ms`,
+              } as CSSProperties;
+              return p.line ? (
+                <ellipse
+                  key={i}
+                  className='y-ov-particle y-ov-particle-line'
+                  cx={p.x}
+                  cy={DISC.cy}
+                  rx={0.65}
+                  ry={p.r * 2.6}
+                  style={style}
+                />
+              ) : (
+                <circle
+                  key={i}
+                  className='y-ov-particle'
+                  cx={p.x}
+                  cy={DISC.cy}
+                  r={p.r}
+                  style={style}
+                />
+              );
+            })}
+            {SPLASH_PARTICLES.map((p, i) => (
+              <circle
+                key={i}
+                className='y-ov-splash'
+                cx={DISC.cx}
+                cy={DISC.cy}
+                r={p.r}
+                style={
+                  {
+                    animationDelay: `${p.delay}ms`,
+                    '--ov-sx': `${p.sx}px`,
+                    '--ov-sy': `${p.sy}px`,
+                    '--ov-sdur': `${p.duration}ms`,
+                  } as CSSProperties
+                }
               />
             ))}
           </g>
@@ -347,7 +419,7 @@ export default function Overture() {
                 className='y-ov-label'
                 style={
                   {
-                    '--ov-delay': `${2600 + i * 95}ms`,
+                    '--ov-delay': `${2950 + i * 95}ms`,
                     '--ov-dx': `${plate.dx}px`,
                     '--ov-dy': `${plate.dy}px`,
                   } as CSSProperties

@@ -104,18 +104,24 @@
 /* ------------------------------ 水束与水滴 ------------------------------ */
 .y-ov-fall {
   fill: none;
-  stroke-width: 2;
+  stroke-width: 2.6;
   stroke-linecap: round;
   stroke-dasharray: 1;
   stroke-dashoffset: 1;
-  filter: drop-shadow(0 0 6px rgba(150, 210, 255, 0.6));
-  animation: yOvFall 1.05s cubic-bezier(0.35, 0, 0.65, 1) 0.12s both;
+  filter: drop-shadow(0 0 7px rgba(150, 210, 255, 0.62));
+  animation: yOvFall 1.6s cubic-bezier(0.35, 0, 0.65, 1) 0.15s both;
 }
 
 .y-ov-fall-b {
-  stroke-width: 1.1;
+  stroke-width: 1.3;
   opacity: 0.7;
-  animation-delay: 0.2s;
+  animation-delay: 0.34s;
+}
+
+.y-ov-fall-c {
+  stroke-width: 0.8;
+  opacity: 0.45;
+  animation-delay: 0.52s;
 }
 
 @keyframes yOvFall {
@@ -135,25 +141,53 @@
   }
 }
 
-.y-ov-drop {
-  fill: #d8f0ff;
+/* 水粒：水珠与速度线共用一条下落曲线，时长与起点由确定性序列给出 */
+.y-ov-particle {
+  fill: #dff2ff;
   opacity: 0;
-  animation: yOvDrop 0.95s cubic-bezier(0.55, 0, 0.85, 0.4) both;
+  animation: yOvParticle var(--ov-dur, 800ms) cubic-bezier(0.45, 0, 0.85, 0.5)
+    both;
 }
 
-@keyframes yOvDrop {
+.y-ov-particle-line {
+  fill: rgba(196, 232, 255, 0.78);
+}
+
+@keyframes yOvParticle {
   0% {
-    transform: translateY(calc(-1 * var(--ov-lift, 380px)));
+    transform: translate(0, calc(-1 * var(--ov-lift, 480px)));
     opacity: 0;
   }
-  14% {
+  10% {
     opacity: 0.9;
   }
-  78% {
-    opacity: 0.85;
+  72% {
+    opacity: 0.72;
   }
   100% {
-    transform: translateY(0);
+    transform: translate(var(--ov-drift, 0px), 0);
+    opacity: 0;
+  }
+}
+
+/* 落点溅起的水星 */
+.y-ov-splash {
+  fill: #eaf8ff;
+  opacity: 0;
+  animation: yOvSplash var(--ov-sdur, 800ms) cubic-bezier(0.2, 0.7, 0.3, 1)
+    both;
+}
+
+@keyframes yOvSplash {
+  0% {
+    transform: translate(0, 0) scale(0.5);
+    opacity: 0;
+  }
+  16% {
+    opacity: 0.9;
+  }
+  100% {
+    transform: translate(var(--ov-sx, 0px), var(--ov-sy, 0px)) scale(1);
     opacity: 0;
   }
 }
@@ -162,7 +196,7 @@
 .y-ov-disc {
   transform-box: fill-box;
   transform-origin: center;
-  animation: yOvPool 1.15s var(--ov-ease) 1.1s both;
+  animation: yOvPool 1.15s var(--ov-ease) 1.45s both;
 }
 
 @keyframes yOvPool {
@@ -184,17 +218,17 @@
   stroke: rgba(168, 216, 255, 0.16);
   stroke-width: 0.9;
   opacity: 0;
-  animation: yOvFadeIn 1.2s ease 1.7s both;
+  animation: yOvFadeIn 1.2s ease 2s both;
 }
 
 .y-ov-contour-b {
   stroke: rgba(168, 216, 255, 0.12);
-  animation-delay: 1.82s;
+  animation-delay: 2.12s;
 }
 
 .y-ov-contour-c {
   stroke: rgba(168, 216, 255, 0.1);
-  animation-delay: 1.94s;
+  animation-delay: 2.24s;
 }
 
 .y-ov-ripple {
@@ -208,11 +242,15 @@
 }
 
 .y-ov-ripple-a {
-  animation-delay: 1.06s;
+  animation-delay: 1.2s;
 }
 
 .y-ov-ripple-b {
-  animation-delay: 1.24s;
+  animation-delay: 1.5s;
+}
+
+.y-ov-ripple-c {
+  animation-delay: 1.8s;
 }
 
 @keyframes yOvRipple {
@@ -233,7 +271,7 @@
   transform-box: fill-box;
   transform-origin: center;
   opacity: 0;
-  animation: yOvFlash 0.75s ease-out 1.02s both;
+  animation: yOvFlash 0.75s ease-out 1.35s both;
 }
 
 @keyframes yOvFlash {
@@ -253,7 +291,7 @@
 .y-ov-core {
   fill: #f4fbff;
   opacity: 0;
-  animation: yOvCore 1.4s ease 1.05s both;
+  animation: yOvCore 1.4s ease 1.4s both;
 }
 
 @keyframes yOvCore {
@@ -278,8 +316,8 @@
   transform-box: view-box;
   transform-origin: 500px 600px;
   animation:
-    yOvTurn 1.45s var(--ov-ease) 1.7s both,
-    yOvDim 0.9s ease 3.15s forwards;
+    yOvTurn 1.45s var(--ov-ease) 2.15s both,
+    yOvDim 0.9s ease 3.55s forwards;
 }
 
 @keyframes yOvTurn {
@@ -318,7 +356,7 @@
 }
 
 .y-ov-labels {
-  animation: yOvDim 0.9s ease 3.15s forwards;
+  animation: yOvDim 0.9s ease 3.55s forwards;
 }
 
 .y-ov-label {
@@ -380,11 +418,11 @@
 }
 
 .y-ov-line-a {
-  animation-delay: 3.2s;
+  animation-delay: 3.6s;
 }
 
 .y-ov-line-b {
-  animation-delay: 3.38s;
+  animation-delay: 3.78s;
 }
 
 @keyframes yOvLine {
@@ -414,7 +452,7 @@
   color: rgba(198, 222, 247, 0.72);
   text-shadow: 0 1px 10px rgba(0, 0, 0, 0.8);
   opacity: 0;
-  animation: yOvFadeUp 0.8s var(--ov-ease) 3.95s both;
+  animation: yOvFadeUp 0.8s var(--ov-ease) 4.2s both;
 }
 
 /* 名句出现时的一圈极淡声波，替代音效 */
@@ -433,7 +471,7 @@
   );
   opacity: 0;
   transform: translateX(-50%) scaleX(0.2);
-  animation: yOvEchoLine 1.4s ease-out 3.98s both;
+  animation: yOvEchoLine 1.4s ease-out 4.23s both;
 }
 
 @keyframes yOvEchoLine {
