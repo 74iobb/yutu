@@ -387,9 +387,14 @@ async function playVoiceShifted(): Promise<boolean> {
     gate.connect(audio.master);
     gate.connect(analyser);
 
-    /* 噪声门：说话时全开，停下 140ms 后压到 6%，句间底噪变轻但不切字 */
+    /*
+     * 自适应噪声门：
+     * 实时跟踪底噪（只向下取更小值、再缓慢回升），阈值取底噪的 2.2 倍；
+     * 说话时全开，停下 160ms 后直接压到 -80dB，句间基本听不见底噪。
+     */
     const samples = new Uint8Array(analyser.fftSize);
     let lastLoud = 0;
+    let noiseFloor = 1;
     const tick = () => {
       const now = performance.now();
       analyser.getByteTimeDomainData(samples);
@@ -398,9 +403,16 @@ async function playVoiceShifted(): Promise<boolean> {
         const v = Math.abs(samples[i] - 128) / 128;
         if (v > p2) p2 = v;
       }
-      if (p2 > 0.008) lastLoud = now;
-      const open = now - lastLoud < 140;
-      gate.gain.setTargetAtTime(open ? 1 : 0.06, ctx.currentTime, open ? 0.01 : 0.05);
+      if (p2 < noiseFloor) noiseFloor = p2;
+      else noiseFloor = Math.min(1, noiseFloor * 1.0004);
+      const threshold = Math.max(0.015, noiseFloor * 2.2);
+      if (p2 > threshold) lastLoud = now;
+      const open = now - lastLoud < 160;
+      gate.gain.setTargetAtTime(
+        open ? 1 : 0.0001,
+        ctx.currentTime,
+        open ? 0.008 : 0.06
+      );
       voiceGateRaf = requestAnimationFrame(tick);
     };
     voiceGateRaf = requestAnimationFrame(tick);
