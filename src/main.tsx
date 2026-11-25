@@ -8,6 +8,7 @@ import './audit.css';
 import './loopmap.css';
 import './layout.css';
 import './motion.css';
+import './visual.css';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <App />

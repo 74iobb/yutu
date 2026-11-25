@@ -457,7 +457,7 @@ export default function Sandbox() {
         <span className='y-ambient-noise' />
       </div>
 
-      <div id='yutu2' className='y-sb-shell'>
+      <div id='yutu2' className='y-sb-shell' data-step='sandbox'>
         <header className='y-sb-top'>
           <Link className='y-sb-back' to='/'>
             <span aria-hidden='true'>←</span> 回到域途

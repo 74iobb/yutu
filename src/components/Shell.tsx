@@ -478,7 +478,7 @@ export function Shell({ children }: { children: ReactNode }) {
   }, []);
 
   return (
-    <div id='yutu2'>
+    <div id='yutu2' data-step={state.step}>
       <div className='y-app-aura' aria-hidden='true'>
         <i />
         <span className='y-mote y-mote-a' />

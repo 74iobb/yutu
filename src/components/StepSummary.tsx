@@ -229,7 +229,7 @@ export default function StepSummary({ onOpenList }: { onOpenList: () => void }) 
           </div>
         </div>
 
-        <aside className='y-next-side'>
+        <aside className='y-next-side y-glass-rail'>
           <div className='y-card'>
             <h3>
               方向约束 C

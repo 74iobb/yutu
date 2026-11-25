@@ -1,4 +1,9 @@
-import { useDeferredValue, useMemo, useState } from 'react';
+import {
+  useDeferredValue,
+  useMemo,
+  useState,
+  type CSSProperties,
+} from 'react';
 import {
   bandOf,
   CITY_MAP,
@@ -26,6 +31,24 @@ interface Props {
   onOpenMap?: (dirName?: string) => void;
   /** 切到同一步内的「归属与摘要」视图 */
   onOpenSummary?: () => void;
+}
+
+/** 方向卡顶部的一块“玻璃碎片”颜色；按方向名稳定分配，筛选时不跳色 */
+const SHARD_HUES = [
+  '#d64923',
+  '#e2aa2e',
+  '#355240',
+  '#54a0b7',
+  '#6b4a8a',
+  '#c2703d',
+];
+
+function shardHue(name: string): string {
+  let h = 0;
+  for (let i = 0; i < name.length; i++) {
+    h = (h * 31 + name.charCodeAt(i)) >>> 0;
+  }
+  return SHARD_HUES[h % SHARD_HUES.length];
 }
 
 export default function Step3({ onOpenMap, onOpenSummary }: Props = {}) {
@@ -250,6 +273,9 @@ export default function Step3({ onOpenMap, onOpenSummary }: Props = {}) {
                       state.shortlist.includes(dir.name) ? ' is-short' : ''
                     }${state.pick === dir.name ? ' is-picked' : ''}`}
                     key={dir.name}
+                    style={
+                      { '--dir-hue': shardHue(dir.name) } as CSSProperties
+                    }
                   >
                     <div className='y-dir-top'>
                       <span className='y-dir-n'>
@@ -321,7 +347,7 @@ export default function Step3({ onOpenMap, onOpenSummary }: Props = {}) {
           </div>
         </div>
 
-        <aside className='y-aside y-aside-sticky'>
+        <aside className='y-aside y-aside-sticky y-glass-rail'>
           <details className='y-detail'>
             <summary>可行性判定依据</summary>
             <div className='y-detail-body'>
