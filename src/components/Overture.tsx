@@ -231,18 +231,19 @@ async function unlockAudio(): Promise<boolean> {
   }
 }
 
-/* --------------------------- 真人录音（降调） --------------------------- */
+/* --------------------------- 真人录音（降调 + 降噪） --------------------------- */
 /**
- * 用用户提供的朗诵录音，但以 0.87 倍速播放：
- * 音调下降约 2 个半音、语速放慢，听起来更成熟，不再稚嫩。
- * 同源加载，浏览器自带平台登录态；失败时只剩低频垫底，不回退到女声 TTS。
+ * 用户提供的朗诵录音，0.92 倍速播放：略降调、略放慢，听感更成熟。
+ * 前端降噪链：130Hz 高通 → 7.5kHz 低通 → 动态压缩 → 噪声门。
+ * 仍受录音本身底噪限制；若还不够干净，需要更干净的录音源。
  */
 const VOICE_URL =
   'https://agent.nuwax.com/api/f/s3/app-dev/20261125/64465fff87744c84bbc0073a89c03b92.m4a';
-const VOICE_RATE = 0.87;
+const VOICE_RATE = 0.92;
 
 let voiceBufferPromise: Promise<AudioBuffer | null> | null = null;
 let voiceSource: AudioBufferSourceNode | null = null;
+let voiceGateRaf = 0;
 
 function loadVoiceBuffer(): Promise<AudioBuffer | null> {
   if (!voiceBufferPromise) {
@@ -263,6 +264,10 @@ function loadVoiceBuffer(): Promise<AudioBuffer | null> {
 }
 
 function stopVoice(): void {
+  if (voiceGateRaf) {
+    cancelAnimationFrame(voiceGateRaf);
+    voiceGateRaf = 0;
+  }
   if (!voiceSource) return;
   try {
     voiceSource.stop();
@@ -272,7 +277,7 @@ function stopVoice(): void {
   voiceSource = null;
 }
 
-/** 播放降调后的朗诵；正在播时不重复启动 */
+/** 播放降调、降噪后的朗诵；正在播时不重复启动 */
 async function playVoiceShifted(): Promise<boolean> {
   if (voiceSource) return true;
   try {
@@ -282,25 +287,69 @@ async function playVoiceShifted(): Promise<boolean> {
     if (!unlocked) return false;
     const buffer = await loadVoiceBuffer();
     if (!buffer) return false;
-    const src = audio.ctx.createBufferSource();
+
+    const ctx = audio.ctx;
+    const src = ctx.createBufferSource();
     src.buffer = buffer;
     src.playbackRate.value = VOICE_RATE;
-    /* 去底噪：切掉 90Hz 以下的嗡声和 9kHz 以上的嘶声，只留人声频段 */
-    const highpass = audio.ctx.createBiquadFilter();
+
+    const highpass = ctx.createBiquadFilter();
     highpass.type = 'highpass';
-    highpass.frequency.value = 90;
-    const lowpass = audio.ctx.createBiquadFilter();
+    highpass.frequency.value = 130;
+    highpass.Q.value = 0.7;
+
+    const lowpass = ctx.createBiquadFilter();
     lowpass.type = 'lowpass';
-    lowpass.frequency.value = 9000;
-    const gain = audio.ctx.createGain();
-    gain.gain.value = 1;
+    lowpass.frequency.value = 7500;
+
+    const comp = ctx.createDynamicsCompressor();
+    comp.threshold.value = -28;
+    comp.knee.value = 18;
+    comp.ratio.value = 3.5;
+    comp.attack.value = 0.004;
+    comp.release.value = 0.22;
+
+    const gate = ctx.createGain();
+    gate.gain.value = 1;
+    const analyser = ctx.createAnalyser();
+    analyser.fftSize = 512;
+
+    const out = ctx.createGain();
+    out.gain.value = 1;
+
     src.connect(highpass);
     highpass.connect(lowpass);
-    lowpass.connect(gain);
-    gain.connect(audio.master);
+    lowpass.connect(comp);
+    comp.connect(gate);
+    gate.connect(out);
+    gate.connect(analyser);
+    out.connect(audio.master);
+
+    /* 噪声门：峰值低于阈值时把音量压到 3%，句间底噪基本听不见 */
+    const samples = new Uint8Array(analyser.fftSize);
+    const tick = () => {
+      analyser.getByteTimeDomainData(samples);
+      let peak = 0;
+      for (let i = 0; i < samples.length; i += 1) {
+        const v = Math.abs(samples[i] - 128) / 128;
+        if (v > peak) peak = v;
+      }
+      gate.gain.setTargetAtTime(
+        peak > 0.02 ? 1 : 0.03,
+        ctx.currentTime,
+        0.02
+      );
+      voiceGateRaf = requestAnimationFrame(tick);
+    };
+    voiceGateRaf = requestAnimationFrame(tick);
+
     voiceSource = src;
     src.onended = () => {
       if (voiceSource === src) voiceSource = null;
+      if (voiceGateRaf) {
+        cancelAnimationFrame(voiceGateRaf);
+        voiceGateRaf = 0;
+      }
     };
     src.start();
     return true;
