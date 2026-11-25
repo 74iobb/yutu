@@ -381,10 +381,23 @@ async function playVoiceShifted(): Promise<boolean> {
     const analyser = ctx.createAnalyser();
     analyser.fftSize = 512;
 
+    /* 音量归一化：把录音峰值拉到 0.95，最多放大 3 倍、至少 1.2 倍 */
+    const out = ctx.createGain();
+    let peak = 0;
+    for (let c = 0; c < buffer.numberOfChannels; c += 1) {
+      const data = buffer.getChannelData(c);
+      for (let i = 0; i < data.length; i += 1) {
+        const v = Math.abs(data[i]);
+        if (v > peak) peak = v;
+      }
+    }
+    out.gain.value = Math.min(3, Math.max(1.2, 0.95 / (peak || 0.4)));
+
     src.connect(highpass);
     highpass.connect(lowpass);
     lowpass.connect(gate);
-    gate.connect(audio.master);
+    gate.connect(out);
+    out.connect(audio.master);
     gate.connect(analyser);
 
     /*
