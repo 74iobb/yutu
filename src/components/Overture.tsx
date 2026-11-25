@@ -163,6 +163,43 @@ const SPLASH_PARTICLES = Array.from(
   }
 );
 
+/** 撞击瞬间的星尘：从落点向四面八方飞散 */
+const STAR_DUST = Array.from(
+  { length: REDUCED_EFFECTS ? 24 : 44 },
+  (_, i) => {
+    const angle = noise(i * 7 + 200) * Math.PI * 2;
+    const dist = 40 + noise(i * 7 + 201) * 210;
+    return {
+      dx: Math.cos(angle) * dist,
+      dy: Math.sin(angle) * dist * 0.7,
+      r: 0.35 + noise(i * 7 + 202) * 1.1,
+      delay: Math.round(1500 + noise(i * 7 + 203) * 700),
+      duration: Math.round(900 + noise(i * 7 + 204) * 1000),
+      color: WATER_COLORS[i % WATER_COLORS.length],
+    };
+  }
+);
+
+/** 命途光轨：从落点向外发散，呼应「各自东西南北流」 */
+const DESTINY_RAYS = Array.from({ length: 9 }, (_, i) => {
+  const angle = (i / 9) * Math.PI * 2 + 0.25;
+  return {
+    x2: DISC.cx + Math.cos(angle) * 250,
+    y2: DISC.cy + Math.sin(angle) * 200,
+    delay: Math.round(1450 + noise(i + 330) * 260),
+  };
+});
+
+/** 前景散景：微距镜头的失焦光斑 */
+const BOKEH = [
+  { x: 210, y: 250, r: 26, color: '#8ee9ff', delay: 0 },
+  { x: 790, y: 300, r: 20, color: '#ffa8e0', delay: 1.2 },
+  { x: 160, y: 620, r: 18, color: '#ffe08a', delay: 2.4 },
+  { x: 850, y: 640, r: 30, color: '#b6a8ff', delay: 0.8 },
+  { x: 330, y: 170, r: 14, color: '#8dffcf', delay: 1.8 },
+  { x: 700, y: 120, r: 12, color: '#8ee9ff', delay: 2.8 },
+];
+
 function motionAllowed(): boolean {
   if (typeof window === 'undefined') return false;
   try {
@@ -901,6 +938,16 @@ export default function Overture() {
               <stop offset='50%' stopColor='#ffffff' stopOpacity='0.6' />
               <stop offset='100%' stopColor='#ffffff' stopOpacity='0' />
             </linearGradient>
+            <radialGradient id='y-ov-obsidian' cx='50%' cy='50%' r='50%'>
+              <stop offset='0%' stopColor='#0b0f1a' stopOpacity='0.96' />
+              <stop offset='52%' stopColor='#060911' stopOpacity='0.82' />
+              <stop offset='100%' stopColor='#03050a' stopOpacity='0' />
+            </radialGradient>
+            <linearGradient id='y-ov-beam' x1='0' y1='0' x2='0' y2='1'>
+              <stop offset='0%' stopColor='#cfefff' stopOpacity='0.16' />
+              <stop offset='55%' stopColor='#9be8ff' stopOpacity='0.07' />
+              <stop offset='100%' stopColor='#9be8ff' stopOpacity='0' />
+            </linearGradient>
             <radialGradient id='y-ov-mist' cx='50%' cy='50%' r='50%'>
               <stop offset='0%' stopColor='#ffffff' stopOpacity='0.55' />
               <stop offset='38%' stopColor='#9be8ff' stopOpacity='0.3' />
@@ -941,6 +988,14 @@ export default function Overture() {
               cy={DISC.cy}
               r={DISC.r}
               fill='url(#y-ov-iris-2)'
+            />
+            {/* 黑曜石底：让水面沉成一块深黑的镜面 */}
+            <circle
+              className='y-ov-obsidian'
+              cx={DISC.cx}
+              cy={DISC.cy}
+              r={DISC.r}
+              fill='url(#y-ov-obsidian)'
             />
             {/* 水面镜面高光：一条缓慢漂移的亮带 */}
             <ellipse
@@ -1020,6 +1075,13 @@ export default function Overture() {
             />
             <circle className='y-ov-core' cx={DISC.cx} cy={DISC.cy} r='2.6' />
           </g>
+
+          {/* 体积光：从上方落下的锥形光束 */}
+          <polygon
+            className='y-ov-beam'
+            points='430,-40 570,-40 660,640 340,640'
+            fill='url(#y-ov-beam)'
+          />
 
           {/* 板块：真实的 Voronoi 单元，整组缓慢回正 */}
           <g className='y-ov-crust' clipPath='url(#y-ov-disc)'>
@@ -1122,6 +1184,43 @@ export default function Overture() {
             ))}
           </g>
 
+          {/* 命途光轨：从落点向四周发散 */}
+          <g className='y-ov-rays' aria-hidden='true'>
+            {DESTINY_RAYS.map((ray, i) => (
+              <line
+                key={i}
+                className='y-ov-ray'
+                x1={DISC.cx}
+                y1={DISC.cy}
+                x2={ray.x2}
+                y2={ray.y2}
+                style={{ animationDelay: `${ray.delay}ms` }}
+              />
+            ))}
+          </g>
+
+          {/* 撞击星尘：从落点飞散的光点 */}
+          <g className='y-ov-dusts' aria-hidden='true'>
+            {STAR_DUST.map((p, i) => (
+              <circle
+                key={i}
+                className='y-ov-dust'
+                cx={DISC.cx}
+                cy={DISC.cy}
+                r={p.r}
+                style={
+                  {
+                    animationDelay: `${p.delay}ms`,
+                    '--ov-dx': `${p.dx}px`,
+                    '--ov-dy': `${p.dy}px`,
+                    '--ov-dur': `${p.duration}ms`,
+                    fill: p.color,
+                  } as CSSProperties
+                }
+              />
+            ))}
+          </g>
+
           {/* 板块名：与四步一一对应，不随板块旋转 */}
           <g className='y-ov-labels'>
             {PLATES.map((plate, i) => (
@@ -1153,6 +1252,21 @@ export default function Overture() {
                   {plate.label}
                 </text>
               </g>
+            ))}
+          </g>
+
+          {/* 前景散景：微距镜头的失焦光斑 */}
+          <g className='y-ov-bokehs' aria-hidden='true'>
+            {BOKEH.map((b, i) => (
+              <circle
+                key={i}
+                className='y-ov-bokeh'
+                cx={b.x}
+                cy={b.y}
+                r={b.r}
+                fill={b.color}
+                style={{ animationDelay: `${b.delay}s` }}
+              />
             ))}
           </g>
         </svg>

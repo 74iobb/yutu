@@ -1140,6 +1140,125 @@
   }
 }
 
+/* ------------------------------ 黑曜石与光 ------------------------------ */
+/* 黑曜石镜面：把水面沉成深黑底 */
+.y-ov-obsidian {
+  opacity: 0;
+  animation: yOvObsidian 1.6s ease 1.7s both;
+}
+
+@keyframes yOvObsidian {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* 体积光：从上方落下的锥形光束 */
+.y-ov-beam {
+  opacity: 0;
+  animation: yOvBeam 2.6s ease-out 0.35s both;
+}
+
+@keyframes yOvBeam {
+  0% {
+    opacity: 0;
+  }
+  30% {
+    opacity: 0.9;
+  }
+  100% {
+    opacity: 0.5;
+  }
+}
+
+/* 命途光轨：从落点向外扩散 */
+.y-ov-ray {
+  fill: none;
+  stroke: rgba(198, 233, 255, 0.55);
+  stroke-width: 0.9;
+  stroke-linecap: round;
+  opacity: 0;
+  transform-box: view-box;
+  transform-origin: 500px 600px;
+  filter: drop-shadow(0 0 4px rgba(180, 225, 255, 0.6));
+  animation: yOvRay 1.8s ease-out both;
+}
+
+@keyframes yOvRay {
+  0% {
+    opacity: 0;
+    transform: scale(0.2);
+  }
+  18% {
+    opacity: 0.95;
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1);
+  }
+}
+
+/* 撞击星尘：飞散后淡出 */
+.y-ov-dust {
+  opacity: 0;
+  animation: yOvDust var(--ov-dur, 1200ms) cubic-bezier(0.15, 0.7, 0.3, 1)
+    both;
+}
+
+@keyframes yOvDust {
+  0% {
+    transform: translate(0, 0) scale(0.4);
+    opacity: 0;
+  }
+  12% {
+    opacity: 0.95;
+  }
+  100% {
+    transform: translate(var(--ov-dx, 0px), var(--ov-dy, 0px)) scale(1);
+    opacity: 0;
+  }
+}
+
+/* 前景散景：微距失焦光斑 */
+.y-ov-bokeh {
+  opacity: 0;
+  filter: blur(10px);
+  animation:
+    yOvBokehIn 2.4s ease both,
+    yOvBokehDrift 14s ease-in-out infinite alternate;
+}
+
+@keyframes yOvBokehIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 0.3;
+  }
+}
+
+@keyframes yOvBokehDrift {
+  from {
+    transform: translateY(-6px);
+  }
+  to {
+    transform: translateY(6px);
+  }
+}
+
+/* 退潮时这些光一起收掉 */
+.y-overture.is-leaving .y-ov-beam,
+.y-overture.is-leaving .y-ov-rays,
+.y-overture.is-leaving .y-ov-dusts,
+.y-overture.is-leaving .y-ov-bokehs {
+  animation: none;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
 /* ------------------------------ 响应式 ------------------------------ */
 @media (max-width: 640px) {
   .y-ov-scene {
@@ -1263,6 +1382,14 @@
 
 .y-ov-lite .y-ov-scene {
   animation: none;
+}
+
+.y-ov-lite .y-ov-bokeh {
+  display: none;
+}
+
+.y-ov-lite .y-ov-ray {
+  filter: none;
 }
 
 @media (prefers-reduced-motion: reduce) {
