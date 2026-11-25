@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import { simBand } from '@/lib/model';
 import { retrieveMemories, type MemoryItem } from '@/lib/memory';
 import { useYutu } from '@/store/YutuContext';
 import { Empty } from './bits';
@@ -158,9 +159,9 @@ export default function MemoryPanel() {
                     key={m.id}
                     role='button'
                     tabIndex={0}
-                    aria-label={`${KIND_LABEL[m.kind]} · ${m.when} · 接近度 ${Math.round(
-                      m.sim * 100
-                    )}%`}
+                    aria-label={`${KIND_LABEL[m.kind]} · ${m.when} · 接近度 ${simBand(
+                      m.sim
+                    )}`}
                     onClick={() => setSelectedId(m.id)}
                     onKeyDown={(e) => {
                       if (e.key === 'Enter' || e.key === ' ') {
@@ -185,9 +186,9 @@ export default function MemoryPanel() {
                       style={{ fill: KIND_COLOR[m.kind] }}
                     />
                     <title>
-                      {`${KIND_LABEL[m.kind]} · ${m.when} · 接近度 ${Math.round(
-                        m.sim * 100
-                      )}%`}
+                      {`${KIND_LABEL[m.kind]} · ${m.when} · 接近度 ${simBand(
+                        m.sim
+                      )}`}
                     </title>
                   </g>
                 );
@@ -233,7 +234,7 @@ export default function MemoryPanel() {
               <div className='y-memory-detail-head'>
                 <span>{KIND_LABEL[selected.kind]}</span>
                 <span>{selected.when}</span>
-                <b>接近度 {Math.round(selected.sim * 100)}%</b>
+                <b>接近度 {simBand(selected.sim)}</b>
               </div>
               <p>{selected.full}</p>
               {selected.vector ? (

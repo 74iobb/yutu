@@ -46,22 +46,42 @@ def run(text, bold=False, code=False, size=None, color=None):
 
 
 def inline_runs(text, bold=False, size=None, color=None):
-    """把 `代码` 与 **加粗** 拆成 run；其余保持普通 run。"""
+    """把 `代码` 与 **加粗** 拆成 run；支持加粗内部包含行内代码。"""
+    codes = []
+
+    def stash(m):
+        codes.append(m.group(1))
+        return f"\x00{len(codes) - 1}\x00"
+
+    protected = re.sub(r"`([^`]+)`", stash, text)
     out = []
-    for seg in re.split(r"(`[^`]+`)", text):
-        if not seg:
-            continue
-        if seg.startswith("`") and seg.endswith("`") and len(seg) > 2:
-            out.append(run(seg[1:-1], bold=bold, code=True, size=size, color=color))
-            continue
-        for part in re.split(r"(\*\*[^*]+\*\*)", seg):
-            if not part:
+
+    def emit(seg, is_bold):
+        for piece in re.split(r"(\x00\d+\x00)", seg):
+            if not piece:
                 continue
-            is_bold = bold
-            if part.startswith("**") and part.endswith("**") and len(part) > 4:
-                part = part[2:-2]
-                is_bold = True
-            out.append(run(part, bold=is_bold, size=size, color=color))
+            m = re.fullmatch(r"\x00(\d+)\x00", piece)
+            if m:
+                out.append(
+                    run(
+                        codes[int(m.group(1))],
+                        bold=is_bold,
+                        code=True,
+                        size=size,
+                        color=color,
+                    )
+                )
+            else:
+                out.append(run(piece, bold=is_bold, size=size, color=color))
+
+    for part in re.split(r"(\*\*[^*]+\*\*)", protected):
+        if not part:
+            continue
+        is_bold = bold
+        if part.startswith("**") and part.endswith("**") and len(part) > 4:
+            part = part[2:-2]
+            is_bold = True
+        emit(part, is_bold)
     return "".join(out)
 
 

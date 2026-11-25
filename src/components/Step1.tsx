@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { CITIES, PROVINCES, URBAN_LABEL, type Urban } from '@/data/catalog';
 import { cityById, currentStage, DIMS, stageReason } from '@/lib/model';
 import { matchFieldCategory } from '@/lib/searchCore';
-import { useYutu } from '@/store/YutuContext';
+import { DEFAULT_PROFILE, useYutu } from '@/store/YutuContext';
 import StructuredScale from './StructuredScale';
 import GrowthDelta from './GrowthDelta';
 import GapPhoto from './GapPhoto';
@@ -17,6 +17,14 @@ export default function Step1() {
   const city = cityById(p.city);
   const urban = URBAN_LABEL[p.urban];
   const fieldMatch = matchFieldCategory(p.field);
+  /** 尚未进入第 2 步，且档案仍与初始模板完全一致：必须提示这是示例值 */
+  const initialValues =
+    state.maxStep < 2 &&
+    p.city === DEFAULT_PROFILE.city &&
+    p.urban === DEFAULT_PROFILE.urban &&
+    p.identity === DEFAULT_PROFILE.identity &&
+    p.field === DEFAULT_PROFILE.field &&
+    DIMS.every(d => p.s[d.k] === DEFAULT_PROFILE.s[d.k]);
   /** 方向为空时，主按钮不再只是弹 toast：聚焦输入框并给出一次短促反馈 */
   const fieldRef = useRef<HTMLInputElement>(null);
   const [shake, setShake] = useState(false);
@@ -65,6 +73,23 @@ export default function Step1() {
         <p className='y-eyebrow'>STEP 01 · 处境</p>
         <h2>先把你的情况填清楚</h2>
       </header>
+
+      {initialValues ? (
+        <p
+          className='y-note'
+          role='status'
+          style={{
+            margin: '0 0 12px',
+            padding: '9px 12px',
+            borderLeft: '2px solid var(--step-accent, #4fc9e6)',
+            background: 'var(--step-accent-soft, rgba(79, 201, 230, 0.08))',
+            borderRadius: 8,
+          }}
+        >
+          当前显示的是初始示例（{city.name} · {p.s.age} 岁 ·{' '}
+          {p.field || '未填写方向'}），不是你的真实情况。请按你的城市、年龄与处境修改；改动后这行提示会自动消失。
+        </p>
+      ) : null}
 
       <GrowthDelta />
 

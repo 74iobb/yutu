@@ -1,4 +1,4 @@
-import { DIMS } from '@/lib/model';
+import { DIMS, simBand } from '@/lib/model';
 import type { MemoryItem } from '@/lib/memory';
 import type { Scores, TaskItem, Victory } from '@/types';
 
@@ -97,7 +97,7 @@ export function buildSoulQuestions({
   /* 4. 长期记忆：引用与当前处境最接近的那条旧记录 */
   const mem = memories[0];
   if (mem) {
-    const pct = Math.round(mem.sim * 100);
+    const band = simBand(mem.sim);
     out.push({
       id: 'memory',
       basis: `历史记忆 · ${
@@ -106,8 +106,8 @@ export function buildSoulQuestions({
           : mem.kind === 'review'
             ? '你的复盘'
             : '你的讨论'
-      } · ${mem.when} · 接近度 ${pct}%`,
-      text: `${mem.when}你写过：「${mem.text}」。这次的处境和当时接近度 ${pct}%——那句话现在还成立吗？`,
+      } · ${mem.when} · 接近度 ${band}`,
+      text: `${mem.when}你写过：「${mem.text}」。这次的处境和当时接近度：${band}——那句话现在还成立吗？`,
     });
   } else {
     const latest = victories[victories.length - 1];
