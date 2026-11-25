@@ -5,7 +5,7 @@ import type { Profile } from '@/types';
 const TIERS = [
   { k: 'high' as const, n: '当前可做', color: '#4f7a58', y: 96 },
   { k: 'mid' as const, n: '需补条件', color: '#a9762f', y: 222 },
-  { k: 'low' as const, n: '暂不建议', color: '#9c4a3c', y: 348 },
+  { k: 'low' as const, n: '条件不足', color: '#9c4a3c', y: 348 },
 ];
 
 interface Props {

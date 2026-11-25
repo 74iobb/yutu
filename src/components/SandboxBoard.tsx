@@ -1,7 +1,9 @@
 import {
-  SANDBOX_ACTION_MAP,
+  pickCode,
+  pickHue,
+  pickLabel,
   SANDBOX_ROUNDS,
-  type SandboxActionId,
+  type SandboxPick,
 } from '@/lib/sandbox';
 
 interface Pt {
@@ -53,7 +55,7 @@ export default function SandboxBoard({
   baseEndLabel,
   onTile,
 }: {
-  picks: SandboxActionId[];
+  picks: SandboxPick[];
   /** 正在查看的格序号；null 表示正在看「下一格」 */
   focus: number | null;
   startHue: string;
@@ -217,7 +219,7 @@ export default function SandboxBoard({
         {/* 六格 */}
         {POS.map((p, i) => {
           const filled = i < done;
-          const act = filled ? SANDBOX_ACTION_MAP[picks[i]] : null;
+          const pick = filled ? picks[i] : null;
           const isNext = i === next;
           const isFocus = focus === i;
           const cls = [
@@ -226,11 +228,12 @@ export default function SandboxBoard({
             isNext ? 'is-next' : '',
             !filled && !isNext ? 'is-locked' : '',
             isFocus ? 'is-focus' : '',
+            pick?.kind === 'custom' ? 'is-custom' : '',
           ]
             .filter(Boolean)
             .join(' ');
-          const label = act
-            ? `第 ${i + 1} 格：${act.name}`
+          const label = pick
+            ? `第 ${i + 1} 格：${pickLabel(pick)}`
             : isNext
               ? `第 ${i + 1} 格：选择动作`
               : `第 ${i + 1} 格：未解锁`;
@@ -283,21 +286,21 @@ export default function SandboxBoard({
               <polygon
                 points={hexPoints(p.x, p.y, HEX_R)}
                 className='sb-hex-body'
-                fill={act ? `${act.hue}22` : 'rgba(10,20,40,0.72)'}
+                fill={pick ? `${pickHue(pick)}22` : 'rgba(10,20,40,0.72)'}
                 stroke={
-                  act
-                    ? act.hue
+                  pick
+                    ? pickHue(pick)
                     : isNext
                       ? 'rgba(245,193,90,0.95)'
                       : 'rgba(160,190,255,0.28)'
                 }
-                strokeWidth={act ? 1.8 : 1.3}
-                strokeDasharray={act || isNext ? undefined : '4 5'}
+                strokeWidth={pick ? 1.8 : 1.3}
+                strokeDasharray={pick || isNext ? undefined : '4 5'}
               />
               <polygon
                 points={hexPoints(p.x, p.y - 2, HEX_R - 7)}
                 className='sb-hex-top'
-                fill={act ? 'rgba(255,255,255,0.07)' : 'rgba(255,255,255,0.03)'}
+                fill={pick ? 'rgba(255,255,255,0.07)' : 'rgba(255,255,255,0.03)'}
                 stroke='none'
               />
               <text
@@ -313,9 +316,15 @@ export default function SandboxBoard({
                 y={p.y + 15}
                 textAnchor='middle'
                 className='sb-hex-code'
-                fill={act ? act.hue : isNext ? 'rgba(245,193,90,0.9)' : 'rgba(160,190,255,0.4)'}
+                fill={
+                  pick
+                    ? pickHue(pick)
+                    : isNext
+                      ? 'rgba(245,193,90,0.9)'
+                      : 'rgba(160,190,255,0.4)'
+                }
               >
-                {act ? act.code : isNext ? '+' : '·'}
+                {pick ? pickCode(pick) : isNext ? '+' : '·'}
               </text>
               <text
                 x={p.x}

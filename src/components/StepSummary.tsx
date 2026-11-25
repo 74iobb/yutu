@@ -76,7 +76,7 @@ export default function StepSummary({ onOpenList }: { onOpenList: () => void }) 
     const dm = Math.abs(m - mn);
     if (dm > 0.3) {
       warnings.push(
-        `与「${shortName(top.node.name)}」的强度接近度偏低；这只是模型提示，建议结合逐维差异阅读。`
+        `与「${shortName(top.node.name)}」的强度接近度偏低；这只是模型提示，需要结合逐维差异阅读。`
       );
     }
   }

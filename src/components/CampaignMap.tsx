@@ -39,7 +39,7 @@ interface Props {
 const TIER = {
   high: { color: '#4f7a58', km: 55, label: '当前可做', ring: '近圈' },
   mid: { color: '#a9762f', km: 105, label: '需补条件', ring: '中圈' },
-  low: { color: '#9c4a3c', km: 155, label: '暂不建议', ring: '外圈' },
+  low: { color: '#9c4a3c', km: 155, label: '条件不足', ring: '外圈' },
 } as const;
 
 const DIRECTION_LABELS: Record<string, string> = {
@@ -372,7 +372,7 @@ export default function CampaignMap({
         ).addTo(group);
       });
 
-      /* 三层推进圈：近圈当前可做，中圈需补条件，外圈暂不建议。
+      /* 三层推进圈：近圈当前可做，中圈需补条件，外圈条件不足。
          每个圈在南侧带一个常驻标签，避免只有颜色、看不出半径与含义。 */
       (['high', 'mid', 'low'] as const).forEach(key => {
         const tier = TIER[key];

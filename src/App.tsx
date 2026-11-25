@@ -1,9 +1,12 @@
+import { lazy, Suspense } from 'react';
 import { HashRouter, Navigate, Outlet, Route, Routes } from 'react-router-dom';
 import YutuApp from '@/pages/YutuApp';
 import ElectricalLab from '@/pages/ElectricalLab';
-import Sandbox from '@/pages/Sandbox';
 import ErrorBoundary from '@/components/ErrorBoundary';
 import { YutuProvider } from '@/store/YutuContext';
+
+/** 沙盘按需加载：它依赖完整检索语料，不进入首屏主包 */
+const Sandbox = lazy(() => import('@/pages/Sandbox'));
 
 /**
  * 域途 / 沙盘共用同一份 YutuProvider：
@@ -30,7 +33,14 @@ function App() {
       <Routes>
         <Route element={<YutuLayout />}>
           <Route path='/' element={<YutuApp />} />
-          <Route path='/sandbox' element={<Sandbox />} />
+          <Route
+            path='/sandbox'
+            element={
+              <Suspense fallback={<div className='y-loading'>正在加载沙盘…</div>}>
+                <Sandbox />
+              </Suspense>
+            }
+          />
         </Route>
         <Route path='/electrical' element={<ElectricalLab />} />
         <Route path='*' element={<Navigate to='/' replace />} />

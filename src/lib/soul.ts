@@ -89,7 +89,7 @@ export function buildSoulQuestions({
       out.push({
         id: 'history-up',
         basis: `体验历史 ${snapshot0.history} → ${current.history}`,
-        text: `你的体验历史从 ${snapshot0.history} 涨到 ${current.history}。这些经历是让你更确定方向了，还是让你更犹豫了？如果答案是后者，犹豫本身就值得记下来。`,
+        text: `你的体验历史从 ${snapshot0.history} 涨到 ${current.history}。这些经历是让你更确定方向了，还是让你更犹豫了？如果答案是后者，犹豫出现在哪一维，就写哪一维。`,
       });
     }
   }

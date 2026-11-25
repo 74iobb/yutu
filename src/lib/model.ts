@@ -375,7 +375,7 @@ export function stabilityOf(s: Scores, nodes: PrototypeNode[]): Stability {
       ? '各维接近中性，向量模长偏小；此时归属对 1 分变化敏感，请把它当作“尚未落定”，而不是确定标签。'
       : label === '高'
         ? '与第二名的相对差距明显，归属相对稳定。'
-        : `与「${runnerUp ?? '邻近域'}」的差距较小，1 分变化就可能切换；建议按过渡带理解，而不是把它当作确定归属。`;
+        : `与「${runnerUp ?? '邻近域'}」的差距较小，1 分变化就可能切换；它是一个过渡带，不是确定归属。`;
   return { margin, mag: m, label, tone, note };
 }
 

@@ -5,7 +5,7 @@ import type { DimensionKey, Scores } from '@/types';
 /**
  * 沙盘推演：确定性规则，不含随机数。
  * 每一格代表一个季度；动作效果写在数据里，界面必须原样展示。
- * ⚠️ 这是启发式推演，不是预测，也不回写真实处境 / 档案。
+ * ⚠️ 这是启发式推演，不是预测；也不替用户判断一条自定义的路“值不值得”。
  */
 
 export const SANDBOX_ROUNDS = 6;
@@ -121,6 +121,69 @@ export const BASELINE_TICK: Partial<Record<DimensionKey, number>> = {
 const BASELINE_CASH = -4;
 const BASELINE_ENERGY = 3;
 
+/* --------------------------- 自定义的路 --------------------------- */
+
+export type CustomIntensity = 'low' | 'mid' | 'high';
+
+export const CUSTOM_INTENSITY: Record<
+  CustomIntensity,
+  { label: string; cash: number; energy: number; hint: string }
+> = {
+  low: { label: '低投入', cash: 4, energy: 6, hint: '每周几小时，不改变现有安排' },
+  mid: { label: '中投入', cash: 10, energy: 12, hint: '每周十余小时，需要挪出固定时段' },
+  high: { label: '高投入', cash: 18, energy: 20, hint: '接近脱产或长期投入' },
+};
+
+export interface CustomEvidence {
+  title: string;
+  url: string;
+  excerpt: string;
+  source: string;
+}
+
+/**
+ * 用户自己写的一步。
+ * 系统只记录步数、投入与检索到的原文；**不推断这一步的七维变化**，
+ * 因为七维变化属于“结果判断”，定义权在用户。
+ */
+export interface CustomPlan {
+  title: string;
+  intensity: CustomIntensity;
+  taskType: (typeof SIX_BODY_TYPES)[number];
+  evidence: CustomEvidence[];
+  /** 本次检索命中的条数（不是“成功率”，也不是评价） */
+  matched: number;
+  /** 检索用的语料规模 */
+  corpusSize: number;
+  searchedAt: number;
+}
+
+export type SandboxPick =
+  | { kind: 'preset'; action: SandboxActionId }
+  | { kind: 'custom'; plan: CustomPlan };
+
+export function pickCode(p: SandboxPick): string {
+  return p.kind === 'preset' ? SANDBOX_ACTION_MAP[p.action]?.code ?? '·' : '自';
+}
+
+export function pickHue(p: SandboxPick): string {
+  return p.kind === 'preset' ? SANDBOX_ACTION_MAP[p.action]?.hue ?? '#7fb6ff' : '#f7d9a0';
+}
+
+export function pickLabel(p: SandboxPick): string {
+  return p.kind === 'preset'
+    ? SANDBOX_ACTION_MAP[p.action]?.name ?? '未命名动作'
+    : p.plan.title;
+}
+
+export function pickCost(p: SandboxPick): { cash: number; energy: number } {
+  if (p.kind === 'preset') {
+    return SANDBOX_ACTION_MAP[p.action]?.cost ?? { cash: 0, energy: 0 };
+  }
+  const c = CUSTOM_INTENSITY[p.plan.intensity];
+  return { cash: c.cash, energy: c.energy };
+}
+
 export interface SandboxResources {
   cash: number;
   energy: number;
@@ -144,7 +207,14 @@ export function initialResources(s: Scores, identity: Identity): SandboxResource
 
 export interface SandboxStep {
   idx: number;
-  action: SandboxActionId;
+  kind: 'preset' | 'custom';
+  /** 预设动作 id；自定义步骤为空 */
+  action?: SandboxActionId;
+  /** 自定义步骤的原始计划 */
+  plan?: CustomPlan;
+  label: string;
+  code: string;
+  hue: string;
   before: Scores;
   after: Scores;
   cashBefore: number;
@@ -168,7 +238,7 @@ export interface SandboxRun {
 
 export function simulateSandbox(
   start: Scores,
-  picks: SandboxActionId[],
+  picks: SandboxPick[],
   identity: Identity
 ): SandboxRun {
   const base = initialResources(start, identity);
@@ -178,13 +248,16 @@ export function simulateSandbox(
   const steps: SandboxStep[] = [];
   let blockedAt = -1;
 
-  picks.slice(0, SANDBOX_ROUNDS).forEach((actionId, idx) => {
-    const act = SANDBOX_ACTION_MAP[actionId];
-    if (!act) return;
-    const cashDelta = -act.cost.cash;
-    const energyDelta = -act.cost.energy;
-    const blocked =
-      cash + cashDelta < 0 || energy + energyDelta < 0;
+  picks.slice(0, SANDBOX_ROUNDS).forEach((pick, idx) => {
+    const cost = pickCost(pick);
+    const drift =
+      pick.kind === 'preset'
+        ? SANDBOX_ACTION_MAP[pick.action]?.drift ?? {}
+        : {};
+
+    const cashDelta = -cost.cash;
+    const energyDelta = -cost.energy;
+    const blocked = cash + cashDelta < 0 || energy + energyDelta < 0;
     if (blocked && blockedAt < 0) blockedAt = idx;
 
     const cashBefore = cash;
@@ -193,12 +266,18 @@ export function simulateSandbox(
     energy = clampPct(energy + energyDelta);
 
     const before = s;
-    const after = applyDrift(applyDrift(before, act.drift), ROUND_TICK);
+    /* 自定义步骤只走时间成本，不替用户推断七维变化 */
+    const after = applyDrift(applyDrift(before, drift), ROUND_TICK);
     s = after;
 
     steps.push({
       idx,
-      action: actionId,
+      kind: pick.kind,
+      action: pick.kind === 'preset' ? pick.action : undefined,
+      plan: pick.kind === 'custom' ? pick.plan : undefined,
+      label: pickLabel(pick),
+      code: pickCode(pick),
+      hue: pickHue(pick),
       before,
       after,
       cashBefore,
@@ -237,21 +316,21 @@ export function simulateBaseline(
   return { final: s, cash, energy };
 }
 
-/** 行动在当前资源下是否可落子 */
+/** 动作在当前资源下是否可落子 */
 export function canAfford(
-  act: SandboxAction,
+  cost: { cash: number; energy: number },
   res: SandboxResources
 ): { ok: boolean; reason?: string } {
-  if (res.cash - act.cost.cash < 0) {
-    return { ok: false, reason: `现金缓冲不足（需 ${act.cost.cash}）` };
+  if (res.cash - cost.cash < 0) {
+    return { ok: false, reason: `现金缓冲不足（需 ${cost.cash}）` };
   }
-  if (res.energy - act.cost.energy < 0) {
-    return { ok: false, reason: `精力不足（需 ${act.cost.energy}）` };
+  if (res.energy - cost.energy < 0) {
+    return { ok: false, reason: `精力不足（需 ${cost.energy}）` };
   }
   return { ok: true };
 }
 
-/** 规则补满：只解决「现金 / 精力 / 体验积累」三个显性缺口，不做最优解 */
+/** 规则补满：只解决「现金 / 精力 / 体验积累」三个显性缺口，不做最优解，也不是推荐 */
 export function recommendAction(
   s: Scores,
   res: SandboxResources
