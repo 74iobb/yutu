@@ -13,10 +13,12 @@ import { Delaunay } from 'd3-delaunay';
 
 /** 会话级记录：开播即写入，刷新与切步都不会重复播放 */
 const SEEN_KEY = 'yutu.overture.v1';
-/** 名句落定后开始退潮（落水与粒子占前 2.4s） */
-const PLAY_MS = 4950;
+/** 名句落定后开始退潮（落水与铺开占前 3.3s） */
+const PLAY_MS = 6050;
 /** 退潮 + 系统显影的总时长 */
 const LEAVE_MS = 1150;
+/** 朗诵与低频轰鸣的起点，略早于名句浮现 */
+const NARRATE_AT = 4450;
 
 type Phase = 'idle' | 'playing' | 'leaving';
 
@@ -100,8 +102,8 @@ const FALL_PARTICLES = Array.from({ length: 56 }, (_, i) => {
     r: 0.55 + b * 1.9,
     lift: 470 + c * 300,
     drift: (a - 0.5) * 30,
-    delay: Math.round(b * 1250),
-    duration: Math.round(620 + c * 520),
+    delay: Math.round(b * 1800),
+    duration: Math.round(720 + c * 600),
     line: i % 5 === 0,
   };
 });
@@ -115,8 +117,8 @@ const SPLASH_PARTICLES = Array.from({ length: 16 }, (_, i) => {
     sx: dir * (22 + a * 96),
     sy: -(16 + b * 62),
     r: 0.6 + a * 1.3,
-    delay: Math.round(1180 + b * 780),
-    duration: Math.round(680 + a * 360),
+    delay: Math.round(1350 + b * 1050),
+    duration: Math.round(720 + a * 380),
   };
 });
 
@@ -164,6 +166,89 @@ function markSeen(): void {
   }
 }
 
+/** `?narrate=0` 可静音；默认朗读 */
+function narrationAllowed(): boolean {
+  if (typeof window === 'undefined') return false;
+  try {
+    return !/[?&]narrate=0(?:&|$)/.test(
+      `${window.location.search}${window.location.hash}`
+    );
+  } catch {
+    return true;
+  }
+}
+
+/**
+ * 用浏览器自带的语音合成朗诵两句。
+ * 优先低音的中文男声；不支持、没有中文嗓音或被自动播放策略拦截时静默降级，
+ * 画面本身不受影响。
+ */
+function speakVerse(): void {
+  try {
+    if (!('speechSynthesis' in window)) return;
+    const synth = window.speechSynthesis;
+    synth.cancel();
+    const voices = synth.getVoices();
+    const zh = voices.filter((v) => /^zh/i.test(v.lang));
+    const cn = zh.filter((v) => /CN|Hans/i.test(v.lang));
+    const pool = cn.length ? cn : zh;
+    const preferred =
+      pool.find((v) => /Yunjian|Yunxi|Kangkang|Male|男/i.test(v.name)) ??
+      pool[0];
+    const lines = ['泻水置平地。', '各自东西南北流。'];
+    lines.forEach((text, i) => {
+      const u = new SpeechSynthesisUtterance(text);
+      u.lang = 'zh-CN';
+      if (preferred) u.voice = preferred;
+      u.rate = i === 0 ? 0.86 : 0.8;
+      u.pitch = 0.82;
+      u.volume = 1;
+      synth.speak(u);
+    });
+  } catch {
+    /* 静默：保留纯视觉版本 */
+  }
+}
+
+function stopVerse(): void {
+  try {
+    window.speechSynthesis?.cancel();
+  } catch {
+    /* ignore */
+  }
+}
+
+/** 名句落定前的一次低频轰鸣，给「落地」一点重量；被拦截时静默 */
+function playImpact(): void {
+  try {
+    const Ctor =
+      window.AudioContext ??
+      (window as unknown as { webkitAudioContext?: typeof AudioContext })
+        .webkitAudioContext;
+    if (!Ctor) return;
+    const ctx = new Ctor();
+    void ctx.resume().catch(() => undefined);
+    const now = ctx.currentTime;
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(56, now);
+    osc.frequency.exponentialRampToValueAtTime(36, now + 2.6);
+    gain.gain.setValueAtTime(0.0001, now);
+    gain.gain.exponentialRampToValueAtTime(0.055, now + 0.16);
+    gain.gain.exponentialRampToValueAtTime(0.0001, now + 2.8);
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start(now);
+    osc.stop(now + 2.9);
+    osc.onended = () => {
+      void ctx.close().catch(() => undefined);
+    };
+  } catch {
+    /* 静默 */
+  }
+}
+
 export default function Overture() {
   const [seq, setSeq] = useState<{ id: number; phase: Phase }>(() => {
     const auto = motionAllowed() && (forcedByUrl() || !seenThisSession());
@@ -171,6 +256,7 @@ export default function Overture() {
   });
 
   const skip = useCallback(() => {
+    stopVerse();
     setSeq((s) => (s.phase === 'playing' ? { ...s, phase: 'leaving' } : s));
   }, []);
 
@@ -181,7 +267,10 @@ export default function Overture() {
       setSeq((s) => ({ id: s.id + 1, phase: 'playing' }));
     };
     window.addEventListener('yutu:overture', onReplay);
-    return () => window.removeEventListener('yutu:overture', onReplay);
+    return () => {
+      window.removeEventListener('yutu:overture', onReplay);
+      stopVerse();
+    };
   }, []);
 
   /** 播放中：写会话记录、锁住页面滚动，到点收场 */
@@ -194,8 +283,15 @@ export default function Overture() {
     const timer = window.setTimeout(() => {
       setSeq((s) => (s.phase === 'playing' ? { ...s, phase: 'leaving' } : s));
     }, PLAY_MS);
+    /* 名句浮现前读诗；自然退潮不打断，留一点余音 */
+    const voiceTimer = window.setTimeout(() => {
+      if (!narrationAllowed()) return;
+      playImpact();
+      speakVerse();
+    }, NARRATE_AT);
     return () => {
       window.clearTimeout(timer);
+      window.clearTimeout(voiceTimer);
       body.style.overflow = prevOverflow;
     };
   }, [seq.id, seq.phase]);
@@ -339,7 +435,7 @@ export default function Overture() {
                 className='y-ov-cell'
                 d={plate.d}
                 fill={plate.fill}
-                style={{ animationDelay: `${2150 + i * 130}ms` }}
+                style={{ animationDelay: `${3000 + i * 140}ms` }}
               />
             ))}
           </g>
@@ -419,7 +515,7 @@ export default function Overture() {
                 className='y-ov-label'
                 style={
                   {
-                    '--ov-delay': `${2950 + i * 95}ms`,
+                    '--ov-delay': `${3750 + i * 95}ms`,
                     '--ov-dx': `${plate.dx}px`,
                     '--ov-dy': `${plate.dy}px`,
                   } as CSSProperties
