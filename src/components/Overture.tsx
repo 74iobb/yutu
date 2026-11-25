@@ -237,7 +237,7 @@ async function unlockAudio(): Promise<boolean> {
  * 不降调、不做 EQ、不做滤波、不做音量归一化 —— 除了静音开关，不改变任何东西。
  */
 const VOICE_URL =
-  'https://agent.nuwax.com/api/f/s3/app-dev/20261125/2fb213bbe0a0465fb99e0488dd53966f.m4a';
+  'https://agent.nuwax.com/api/f/s3/app-dev/20261125/32d36e5a83aa4526bf7dcad9e50b738a.m4a';
 
 let voiceBufferPromise: Promise<AudioBuffer | null> | null = null;
 let voiceSource: AudioBufferSourceNode | null = null;
