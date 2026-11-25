@@ -304,6 +304,23 @@ async function playVoiceShifted(): Promise<boolean> {
     lowpass.frequency.value = 6500;
     lowpass.Q.value = 0.7;
 
+    /* 播音质感：低频托一点胸腔、2.8kHz 提清晰度、9kHz 收一点嘶声 */
+    const body = ctx.createBiquadFilter();
+    body.type = 'lowshelf';
+    body.frequency.value = 140;
+    body.gain.value = 1.5;
+
+    const presence = ctx.createBiquadFilter();
+    presence.type = 'peaking';
+    presence.frequency.value = 2800;
+    presence.Q.value = 1;
+    presence.gain.value = 1.5;
+
+    const air = ctx.createBiquadFilter();
+    air.type = 'highshelf';
+    air.frequency.value = 9000;
+    air.gain.value = -1;
+
     /* 不用压缩：压缩会把底噪一起抬起来 */
     const gate = ctx.createGain();
     gate.gain.value = 1;
@@ -324,7 +341,10 @@ async function playVoiceShifted(): Promise<boolean> {
 
     src.connect(highpass);
     highpass.connect(lowpass);
-    lowpass.connect(gate);
+    lowpass.connect(body);
+    body.connect(presence);
+    presence.connect(air);
+    air.connect(gate);
     gate.connect(out);
     out.connect(audio.master);
     gate.connect(analyser);
