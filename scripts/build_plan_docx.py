@@ -1,9 +1,19 @@
 #!/usr/bin/env python3
-"""把 docs/域途-方案书-修订版.md 重排为可编辑的 Word 文档。
+"""把 Markdown 重排为可编辑的 Word 文档。
 
-不依赖 python-docx：直接生成 OOXML 包（标题 / 正文 / 列表 / 表格 / 代码块 / 页脚页码）。
-用法：python3 scripts/build_plan_docx.py
+不依赖 python-docx：直接生成 OOXML 包（标题 / 正文 / 列表 / 表格 / 代码块 /
+行内代码 / 页脚页码）。默认行为仍是导出 `docs/域途-方案书-修订版.md`。
+
+用法：
+  python3 scripts/build_plan_docx.py                      # 方案书（沿用旧行为）
+  python3 scripts/build_plan_docx.py \
+      --src "docs/域途-产品说明计划书.md" \
+      --out "docs/域途-产品说明计划书.docx" \
+      --title "域途 · 产品说明计划书（V12.1）" \
+      --footer "域途 · 产品说明计划书" \
+      --simple-headings
 """
+import argparse
 import os
 import re
 import zipfile
@@ -17,28 +27,41 @@ W_NS = "http://schemas.openxmlformats.org/wordprocessingml/2006/main"
 R_NS = "http://schemas.openxmlformats.org/officeDocument/2006/relationships"
 
 
-def inline_runs(text, bold=False, size=None, color=None):
-    """把 **加粗** 拆成 run；其余保持普通 run。"""
-    parts = re.split(r"(\*\*[^*]+\*\*)", text)
-    out = []
-    for part in parts:
-        if not part:
-            continue
-        is_bold = bold
-        if part.startswith("**") and part.endswith("**") and len(part) > 4:
-            part = part[2:-2]
-            is_bold = True
-        rpr = ""
-        if is_bold:
-            rpr += "<w:b/>"
-        if size:
-            rpr += f'<w:sz w:val="{size}"/><w:szCs w:val="{size}"/>'
-        if color:
-            rpr += f'<w:color w:val="{color}"/>'
-        rpr = f"<w:rPr>{rpr}</w:rPr>" if rpr else ""
-        out.append(
-            f'<w:r>{rpr}<w:t xml:space="preserve">{escape(part)}</w:t></w:r>'
+def run(text, bold=False, code=False, size=None, color=None):
+    """生成单个 run；code 使用等宽字体与浅底。"""
+    rpr = ""
+    if code:
+        rpr += (
+            '<w:rFonts w:ascii="Consolas" w:eastAsia="Consolas" w:hAnsi="Consolas"/>'
+            '<w:shd w:val="clear" w:color="auto" w:fill="F4F1EA"/>'
         )
+    if bold:
+        rpr += "<w:b/>"
+    if size:
+        rpr += f'<w:sz w:val="{size}"/><w:szCs w:val="{size}"/>'
+    if color:
+        rpr += f'<w:color w:val="{color}"/>'
+    rpr = f"<w:rPr>{rpr}</w:rPr>" if rpr else ""
+    return f'<w:r>{rpr}<w:t xml:space="preserve">{escape(text)}</w:t></w:r>'
+
+
+def inline_runs(text, bold=False, size=None, color=None):
+    """把 `代码` 与 **加粗** 拆成 run；其余保持普通 run。"""
+    out = []
+    for seg in re.split(r"(`[^`]+`)", text):
+        if not seg:
+            continue
+        if seg.startswith("`") and seg.endswith("`") and len(seg) > 2:
+            out.append(run(seg[1:-1], bold=bold, code=True, size=size, color=color))
+            continue
+        for part in re.split(r"(\*\*[^*]+\*\*)", seg):
+            if not part:
+                continue
+            is_bold = bold
+            if part.startswith("**") and part.endswith("**") and len(part) > 4:
+                part = part[2:-2]
+                is_bold = True
+            out.append(run(part, bold=is_bold, size=size, color=color))
     return "".join(out)
 
 
@@ -174,19 +197,21 @@ STYLES = """<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 </w:styles>
 """ % W_NS
 
-FOOTER = """<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<w:ftr xmlns:w="%s">
-  <w:p><w:pPr><w:jc w:val="center"/></w:pPr>
-    <w:r><w:rPr><w:color w:val="8D887E"/><w:sz w:val="18"/></w:rPr>
-      <w:t xml:space="preserve">域途 · 项目方案（修订版）　·　</w:t></w:r>
-    <w:r><w:fldChar w:fldCharType="begin"/></w:r>
-    <w:r><w:instrText xml:space="preserve"> PAGE </w:instrText></w:r>
-    <w:r><w:fldChar w:fldCharType="separate"/></w:r>
-    <w:r><w:t>1</w:t></w:r>
-    <w:r><w:fldChar w:fldCharType="end"/></w:r>
-  </w:p>
-</w:ftr>
-""" % W_NS
+def footer_xml(label):
+    """页脚：标签 + 页码。"""
+    return (
+        '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
+        f'<w:ftr xmlns:w="{W_NS}">'
+        '<w:p><w:pPr><w:jc w:val="center"/></w:pPr>'
+        '<w:r><w:rPr><w:color w:val="8D887E"/><w:sz w:val="18"/></w:rPr>'
+        f'<w:t xml:space="preserve">{escape(label)}　·　</w:t></w:r>'
+        '<w:r><w:fldChar w:fldCharType="begin"/></w:r>'
+        '<w:r><w:instrText xml:space="preserve"> PAGE </w:instrText></w:r>'
+        '<w:r><w:fldChar w:fldCharType="separate"/></w:r>'
+        '<w:r><w:t>1</w:t></w:r>'
+        '<w:r><w:fldChar w:fldCharType="end"/></w:r>'
+        '</w:p></w:ftr>'
+    )
 
 SECT = (
     "<w:sectPr>"
@@ -198,7 +223,7 @@ SECT = (
 )
 
 
-def build_body(md):
+def build_body(md, simple_headings=False):
     lines = md.splitlines()
     body = []
     i = 0
@@ -265,7 +290,16 @@ def build_body(md):
             level = len(line) - len(line.lstrip("#"))
             text = line[level:].strip()
             title_count += 1
-            if title_count == 1:
+            if simple_headings:
+                if title_count == 1 and level == 1:
+                    style = "Title"
+                elif level <= 2:
+                    style = "Heading1"
+                elif level == 3:
+                    style = "Heading2"
+                else:
+                    style = "Heading3"
+            elif title_count == 1:
                 style = "Title"
             elif title_count == 2:
                 style = "Subtitle"
@@ -298,10 +332,26 @@ def build_body(md):
 
 
 def main():
-    with open(SRC, encoding="utf-8") as f:
+    ap = argparse.ArgumentParser(description="把 Markdown 重排为可编辑的 Word 文档")
+    ap.add_argument("--src", default=SRC, help="Markdown 源文件")
+    ap.add_argument("--out", default=OUT, help="Word 输出文件")
+    ap.add_argument(
+        "--title",
+        default="域途 · 多维沃罗诺伊体验式生涯陪伴系统 · 项目方案（修订版）",
+        help="文档属性标题",
+    )
+    ap.add_argument("--footer", default="域途 · 项目方案（修订版）", help="页脚文本")
+    ap.add_argument(
+        "--simple-headings",
+        action="store_true",
+        help="仅首个 H1 作为标题，H2/H3/H4 逐级映射为 Heading1/2/3",
+    )
+    args = ap.parse_args()
+
+    with open(args.src, encoding="utf-8") as f:
         md = f.read()
 
-    body = build_body(md)
+    body = build_body(md, simple_headings=args.simple_headings)
     document = (
         '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
         f'<w:document xmlns:w="{W_NS}" xmlns:r="{R_NS}">'
@@ -333,25 +383,26 @@ def main():
 </Relationships>
 """
 
-    core = """<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<cp:coreProperties xmlns:cp="http://schemas.openxmlformats.org/package/2006/metadata/core-properties"
- xmlns:dc="http://purl.org/dc/elements/1.1/">
-  <dc:title>域途 · 多维沃罗诺伊体验式生涯陪伴系统 · 项目方案（修订版）</dc:title>
-  <dc:creator>域途项目组</dc:creator>
-</cp:coreProperties>
-"""
+    core = (
+        '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
+        '<cp:coreProperties xmlns:cp="http://schemas.openxmlformats.org/package/2006/metadata/core-properties"'
+        ' xmlns:dc="http://purl.org/dc/elements/1.1/">'
+        f"<dc:title>{escape(args.title)}</dc:title>"
+        "<dc:creator>域途项目组</dc:creator>"
+        "</cp:coreProperties>"
+    )
 
-    with zipfile.ZipFile(OUT, "w", zipfile.ZIP_DEFLATED) as z:
+    with zipfile.ZipFile(args.out, "w", zipfile.ZIP_DEFLATED) as z:
         z.writestr("[Content_Types].xml", content_types)
         z.writestr("_rels/.rels", rels)
         z.writestr("word/document.xml", document)
         z.writestr("word/styles.xml", STYLES)
-        z.writestr("word/footer1.xml", FOOTER)
+        z.writestr("word/footer1.xml", footer_xml(args.footer))
         z.writestr("word/_rels/document.xml.rels", doc_rels)
         z.writestr("docProps/core.xml", core)
 
-    print("written:", OUT)
-    print("bytes:", os.path.getsize(OUT))
+    print("written:", args.out)
+    print("bytes:", os.path.getsize(args.out))
 
 
 if __name__ == "__main__":
