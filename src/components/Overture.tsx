@@ -280,13 +280,14 @@ function pickVoice() {
     const zh = voices.filter((v) => /^zh/i.test(v.lang));
     const cn = zh.filter((v) => /CN|Hans/i.test(v.lang));
     const pool = cn.length ? cn : zh;
-    const preferred =
-      /Yunxi|Yunjian|Xiaoxiao|Xiaoyi|Yunyang|Ting-?Ting|Huihui|Meijia|Kangkang|Liang/i;
-    return (
-      pool.find((v) => preferred.test(v.name)) ??
-      pool.find((v) => /Google|Natural|Neural|Online/i.test(v.name)) ??
-      pool[0]
+    /* 这段诗需要成熟、低沉的声音：优先中文男声，其次较自然的嗓音 */
+    const male = pool.find((v) =>
+      /Yunxi|Yunjian|Yunyang|Kangkang|Liang|Male|男/i.test(v.name)
     );
+    const natural = pool.find((v) =>
+      /Google|Natural|Neural|Online|Ting-?Ting|Xiaoxiao|Meijia/i.test(v.name)
+    );
+    return male ?? natural ?? pool[0];
   } catch {
     return undefined;
   }
@@ -303,8 +304,8 @@ function speakVerse(): void {
       const u = new SpeechSynthesisUtterance(text);
       u.lang = 'zh-CN';
       if (voice) u.voice = voice;
-      u.rate = i === 0 ? 0.86 : 0.82;
-      u.pitch = 0.95;
+      u.rate = i === 0 ? 0.8 : 0.76;
+      u.pitch = 0.75;
       u.volume = 1;
       synth.speak(u);
     });
