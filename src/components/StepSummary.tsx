@@ -1,4 +1,5 @@
-import { useMemo } from 'react';
+import { useMemo, type CSSProperties } from 'react';
+import { flushSync } from 'react-dom';
 import {
   CHOICE_LABEL,
   cosSim,
@@ -90,6 +91,49 @@ export default function StepSummary({ onOpenList }: { onOpenList: () => void }) 
   }
 
   const focused = picked ? [picked] : candidates.slice(0, 2);
+
+  /**
+   * 进入闭环时，如果已选定方向，用 View Transition 让「方向 chip」从摘要侧栏
+   * 连续移动到闭环图侧栏；不支持 / 减动效 / 动效关时直接切步。
+   */
+  function enterLoop() {
+    const doc = document as Document & {
+      startViewTransition?: (cb: () => void) => { finished: Promise<void> };
+    };
+    const reduce = window.matchMedia?.(
+      '(prefers-reduced-motion: reduce)'
+    ).matches;
+    const motionOff =
+      document.documentElement.classList.contains('y-motion-off');
+    if (
+      picked &&
+      !reduce &&
+      !motionOff &&
+      typeof doc.startViewTransition === 'function'
+    ) {
+      const root = document.documentElement;
+      root.dataset.sharedTransition = '1';
+      root.classList.add('y-shared-transition');
+      try {
+        const vt = doc.startViewTransition(() => {
+          flushSync(() => setStep(4));
+        });
+        vt.finished.finally(() =>
+          root.classList.remove('y-shared-transition')
+        );
+        /* 兜底：如果切步 effect 没来得及消费标记，也会在 2.4s 后清掉 */
+        window.setTimeout(() => {
+          delete root.dataset.sharedTransition;
+          root.classList.remove('y-shared-transition');
+        }, 2400);
+        return;
+      } catch {
+        delete root.dataset.sharedTransition;
+        root.classList.remove('y-shared-transition');
+      }
+    }
+    setStep(4);
+  }
 
   return (
     <section id='y-p4' role='tabpanel' aria-labelledby='y-s4'>
@@ -237,24 +281,38 @@ export default function StepSummary({ onOpenList }: { onOpenList: () => void }) 
             </h3>
             {focused.length ? (
               <>
-                {focused.map(({ dir, f }) => (
-                  <div className='y-constraint' key={dir.name}>
-                    <div className='y-constraint-top'>
-                      <span>{dir.name}</span>
-                      <Chip
-                        tone={
-                          FEAS_LABEL[f.level].cls.replace('y-chip-', '') as
-                            | 'c'
-                            | 'w'
-                            | 'r'
-                        }
-                      >
-                        {FEAS_LABEL[f.level].t}
-                      </Chip>
+                {focused.map(({ dir, f }) => {
+                  const isPicked = picked?.dir.name === dir.name;
+                  return (
+                    <div className='y-constraint' key={dir.name}>
+                      <div className='y-constraint-top'>
+                        <span
+                          className={isPicked ? 'y-vt-chip' : undefined}
+                          style={
+                            isPicked
+                              ? ({
+                                  viewTransitionName: 'y-direction',
+                                } as CSSProperties)
+                              : undefined
+                          }
+                        >
+                          {dir.name}
+                        </span>
+                        <Chip
+                          tone={
+                            FEAS_LABEL[f.level].cls.replace('y-chip-', '') as
+                              | 'c'
+                              | 'w'
+                              | 'r'
+                          }
+                        >
+                          {FEAS_LABEL[f.level].t}
+                        </Chip>
+                      </div>
+                      <p className='y-note'>{f.reasons[0] || dir.prereq}</p>
                     </div>
-                    <p className='y-note'>{f.reasons[0] || dir.prereq}</p>
-                  </div>
-                ))}
+                  );
+                })}
                 <button
                   type='button'
                   className='y-btn y-btn-s'
@@ -466,7 +524,7 @@ export default function StepSummary({ onOpenList }: { onOpenList: () => void }) 
         <button
           type='button'
           className='y-btn y-btn-main'
-          onClick={() => setStep(4)}
+          onClick={enterLoop}
         >
           进入成长闭环 →
         </button>

@@ -117,6 +117,14 @@ export function Shell({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (lastStep.current === state.step) return;
     lastStep.current = state.step;
+    /* 归属摘要 → 闭环的共享元素切换：跳过扫光，交给 View Transition */
+    if (document.documentElement.dataset.sharedTransition === '1') {
+      delete document.documentElement.dataset.sharedTransition;
+      window.scrollTo({ top: 0, behavior: 'auto' });
+      setSlideDir(null);
+      slideRef.current = false;
+      return;
+    }
     const viaSlide = slideRef.current;
     /* 手势切步先回到顶部，让方向滑入完整可见；点击步骤条仍用平滑滚动 */
     window.scrollTo({ top: 0, behavior: viaSlide ? 'auto' : 'smooth' });

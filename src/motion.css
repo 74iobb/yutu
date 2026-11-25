@@ -192,3 +192,107 @@ html.y-motion-off #yutu2 .y-step-wipe {
 html.y-motion-off #yutu2 .y-p1-develop .y-gap-photo {
   transition: none;
 }
+
+/* ==========================================================================
+   Batch 3：方向 chip 共享元素 + 归档玻璃透光
+   ========================================================================== */
+
+/* 共享 chip：摘要侧栏 → 闭环图侧栏 */
+#yutu2 .y-vt-chip {
+  display: inline-flex;
+  align-items: center;
+  min-width: 0;
+  max-width: 100%;
+  padding: 2px 9px;
+  border: 1px solid var(--step-accent);
+  border-radius: 999px;
+  background: var(--step-accent-soft);
+  color: var(--y-ink);
+  font-size: 11.5px;
+  font-weight: 600;
+  line-height: 1.6;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+#yutu2 .y-loop-direction-chip {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  min-width: 0;
+  margin-bottom: 6px;
+  font-size: 10.5px;
+  color: var(--y-muted);
+}
+#yutu2 .y-loop-direction-chip b {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+::view-transition-group(y-direction) {
+  animation-duration: 620ms;
+  animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+}
+::view-transition-old(y-direction),
+::view-transition-new(y-direction) {
+  mix-blend-mode: normal;
+  border-radius: 999px;
+}
+html.y-shared-transition::view-transition-group(root) {
+  perspective: none;
+}
+html.y-shared-transition::view-transition-old(root),
+html.y-shared-transition::view-transition-new(root) {
+  animation-duration: 420ms;
+}
+
+/* 归档完成：一束光从彩玻璃后透过来（只播一次） */
+#yutu2 .y-loop-done {
+  position: relative;
+  overflow: hidden;
+}
+#yutu2 .y-loop-done > *:not(.y-loop-glass-flare) {
+  position: relative;
+  z-index: 1;
+}
+#yutu2 .y-loop-glass-flare {
+  position: absolute;
+  inset: -40%;
+  z-index: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    115deg,
+    transparent 30%,
+    rgba(255, 210, 122, 0.22) 46%,
+    rgba(214, 73, 35, 0.14) 52%,
+    rgba(84, 160, 183, 0.14) 58%,
+    transparent 72%
+  );
+  transform: translateX(-60%);
+  animation: yGlassFlare 1.6s ease-out 0.1s both;
+  mix-blend-mode: screen;
+}
+@keyframes yGlassFlare {
+  0% {
+    transform: translateX(-60%);
+    opacity: 0;
+  }
+  15% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(60%);
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #yutu2 .y-loop-glass-flare {
+    display: none;
+  }
+}
+html.y-motion-off #yutu2 .y-loop-glass-flare {
+  display: none;
+}

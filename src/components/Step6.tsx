@@ -1,4 +1,11 @@
-import { useEffect, useId, useMemo, useRef, useState } from 'react';
+import {
+  useEffect,
+  useId,
+  useMemo,
+  useRef,
+  useState,
+  type CSSProperties,
+} from 'react';
 import { SIX_BODY_TYPES } from '@/data/catalog';
 import {
   CHOICE_LABEL,
@@ -159,6 +166,7 @@ function LoopDone({
   const resting = data.choice === 'rest';
   return (
     <div className='y-loop-done' role='status'>
+      <span className='y-loop-glass-flare' aria-hidden='true' />
       <div className='y-loop-done-head'>
         <span className='y-loop-check-big' aria-hidden='true'>
           ✓
@@ -2257,6 +2265,21 @@ export default function Step6() {
             <p className='y-loop-current-badge'>
               第 {round} 轮 · 第 {idx + 1} / {LOOP_STATIONS.length} 步
             </p>
+            {state.pick ? (
+              <p className='y-loop-direction-chip'>
+                <span>当前方向</span>
+                <b
+                  className='y-vt-chip'
+                  style={
+                    {
+                      viewTransitionName: 'y-direction',
+                    } as CSSProperties
+                  }
+                >
+                  {state.pick}
+                </b>
+              </p>
+            ) : null}
             <h4>
               {currentStation.name}
               <em>{currentStation.hint}</em>
