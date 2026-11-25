@@ -27,7 +27,7 @@ let autoPlayed = false;
 const PLAY_MS = 7800;
 /** 退潮 + 系统显影的总时长 */
 const LEAVE_MS = 1150;
-/** 朗诵与低频轰鸣的起点，略早于名句浮现 */
+/** 朗诵起点，略早于名句浮现 */
 const NARRATE_AT = 4420;
 
 /** 名句逐字出现：`start` 为这一行的起始秒数，字与字之间间隔 0.11s */
@@ -231,19 +231,16 @@ async function unlockAudio(): Promise<boolean> {
   }
 }
 
-/* --------------------------- 真人录音（降调 + 降噪） --------------------------- */
+/* ------------------------------ 真人录音 ------------------------------ */
 /**
- * 用户提供的朗诵录音，0.92 倍速播放：略降调、略放慢，听感更成熟。
- * 前端降噪链：130Hz 高通 → 7.5kHz 低通 → 动态压缩 → 噪声门。
- * 仍受录音本身底噪限制；若还不够干净，需要更干净的录音源。
+ * 用户提供的朗诵录音，原声播放。
+ * 按「完全换成这个声音」的要求：不降调、不做 EQ、不做滤波，只做音量归一化。
  */
 const VOICE_URL =
-  'https://agent.nuwax.com/api/f/s3/app-dev/20261125/077b86a54b174ddd8f8b6ec675e36f9b.m4a';
-const VOICE_RATE = 0.96;
+  'https://agent.nuwax.com/api/f/s3/app-dev/20261125/bc03df955ca040b8baba8d7d4fda42aa.m4a';
 
 let voiceBufferPromise: Promise<AudioBuffer | null> | null = null;
 let voiceSource: AudioBufferSourceNode | null = null;
-let voiceGateRaf = 0;
 
 function loadVoiceBuffer(): Promise<AudioBuffer | null> {
   if (!voiceBufferPromise) {
@@ -264,10 +261,6 @@ function loadVoiceBuffer(): Promise<AudioBuffer | null> {
 }
 
 function stopVoice(): void {
-  if (voiceGateRaf) {
-    cancelAnimationFrame(voiceGateRaf);
-    voiceGateRaf = 0;
-  }
   if (!voiceSource) return;
   try {
     voiceSource.stop();
@@ -277,7 +270,10 @@ function stopVoice(): void {
   voiceSource = null;
 }
 
-/** 播放降调、降噪后的朗诵；正在播时不重复启动 */
+/**
+ * 原声播放这段录音：不降调、不做 EQ、不做滤波，只做音量归一化。
+ * 用户要求「完全换成这个声音」，所以除音量外不改动音色。
+ */
 async function playVoiceShifted(): Promise<boolean> {
   if (voiceSource) return true;
   try {
@@ -291,44 +287,9 @@ async function playVoiceShifted(): Promise<boolean> {
     const ctx = audio.ctx;
     const src = ctx.createBufferSource();
     src.buffer = buffer;
-    src.playbackRate.value = VOICE_RATE;
-
-    /* 只保留人声频段：100Hz 以下嗡声、6.5kHz 以上嘶声全部切掉 */
-    const highpass = ctx.createBiquadFilter();
-    highpass.type = 'highpass';
-    highpass.frequency.value = 100;
-    highpass.Q.value = 0.7;
-
-    const lowpass = ctx.createBiquadFilter();
-    lowpass.type = 'lowpass';
-    lowpass.frequency.value = 6500;
-    lowpass.Q.value = 0.7;
-
-    /* 播音质感：低频托一点胸腔、2.8kHz 提清晰度、9kHz 收一点嘶声 */
-    const body = ctx.createBiquadFilter();
-    body.type = 'lowshelf';
-    body.frequency.value = 140;
-    body.gain.value = 1.5;
-
-    const presence = ctx.createBiquadFilter();
-    presence.type = 'peaking';
-    presence.frequency.value = 2800;
-    presence.Q.value = 1;
-    presence.gain.value = 1.5;
-
-    const air = ctx.createBiquadFilter();
-    air.type = 'highshelf';
-    air.frequency.value = 9000;
-    air.gain.value = -1;
-
-    /* 不用压缩：压缩会把底噪一起抬起来 */
-    const gate = ctx.createGain();
-    gate.gain.value = 1;
-    const analyser = ctx.createAnalyser();
-    analyser.fftSize = 512;
+    src.playbackRate.value = 1;
 
     const out = ctx.createGain();
-    /* 归一化：峰值拉到 0.85，避免过度放大底噪 */
     let peak = 0;
     for (let c = 0; c < buffer.numberOfChannels; c += 1) {
       const data = buffer.getChannelData(c);
@@ -337,47 +298,15 @@ async function playVoiceShifted(): Promise<boolean> {
         if (v > peak) peak = v;
       }
     }
-    out.gain.value = Math.min(3, Math.max(1, 0.85 / (peak || 0.4)));
+    /* 只做音量归一化：峰值拉到 0.92，上限 2.5 倍 */
+    out.gain.value = Math.min(2.5, Math.max(1, 0.92 / (peak || 0.4)));
 
-    src.connect(highpass);
-    highpass.connect(lowpass);
-    lowpass.connect(body);
-    body.connect(presence);
-    presence.connect(air);
-    air.connect(gate);
-    gate.connect(out);
+    src.connect(out);
     out.connect(audio.master);
-    gate.connect(analyser);
-
-    /*
-     * 噪声门 + hangover：
-     * 峰值超过 0.01 立即打开；之后 140ms 内保持打开，避免切掉字头或产生呼吸感。
-     * 关闭时压到 2%，句间底噪基本消失。
-     */
-    const samples = new Uint8Array(analyser.fftSize);
-    let lastLoud = 0;
-    const tick = () => {
-      const now = performance.now();
-      analyser.getByteTimeDomainData(samples);
-      let p2 = 0;
-      for (let i = 0; i < samples.length; i += 1) {
-        const v = Math.abs(samples[i] - 128) / 128;
-        if (v > p2) p2 = v;
-      }
-      if (p2 > 0.01) lastLoud = now;
-      const open = now - lastLoud < 140;
-      gate.gain.setTargetAtTime(open ? 1 : 0.02, ctx.currentTime, open ? 0.01 : 0.06);
-      voiceGateRaf = requestAnimationFrame(tick);
-    };
-    voiceGateRaf = requestAnimationFrame(tick);
 
     voiceSource = src;
     src.onended = () => {
       if (voiceSource === src) voiceSource = null;
-      if (voiceGateRaf) {
-        cancelAnimationFrame(voiceGateRaf);
-        voiceGateRaf = 0;
-      }
     };
     src.start();
     return true;
