@@ -269,56 +269,72 @@ function playImpact(): void {
   playTone(36, 3.1, 0.02, 0.06, 'sine');
 }
 
-/* ----------------------------- 人声朗读 ----------------------------- */
+/* --------------------------- 真人录音（降调） --------------------------- */
 /**
- * 浏览器中文语音合成：系统人声，比合成磬音更像「有人在念」。
- * 优先选已知较自然的中文嗓音；不支持时静默，不影响画面。
+ * 用用户提供的朗诵录音，但以 0.87 倍速播放：
+ * 音调下降约 2 个半音、语速放慢，听起来更成熟，不再稚嫩。
+ * 同源加载，浏览器自带平台登录态；失败时只剩低频垫底，不回退到女声 TTS。
  */
-function pickVoice() {
-  try {
-    const voices = window.speechSynthesis.getVoices();
-    const zh = voices.filter((v) => /^zh/i.test(v.lang));
-    const cn = zh.filter((v) => /CN|Hans/i.test(v.lang));
-    const pool = cn.length ? cn : zh;
-    /* 这段诗需要成熟、低沉的声音：优先中文男声，其次较自然的嗓音 */
-    const male = pool.find((v) =>
-      /Yunxi|Yunjian|Yunyang|Kangkang|Liang|Male|男/i.test(v.name)
-    );
-    const natural = pool.find((v) =>
-      /Google|Natural|Neural|Online|Ting-?Ting|Xiaoxiao|Meijia/i.test(v.name)
-    );
-    return male ?? natural ?? pool[0];
-  } catch {
-    return undefined;
+const VOICE_URL =
+  'https://agent.nuwax.com/api/f/s3/app-dev/20261125/64465fff87744c84bbc0073a89c03b92.m4a';
+const VOICE_RATE = 0.87;
+
+let voiceBufferPromise: Promise<AudioBuffer | null> | null = null;
+let voiceSource: AudioBufferSourceNode | null = null;
+
+function loadVoiceBuffer(): Promise<AudioBuffer | null> {
+  if (!voiceBufferPromise) {
+    voiceBufferPromise = (async () => {
+      try {
+        const audio = getAudio();
+        if (!audio) return null;
+        const res = await fetch(VOICE_URL, { credentials: 'same-origin' });
+        if (!res.ok) return null;
+        const data = await res.arrayBuffer();
+        return await audio.ctx.decodeAudioData(data);
+      } catch {
+        return null;
+      }
+    })();
   }
+  return voiceBufferPromise;
 }
 
-/** 两句分开读，第二句稍慢，像念诗而不是播报 */
-function speakVerse(): void {
+function stopVoice(): void {
+  if (!voiceSource) return;
   try {
-    if (!('speechSynthesis' in window)) return;
-    const synth = window.speechSynthesis;
-    synth.cancel();
-    const voice = pickVoice();
-    ['泻水置平地。', '各自东西南北流。'].forEach((text, i) => {
-      const u = new SpeechSynthesisUtterance(text);
-      u.lang = 'zh-CN';
-      if (voice) u.voice = voice;
-      u.rate = i === 0 ? 0.8 : 0.76;
-      u.pitch = 0.75;
-      u.volume = 1;
-      synth.speak(u);
-    });
+    voiceSource.stop();
   } catch {
-    /* 静默 */
+    /* 已经结束 */
   }
+  voiceSource = null;
 }
 
-function stopSpeech(): void {
+/** 播放降调后的朗诵；正在播时不重复启动 */
+async function playVoiceShifted(): Promise<boolean> {
+  if (voiceSource) return true;
   try {
-    window.speechSynthesis?.cancel();
+    const audio = getAudio();
+    if (!audio) return false;
+    const unlocked = await unlockAudio();
+    if (!unlocked) return false;
+    const buffer = await loadVoiceBuffer();
+    if (!buffer) return false;
+    const src = audio.ctx.createBufferSource();
+    src.buffer = buffer;
+    src.playbackRate.value = VOICE_RATE;
+    const gain = audio.ctx.createGain();
+    gain.gain.value = 1;
+    src.connect(gain);
+    gain.connect(audio.master);
+    voiceSource = src;
+    src.onended = () => {
+      if (voiceSource === src) voiceSource = null;
+    };
+    src.start();
+    return true;
   } catch {
-    /* ignore */
+    return false;
   }
 }
 
@@ -404,14 +420,6 @@ export default function Overture() {
     chimeTimers.current = [];
   }, []);
 
-  /** 只在没在读的时候开口，避免自动播放与手势重复触发 */
-  const speakOnce = useCallback(() => {
-    const synth = window.speechSynthesis;
-    if (!synth) return;
-    if (synth.speaking || synth.pending) return;
-    speakVerse();
-  }, []);
-
   const toggleSound = useCallback(() => {
     const next = !soundRef.current;
     soundRef.current = next;
@@ -420,18 +428,18 @@ export default function Overture() {
       void unlockAudio().then(markAudioReady);
       setAudioMuted(false);
       playImpact();
-      speakOnce();
+      void playVoiceShifted();
     } else {
-      stopSpeech();
+      stopVoice();
       stopChimes();
       setAudioMuted(true);
       /* 手动静音即退出「强制有声」，但路演标记保留 */
       demoRef.current = false;
     }
-  }, [markAudioReady, speakOnce, stopChimes]);
+  }, [markAudioReady, stopChimes]);
 
   const skip = useCallback(() => {
-    stopSpeech();
+    stopVoice();
     stopChimes();
     setAudioMuted(true);
     setSeq((s) => (s.phase === 'playing' ? { ...s, phase: 'leaving' } : s));
@@ -449,9 +457,9 @@ export default function Overture() {
       markAudioReady(true);
       setAudioMuted(false);
       playImpact();
-      speakOnce();
+      void playVoiceShifted();
     });
-  }, [markAudioReady, speakOnce, toggleSound]);
+  }, [markAudioReady, toggleSound]);
 
   useEffect(() => {
     if (seq.phase === 'idle') markAudioReady(false);
@@ -470,7 +478,7 @@ export default function Overture() {
         setAudioMuted(false);
         if (seqRef.current.phase === 'playing') {
           playImpact();
-          speakOnce();
+          void playVoiceShifted();
         }
       });
     };
@@ -483,7 +491,7 @@ export default function Overture() {
       window.removeEventListener('pointerdown', onGesture, { capture: true });
       window.removeEventListener('keydown', onGesture, { capture: true });
     };
-  }, [markAudioReady, speakOnce]);
+  }, [markAudioReady]);
 
   /**
    * 开篇内的第一次点击：若声音还没解锁，先开声音、不跳过；
@@ -518,7 +526,7 @@ export default function Overture() {
     window.addEventListener('yutu:overture', onReplay);
     return () => {
       window.removeEventListener('yutu:overture', onReplay);
-      stopSpeech();
+      stopVoice();
       stopChimes();
     };
   }, [stopChimes]);
@@ -531,6 +539,8 @@ export default function Overture() {
     body.style.overflow = 'hidden';
     if (soundRef.current || demoRef.current) {
       setAudioMuted(false);
+      /* 提前拉录音，名句出现时才能立刻出声 */
+      void loadVoiceBuffer();
       /* 无手势时多半会被挂起，这里先试一次；失败由全局手势与提示按钮兜底 */
       void unlockAudio().then((ok) => {
         if (ok) markAudioReady(true);
@@ -539,12 +549,12 @@ export default function Overture() {
     const timer = window.setTimeout(() => {
       setSeq((s) => (s.phase === 'playing' ? { ...s, phase: 'leaving' } : s));
     }, PLAY_MS);
-    /* 名句浮现时：人声读诗，低频垫底 */
+    /* 名句浮现时：播放降调后的真人朗诵，低频垫底 */
     const voiceTimer = window.setTimeout(() => {
       if (!soundRef.current && !demoRef.current) return;
       setAudioMuted(false);
       playImpact();
-      speakOnce();
+      void playVoiceShifted();
     }, NARRATE_AT);
     return () => {
       window.clearTimeout(timer);
@@ -552,7 +562,7 @@ export default function Overture() {
       stopChimes();
       body.style.overflow = prevOverflow;
     };
-  }, [seq.id, seq.phase, speakOnce, stopChimes, markAudioReady]);
+  }, [seq.id, seq.phase, stopChimes, markAudioReady]);
 
   /**
    * 退潮：水向四周散开、背景褪去，系统从下面显形。
