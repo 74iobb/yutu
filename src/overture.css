@@ -211,6 +211,7 @@
   z-index: 0;
   width: min(76vmin, 680px);
   height: min(76vmin, 680px);
+  will-change: transform, opacity;
   border-radius: 50%;
   background: radial-gradient(
     50% 50% at 50% 50%,
@@ -239,6 +240,7 @@
   z-index: 1;
   width: min(1000px, 96vw, 102vh);
   aspect-ratio: 10 / 9;
+  will-change: transform;
   animation: yOvPush 9s var(--ov-ease) both;
 }
 
@@ -1239,6 +1241,30 @@
 }
 
 /* ------------------------------ 降级 ------------------------------ */
+/* 低核数 / 低内存设备：保留构图，关掉最贵的模糊、双虹彩与持续滤镜 */
+.y-ov-lite .y-ov-veil,
+.y-ov-lite .y-ov-iris-2 {
+  display: none;
+}
+
+.y-ov-lite .y-ov-halo {
+  filter: blur(14px);
+  animation: none;
+  opacity: 0.6;
+}
+
+.y-ov-lite .y-ov-mist {
+  filter: blur(6px);
+}
+
+.y-ov-lite .y-ov-disc {
+  animation: yOvPool 1.4s var(--ov-ease) 1.9s both;
+}
+
+.y-ov-lite .y-ov-scene {
+  animation: none;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .y-overture {
     display: none !important;

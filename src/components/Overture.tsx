@@ -116,9 +116,18 @@ const SMALL_SCREEN =
   typeof window !== 'undefined' &&
   Boolean(window.matchMedia?.('(max-width: 640px)').matches);
 
+/** 低核数 / 低内存设备：再降一档，关闭最贵的模糊与持续滤镜 */
+const LOW_POWER =
+  typeof navigator !== 'undefined' &&
+  ((navigator.hardwareConcurrency ?? 8) <= 4 ||
+    ((navigator as unknown as { deviceMemory?: number }).deviceMemory ?? 8) <=
+      4);
+
+const REDUCED_EFFECTS = SMALL_SCREEN || LOW_POWER;
+
 /** 下落粒子：每 4 颗里 1 条速度线，其余是水珠；错峰持续约 2s */
 const FALL_PARTICLES = Array.from(
-  { length: SMALL_SCREEN ? 64 : 108 },
+  { length: REDUCED_EFFECTS ? 64 : 108 },
   (_, i) => {
     const a = noise(i * 3 + 1);
     const b = noise(i * 3 + 2);
@@ -138,7 +147,7 @@ const FALL_PARTICLES = Array.from(
 
 /** 落点溅水：从水面向两侧上方抛起的水星 */
 const SPLASH_PARTICLES = Array.from(
-  { length: SMALL_SCREEN ? 18 : 28 },
+  { length: REDUCED_EFFECTS ? 18 : 28 },
   (_, i) => {
     const a = noise(i * 5 + 100);
     const b = noise(i * 5 + 101);
@@ -198,7 +207,12 @@ let masterGain: GainNode | null = null;
 
 function getAudio(): { ctx: AudioContext; master: GainNode } | null {
   try {
-    if (audioCtx && masterGain) return { ctx: audioCtx, master: masterGain };
+    if (audioCtx && masterGain) {
+      /* 系统休眠 / 浏览器回收后 context 可能已关闭，重建一次 */
+      if (audioCtx.state !== 'closed') return { ctx: audioCtx, master: masterGain };
+      audioCtx = null;
+      masterGain = null;
+    }
     const Ctor =
       window.AudioContext ??
       (window as unknown as { webkitAudioContext?: typeof AudioContext })
@@ -255,7 +269,11 @@ function loadVoiceBuffer(): Promise<AudioBuffer | null> {
       } catch {
         return null;
       }
-    })();
+    })().then((buffer) => {
+      /* 失败不缓存，下次重播还能再试一次 */
+      if (!buffer) voiceBufferPromise = null;
+      return buffer;
+    });
   }
   return voiceBufferPromise;
 }
@@ -373,12 +391,6 @@ export default function Overture() {
     seqRef.current = seq;
   }, [seq]);
   /** 逐字磬音与钟声的定时器，跳过 / 静音 / 卸载时统一清掉 */
-  const chimeTimers = useRef<number[]>([]);
-  const stopChimes = useCallback(() => {
-    chimeTimers.current.forEach((t) => window.clearTimeout(t));
-    chimeTimers.current = [];
-  }, []);
-
   const toggleSound = useCallback(() => {
     const next = !soundRef.current;
     soundRef.current = next;
@@ -389,19 +401,17 @@ export default function Overture() {
       void playVoiceShifted();
     } else {
       stopVoice();
-      stopChimes();
       setAudioMuted(true);
       /* 手动静音即退出「强制有声」，但路演标记保留 */
       demoRef.current = false;
     }
-  }, [markAudioReady, stopChimes]);
+  }, [markAudioReady]);
 
   const skip = useCallback(() => {
     stopVoice();
-    stopChimes();
     setAudioMuted(true);
     setSeq((s) => (s.phase === 'playing' ? { ...s, phase: 'leaving' } : s));
-  }, [stopChimes]);
+  }, []);
 
   /** 点击提示：打开声音开关并在同一手势里解锁音频 */
   const enableSound = useCallback(() => {
@@ -483,9 +493,8 @@ export default function Overture() {
     return () => {
       window.removeEventListener('yutu:overture', onReplay);
       stopVoice();
-      stopChimes();
     };
-  }, [stopChimes]);
+  }, []);
 
   /** 播放中：写会话记录、锁住页面滚动，到点收场 */
   useEffect(() => {
@@ -514,10 +523,9 @@ export default function Overture() {
     return () => {
       window.clearTimeout(timer);
       window.clearTimeout(voiceTimer);
-      stopChimes();
       body.style.overflow = prevOverflow;
     };
-  }, [seq.id, seq.phase, stopChimes, markAudioReady]);
+  }, [seq.id, seq.phase, markAudioReady]);
 
   /**
    * 退潮：水向四周散开、背景褪去，系统从下面显形。
@@ -560,7 +568,9 @@ export default function Overture() {
   return (
     <div
       key={seq.id}
-      className={`y-overture${seq.phase === 'leaving' ? ' is-leaving' : ''}`}
+      className={`y-overture${seq.phase === 'leaving' ? ' is-leaving' : ''}${
+        LOW_POWER ? ' y-ov-lite' : ''
+      }`}
       onClick={handleOverlayClick}
     >
       <span className='y-ov-halo' aria-hidden='true' />
