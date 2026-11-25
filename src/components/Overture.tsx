@@ -269,26 +269,56 @@ function playImpact(): void {
   playTone(36, 3.1, 0.02, 0.06, 'sine');
 }
 
-/** 五声音阶：宫商角徵羽（最初版音高） */
-const PENTATONIC = [261.63, 293.66, 329.63, 392.0, 440.0];
-
+/* ----------------------------- 人声朗读 ----------------------------- */
 /**
- * 每个字落下时的一声轻磬：第一行高八度，第二行低八度。
- * 与 CSS 的逐字节奏（0.11s / 字）对齐。
+ * 浏览器中文语音合成：系统人声，比合成磬音更像「有人在念」。
+ * 优先选已知较自然的中文嗓音；不支持时静默，不影响画面。
  */
-function playCharChime(index: number): void {
-  const octave = index < 5 ? 1 : 0.5;
-  const note = PENTATONIC[index % PENTATONIC.length] * octave;
-  playTone(note, 1.1, 0, 0.085, 'triangle');
-  playTone(note * 2, 0.6, 0.006, 0.03, 'sine');
+function pickVoice() {
+  try {
+    const voices = window.speechSynthesis.getVoices();
+    const zh = voices.filter((v) => /^zh/i.test(v.lang));
+    const cn = zh.filter((v) => /CN|Hans/i.test(v.lang));
+    const pool = cn.length ? cn : zh;
+    const preferred =
+      /Yunxi|Yunjian|Xiaoxiao|Xiaoyi|Yunyang|Ting-?Ting|Huihui|Meijia|Kangkang|Liang/i;
+    return (
+      pool.find((v) => preferred.test(v.name)) ??
+      pool.find((v) => /Google|Natural|Neural|Online/i.test(v.name)) ??
+      pool[0]
+    );
+  } catch {
+    return undefined;
+  }
 }
 
-/** 退潮钟声：低频钟体 + 三个泛音，余韵比开篇更长 */
-function playBell(): void {
-  const base = 110;
-  [1, 1.5, 2.02, 2.74].forEach((ratio, i) => {
-    playTone(base * ratio, 4.4 - i * 0.7, i * 0.012, 0.08 / (i + 1), 'sine');
-  });
+/** 两句分开读，第二句稍慢，像念诗而不是播报 */
+function speakVerse(): void {
+  try {
+    if (!('speechSynthesis' in window)) return;
+    const synth = window.speechSynthesis;
+    synth.cancel();
+    const voice = pickVoice();
+    ['泻水置平地。', '各自东西南北流。'].forEach((text, i) => {
+      const u = new SpeechSynthesisUtterance(text);
+      u.lang = 'zh-CN';
+      if (voice) u.voice = voice;
+      u.rate = i === 0 ? 0.86 : 0.82;
+      u.pitch = 0.95;
+      u.volume = 1;
+      synth.speak(u);
+    });
+  } catch {
+    /* 静默 */
+  }
+}
+
+function stopSpeech(): void {
+  try {
+    window.speechSynthesis?.cancel();
+  } catch {
+    /* ignore */
+  }
 }
 
 /** 静音 / 恢复所有合成声 */
@@ -373,6 +403,14 @@ export default function Overture() {
     chimeTimers.current = [];
   }, []);
 
+  /** 只在没在读的时候开口，避免自动播放与手势重复触发 */
+  const speakOnce = useCallback(() => {
+    const synth = window.speechSynthesis;
+    if (!synth) return;
+    if (synth.speaking || synth.pending) return;
+    speakVerse();
+  }, []);
+
   const toggleSound = useCallback(() => {
     const next = !soundRef.current;
     soundRef.current = next;
@@ -381,15 +419,18 @@ export default function Overture() {
       void unlockAudio().then(markAudioReady);
       setAudioMuted(false);
       playImpact();
+      speakOnce();
     } else {
+      stopSpeech();
       stopChimes();
       setAudioMuted(true);
       /* 手动静音即退出「强制有声」，但路演标记保留 */
       demoRef.current = false;
     }
-  }, [markAudioReady, stopChimes]);
+  }, [markAudioReady, speakOnce, stopChimes]);
 
   const skip = useCallback(() => {
+    stopSpeech();
     stopChimes();
     setAudioMuted(true);
     setSeq((s) => (s.phase === 'playing' ? { ...s, phase: 'leaving' } : s));
@@ -407,8 +448,9 @@ export default function Overture() {
       markAudioReady(true);
       setAudioMuted(false);
       playImpact();
+      speakOnce();
     });
-  }, [markAudioReady, toggleSound]);
+  }, [markAudioReady, speakOnce, toggleSound]);
 
   useEffect(() => {
     if (seq.phase === 'idle') markAudioReady(false);
@@ -425,7 +467,10 @@ export default function Overture() {
         if (!ok) return;
         markAudioReady(true);
         setAudioMuted(false);
-        if (seqRef.current.phase === 'playing') playImpact();
+        if (seqRef.current.phase === 'playing') {
+          playImpact();
+          speakOnce();
+        }
       });
     };
     window.addEventListener('pointerdown', onGesture, {
@@ -437,7 +482,7 @@ export default function Overture() {
       window.removeEventListener('pointerdown', onGesture, { capture: true });
       window.removeEventListener('keydown', onGesture, { capture: true });
     };
-  }, [markAudioReady]);
+  }, [markAudioReady, speakOnce]);
 
   /**
    * 开篇内的第一次点击：若声音还没解锁，先开声音、不跳过；
@@ -472,6 +517,7 @@ export default function Overture() {
     window.addEventListener('yutu:overture', onReplay);
     return () => {
       window.removeEventListener('yutu:overture', onReplay);
+      stopSpeech();
       stopChimes();
     };
   }, [stopChimes]);
@@ -492,33 +538,12 @@ export default function Overture() {
     const timer = window.setTimeout(() => {
       setSeq((s) => (s.phase === 'playing' ? { ...s, phase: 'leaving' } : s));
     }, PLAY_MS);
-    /* 名句浮现时：每个字一声合成磬音 */
+    /* 名句浮现时：人声读诗，低频垫底 */
     const voiceTimer = window.setTimeout(() => {
       if (!soundRef.current && !demoRef.current) return;
       setAudioMuted(false);
       playImpact();
-      const timers = chimeTimers.current;
-      let chimed = false;
-      const chimes = (offset: number) => {
-        if (chimed) return;
-        chimed = true;
-        for (let i = 0; i < 5; i += 1) {
-          timers.push(
-            window.setTimeout(() => playCharChime(i), offset + i * 110)
-          );
-        }
-        for (let i = 0; i < 7; i += 1) {
-          timers.push(
-            window.setTimeout(
-              () => playCharChime(5 + i),
-              offset + 1050 + i * 110
-            )
-          );
-        }
-      };
-      /* 比退潮早 150ms，确保不会被清理掉 */
-      timers.push(window.setTimeout(playBell, PLAY_MS - NARRATE_AT - 150));
-      chimes(80);
+      speakOnce();
     }, NARRATE_AT);
     return () => {
       window.clearTimeout(timer);
@@ -526,7 +551,7 @@ export default function Overture() {
       stopChimes();
       body.style.overflow = prevOverflow;
     };
-  }, [seq.id, seq.phase, stopChimes, markAudioReady]);
+  }, [seq.id, seq.phase, speakOnce, stopChimes, markAudioReady]);
 
   /**
    * 退潮：水向四周散开、背景褪去，系统从下面显形。
