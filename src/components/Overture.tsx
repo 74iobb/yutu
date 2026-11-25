@@ -293,29 +293,25 @@ async function playVoiceShifted(): Promise<boolean> {
     src.buffer = buffer;
     src.playbackRate.value = VOICE_RATE;
 
+    /* 只保留人声频段：100Hz 以下嗡声、6.5kHz 以上嘶声全部切掉 */
     const highpass = ctx.createBiquadFilter();
     highpass.type = 'highpass';
-    highpass.frequency.value = 90;
+    highpass.frequency.value = 100;
     highpass.Q.value = 0.7;
 
     const lowpass = ctx.createBiquadFilter();
     lowpass.type = 'lowpass';
-    lowpass.frequency.value = 8000;
+    lowpass.frequency.value = 6500;
+    lowpass.Q.value = 0.7;
 
-    const comp = ctx.createDynamicsCompressor();
-    comp.threshold.value = -20;
-    comp.knee.value = 20;
-    comp.ratio.value = 2.5;
-    comp.attack.value = 0.004;
-    comp.release.value = 0.2;
-
+    /* 不用压缩：压缩会把底噪一起抬起来 */
     const gate = ctx.createGain();
     gate.gain.value = 1;
     const analyser = ctx.createAnalyser();
     analyser.fftSize = 512;
 
     const out = ctx.createGain();
-    /* 归一化：把录音峰值拉到 0.92，原本偏小的录音也能听清 */
+    /* 归一化：峰值拉到 0.85，避免过度放大底噪 */
     let peak = 0;
     for (let c = 0; c < buffer.numberOfChannels; c += 1) {
       const data = buffer.getChannelData(c);
@@ -324,26 +320,33 @@ async function playVoiceShifted(): Promise<boolean> {
         if (v > peak) peak = v;
       }
     }
-    out.gain.value = Math.min(3.2, Math.max(1, 0.92 / (peak || 0.4)));
+    out.gain.value = Math.min(3, Math.max(1, 0.85 / (peak || 0.4)));
 
     src.connect(highpass);
     highpass.connect(lowpass);
-    lowpass.connect(comp);
-    comp.connect(gate);
+    lowpass.connect(gate);
     gate.connect(out);
     out.connect(audio.master);
-    comp.connect(analyser);
+    gate.connect(analyser);
 
-    /* 噪声门：阈值降到 0.008，句间只轻压到 10%，不再切掉字头 */
+    /*
+     * 噪声门 + hangover：
+     * 峰值超过 0.01 立即打开；之后 140ms 内保持打开，避免切掉字头或产生呼吸感。
+     * 关闭时压到 2%，句间底噪基本消失。
+     */
     const samples = new Uint8Array(analyser.fftSize);
+    let lastLoud = 0;
     const tick = () => {
+      const now = performance.now();
       analyser.getByteTimeDomainData(samples);
       let p2 = 0;
       for (let i = 0; i < samples.length; i += 1) {
         const v = Math.abs(samples[i] - 128) / 128;
         if (v > p2) p2 = v;
       }
-      gate.gain.setTargetAtTime(p2 > 0.008 ? 1 : 0.1, ctx.currentTime, 0.03);
+      if (p2 > 0.01) lastLoud = now;
+      const open = now - lastLoud < 140;
+      gate.gain.setTargetAtTime(open ? 1 : 0.02, ctx.currentTime, open ? 0.01 : 0.06);
       voiceGateRaf = requestAnimationFrame(tick);
     };
     voiceGateRaf = requestAnimationFrame(tick);
