@@ -448,6 +448,16 @@ export default function Overture() {
   const demoRef = useRef(demo);
   /** 音频是否真正跑起来（浏览器可能拦截无手势播放） */
   const [audioReady, setAudioReady] = useState(false);
+  const audioReadyRef = useRef(false);
+  const markAudioReady = useCallback((ready: boolean) => {
+    audioReadyRef.current = ready;
+    setAudioReady(ready);
+  }, []);
+  /** 给全局手势监听读取当前播放阶段，避免闭包里的旧值 */
+  const seqRef = useRef(seq);
+  useEffect(() => {
+    seqRef.current = seq;
+  }, [seq]);
   /** 逐字磬音与钟声的定时器，跳过 / 静音 / 卸载时统一清掉 */
   const chimeTimers = useRef<number[]>([]);
   const stopChimes = useCallback(() => {
@@ -465,7 +475,7 @@ export default function Overture() {
       /* 存储不可用时只影响下次打开 */
     }
     if (next) {
-      void unlockAudio().then((ok) => setAudioReady(ok));
+      void unlockAudio().then(markAudioReady);
       setAudioMuted(false);
       playImpact();
       playVoice();
@@ -476,7 +486,7 @@ export default function Overture() {
       /* 手动静音即退出「强制有声」，但路演标记保留 */
       demoRef.current = false;
     }
-  }, [stopChimes]);
+  }, [markAudioReady, stopChimes]);
 
   const skip = useCallback(() => {
     stopVoice();
@@ -489,20 +499,64 @@ export default function Overture() {
   const enableSound = useCallback(() => {
     if (!soundRef.current) {
       toggleSound();
-      void unlockAudio().then((ok) => setAudioReady(ok));
+      void unlockAudio().then(markAudioReady);
       return;
     }
     void unlockAudio().then((ok) => {
       if (!ok) return;
-      setAudioReady(true);
+      markAudioReady(true);
       setAudioMuted(false);
       playImpact();
     });
-  }, [toggleSound]);
+  }, [markAudioReady, toggleSound]);
 
   useEffect(() => {
-    if (seq.phase === 'idle') setAudioReady(false);
-  }, [seq.phase]);
+    if (seq.phase === 'idle') markAudioReady(false);
+  }, [markAudioReady, seq.phase]);
+
+  /**
+   * 浏览器要求用户手势才能出声。应用里任何一次点击 / 按键都先解锁一次，
+   * 这样即使自动播放被拦，用户随手一点，后续声音就出来了。
+   */
+  useEffect(() => {
+    const onGesture = () => {
+      if (audioReadyRef.current) return;
+      void unlockAudio().then((ok) => {
+        if (!ok) return;
+        markAudioReady(true);
+        setAudioMuted(false);
+        if (seqRef.current.phase === 'playing') playImpact();
+      });
+    };
+    window.addEventListener('pointerdown', onGesture, {
+      capture: true,
+      passive: true,
+    });
+    window.addEventListener('keydown', onGesture, { capture: true });
+    return () => {
+      window.removeEventListener('pointerdown', onGesture, { capture: true });
+      window.removeEventListener('keydown', onGesture, { capture: true });
+    };
+  }, [markAudioReady]);
+
+  /**
+   * 开篇内的第一次点击：若声音还没解锁，先开声音、不跳过；
+   * 已经能出声时，点击才是跳过。
+   */
+  const handleOverlayClick = useCallback(() => {
+    if (!audioReadyRef.current && soundRef.current) {
+      void unlockAudio().then((ok) => {
+        if (ok) {
+          markAudioReady(true);
+          setAudioMuted(false);
+          return;
+        }
+        skip();
+      });
+      return;
+    }
+    skip();
+  }, [markAudioReady, skip]);
 
   /** 「更多 → 重看开篇」：手动重播绕过会话记录，但仍尊重减弱动效 */
   useEffect(() => {
@@ -532,9 +586,9 @@ export default function Overture() {
     if (soundRef.current || demoRef.current) {
       setAudioMuted(false);
       primeVoice();
-      /* 无手势时多半会被挂起，这里先试一次；失败由提示按钮兜底 */
+      /* 无手势时多半会被挂起，这里先试一次；失败由全局手势与提示按钮兜底 */
       void unlockAudio().then((ok) => {
-        if (ok) setAudioReady(true);
+        if (ok) markAudioReady(true);
       });
     }
     const timer = window.setTimeout(() => {
@@ -582,7 +636,7 @@ export default function Overture() {
       stopChimes();
       body.style.overflow = prevOverflow;
     };
-  }, [seq.id, seq.phase, stopChimes]);
+  }, [seq.id, seq.phase, stopChimes, markAudioReady]);
 
   /**
    * 退潮：水向四周散开、背景褪去，系统从下面显形。
@@ -626,7 +680,7 @@ export default function Overture() {
     <div
       key={seq.id}
       className={`y-overture${seq.phase === 'leaving' ? ' is-leaving' : ''}`}
-      onClick={skip}
+      onClick={handleOverlayClick}
     >
       <span className='y-ov-halo' aria-hidden='true' />
 
