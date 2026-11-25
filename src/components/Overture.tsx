@@ -248,7 +248,7 @@ async function unlockAudio(): Promise<boolean> {
 /* ----------------------------- 系统语音 ----------------------------- */
 /**
  * 浏览器中文语音合成：不依赖录音文件。
- * 优先中文男声，其次自然嗓音；rate 0.84 / 0.8，pitch 0.78。
+ * 使用自然女声；rate 0.9 / 0.86，pitch 1.0。
  */
 function pickVoice() {
   try {
@@ -256,13 +256,13 @@ function pickVoice() {
     const zh = voices.filter((v) => /^zh/i.test(v.lang));
     const cn = zh.filter((v) => /CN|Hans/i.test(v.lang));
     const pool = cn.length ? cn : zh;
-    const male = pool.find((v) =>
-      /Yunxi|Yunjian|Yunyang|Kangkang|Liang|Male|男/i.test(v.name)
+    const female = pool.find((v) =>
+      /Xiaoxiao|Xiaoyi|Ting-?Ting|Huihui|Meijia|Sinji|Female|女/i.test(v.name)
     );
     const natural = pool.find((v) =>
-      /Google|Natural|Neural|Online|Ting-?Ting|Xiaoxiao|Meijia/i.test(v.name)
+      /Google|Natural|Neural|Online/i.test(v.name)
     );
-    return male ?? natural ?? pool[0];
+    return female ?? natural ?? pool[0];
   } catch {
     return undefined;
   }
@@ -278,8 +278,8 @@ function speakVerse(): void {
       const u = new SpeechSynthesisUtterance(text);
       u.lang = 'zh-CN';
       if (voice) u.voice = voice;
-      u.rate = i === 0 ? 0.84 : 0.8;
-      u.pitch = 0.78;
+      u.rate = i === 0 ? 0.9 : 0.86;
+      u.pitch = 1;
       u.volume = 1;
       synth.speak(u);
     });
@@ -302,7 +302,7 @@ function stopSpeech(): void {
  * 不降调、不做 EQ、不做滤波、不做音量归一化 —— 除了静音开关，不改变任何东西。
  */
 /** 默认使用系统语音；改回 `true` 恢复录音播放 */
-const USE_RECORDING = true;
+const USE_RECORDING = false;
 
 const VOICE_URL =
   'https://agent.nuwax.com/api/f/s3/app-dev/20261125/32d36e5a83aa4526bf7dcad9e50b738a.m4a';
