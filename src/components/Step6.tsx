@@ -2248,6 +2248,9 @@ export default function Step6() {
       <header className='y-lead'>
         <p className='y-eyebrow'>04 / 闭环</p>
         <h2>成长闭环</h2>
+        <a className='y-btn y-btn-s' href='#/sandbox' style={{ marginTop: 10 }}>
+          先在沙盘里试走一轮 →
+        </a>
       </header>
 
       <div className='y-zone'>

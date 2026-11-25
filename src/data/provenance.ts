@@ -78,6 +78,12 @@ export const PROVENANCE = {
     detail:
       '七维带权相似度与稳定度是启发式模型；参数尚未用外部样本校准，1 分变化可能切换归属。',
   },
+  sandbox: {
+    label: '沙盘推演',
+    kind: 'heuristic',
+    detail:
+      '固定规则的启发式推演：每格一个季度，动作效果表公开、无随机；只回答“按这套规则走的代价与落点”，不是预测，也不回写真实处境与档案。',
+  },
   stage: {
     label: '阶段判定',
     kind: 'heuristic',

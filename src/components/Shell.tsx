@@ -31,7 +31,7 @@ export function Shell({ children }: { children: ReactNode }) {
   const [syncOpen, setSyncOpen] = useState(false);
   const [dataOpen, setDataOpen] = useState(false);
   useImmersive(dataOpen, setDataOpen);
-  /** 头部「更多」：把知乎快照 / 数据口径 / 电气实训收口 */
+  /** 头部「更多」：把知乎快照 / 数据口径 / 沙盘 / 电气实训收口 */
   const [moreOpen, setMoreOpen] = useState(false);
   const moreRef = useRef<HTMLSpanElement>(null);
   /** 长页面回到顶部 */
@@ -663,6 +663,14 @@ export function Shell({ children }: { children: ReactNode }) {
                     <span>知乎快照</span>
                     <b>{SNAPSHOT_AT}</b>
                   </div>
+                  <a
+                    className='y-more-item'
+                    href='#/sandbox'
+                    onClick={() => setMoreOpen(false)}
+                  >
+                    <span>沙盘推演</span>
+                    <span aria-hidden='true'>→</span>
+                  </a>
                   <a
                     className='y-more-item'
                     href='#/electrical'
