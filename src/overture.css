@@ -914,6 +914,48 @@
   }
 }
 
+/* ------------------------------ 声音提示 ------------------------------ */
+/* 浏览器拦截无手势音频时，这枚按钮是唯一可靠的入口 */
+.y-ov-sound-hint {
+  position: absolute;
+  left: 50%;
+  bottom: 86px;
+  transform: translateX(-50%);
+  z-index: 4;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 16px;
+  border: 1px solid rgba(245, 193, 90, 0.45);
+  border-radius: 999px;
+  background: rgba(10, 14, 24, 0.55);
+  color: rgba(255, 232, 190, 0.92);
+  font-family: inherit;
+  font-size: 12px;
+  letter-spacing: 0.16em;
+  cursor: pointer;
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  animation:
+    yOvFadeIn 0.5s ease 1.2s both,
+    yOvHintPulse 2.2s ease-in-out 1.7s infinite;
+}
+
+.y-ov-sound-hint-note {
+  font-size: 14px;
+  color: #f5c15a;
+}
+
+@keyframes yOvHintPulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(245, 193, 90, 0);
+  }
+  50% {
+    box-shadow: 0 0 0 6px rgba(245, 193, 90, 0.08);
+  }
+}
+
 /* ------------------------------ 路演标记 ------------------------------ */
 .y-ov-demo {
   position: absolute;
@@ -1155,6 +1197,12 @@
   }
   .y-ov-rule {
     display: none;
+  }
+  .y-ov-sound-hint {
+    bottom: 62px;
+    padding: 8px 12px;
+    font-size: 11px;
+    letter-spacing: 0.1em;
   }
   .y-ov-label text.y-ov-label-no {
     font-size: 8px;

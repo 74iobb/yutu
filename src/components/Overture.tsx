@@ -235,6 +235,21 @@ function getAudio(): { ctx: AudioContext; master: GainNode } | null {
 
 type ToneType = 'sine' | 'square' | 'sawtooth' | 'triangle';
 
+/** 在当前用户手势里解锁音频；返回是否已真正 running */
+async function unlockAudio(): Promise<boolean> {
+  const audio = getAudio();
+  if (!audio) return false;
+  try {
+    await Promise.race([
+      audio.ctx.resume(),
+      new Promise((resolve) => window.setTimeout(resolve, 600)),
+    ]);
+    return audio.ctx.state === 'running';
+  } catch {
+    return false;
+  }
+}
+
 function playTone(
   freq: number,
   duration: number,
@@ -431,6 +446,8 @@ export default function Overture() {
   /** 路演模式：强制有声、并显示一枚小标签；由「更多 → 路演模式」或 `?demo=1` 触发 */
   const [demo, setDemo] = useState(() => readFlag('demo'));
   const demoRef = useRef(demo);
+  /** 音频是否真正跑起来（浏览器可能拦截无手势播放） */
+  const [audioReady, setAudioReady] = useState(false);
   /** 逐字磬音与钟声的定时器，跳过 / 静音 / 卸载时统一清掉 */
   const chimeTimers = useRef<number[]>([]);
   const stopChimes = useCallback(() => {
@@ -448,6 +465,7 @@ export default function Overture() {
       /* 存储不可用时只影响下次打开 */
     }
     if (next) {
+      void unlockAudio().then((ok) => setAudioReady(ok));
       setAudioMuted(false);
       playImpact();
       playVoice();
@@ -466,6 +484,25 @@ export default function Overture() {
     setAudioMuted(true);
     setSeq((s) => (s.phase === 'playing' ? { ...s, phase: 'leaving' } : s));
   }, [stopChimes]);
+
+  /** 点击提示：打开声音开关并在同一手势里解锁音频 */
+  const enableSound = useCallback(() => {
+    if (!soundRef.current) {
+      toggleSound();
+      void unlockAudio().then((ok) => setAudioReady(ok));
+      return;
+    }
+    void unlockAudio().then((ok) => {
+      if (!ok) return;
+      setAudioReady(true);
+      setAudioMuted(false);
+      playImpact();
+    });
+  }, [toggleSound]);
+
+  useEffect(() => {
+    if (seq.phase === 'idle') setAudioReady(false);
+  }, [seq.phase]);
 
   /** 「更多 → 重看开篇」：手动重播绕过会话记录，但仍尊重减弱动效 */
   useEffect(() => {
@@ -495,6 +532,10 @@ export default function Overture() {
     if (soundRef.current || demoRef.current) {
       setAudioMuted(false);
       primeVoice();
+      /* 无手势时多半会被挂起，这里先试一次；失败由提示按钮兜底 */
+      void unlockAudio().then((ok) => {
+        if (ok) setAudioReady(true);
+      });
     }
     const timer = window.setTimeout(() => {
       setSeq((s) => (s.phase === 'playing' ? { ...s, phase: 'leaving' } : s));
@@ -929,6 +970,22 @@ export default function Overture() {
         <span className='y-ov-demo' aria-hidden='true'>
           路演模式
         </span>
+      ) : null}
+
+      {seq.phase === 'playing' && (!soundOn || !audioReady) ? (
+        <button
+          type='button'
+          className='y-ov-sound-hint'
+          onClick={(e) => {
+            e.stopPropagation();
+            enableSound();
+          }}
+        >
+          <span className='y-ov-sound-hint-note' aria-hidden='true'>
+            ♪
+          </span>
+          {soundOn ? '点击开启声音' : '声音已关 · 点击开启'}
+        </button>
       ) : null}
 
       <div className='y-ov-controls'>
