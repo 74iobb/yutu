@@ -2016,7 +2016,7 @@ export default function Step6() {
     flash,
   } = useYutu();
   const [confirmReset, setConfirmReset] = useState(false);
-  /** 聚焦模式：轮盘放大铺满视口，指标与主操作留在右侧 */
+  /** 聚焦模式：闭环图放大铺满视口，指标与主操作留在右侧 */
   const [focus, setFocus] = useState(false);
   useImmersive(focus, setFocus);
   /**
@@ -2321,8 +2321,8 @@ export default function Step6() {
 
         <div className='y-zone-head y-zone-subhead'>
           <span className='y-zone-n'>02 / 闭环全貌</span>
-          <h3>轮盘、当前判定与累计进度</h3>
-          <p>轮盘高亮与上方「当前步骤」始终是同一站</p>
+          <h3>螺旋、当前判定与累计进度</h3>
+          <p>闭环图高亮与上方「当前步骤」始终是同一站</p>
         </div>
 
         {focus ? (
@@ -2378,9 +2378,9 @@ export default function Step6() {
                     className='y-btn y-btn-s y-focus-toggle'
                     aria-pressed={focus}
                     onClick={() => setFocus(v => !v)}
-                    title={focus ? 'Esc 也可退出' : '轮盘放大铺满视口'}
+                    title={focus ? 'Esc 也可退出' : '闭环图放大铺满视口'}
                   >
-                    {focus ? '退出聚焦' : '聚焦轮盘'}
+                    {focus ? '退出聚焦' : '聚焦闭环图'}
                   </button>
                 </div>
               )}

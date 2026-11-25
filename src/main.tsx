@@ -5,6 +5,7 @@ import './yutu.css';
 import './electrical.css';
 import './sandbox.css';
 import './audit.css';
+import './loopmap.css';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <App />

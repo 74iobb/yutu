@@ -1,0 +1,233 @@
+/* ==========================================================================
+   成长闭环图（螺旋年轮）
+   外圈 = 当前轮的 6 个站点；内圈 = 已完成轮次；棋子停在当前站点。
+   作用域：#yutu2，覆盖旧版轮盘的浅色环与无意义绕圈动效。
+   ========================================================================== */
+
+#yutu2 .y-loop-board {
+  grid-template-columns: minmax(280px, 380px) minmax(0, 1fr);
+}
+#yutu2 .y-loop-map {
+  max-width: 380px;
+}
+
+#yutu2 .y-loop-track {
+  fill: none;
+  stroke: rgba(160, 190, 255, 0.18);
+  stroke-width: 2.2;
+}
+#yutu2 .y-loop-track2 {
+  fill: none;
+  stroke: rgba(160, 190, 255, 0.13);
+  stroke-width: 1;
+  stroke-dasharray: 1 8;
+  animation: none;
+}
+#yutu2 .y-loop-arc {
+  fill: none;
+  stroke-width: 4;
+  stroke-linecap: round;
+  opacity: 0.96;
+  filter: drop-shadow(0 0 6px rgba(127, 182, 255, 0.5));
+  transition: stroke-dashoffset 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* 已完成轮次的内圈 */
+#yutu2 .y-loop-past-ring {
+  fill: none;
+  stroke: rgba(143, 214, 192, 0.5);
+  stroke-width: 1;
+  stroke-dasharray: 2 6;
+}
+#yutu2 .y-loop-past-dot {
+  fill: rgba(143, 214, 192, 0.78);
+}
+#yutu2 .y-loop-tick {
+  stroke: rgba(160, 190, 255, 0.26);
+  stroke-width: 1;
+}
+
+/* 站点 */
+#yutu2 .y-loop-node {
+  fill: rgba(8, 16, 32, 0.92);
+  stroke: rgba(160, 190, 255, 0.42);
+  stroke-width: 1.5;
+  transform-box: fill-box;
+  transform-origin: center;
+  transition:
+    fill 0.2s,
+    stroke 0.2s;
+}
+#yutu2 .y-loop-node-halo {
+  fill: none;
+  stroke: rgba(245, 193, 90, 0.34);
+  stroke-width: 1;
+  stroke-dasharray: 2 4;
+}
+#yutu2 .y-loop-station:hover .y-loop-node,
+#yutu2 .y-loop-station:focus-visible .y-loop-node {
+  stroke: #fff;
+}
+#yutu2 .y-loop-station.is-passed .y-loop-node {
+  fill: rgba(143, 214, 192, 0.16);
+  stroke: rgba(143, 214, 192, 0.72);
+}
+#yutu2 .y-loop-station.is-active .y-loop-node {
+  fill: #f5c15a;
+  stroke: #fff3d6;
+  animation: y-loop-pulse 2.2s ease-in-out infinite;
+}
+#yutu2 .y-loop-station.is-next .y-loop-node {
+  stroke: rgba(127, 182, 255, 0.85);
+  stroke-dasharray: 3 3;
+}
+
+#yutu2 .y-loop-idx {
+  font-size: 11.5px;
+  font-weight: 600;
+  fill: var(--y-ink2);
+  pointer-events: none;
+}
+#yutu2 .y-loop-station.is-active .y-loop-idx {
+  fill: #1a1408;
+}
+#yutu2 .y-loop-check {
+  fill: none;
+  stroke: #8fd6c0;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  pointer-events: none;
+}
+#yutu2 .y-loop-lbl {
+  font-size: 11px;
+  font-weight: 600;
+  fill: var(--y-ink);
+  user-select: none;
+}
+#yutu2 .y-loop-station.is-passed .y-loop-lbl {
+  fill: var(--y-ink2);
+}
+#yutu2 .y-loop-station.is-next .y-loop-lbl {
+  fill: #bfe0ff;
+}
+#yutu2 .y-loop-station.is-active .y-loop-lbl {
+  fill: #f5c15a;
+}
+#yutu2 .y-loop-hint {
+  font-size: 9px;
+  fill: var(--y-muted);
+  user-select: none;
+}
+#yutu2 .y-loop-station.is-active .y-loop-hint {
+  fill: #f7d9a0;
+}
+
+/* 中心 */
+#yutu2 .y-loop-core-glow {
+  fill: url(#y-loop-core-grad);
+}
+#yutu2 .y-loop-round {
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  fill: var(--y-ink);
+}
+#yutu2 .y-loop-state {
+  font-size: 12px;
+  font-weight: 650;
+  fill: #f5c15a;
+}
+#yutu2 .y-loop-note {
+  font-size: 9px;
+  fill: var(--y-muted);
+}
+#yutu2 .y-loop-count {
+  font-size: 8.8px;
+  fill: var(--y-muted);
+}
+
+/* 棋子：停在当前站点 */
+#yutu2 .y-loop-token-halo {
+  fill: none;
+  stroke: rgba(245, 193, 90, 0.5);
+  stroke-width: 1;
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: yLoopToken 3.6s ease-in-out infinite;
+}
+#yutu2 .y-loop-token .y-loop-marble {
+  pointer-events: none;
+}
+#yutu2 .y-loop-marble-rim {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.55);
+  stroke-width: 1.2;
+  stroke-linecap: round;
+  filter: drop-shadow(0 0 2px rgba(255, 255, 255, 0.35));
+}
+
+/* 内圈图例 */
+#yutu2 .y-loop-legend text {
+  fill: var(--y-muted);
+  font-size: 8px;
+  letter-spacing: 0.04em;
+}
+#yutu2 .y-loop-legend-dot {
+  fill: none;
+  stroke: rgba(143, 214, 192, 0.75);
+  stroke-width: 1;
+  stroke-dasharray: 2 2;
+}
+
+@keyframes yLoopToken {
+  0%,
+  100% {
+    opacity: 0.55;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.16);
+  }
+}
+
+/* 聚焦模式：放大后文字与线宽同步更清晰 */
+#yutu2 .y-loop-board-card.is-focus .y-loop-map {
+  max-width: min(62vh, 640px);
+}
+
+@media (max-width: 860px) {
+  #yutu2 .y-loop-board {
+    grid-template-columns: 1fr;
+  }
+  #yutu2 .y-loop-map {
+    max-width: 340px;
+  }
+}
+
+@media (max-width: 520px) {
+  #yutu2 .y-loop-map {
+    max-width: 300px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #yutu2 .y-loop-station.is-active .y-loop-node,
+  #yutu2 .y-loop-token-halo {
+    animation: none;
+  }
+  #yutu2 .y-loop-arc {
+    transition: none;
+  }
+  #yutu2 .y-loop-token-halo {
+    opacity: 0.9;
+  }
+}
+html.y-motion-off #yutu2 .y-loop-station.is-active .y-loop-node,
+html.y-motion-off #yutu2 .y-loop-token-halo {
+  animation: none;
+}
+html.y-motion-off #yutu2 .y-loop-token-halo {
+  opacity: 0.9;
+}
