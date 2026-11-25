@@ -216,8 +216,6 @@ function getAudio(): { ctx: AudioContext; master: GainNode } | null {
   }
 }
 
-type ToneType = 'sine' | 'square' | 'sawtooth' | 'triangle';
-
 /** 在当前用户手势里解锁音频；返回是否已真正 running */
 async function unlockAudio(): Promise<boolean> {
   const audio = getAudio();
@@ -231,42 +229,6 @@ async function unlockAudio(): Promise<boolean> {
   } catch {
     return false;
   }
-}
-
-function playTone(
-  freq: number,
-  duration: number,
-  delay = 0,
-  level = 0.05,
-  type: ToneType = 'sine'
-): void {
-  const audio = getAudio();
-  if (!audio) return;
-  const { ctx, master } = audio;
-  void ctx.resume().catch(() => undefined);
-  try {
-    const t0 = ctx.currentTime + delay;
-    const osc = ctx.createOscillator();
-    const gain = ctx.createGain();
-    osc.type = type;
-    osc.frequency.setValueAtTime(freq, t0);
-    gain.gain.setValueAtTime(0.0001, t0);
-    gain.gain.exponentialRampToValueAtTime(level, t0 + 0.014);
-    gain.gain.exponentialRampToValueAtTime(0.0001, t0 + duration);
-    osc.connect(gain);
-    gain.connect(master);
-    osc.start(t0);
-    osc.stop(t0 + duration + 0.06);
-  } catch {
-    /* 静默 */
-  }
-}
-
-/** 落水低频：给「砸到水面」一点重量（补 110Hz，手机扬声器才听得见） */
-function playImpact(): void {
-  playTone(110, 1.6, 0, 0.05, 'sine');
-  playTone(56, 2.8, 0, 0.09, 'sine');
-  playTone(36, 3.1, 0.02, 0.06, 'sine');
 }
 
 /* --------------------------- 真人录音（降调） --------------------------- */
@@ -323,9 +285,18 @@ async function playVoiceShifted(): Promise<boolean> {
     const src = audio.ctx.createBufferSource();
     src.buffer = buffer;
     src.playbackRate.value = VOICE_RATE;
+    /* 去底噪：切掉 90Hz 以下的嗡声和 9kHz 以上的嘶声，只留人声频段 */
+    const highpass = audio.ctx.createBiquadFilter();
+    highpass.type = 'highpass';
+    highpass.frequency.value = 90;
+    const lowpass = audio.ctx.createBiquadFilter();
+    lowpass.type = 'lowpass';
+    lowpass.frequency.value = 9000;
     const gain = audio.ctx.createGain();
     gain.gain.value = 1;
-    src.connect(gain);
+    src.connect(highpass);
+    highpass.connect(lowpass);
+    lowpass.connect(gain);
     gain.connect(audio.master);
     voiceSource = src;
     src.onended = () => {
@@ -427,7 +398,6 @@ export default function Overture() {
     if (next) {
       void unlockAudio().then(markAudioReady);
       setAudioMuted(false);
-      playImpact();
       void playVoiceShifted();
     } else {
       stopVoice();
@@ -456,7 +426,6 @@ export default function Overture() {
       if (!ok) return;
       markAudioReady(true);
       setAudioMuted(false);
-      playImpact();
       void playVoiceShifted();
     });
   }, [markAudioReady, toggleSound]);
@@ -477,7 +446,6 @@ export default function Overture() {
         markAudioReady(true);
         setAudioMuted(false);
         if (seqRef.current.phase === 'playing') {
-          playImpact();
           void playVoiceShifted();
         }
       });
@@ -553,7 +521,6 @@ export default function Overture() {
     const voiceTimer = window.setTimeout(() => {
       if (!soundRef.current && !demoRef.current) return;
       setAudioMuted(false);
-      playImpact();
       void playVoiceShifted();
     }, NARRATE_AT);
     return () => {
