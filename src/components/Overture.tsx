@@ -219,7 +219,12 @@ function getAudio(): { ctx: AudioContext; master: GainNode } | null {
     const ctx = new Ctor();
     const master = ctx.createGain();
     master.gain.value = 0.85;
-    master.connect(ctx.destination);
+    /* 低通：削掉高频的「电子亮」，让整体更沉、更接近木石之声 */
+    const tone = ctx.createBiquadFilter();
+    tone.type = 'lowpass';
+    tone.frequency.value = 2600;
+    master.connect(tone);
+    tone.connect(ctx.destination);
     audioCtx = ctx;
     masterGain = master;
     return { ctx, master };
@@ -265,18 +270,18 @@ function playImpact(): void {
   playTone(36, 3.1, 0.02, 0.04, 'sine');
 }
 
-/** 五声音阶：宫商角徵羽 */
-const PENTATONIC = [261.63, 293.66, 329.63, 392.0, 440.0];
+/** 五声音阶（G 调，宫商角徵羽），整体偏低，音色更沉 */
+const PENTATONIC = [196.0, 220.0, 246.94, 293.66, 329.63];
 
 /**
- * 每个字落下时的一声轻磬：第一行在高八度，第二行低八度。
- * 与 CSS 的逐字节奏（0.11s / 字）对齐。
+ * 每个字落下时的一声轻磬：第一行低八度，第二行再降约六成。
+ * 与 CSS 的逐字节奏（0.11s / 字）对齐；衰减拉长，听起来更像木石。
  */
 function playCharChime(index: number): void {
-  const octave = index < 5 ? 1 : 0.5;
+  const octave = index < 5 ? 1 : 0.6;
   const note = PENTATONIC[index % PENTATONIC.length] * octave;
-  playTone(note, 1.1, 0, 0.045, 'triangle');
-  playTone(note * 2, 0.6, 0.006, 0.018, 'sine');
+  playTone(note, 1.4, 0, 0.05, 'triangle');
+  playTone(note * 2, 0.8, 0.006, 0.014, 'sine');
 }
 
 /** 退潮钟声：低频钟体 + 三个泛音，余韵比开篇更长 */
@@ -296,9 +301,13 @@ function playBell(): void {
 const VOICE_URL =
   'https://agent.nuwax.com/api/f/s3/app-dev/20261125/64465fff87744c84bbc0073a89c03b92.m4a';
 
+/** 默认不用真人录音：用户希望开篇声音更沉、更「老」，走合成音景。改回 `true` 即可恢复。 */
+const USE_VOICE = false;
+
 let voiceAudio: HTMLAudioElement | null = null;
 
 function getVoice(): HTMLAudioElement | null {
+  if (!USE_VOICE) return null;
   if (typeof window === 'undefined' || typeof Audio === 'undefined') {
     return null;
   }
