@@ -165,7 +165,7 @@ const SPLASH_PARTICLES = Array.from(
 
 /** 撞击瞬间的星尘：从落点向四面八方飞散 */
 const STAR_DUST = Array.from(
-  { length: REDUCED_EFFECTS ? 24 : 44 },
+  { length: REDUCED_EFFECTS ? 32 : 58 },
   (_, i) => {
     const angle = noise(i * 7 + 200) * Math.PI * 2;
     const dist = 40 + noise(i * 7 + 201) * 210;
@@ -181,12 +181,13 @@ const STAR_DUST = Array.from(
 );
 
 /** 命途光轨：从落点向外发散，呼应「各自东西南北流」 */
-const DESTINY_RAYS = Array.from({ length: 9 }, (_, i) => {
-  const angle = (i / 9) * Math.PI * 2 + 0.25;
+const DESTINY_RAYS = Array.from({ length: 14 }, (_, i) => {
+  const angle = (i / 14) * Math.PI * 2 + 0.2;
+  const reach = 300 + noise(i + 340) * 90;
   return {
-    x2: DISC.cx + Math.cos(angle) * 250,
-    y2: DISC.cy + Math.sin(angle) * 200,
-    delay: Math.round(1450 + noise(i + 330) * 260),
+    x2: DISC.cx + Math.cos(angle) * reach,
+    y2: DISC.cy + Math.sin(angle) * reach * 0.8,
+    delay: Math.round(1430 + noise(i + 330) * 320),
   };
 });
 
@@ -948,6 +949,16 @@ export default function Overture() {
               <stop offset='55%' stopColor='#9be8ff' stopOpacity='0.07' />
               <stop offset='100%' stopColor='#9be8ff' stopOpacity='0' />
             </linearGradient>
+            <radialGradient id='y-ov-horizon' cx='50%' cy='50%' r='50%'>
+              <stop offset='0%' stopColor='#ffe3b0' stopOpacity='0.24' />
+              <stop offset='52%' stopColor='#9bc8ff' stopOpacity='0.1' />
+              <stop offset='100%' stopColor='#0a0f1c' stopOpacity='0' />
+            </radialGradient>
+            <radialGradient id='y-ov-fog' cx='50%' cy='50%' r='50%'>
+              <stop offset='0%' stopColor='#ffe9c8' stopOpacity='0.3' />
+              <stop offset='55%' stopColor='#a8d8ff' stopOpacity='0.12' />
+              <stop offset='100%' stopColor='#0a0f1c' stopOpacity='0' />
+            </radialGradient>
             <radialGradient id='y-ov-mist' cx='50%' cy='50%' r='50%'>
               <stop offset='0%' stopColor='#ffffff' stopOpacity='0.55' />
               <stop offset='38%' stopColor='#9be8ff' stopOpacity='0.3' />
@@ -1081,6 +1092,50 @@ export default function Overture() {
             className='y-ov-beam'
             points='430,-40 570,-40 660,640 340,640'
             fill='url(#y-ov-beam)'
+          />
+
+          {/* 神光：多条斜射的丁达尔光 */}
+          <g className='y-ov-godrays' aria-hidden='true'>
+            <polygon
+              className='y-ov-godray'
+              points='250,-40 330,-40 520,700 400,700'
+              fill='url(#y-ov-beam)'
+            />
+            <polygon
+              className='y-ov-godray'
+              points='620,-40 700,-40 760,690 620,690'
+              fill='url(#y-ov-beam)'
+            />
+            <polygon
+              className='y-ov-godray'
+              points='760,-40 820,-40 980,680 860,680'
+              fill='url(#y-ov-beam)'
+            />
+          </g>
+
+          {/* 地平线与发光雾：镜面平原延伸到远方 */}
+          <ellipse
+            className='y-ov-horizon'
+            cx='500'
+            cy='720'
+            rx='520'
+            ry='54'
+            fill='url(#y-ov-horizon)'
+          />
+          <line
+            className='y-ov-horizon-line'
+            x1='70'
+            y1='700'
+            x2='930'
+            y2='700'
+          />
+          <ellipse
+            className='y-ov-fog'
+            cx='500'
+            cy='745'
+            rx='470'
+            ry='80'
+            fill='url(#y-ov-fog)'
           />
 
           {/* 板块：真实的 Voronoi 单元，整组缓慢回正 */}
