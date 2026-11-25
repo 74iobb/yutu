@@ -302,78 +302,6 @@ function playBell(): void {
   });
 }
 
-/* ----------------------------- 真人朗诵 ----------------------------- */
-/**
- * 用户提供的朗诵录音（m4a / AAC）。
- * 同源加载，浏览器自带平台登录态；服务端无法直接下载（接口需要登录 cookie）。
- * 加载失败或被拦截时自动回退到合成磬音，不会没有声音或报错。
- */
-const VOICE_URL =
-  'https://agent.nuwax.com/api/f/s3/app-dev/20261125/64465fff87744c84bbc0073a89c03b92.m4a';
-
-/** 默认不用真人录音：用户希望开篇声音更沉、更「老」，走合成音景。改回 `true` 即可恢复。 */
-const USE_VOICE = false;
-
-let voiceAudio: HTMLAudioElement | null = null;
-
-function getVoice(): HTMLAudioElement | null {
-  if (!USE_VOICE) return null;
-  if (typeof window === 'undefined' || typeof Audio === 'undefined') {
-    return null;
-  }
-  if (!voiceAudio) {
-    try {
-      const audio = new Audio();
-      audio.preload = 'auto';
-      audio.src = VOICE_URL;
-      voiceAudio = audio;
-    } catch {
-      return null;
-    }
-  }
-  return voiceAudio;
-}
-
-/** 开篇一开始就预拉，名句出现时才能立刻出声 */
-function primeVoice(): void {
-  const voice = getVoice();
-  if (!voice) return;
-  try {
-    voice.load();
-  } catch {
-    /* 忽略 */
-  }
-}
-
-/** 播放朗诵；被拦截或解码失败时调用 onFail，交给合成音景兜底 */
-function playVoice(onFail?: () => void): void {
-  const voice = getVoice();
-  if (!voice || voice.error || voice.networkState === 3) {
-    onFail?.();
-    return;
-  }
-  try {
-    voice.currentTime = 0;
-    voice.volume = 1;
-    const started = voice.play();
-    if (started && typeof started.then === 'function') {
-      started.then(() => undefined).catch(() => onFail?.());
-    }
-  } catch {
-    onFail?.();
-  }
-}
-
-function stopVoice(): void {
-  if (!voiceAudio) return;
-  try {
-    voiceAudio.pause();
-    voiceAudio.currentTime = 0;
-  } catch {
-    /* 忽略 */
-  }
-}
-
 /** 静音 / 恢复所有合成声 */
 function setAudioMuted(muted: boolean): void {
   if (!audioCtx || !masterGain) return;
@@ -473,9 +401,7 @@ export default function Overture() {
       void unlockAudio().then(markAudioReady);
       setAudioMuted(false);
       playImpact();
-      playVoice();
     } else {
-      stopVoice();
       stopChimes();
       setAudioMuted(true);
       /* 手动静音即退出「强制有声」，但路演标记保留 */
@@ -484,7 +410,6 @@ export default function Overture() {
   }, [markAudioReady, stopChimes]);
 
   const skip = useCallback(() => {
-    stopVoice();
     stopChimes();
     setAudioMuted(true);
     setSeq((s) => (s.phase === 'playing' ? { ...s, phase: 'leaving' } : s));
@@ -568,7 +493,6 @@ export default function Overture() {
     return () => {
       window.removeEventListener('yutu:overture', onReplay);
       stopChimes();
-      stopVoice();
     };
   }, [stopChimes]);
 
@@ -580,7 +504,6 @@ export default function Overture() {
     body.style.overflow = 'hidden';
     if (soundRef.current || demoRef.current) {
       setAudioMuted(false);
-      primeVoice();
       /* 无手势时多半会被挂起，这里先试一次；失败由全局手势与提示按钮兜底 */
       void unlockAudio().then((ok) => {
         if (ok) markAudioReady(true);
@@ -589,7 +512,7 @@ export default function Overture() {
     const timer = window.setTimeout(() => {
       setSeq((s) => (s.phase === 'playing' ? { ...s, phase: 'leaving' } : s));
     }, PLAY_MS);
-    /* 名句浮现时：优先真人朗诵，失败则每个字一声合成磬音 */
+    /* 名句浮现时：每个字一声合成磬音 */
     const voiceTimer = window.setTimeout(() => {
       if (!narrationAllowed()) return;
       if (!soundRef.current && !demoRef.current) return;
@@ -616,14 +539,7 @@ export default function Overture() {
       };
       /* 比退潮早 150ms，确保不会被清理掉 */
       timers.push(window.setTimeout(playBell, PLAY_MS - NARRATE_AT - 150));
-      playVoice(() => chimes(80));
-      /* 被自动播放策略拦下时 play() 不一定 reject：1.2s 后仍未开始就兜底 */
-      timers.push(
-        window.setTimeout(() => {
-          const voice = getVoice();
-          if (!voice || voice.paused) chimes(0);
-        }, 1200)
-      );
+      chimes(80);
     }, NARRATE_AT);
     return () => {
       window.clearTimeout(timer);
