@@ -146,6 +146,32 @@
   color: var(--y-ink2);
 }
 
+/* 6. 沙盘的“门槛”：取自真实大厅的琥珀斜板，只用形状与光 */
+#yutu2 .y-sb-lead {
+  position: relative;
+  overflow: hidden;
+}
+#yutu2 .y-sb-lead > div {
+  position: relative;
+  z-index: 1;
+}
+#yutu2 .y-portal {
+  position: absolute;
+  right: 10px;
+  bottom: -16px;
+  z-index: 0;
+  width: min(29%, 280px);
+  height: auto;
+  pointer-events: none;
+  opacity: 0.82;
+  filter: saturate(0.92);
+}
+@media (max-width: 1040px) {
+  #yutu2 .y-portal {
+    display: none;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   #yutu2 .y-dir::before {
     transition: none;

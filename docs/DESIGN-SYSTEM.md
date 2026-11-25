@@ -124,6 +124,7 @@
 | 玻璃碎片 | `.y-dir::before` + `--dir-hue` | 方向卡顶部 48px 彩色边；选中时铺满整条 |
 | 侧栏玻璃轨 | `.y-glass-rail` | Step3 方向清单 / 归属摘要侧栏边缘的 2px 五色竖线；窄屏变顶部横线 |
 | 光学带 | `.y-optical-band` + `OpticalBand` | Step1 水下焦散 / Step2 退潮海岸 / Step3 彩玻璃 / Step4 年轮；236px（窄屏 150px），mask 渐隐，不承载数据 |
+| 门槛 | `.y-portal` + `PortalSlab` | 沙盘页右上角的琥珀斜板；取自真实大厅装置，只用形状与光，不引用照片；≤1040px 隐藏 |
 
 ### 7.3 禁止
 

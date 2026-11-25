@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState, type CSSProperties } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import DataSourceBadge from '@/components/DataSourceBadge';
+import PortalSlab from '@/components/PortalSlab';
 import SandboxBoard from '@/components/SandboxBoard';
 import {
   bandOf,
@@ -501,6 +502,7 @@ export default function Sandbox() {
             <div className='y-sb-lead-badge'>
               <DataSourceBadge source='sandbox' />
             </div>
+            <PortalSlab />
           </section>
 
           {needsProfile ? (
