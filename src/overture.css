@@ -107,24 +107,65 @@
 /* ------------------------------ 水束与水滴 ------------------------------ */
 .y-ov-fall {
   fill: none;
-  stroke-width: 2.6;
+  stroke-width: 3.2;
   stroke-linecap: round;
   stroke-dasharray: 1;
   stroke-dashoffset: 1;
-  filter: drop-shadow(0 0 7px rgba(150, 210, 255, 0.62));
+  filter: drop-shadow(0 0 8px rgba(180, 220, 255, 0.7));
   animation: yOvFall 2.2s cubic-bezier(0.35, 0, 0.65, 1) 0.18s both;
 }
 
 .y-ov-fall-b {
-  stroke-width: 1.3;
-  opacity: 0.7;
+  stroke-width: 1.9;
+  opacity: 0.72;
   animation-delay: 0.5s;
 }
 
 .y-ov-fall-c {
-  stroke-width: 0.8;
-  opacity: 0.45;
+  stroke-width: 1.2;
+  opacity: 0.5;
   animation-delay: 0.8s;
+}
+
+.y-ov-fall-d {
+  stroke-width: 0.9;
+  opacity: 0.55;
+  animation-delay: 0.64s;
+}
+
+.y-ov-fall-e {
+  stroke-width: 1.7;
+  opacity: 0.62;
+  animation-delay: 0.96s;
+}
+
+/* 模糊水幕：让水流有体积，而不是几根线 */
+.y-ov-veil {
+  fill: none;
+  stroke-width: 30;
+  stroke-linecap: round;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  filter: blur(9px);
+  opacity: 0.16;
+  animation: yOvVeil 2.35s cubic-bezier(0.35, 0, 0.65, 1) 0.2s both;
+}
+
+@keyframes yOvVeil {
+  0% {
+    stroke-dashoffset: 1;
+    opacity: 0;
+  }
+  20% {
+    opacity: 0.2;
+  }
+  80% {
+    opacity: 0.17;
+  }
+  100% {
+    stroke-dashoffset: 0;
+    opacity: 0.12;
+  }
 }
 
 @keyframes yOvFall {
@@ -144,16 +185,15 @@
   }
 }
 
-/* 水粒：水珠与速度线共用一条下落曲线，时长与起点由确定性序列给出 */
+/* 水粒：水珠与速度线共用一条下落曲线；五彩填充由每颗粒子的确定性色值给出 */
 .y-ov-particle {
-  fill: #dff2ff;
   opacity: 0;
   animation: yOvParticle var(--ov-dur, 800ms) cubic-bezier(0.45, 0, 0.85, 0.5)
     both;
 }
 
 .y-ov-particle-line {
-  fill: rgba(196, 232, 255, 0.78);
+  opacity: 0.85;
 }
 
 @keyframes yOvParticle {
@@ -173,9 +213,8 @@
   }
 }
 
-/* 落点溅起的水星 */
+/* 落点溅起的水星；填充同样由每颗水星给出 */
 .y-ov-splash {
-  fill: #eaf8ff;
   opacity: 0;
   animation: yOvSplash var(--ov-sdur, 800ms) cubic-bezier(0.2, 0.7, 0.3, 1)
     both;
@@ -199,7 +238,74 @@
 .y-ov-disc {
   transform-box: fill-box;
   transform-origin: center;
-  animation: yOvPool 1.4s var(--ov-ease) 1.9s both;
+  animation:
+    yOvPool 1.4s var(--ov-ease) 1.9s both,
+    yOvHue 11s linear 2.6s infinite;
+}
+
+/* 水面颜色缓慢流转，像光在彩色水膜上走 */
+@keyframes yOvHue {
+  from {
+    filter: hue-rotate(0deg) saturate(1.2);
+  }
+  to {
+    filter: hue-rotate(360deg) saturate(1.2);
+  }
+}
+
+/* 油膜虹彩：缓慢自转的一层彩光 */
+.y-ov-iris {
+  opacity: 0;
+  mix-blend-mode: screen;
+  transform-box: fill-box;
+  transform-origin: center;
+  animation:
+    yOvIrisIn 1.4s ease 2.2s both,
+    yOvIrisSpin 22s linear 3s infinite;
+}
+
+@keyframes yOvIrisIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 0.55;
+  }
+}
+
+@keyframes yOvIrisSpin {
+  from {
+    transform: rotate(0deg) scale(1);
+  }
+  50% {
+    transform: rotate(180deg) scale(1.05);
+  }
+  to {
+    transform: rotate(360deg) scale(1);
+  }
+}
+
+/* 落点湿气：水砸下后一直不散的水雾 */
+.y-ov-mist {
+  opacity: 0;
+  filter: blur(10px);
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: yOvMist 3.4s ease-out 1.55s both;
+}
+
+@keyframes yOvMist {
+  0% {
+    opacity: 0;
+    transform: scale(0.35);
+  }
+  22% {
+    opacity: 0.9;
+  }
+  100% {
+    opacity: 0.22;
+    transform: scale(1.4);
+  }
 }
 
 @keyframes yOvPool {
@@ -225,12 +331,12 @@
 }
 
 .y-ov-contour-b {
-  stroke: rgba(168, 216, 255, 0.12);
+  stroke: rgba(200, 160, 255, 0.14);
   animation-delay: 2.62s;
 }
 
 .y-ov-contour-c {
-  stroke: rgba(168, 216, 255, 0.1);
+  stroke: rgba(255, 200, 150, 0.12);
   animation-delay: 2.74s;
 }
 
@@ -245,14 +351,17 @@
 }
 
 .y-ov-ripple-a {
+  stroke: rgba(142, 233, 255, 0.8);
   animation-delay: 1.45s;
 }
 
 .y-ov-ripple-b {
+  stroke: rgba(255, 168, 224, 0.66);
   animation-delay: 1.85s;
 }
 
 .y-ov-ripple-c {
+  stroke: rgba(255, 224, 138, 0.55);
   animation-delay: 2.25s;
 }
 
@@ -728,6 +837,10 @@
   .y-ov-line {
     font-size: clamp(23px, 7.4vw, 34px);
     letter-spacing: 0.08em;
+  }
+  /* 移动端省掉最贵的一层模糊水幕，保留粒子与彩色水束 */
+  .y-ov-veil {
+    display: none;
   }
   .y-ov-sub {
     margin-top: 6px;

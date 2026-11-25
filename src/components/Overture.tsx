@@ -108,35 +108,51 @@ function noise(seed: number): number {
   return x - Math.floor(x);
 }
 
-/** 下落粒子：每 5 颗里 1 条速度线，其余是水珠；错峰持续约 1.3s */
-const FALL_PARTICLES = Array.from({ length: 56 }, (_, i) => {
-  const a = noise(i * 3 + 1);
-  const b = noise(i * 3 + 2);
-  const c = noise(i * 3 + 3);
-  return {
-    x: 500 + (a - 0.5) * 86,
-    r: 0.55 + b * 1.9,
-    lift: 470 + c * 300,
-    drift: (a - 0.5) * 30,
-    delay: Math.round(b * 1800),
-    duration: Math.round(720 + c * 600),
-    line: i % 5 === 0,
-  };
-});
+/** 五彩水色：青、粉、金、紫、薄荷，按序号循环分配 */
+const WATER_COLORS = ['#8ee9ff', '#ffa8e0', '#ffe08a', '#b6a8ff', '#8dffcf'];
+
+/** 移动端少一些粒子，避免低端机掉帧 */
+const SMALL_SCREEN =
+  typeof window !== 'undefined' &&
+  Boolean(window.matchMedia?.('(max-width: 640px)').matches);
+
+/** 下落粒子：每 4 颗里 1 条速度线，其余是水珠；错峰持续约 2s */
+const FALL_PARTICLES = Array.from(
+  { length: SMALL_SCREEN ? 64 : 108 },
+  (_, i) => {
+    const a = noise(i * 3 + 1);
+    const b = noise(i * 3 + 2);
+    const c = noise(i * 3 + 3);
+    return {
+      x: 500 + (a - 0.5) * 96,
+      r: 0.55 + b * 2,
+      lift: 470 + c * 340,
+      drift: (a - 0.5) * 34,
+      delay: Math.round(b * 1950),
+      duration: Math.round(720 + c * 620),
+      line: i % 4 === 0,
+      color: WATER_COLORS[i % WATER_COLORS.length],
+    };
+  }
+);
 
 /** 落点溅水：从水面向两侧上方抛起的水星 */
-const SPLASH_PARTICLES = Array.from({ length: 16 }, (_, i) => {
-  const a = noise(i * 5 + 100);
-  const b = noise(i * 5 + 101);
-  const dir = i % 2 === 0 ? -1 : 1;
-  return {
-    sx: dir * (22 + a * 96),
-    sy: -(16 + b * 62),
-    r: 0.6 + a * 1.3,
-    delay: Math.round(1350 + b * 1050),
-    duration: Math.round(720 + a * 380),
-  };
-});
+const SPLASH_PARTICLES = Array.from(
+  { length: SMALL_SCREEN ? 18 : 28 },
+  (_, i) => {
+    const a = noise(i * 5 + 100);
+    const b = noise(i * 5 + 101);
+    const dir = i % 2 === 0 ? -1 : 1;
+    return {
+      sx: dir * (20 + a * 112),
+      sy: -(16 + b * 70),
+      r: 0.6 + a * 1.4,
+      delay: Math.round(1350 + b * 1100),
+      duration: Math.round(720 + a * 400),
+      color: WATER_COLORS[(i + 2) % WATER_COLORS.length],
+    };
+  }
+);
 
 function motionAllowed(): boolean {
   if (typeof window === 'undefined') return false;
@@ -399,20 +415,50 @@ export default function Overture() {
           focusable='false'
         >
           <defs>
-            <linearGradient id='y-ov-stream' x1='0' y1='0' x2='0' y2='1'>
-              <stop offset='0%' stopColor='#8fd4ff' stopOpacity='0' />
-              <stop offset='28%' stopColor='#d5efff' stopOpacity='0.9' />
-              <stop offset='100%' stopColor='#7cc3ff' stopOpacity='0.35' />
+            <linearGradient id='y-ov-stream' x1='0' y1='0' x2='0.18' y2='1'>
+              <stop offset='0%' stopColor='#8ee9ff' stopOpacity='0' />
+              <stop offset='14%' stopColor='#d8f7ff' stopOpacity='0.95' />
+              <stop offset='44%' stopColor='#ffa8e0' stopOpacity='0.8' />
+              <stop offset='72%' stopColor='#ffe08a' stopOpacity='0.78' />
+              <stop offset='100%' stopColor='#b6a8ff' stopOpacity='0.42' />
+            </linearGradient>
+            <linearGradient id='y-ov-stream-2' x1='0' y1='0' x2='0.3' y2='1'>
+              <stop offset='0%' stopColor='#8dffcf' stopOpacity='0' />
+              <stop offset='20%' stopColor='#b9ffe9' stopOpacity='0.9' />
+              <stop offset='58%' stopColor='#8ee9ff' stopOpacity='0.7' />
+              <stop offset='100%' stopColor='#b6a8ff' stopOpacity='0.35' />
+            </linearGradient>
+            <linearGradient id='y-ov-stream-3' x1='0' y1='0' x2='0.6' y2='1'>
+              <stop offset='0%' stopColor='#ffd166' stopOpacity='0' />
+              <stop offset='22%' stopColor='#ffe9b0' stopOpacity='0.85' />
+              <stop offset='60%' stopColor='#ffa8e0' stopOpacity='0.6' />
+              <stop offset='100%' stopColor='#8ee9ff' stopOpacity='0.3' />
             </linearGradient>
             <radialGradient id='y-ov-pool' cx='50%' cy='50%' r='50%'>
-              <stop offset='0%' stopColor='#6fc4ff' stopOpacity='0.2' />
-              <stop offset='58%' stopColor='#3d78b8' stopOpacity='0.09' />
-              <stop offset='100%' stopColor='#24446f' stopOpacity='0' />
+              <stop offset='0%' stopColor='#7fe7ff' stopOpacity='0.3' />
+              <stop offset='30%' stopColor='#b48cff' stopOpacity='0.18' />
+              <stop offset='60%' stopColor='#ff8ad4' stopOpacity='0.13' />
+              <stop offset='84%' stopColor='#ffd166' stopOpacity='0.08' />
+              <stop offset='100%' stopColor='#6bffc8' stopOpacity='0' />
+            </radialGradient>
+            <linearGradient id='y-ov-iris' x1='0' y1='0' x2='1' y2='1'>
+              <stop offset='0%' stopColor='#65e6ff' stopOpacity='0.4' />
+              <stop offset='25%' stopColor='#c08bff' stopOpacity='0.34' />
+              <stop offset='50%' stopColor='#ff8ad4' stopOpacity='0.3' />
+              <stop offset='75%' stopColor='#ffd166' stopOpacity='0.26' />
+              <stop offset='100%' stopColor='#6bffc8' stopOpacity='0.34' />
+            </linearGradient>
+            <radialGradient id='y-ov-mist' cx='50%' cy='50%' r='50%'>
+              <stop offset='0%' stopColor='#ffffff' stopOpacity='0.55' />
+              <stop offset='38%' stopColor='#9be8ff' stopOpacity='0.3' />
+              <stop offset='70%' stopColor='#ffa8e0' stopOpacity='0.16' />
+              <stop offset='100%' stopColor='#b6a8ff' stopOpacity='0' />
             </radialGradient>
             <radialGradient id='y-ov-flash' cx='50%' cy='50%' r='50%'>
-              <stop offset='0%' stopColor='#f2fbff' stopOpacity='0.95' />
-              <stop offset='45%' stopColor='#a8e0ff' stopOpacity='0.35' />
-              <stop offset='100%' stopColor='#7cc3ff' stopOpacity='0' />
+              <stop offset='0%' stopColor='#ffffff' stopOpacity='0.95' />
+              <stop offset='40%' stopColor='#c8f3ff' stopOpacity='0.4' />
+              <stop offset='72%' stopColor='#ffa8e0' stopOpacity='0.18' />
+              <stop offset='100%' stopColor='#b6a8ff' stopOpacity='0' />
             </radialGradient>
             <clipPath id='y-ov-disc'>
               <circle cx={DISC.cx} cy={DISC.cy} r={DISC.r} />
@@ -427,6 +473,22 @@ export default function Overture() {
               cy={DISC.cy}
               r={DISC.r}
               fill='url(#y-ov-pool)'
+            />
+            {/* 水面油膜：一层缓慢自转的虹彩 */}
+            <circle
+              className='y-ov-iris'
+              cx={DISC.cx}
+              cy={DISC.cy}
+              r={DISC.r}
+              fill='url(#y-ov-iris)'
+            />
+            {/* 落点水雾：水砸下来后一直不散的湿气 */}
+            <circle
+              className='y-ov-mist'
+              cx={DISC.cx}
+              cy={DISC.cy}
+              r='150'
+              fill='url(#y-ov-mist)'
             />
             <ellipse
               className='y-ov-contour'
@@ -492,23 +554,42 @@ export default function Overture() {
 
           {/* 水束与粒子：从画面外持续落到水面，覆盖在板块表面 */}
           <g className='y-ov-stream'>
+            {/* 模糊水幕：给水流一点厚度，不是一根线 */}
+            <path
+              className='y-ov-veil'
+              d='M 500 -180 C 522 120, 478 340, 500 600'
+              pathLength={1}
+              stroke='url(#y-ov-stream)'
+            />
             <path
               className='y-ov-fall'
-              d='M 500 -140 C 518 120, 482 340, 500 600'
+              d='M 500 -160 C 518 120, 482 340, 500 600'
               pathLength={1}
               stroke='url(#y-ov-stream)'
             />
             <path
               className='y-ov-fall y-ov-fall-b'
-              d='M 486 -100 C 504 140, 468 340, 492 588'
+              d='M 484 -120 C 504 140, 466 340, 490 588'
               pathLength={1}
-              stroke='url(#y-ov-stream)'
+              stroke='url(#y-ov-stream-2)'
             />
             <path
               className='y-ov-fall y-ov-fall-c'
-              d='M 514 -160 C 524 160, 486 360, 506 604'
+              d='M 516 -180 C 526 160, 484 360, 508 604'
               pathLength={1}
-              stroke='url(#y-ov-stream)'
+              stroke='url(#y-ov-stream-3)'
+            />
+            <path
+              className='y-ov-fall y-ov-fall-d'
+              d='M 492 -200 C 510 120, 474 330, 496 596'
+              pathLength={1}
+              stroke='url(#y-ov-stream-2)'
+            />
+            <path
+              className='y-ov-fall y-ov-fall-e'
+              d='M 508 -130 C 520 150, 490 350, 504 600'
+              pathLength={1}
+              stroke='url(#y-ov-stream-3)'
             />
             {FALL_PARTICLES.map((p, i) => {
               const style = {
@@ -516,6 +597,7 @@ export default function Overture() {
                 '--ov-lift': `${p.lift}px`,
                 '--ov-drift': `${p.drift}px`,
                 '--ov-dur': `${p.duration}ms`,
+                fill: p.color,
               } as CSSProperties;
               return p.line ? (
                 <ellipse
@@ -551,6 +633,7 @@ export default function Overture() {
                     '--ov-sx': `${p.sx}px`,
                     '--ov-sy': `${p.sy}px`,
                     '--ov-sdur': `${p.duration}ms`,
+                    fill: p.color,
                   } as CSSProperties
                 }
               />
