@@ -1,5 +1,4 @@
 import {
-  Fragment,
   useCallback,
   useEffect,
   useRef,
@@ -268,6 +267,32 @@ function playImpact(): void {
   } catch {
     /* 静默 */
   }
+}
+
+/**
+ * 单行诗句：逐字拆开，`--i` 控制字与字的错峰、`--start` 控制这一行的起点。
+ * 单独成组件而不是用 Fragment —— 平台会给元素注入属性，
+ * 而 Fragment 只接受 key / children。
+ */
+function VerseLine({ line }: { line: (typeof VERSE_LINES)[number] }) {
+  return (
+    <p className='y-ov-line'>
+      {Array.from(line.text).map((ch, i) => (
+        <span
+          key={i}
+          className='y-ov-char'
+          style={
+            {
+              '--i': i,
+              '--start': line.start,
+            } as CSSProperties
+          }
+        >
+          {ch}
+        </span>
+      ))}
+    </p>
+  );
 }
 
 export default function Overture() {
@@ -737,29 +762,9 @@ export default function Overture() {
           className='y-ov-verse'
           aria-label='开篇引言：泻水置平地，各自东西南北流'
         >
-          {VERSE_LINES.map((line, lineIndex) => (
-            <Fragment key={line.text}>
-              {lineIndex === 1 ? (
-                <span className='y-ov-rule' aria-hidden='true' />
-              ) : null}
-              <p className='y-ov-line'>
-                {Array.from(line.text).map((ch, i) => (
-                  <span
-                    key={i}
-                    className='y-ov-char'
-                    style={
-                      {
-                        '--i': i,
-                        '--start': line.start,
-                      } as CSSProperties
-                    }
-                  >
-                    {ch}
-                  </span>
-                ))}
-              </p>
-            </Fragment>
-          ))}
+          <VerseLine line={VERSE_LINES[0]} />
+          <span className='y-ov-rule' aria-hidden='true' />
+          <VerseLine line={VERSE_LINES[1]} />
           <p className='y-ov-sub'>流向不同，不等于走错</p>
           <p className='y-ov-source'>—— 鲍照《拟行路难·其四》</p>
         </section>
