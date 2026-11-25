@@ -19,12 +19,18 @@ import { Delaunay } from 'd3-delaunay';
 
 /** 会话级记录：开播即写入，刷新与切步都不会重复播放 */
 const SEEN_KEY = 'yutu.overture.v1';
-/** 名句落定后开始退潮（落水与铺开占前 3.3s） */
-const PLAY_MS = 6050;
+/** 名句逐字读完、小字落定后再退潮（落水与铺开占前 3.3s） */
+const PLAY_MS = 7500;
 /** 退潮 + 系统显影的总时长 */
 const LEAVE_MS = 1150;
 /** 朗诵与低频轰鸣的起点，略早于名句浮现 */
-const NARRATE_AT = 4450;
+const NARRATE_AT = 4420;
+
+/** 名句逐字出现：`start` 为这一行的起始秒数，字与字之间间隔 0.11s */
+const VERSE_LINES = [
+  { text: '泻水置平地', start: 4.5 },
+  { text: '各自东西南北流', start: 5.55 },
+] as const;
 
 type Phase = 'idle' | 'playing' | 'leaving';
 
@@ -150,18 +156,23 @@ function seenThisSession(): boolean {
   }
 }
 
-/**
- * 演示开关：URL 上带 `?overture=1`（普通查询串或 hash 查询串均可）时，
- * 每次刷新都播放，忽略会话记录。例如 `/#/?overture=1`。
- */
-function forcedByUrl(): boolean {
+/** 读取 URL 上的布尔开关（普通查询串或 hash 查询串均可） */
+function readFlag(name: string): boolean {
   if (typeof window === 'undefined') return false;
   try {
     const raw = `${window.location.search}${window.location.hash}`;
-    return /(?:^|[?&#])overture=1(?:&|$)/.test(raw);
+    return new RegExp(`(?:^|[?&#])${name}=1(?:&|$)`).test(raw);
   } catch {
     return false;
   }
+}
+
+/**
+ * 演示开关：`?overture=1` 每次刷新都播；`?demo=1` 同时进入路演模式。
+ * 例如 `/#/?demo=1`。
+ */
+function forcedByUrl(): boolean {
+  return readFlag('overture') || readFlag('demo');
 }
 
 function markSeen(): void {
@@ -201,16 +212,15 @@ function speakVerse(): void {
     const preferred =
       pool.find((v) => /Yunjian|Yunxi|Kangkang|Male|男/i.test(v.name)) ??
       pool[0];
-    const lines = ['泻水置平地。', '各自东西南北流。'];
-    lines.forEach((text, i) => {
-      const u = new SpeechSynthesisUtterance(text);
-      u.lang = 'zh-CN';
-      if (preferred) u.voice = preferred;
-      u.rate = i === 0 ? 0.86 : 0.8;
-      u.pitch = 0.82;
-      u.volume = 1;
-      synth.speak(u);
-    });
+    const u = new SpeechSynthesisUtterance(
+      '泻水置平地。各自东西南北流。'
+    );
+    u.lang = 'zh-CN';
+    if (preferred) u.voice = preferred;
+    u.rate = 0.84;
+    u.pitch = 0.82;
+    u.volume = 1;
+    synth.speak(u);
   } catch {
     /* 静默：保留纯视觉版本 */
   }
@@ -271,6 +281,9 @@ export default function Overture() {
     }
   });
   const soundRef = useRef(soundOn);
+  /** 路演模式：强制有声、并显示一枚小标签；由「更多 → 路演模式」或 `?demo=1` 触发 */
+  const [demo, setDemo] = useState(() => readFlag('demo'));
+  const demoRef = useRef(demo);
 
   const toggleSound = useCallback(() => {
     const next = !soundRef.current;
@@ -286,6 +299,8 @@ export default function Overture() {
       speakVerse();
     } else {
       stopVerse();
+      /* 手动静音即退出「强制有声」，但路演标记保留 */
+      demoRef.current = false;
     }
   }, []);
 
@@ -296,8 +311,13 @@ export default function Overture() {
 
   /** 「更多 → 重看开篇」：手动重播绕过会话记录，但仍尊重减弱动效 */
   useEffect(() => {
-    const onReplay = () => {
+    const onReplay = (e: Event) => {
       if (!motionAllowed()) return;
+      const nextDemo = Boolean(
+        (e as CustomEvent<{ demo?: boolean }>).detail?.demo
+      );
+      demoRef.current = nextDemo;
+      setDemo(nextDemo);
       setSeq((s) => ({ id: s.id + 1, phase: 'playing' }));
     };
     window.addEventListener('yutu:overture', onReplay);
@@ -319,7 +339,8 @@ export default function Overture() {
     }, PLAY_MS);
     /* 名句浮现前读诗；自然退潮不打断，留一点余音 */
     const voiceTimer = window.setTimeout(() => {
-      if (!soundRef.current || !narrationAllowed()) return;
+      if (!narrationAllowed()) return;
+      if (!soundRef.current && !demoRef.current) return;
       playImpact();
       speakVerse();
     }, NARRATE_AT);
@@ -573,11 +594,33 @@ export default function Overture() {
           className='y-ov-verse'
           aria-label='开篇引言：泻水置平地，各自东西南北流'
         >
-          <p className='y-ov-line y-ov-line-a'>泻水置平地</p>
-          <p className='y-ov-line y-ov-line-b'>各自东西南北流</p>
+          {VERSE_LINES.map((line) => (
+            <p className='y-ov-line' key={line.text}>
+              {Array.from(line.text).map((ch, i) => (
+                <span
+                  key={i}
+                  className='y-ov-char'
+                  style={
+                    {
+                      '--i': i,
+                      '--start': line.start,
+                    } as CSSProperties
+                  }
+                >
+                  {ch}
+                </span>
+              ))}
+            </p>
+          ))}
           <p className='y-ov-sub'>流向不同，不等于走错</p>
         </section>
       </div>
+
+      {demo ? (
+        <span className='y-ov-demo' aria-hidden='true'>
+          路演模式
+        </span>
+      ) : null}
 
       <div className='y-ov-controls'>
         <button

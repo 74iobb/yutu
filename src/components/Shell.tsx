@@ -699,6 +699,21 @@ export function Shell({ children }: { children: ReactNode }) {
                     <span>重看开篇</span>
                     <span aria-hidden='true'>↺</span>
                   </button>
+                  <button
+                    type='button'
+                    className='y-more-item'
+                    onClick={() => {
+                      window.dispatchEvent(
+                        new CustomEvent('yutu:overture', {
+                          detail: { demo: true },
+                        })
+                      );
+                      setMoreOpen(false);
+                    }}
+                  >
+                    <span>路演模式</span>
+                    <span aria-hidden='true'>▶</span>
+                  </button>
                 </div>
               ) : null}
             </span>

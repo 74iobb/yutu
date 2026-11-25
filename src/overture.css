@@ -416,9 +416,37 @@
     0 2px 20px rgba(0, 0, 0, 0.86),
     0 0 34px rgba(150, 205, 255, 0.22),
     0 0 64px rgba(245, 193, 90, 0.24);
-  opacity: 0;
-  clip-path: inset(0 0 100% 0);
-  animation: yOvLine 0.9s var(--ov-ease) both;
+  white-space: nowrap;
+}
+
+/* 逐字浮现：字与字间隔 0.11s，读到该字时先亮起金色再落回冷白 */
+.y-ov-char {
+  display: inline-block;
+  opacity: 0.1;
+  animation: yOvChar 0.64s var(--ov-ease) both;
+  animation-delay: calc(var(--start) * 1s + var(--i) * 0.11s);
+}
+
+@keyframes yOvChar {
+  0% {
+    opacity: 0.1;
+    filter: blur(3px);
+    transform: translateY(5px) scale(0.96);
+  }
+  55% {
+    opacity: 1;
+    filter: blur(0);
+    color: #fff4d6;
+    text-shadow:
+      0 0 22px rgba(245, 193, 90, 0.55),
+      0 0 46px rgba(245, 193, 90, 0.28);
+  }
+  100% {
+    opacity: 1;
+    filter: blur(0);
+    transform: none;
+    color: #f7fbff;
+  }
 }
 
 /* 名句落下时从背后亮起的一圈金色光，替代音响也能有「震」一下 */
@@ -457,28 +485,6 @@
   }
 }
 
-.y-ov-line-a {
-  animation-delay: 4.5s;
-}
-
-.y-ov-line-b {
-  animation-delay: 4.72s;
-}
-
-@keyframes yOvLine {
-  0% {
-    opacity: 0;
-    clip-path: inset(0 0 100% 0);
-    transform: translateY(10px);
-    letter-spacing: 0.16em;
-  }
-  100% {
-    opacity: 1;
-    clip-path: inset(-30% -6% -30% -6%);
-    transform: translateY(0);
-    letter-spacing: 0.1em;
-  }
-}
 
 .y-ov-sub {
   position: relative;
@@ -492,7 +498,7 @@
   color: rgba(198, 222, 247, 0.72);
   text-shadow: 0 1px 10px rgba(0, 0, 0, 0.8);
   opacity: 0;
-  animation: yOvFadeUp 0.8s var(--ov-ease) 5.2s both;
+  animation: yOvFadeUp 0.8s var(--ov-ease) 6.9s both;
 }
 
 /* 名句出现时的一圈极淡声波，替代音效 */
@@ -511,7 +517,7 @@
   );
   opacity: 0;
   transform: translateX(-50%) scaleX(0.2);
-  animation: yOvEchoLine 1.5s ease-out 5.25s both;
+  animation: yOvEchoLine 1.5s ease-out 6.95s both;
 }
 
 @keyframes yOvEchoLine {
@@ -526,6 +532,22 @@
     opacity: 0;
     transform: translateX(-50%) scaleX(1.25);
   }
+}
+
+/* ------------------------------ 路演标记 ------------------------------ */
+.y-ov-demo {
+  position: absolute;
+  left: max(22px, env(safe-area-inset-left));
+  bottom: max(24px, env(safe-area-inset-bottom));
+  z-index: 3;
+  padding: 5px 9px;
+  border: 1px solid rgba(245, 193, 90, 0.32);
+  border-radius: 999px;
+  color: rgba(245, 205, 130, 0.86);
+  font-size: 10.5px;
+  letter-spacing: 0.22em;
+  opacity: 0;
+  animation: yOvFadeIn 0.5s ease 1.2s both;
 }
 
 /* ------------------------------ 声音与跳过 ------------------------------ */
@@ -712,9 +734,24 @@
     font-size: 11px;
     letter-spacing: 0.24em;
   }
+  .y-ov-label text {
+    font-size: 17px;
+    letter-spacing: 2px;
+  }
   .y-ov-controls {
     right: max(12px, env(safe-area-inset-right));
     bottom: max(12px, env(safe-area-inset-bottom));
+  }
+  .y-ov-sound,
+  .y-ov-skip {
+    padding: 7px 8px;
+    font-size: 11px;
+    letter-spacing: 0.06em;
+  }
+  .y-ov-demo {
+    left: max(12px, env(safe-area-inset-left));
+    bottom: max(14px, env(safe-area-inset-bottom));
+    font-size: 9.5px;
   }
 }
 
