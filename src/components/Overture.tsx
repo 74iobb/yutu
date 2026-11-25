@@ -469,7 +469,7 @@ function startMusic(): void {
   const bus = ctx.createGain();
   bus.gain.value = 0.0001;
   bus.connect(master);
-  bus.gain.setTargetAtTime(0.2, ctx.currentTime, 1.6);
+  bus.gain.setTargetAtTime(0.17, ctx.currentTime, 1.6);
 
   const padA = ctx.createOscillator();
   padA.type = 'sine';
@@ -485,16 +485,29 @@ function startMusic(): void {
   padA.start();
   padB.start();
 
-  const delay = ctx.createDelay(1.2);
-  delay.delayTime.value = 0.46;
+  /* 第一层混响：中短延迟，湿声拉高 */
+  const delay = ctx.createDelay(1.6);
+  delay.delayTime.value = 0.52;
   const feedback = ctx.createGain();
-  feedback.gain.value = 0.3;
+  feedback.gain.value = 0.46;
   const wet = ctx.createGain();
-  wet.gain.value = 0.35;
+  wet.gain.value = 0.5;
   delay.connect(feedback);
   feedback.connect(delay);
   delay.connect(wet);
   wet.connect(bus);
+
+  /* 第二层：更长、更暗的尾巴 */
+  const delay2 = ctx.createDelay(2.4);
+  delay2.delayTime.value = 0.87;
+  const feedback2 = ctx.createGain();
+  feedback2.gain.value = 0.32;
+  const wet2 = ctx.createGain();
+  wet2.gain.value = 0.26;
+  delay2.connect(feedback2);
+  feedback2.connect(delay2);
+  delay2.connect(wet2);
+  wet2.connect(bus);
 
   const notes = [261.63, 293.66, 329.63, 392.0, 440.0];
   let index = 0;
@@ -507,12 +520,13 @@ function startMusic(): void {
     const gain = ctx.createGain();
     gain.gain.setValueAtTime(0.0001, t);
     gain.gain.exponentialRampToValueAtTime(0.1, t + 0.03);
-    gain.gain.exponentialRampToValueAtTime(0.0001, t + 2.4);
+    gain.gain.exponentialRampToValueAtTime(0.0001, t + 3.3);
     osc.connect(gain);
     gain.connect(bus);
     gain.connect(delay);
+    gain.connect(delay2);
     osc.start(t);
-    osc.stop(t + 2.5);
+    osc.stop(t + 3.4);
     index += 1;
   };
 
