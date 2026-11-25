@@ -1,5 +1,6 @@
 import { lazy, Suspense } from 'react';
 import { Shell } from '@/components/Shell';
+import Overture from '@/components/Overture';
 import { useKineticField, usePremiumMotion } from '@/lib/uiMotion';
 import Step1 from '@/components/Step1';
 const Step2 = lazy(() => import('@/components/Step2'));
@@ -25,6 +26,7 @@ function Flow() {
 export default function YutuApp() {
   usePremiumMotion();
   useKineticField();
+  const { state } = useYutu();
 
   return (
     <div className="y-page">
@@ -37,6 +39,7 @@ export default function YutuApp() {
         <span className="y-ambient-noise" />
       </div>
       <Flow />
+      <Overture enabled={state.maxStep <= 1} />
       <p className="y-page-foot">
         域途 · 体验式生涯陪伴系统 ｜ 数据来自知乎开放平台检索快照与平台数据表；示意数据已在界面标注。
         <br />
