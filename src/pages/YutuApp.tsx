@@ -26,7 +26,6 @@ function Flow() {
 export default function YutuApp() {
   usePremiumMotion();
   useKineticField();
-  const { state } = useYutu();
 
   return (
     <div className="y-page">
@@ -39,7 +38,7 @@ export default function YutuApp() {
         <span className="y-ambient-noise" />
       </div>
       <Flow />
-      <Overture enabled={state.maxStep <= 1} />
+      <Overture />
       <p className="y-page-foot">
         域途 · 体验式生涯陪伴系统 ｜ 数据来自知乎开放平台检索快照与平台数据表；示意数据已在界面标注。
         <br />

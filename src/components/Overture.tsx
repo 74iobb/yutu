@@ -115,9 +115,9 @@ function markSeen(): void {
   }
 }
 
-export default function Overture({ enabled }: { enabled: boolean }) {
+export default function Overture() {
   const [seq, setSeq] = useState<{ id: number; phase: Phase }>(() => {
-    const auto = enabled && motionAllowed() && !seenThisSession();
+    const auto = motionAllowed() && !seenThisSession();
     return { id: auto ? 1 : 0, phase: auto ? 'playing' : 'idle' };
   });
 
