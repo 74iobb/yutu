@@ -80,15 +80,3 @@
 | `src/assets/photos/step3-sea-hand.jpg` | 裁底部（VKAH） | 第 2 / 3 步探索 |
 | `src/assets/photos/step4-salt-flat.jpg` | 裁底部（POISON） | 第 3 / 4 步方向与归属（试点） |
 | `src/assets/photos/step5-birds.jpg` | 裁底部（POISON） | 第 5 步成长/休整（试点） |
-
-## 电气实训页教材照片（2026-11-23）
-
-来自用户上传的两张教材习题照片（`.attachments/微信图片_20261123124050_408_2.jpg`、`.attachments/微信图片_20261123124055_409_2.jpg`），顺时针旋转 90° 后压缩输出到 `src/assets/`，仅用于 `/#/electrical` 页面底部「对照原题图」折叠区：
-
-| 文件 | 用途 | 说明 |
-|---|---|---|
-| `src/assets/electrical-problem-1.jpg` | 题 1 原题图（Y-△ 降压启动，图 1-39 题 1 图） | 1500×692，q84，约 84 KB |
-| `src/assets/electrical-problem-2.jpg` | 题 2 原题图（小车运行控制电路设计要求） | 1500×692，q84，约 64 KB |
-
-**图片来源为用户提供的教材照片，仅限本项目内对照学习使用；如需对外发布或商用，请先确认教材版权。**
-电路按教材逻辑用 SVG 重绘，页面中的交互演示不依赖照片像素。

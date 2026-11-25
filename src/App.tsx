@@ -1,7 +1,6 @@
 import { lazy, Suspense } from 'react';
 import { HashRouter, Navigate, Outlet, Route, Routes } from 'react-router-dom';
 import YutuApp from '@/pages/YutuApp';
-import ElectricalLab from '@/pages/ElectricalLab';
 import ErrorBoundary from '@/components/ErrorBoundary';
 import { YutuProvider } from '@/store/YutuContext';
 
@@ -11,7 +10,6 @@ const Sandbox = lazy(() => import('@/pages/Sandbox'));
 /**
  * 域途 / 沙盘共用同一份 YutuProvider：
  * 在沙盘里采纳计划后，回到主流程能直接看到新写入的体验任务。
- * 电气实训是纯前端演示，不挂载数据层。
  */
 function YutuLayout() {
   return (
@@ -42,7 +40,6 @@ function App() {
             }
           />
         </Route>
-        <Route path='/electrical' element={<ElectricalLab />} />
         <Route path='*' element={<Navigate to='/' replace />} />
       </Routes>
     </HashRouter>
