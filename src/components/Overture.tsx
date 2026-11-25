@@ -239,7 +239,7 @@ async function unlockAudio(): Promise<boolean> {
  */
 const VOICE_URL =
   'https://agent.nuwax.com/api/f/s3/app-dev/20261125/64465fff87744c84bbc0073a89c03b92.m4a';
-const VOICE_RATE = 0.92;
+const VOICE_RATE = 0.96;
 
 let voiceBufferPromise: Promise<AudioBuffer | null> | null = null;
 let voiceSource: AudioBufferSourceNode | null = null;
@@ -295,19 +295,19 @@ async function playVoiceShifted(): Promise<boolean> {
 
     const highpass = ctx.createBiquadFilter();
     highpass.type = 'highpass';
-    highpass.frequency.value = 130;
+    highpass.frequency.value = 90;
     highpass.Q.value = 0.7;
 
     const lowpass = ctx.createBiquadFilter();
     lowpass.type = 'lowpass';
-    lowpass.frequency.value = 7500;
+    lowpass.frequency.value = 8000;
 
     const comp = ctx.createDynamicsCompressor();
-    comp.threshold.value = -28;
-    comp.knee.value = 18;
-    comp.ratio.value = 3.5;
+    comp.threshold.value = -20;
+    comp.knee.value = 20;
+    comp.ratio.value = 2.5;
     comp.attack.value = 0.004;
-    comp.release.value = 0.22;
+    comp.release.value = 0.2;
 
     const gate = ctx.createGain();
     gate.gain.value = 1;
@@ -315,30 +315,35 @@ async function playVoiceShifted(): Promise<boolean> {
     analyser.fftSize = 512;
 
     const out = ctx.createGain();
-    out.gain.value = 1;
+    /* 归一化：把录音峰值拉到 0.92，原本偏小的录音也能听清 */
+    let peak = 0;
+    for (let c = 0; c < buffer.numberOfChannels; c += 1) {
+      const data = buffer.getChannelData(c);
+      for (let i = 0; i < data.length; i += 1) {
+        const v = Math.abs(data[i]);
+        if (v > peak) peak = v;
+      }
+    }
+    out.gain.value = Math.min(3.2, Math.max(1, 0.92 / (peak || 0.4)));
 
     src.connect(highpass);
     highpass.connect(lowpass);
     lowpass.connect(comp);
     comp.connect(gate);
     gate.connect(out);
-    gate.connect(analyser);
     out.connect(audio.master);
+    comp.connect(analyser);
 
-    /* 噪声门：峰值低于阈值时把音量压到 3%，句间底噪基本听不见 */
+    /* 噪声门：阈值降到 0.008，句间只轻压到 10%，不再切掉字头 */
     const samples = new Uint8Array(analyser.fftSize);
     const tick = () => {
       analyser.getByteTimeDomainData(samples);
-      let peak = 0;
+      let p2 = 0;
       for (let i = 0; i < samples.length; i += 1) {
         const v = Math.abs(samples[i] - 128) / 128;
-        if (v > peak) peak = v;
+        if (v > p2) p2 = v;
       }
-      gate.gain.setTargetAtTime(
-        peak > 0.02 ? 1 : 0.03,
-        ctx.currentTime,
-        0.02
-      );
+      gate.gain.setTargetAtTime(p2 > 0.008 ? 1 : 0.1, ctx.currentTime, 0.03);
       voiceGateRaf = requestAnimationFrame(tick);
     };
     voiceGateRaf = requestAnimationFrame(tick);
