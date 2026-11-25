@@ -92,10 +92,10 @@ const PLATES = PLATE_CENTERS.map(([cx, cy, label], i) => ({
   dx: [-190, 190, -190, 190][i],
   dy: [-128, -128, 128, 128][i],
   fill: [
-    'rgba(96, 196, 255, 0.17)',
-    'rgba(245, 186, 96, 0.14)',
-    'rgba(162, 150, 255, 0.15)',
-    'rgba(110, 220, 190, 0.13)',
+    'rgba(255, 255, 255, 0.38)',
+    'rgba(255, 246, 224, 0.32)',
+    'rgba(238, 244, 252, 0.34)',
+    'rgba(255, 252, 240, 0.3)',
   ][i],
 }));
 
@@ -109,7 +109,7 @@ function noise(seed: number): number {
 }
 
 /** 五彩水色：青、粉、金、紫、薄荷，按序号循环分配 */
-const WATER_COLORS = ['#8ee9ff', '#ffa8e0', '#ffe08a', '#b6a8ff', '#8dffcf'];
+const WATER_COLORS = ['#eaf4ff', '#fff1d6', '#ffe9b8', '#e8eefb', '#f4fbff'];
 
 /** 移动端少一些粒子，避免低端机掉帧 */
 const SMALL_SCREEN =
@@ -193,12 +193,12 @@ const DESTINY_RAYS = Array.from({ length: 14 }, (_, i) => {
 
 /** 前景散景：微距镜头的失焦光斑 */
 const BOKEH = [
-  { x: 210, y: 250, r: 26, color: '#8ee9ff', delay: 0 },
-  { x: 790, y: 300, r: 20, color: '#ffa8e0', delay: 1.2 },
-  { x: 160, y: 620, r: 18, color: '#ffe08a', delay: 2.4 },
-  { x: 850, y: 640, r: 30, color: '#b6a8ff', delay: 0.8 },
-  { x: 330, y: 170, r: 14, color: '#8dffcf', delay: 1.8 },
-  { x: 700, y: 120, r: 12, color: '#8ee9ff', delay: 2.8 },
+  { x: 210, y: 250, r: 26, color: '#eaf4ff', delay: 0 },
+  { x: 790, y: 300, r: 20, color: '#fff1d6', delay: 1.2 },
+  { x: 160, y: 620, r: 18, color: '#ffe9b8', delay: 2.4 },
+  { x: 850, y: 640, r: 30, color: '#e8eefb', delay: 0.8 },
+  { x: 330, y: 170, r: 14, color: '#f4fbff', delay: 1.8 },
+  { x: 700, y: 120, r: 12, color: '#eaf4ff', delay: 2.8 },
 ];
 
 function motionAllowed(): boolean {
@@ -864,9 +864,9 @@ export default function Overture() {
   return (
     <div
       key={seq.id}
-      className={`y-overture${seq.phase === 'leaving' ? ' is-leaving' : ''}${
-        LOW_POWER ? ' y-ov-lite' : ''
-      }`}
+      className={`y-overture y-ov-bright${
+        seq.phase === 'leaving' ? ' is-leaving' : ''
+      }${LOW_POWER ? ' y-ov-lite' : ''}`}
       onClick={handleOverlayClick}
     >
       <span className='y-ov-halo' aria-hidden='true' />
@@ -895,44 +895,44 @@ export default function Overture() {
         >
           <defs>
             <linearGradient id='y-ov-stream' x1='0' y1='0' x2='0.18' y2='1'>
-              <stop offset='0%' stopColor='#8ee9ff' stopOpacity='0' />
-              <stop offset='14%' stopColor='#d8f7ff' stopOpacity='0.95' />
-              <stop offset='44%' stopColor='#ffa8e0' stopOpacity='0.8' />
-              <stop offset='72%' stopColor='#ffe08a' stopOpacity='0.78' />
-              <stop offset='100%' stopColor='#b6a8ff' stopOpacity='0.42' />
+              <stop offset='0%' stopColor='#eaf4ff' stopOpacity='0' />
+              <stop offset='14%' stopColor='#ffffff' stopOpacity='0.95' />
+              <stop offset='44%' stopColor='#fff1d6' stopOpacity='0.8' />
+              <stop offset='72%' stopColor='#ffe9b8' stopOpacity='0.78' />
+              <stop offset='100%' stopColor='#e8eefb' stopOpacity='0.42' />
             </linearGradient>
             <linearGradient id='y-ov-stream-2' x1='0' y1='0' x2='0.3' y2='1'>
-              <stop offset='0%' stopColor='#8dffcf' stopOpacity='0' />
-              <stop offset='20%' stopColor='#b9ffe9' stopOpacity='0.9' />
-              <stop offset='58%' stopColor='#8ee9ff' stopOpacity='0.7' />
-              <stop offset='100%' stopColor='#b6a8ff' stopOpacity='0.35' />
+              <stop offset='0%' stopColor='#f4fbff' stopOpacity='0' />
+              <stop offset='20%' stopColor='#ffffff' stopOpacity='0.9' />
+              <stop offset='58%' stopColor='#eaf4ff' stopOpacity='0.7' />
+              <stop offset='100%' stopColor='#e8eefb' stopOpacity='0.35' />
             </linearGradient>
             <linearGradient id='y-ov-stream-3' x1='0' y1='0' x2='0.6' y2='1'>
-              <stop offset='0%' stopColor='#ffd166' stopOpacity='0' />
-              <stop offset='22%' stopColor='#ffe9b0' stopOpacity='0.85' />
-              <stop offset='60%' stopColor='#ffa8e0' stopOpacity='0.6' />
-              <stop offset='100%' stopColor='#8ee9ff' stopOpacity='0.3' />
+              <stop offset='0%' stopColor='#f3d79a' stopOpacity='0' />
+              <stop offset='22%' stopColor='#fff8e6' stopOpacity='0.85' />
+              <stop offset='60%' stopColor='#fff1d6' stopOpacity='0.6' />
+              <stop offset='100%' stopColor='#eaf4ff' stopOpacity='0.3' />
             </linearGradient>
             <radialGradient id='y-ov-pool' cx='50%' cy='50%' r='50%'>
-              <stop offset='0%' stopColor='#7fe7ff' stopOpacity='0.3' />
-              <stop offset='30%' stopColor='#b48cff' stopOpacity='0.18' />
-              <stop offset='60%' stopColor='#ff8ad4' stopOpacity='0.13' />
-              <stop offset='84%' stopColor='#ffd166' stopOpacity='0.08' />
-              <stop offset='100%' stopColor='#6bffc8' stopOpacity='0' />
+              <stop offset='0%' stopColor='#ffffff' stopOpacity='0.3' />
+              <stop offset='30%' stopColor='#e6eefb' stopOpacity='0.18' />
+              <stop offset='60%' stopColor='#fff0d8' stopOpacity='0.13' />
+              <stop offset='84%' stopColor='#f3d79a' stopOpacity='0.08' />
+              <stop offset='100%' stopColor='#eef6ff' stopOpacity='0' />
             </radialGradient>
             <linearGradient id='y-ov-iris' x1='0' y1='0' x2='1' y2='1'>
-              <stop offset='0%' stopColor='#65e6ff' stopOpacity='0.4' />
-              <stop offset='25%' stopColor='#c08bff' stopOpacity='0.34' />
-              <stop offset='50%' stopColor='#ff8ad4' stopOpacity='0.3' />
-              <stop offset='75%' stopColor='#ffd166' stopOpacity='0.26' />
-              <stop offset='100%' stopColor='#6bffc8' stopOpacity='0.34' />
+              <stop offset='0%' stopColor='#ffffff' stopOpacity='0.4' />
+              <stop offset='25%' stopColor='#edf2fb' stopOpacity='0.34' />
+              <stop offset='50%' stopColor='#fff0d8' stopOpacity='0.3' />
+              <stop offset='75%' stopColor='#f3d79a' stopOpacity='0.26' />
+              <stop offset='100%' stopColor='#eef6ff' stopOpacity='0.34' />
             </linearGradient>
             <linearGradient id='y-ov-iris-2' x1='1' y1='0' x2='0' y2='1'>
-              <stop offset='0%' stopColor='#ffe08a' stopOpacity='0.3' />
-              <stop offset='30%' stopColor='#8dffcf' stopOpacity='0.26' />
-              <stop offset='58%' stopColor='#8ee9ff' stopOpacity='0.3' />
-              <stop offset='80%' stopColor='#c08bff' stopOpacity='0.26' />
-              <stop offset='100%' stopColor='#ffa8e0' stopOpacity='0.28' />
+              <stop offset='0%' stopColor='#ffe9b8' stopOpacity='0.3' />
+              <stop offset='30%' stopColor='#f4fbff' stopOpacity='0.26' />
+              <stop offset='58%' stopColor='#eaf4ff' stopOpacity='0.3' />
+              <stop offset='80%' stopColor='#edf2fb' stopOpacity='0.26' />
+              <stop offset='100%' stopColor='#fff1d6' stopOpacity='0.28' />
             </linearGradient>
             <linearGradient id='y-ov-sheen' x1='0' y1='0' x2='1' y2='0'>
               <stop offset='0%' stopColor='#ffffff' stopOpacity='0' />
@@ -940,36 +940,36 @@ export default function Overture() {
               <stop offset='100%' stopColor='#ffffff' stopOpacity='0' />
             </linearGradient>
             <radialGradient id='y-ov-obsidian' cx='50%' cy='50%' r='50%'>
-              <stop offset='0%' stopColor='#0b0f1a' stopOpacity='0.96' />
-              <stop offset='52%' stopColor='#060911' stopOpacity='0.82' />
-              <stop offset='100%' stopColor='#03050a' stopOpacity='0' />
+              <stop offset='0%' stopColor='#ffffff' stopOpacity='0.42' />
+              <stop offset='52%' stopColor='#f7fbff' stopOpacity='0.24' />
+              <stop offset='100%' stopColor='#dfe8f4' stopOpacity='0' />
             </radialGradient>
             <linearGradient id='y-ov-beam' x1='0' y1='0' x2='0' y2='1'>
               <stop offset='0%' stopColor='#cfefff' stopOpacity='0.16' />
-              <stop offset='55%' stopColor='#9be8ff' stopOpacity='0.07' />
-              <stop offset='100%' stopColor='#9be8ff' stopOpacity='0' />
+              <stop offset='55%' stopColor='#f2f8ff' stopOpacity='0.07' />
+              <stop offset='100%' stopColor='#f2f8ff' stopOpacity='0' />
             </linearGradient>
             <radialGradient id='y-ov-horizon' cx='50%' cy='50%' r='50%'>
-              <stop offset='0%' stopColor='#ffe3b0' stopOpacity='0.24' />
-              <stop offset='52%' stopColor='#9bc8ff' stopOpacity='0.1' />
-              <stop offset='100%' stopColor='#0a0f1c' stopOpacity='0' />
+              <stop offset='0%' stopColor='#fff5e0' stopOpacity='0.24' />
+              <stop offset='52%' stopColor='#eaf2ff' stopOpacity='0.1' />
+              <stop offset='100%' stopColor='#dfe8f4' stopOpacity='0' />
             </radialGradient>
             <radialGradient id='y-ov-fog' cx='50%' cy='50%' r='50%'>
-              <stop offset='0%' stopColor='#ffe9c8' stopOpacity='0.3' />
-              <stop offset='55%' stopColor='#a8d8ff' stopOpacity='0.12' />
-              <stop offset='100%' stopColor='#0a0f1c' stopOpacity='0' />
+              <stop offset='0%' stopColor='#fff8ea' stopOpacity='0.3' />
+              <stop offset='55%' stopColor='#eef6ff' stopOpacity='0.12' />
+              <stop offset='100%' stopColor='#dfe8f4' stopOpacity='0' />
             </radialGradient>
             <radialGradient id='y-ov-mist' cx='50%' cy='50%' r='50%'>
               <stop offset='0%' stopColor='#ffffff' stopOpacity='0.55' />
-              <stop offset='38%' stopColor='#9be8ff' stopOpacity='0.3' />
-              <stop offset='70%' stopColor='#ffa8e0' stopOpacity='0.16' />
-              <stop offset='100%' stopColor='#b6a8ff' stopOpacity='0' />
+              <stop offset='38%' stopColor='#f2f8ff' stopOpacity='0.3' />
+              <stop offset='70%' stopColor='#fff1d6' stopOpacity='0.16' />
+              <stop offset='100%' stopColor='#e8eefb' stopOpacity='0' />
             </radialGradient>
             <radialGradient id='y-ov-flash' cx='50%' cy='50%' r='50%'>
               <stop offset='0%' stopColor='#ffffff' stopOpacity='0.95' />
-              <stop offset='40%' stopColor='#c8f3ff' stopOpacity='0.4' />
-              <stop offset='72%' stopColor='#ffa8e0' stopOpacity='0.18' />
-              <stop offset='100%' stopColor='#b6a8ff' stopOpacity='0' />
+              <stop offset='40%' stopColor='#ffffff' stopOpacity='0.4' />
+              <stop offset='72%' stopColor='#fff1d6' stopOpacity='0.18' />
+              <stop offset='100%' stopColor='#e8eefb' stopOpacity='0' />
             </radialGradient>
             <clipPath id='y-ov-disc'>
               <circle cx={DISC.cx} cy={DISC.cy} r={DISC.r} />
@@ -1007,6 +1007,19 @@ export default function Overture() {
               cy={DISC.cy}
               r={DISC.r}
               fill='url(#y-ov-obsidian)'
+            />
+            {/* 焦散：湿地面上的细密光纹 */}
+            <path
+              className='y-ov-caustic'
+              d='M 240 660 Q 360 640 480 660 T 760 660'
+            />
+            <path
+              className='y-ov-caustic y-ov-caustic-b'
+              d='M 220 700 Q 360 680 500 700 T 780 700'
+            />
+            <path
+              className='y-ov-caustic y-ov-caustic-c'
+              d='M 260 740 Q 380 720 500 740 T 740 740'
             />
             {/* 水面镜面高光：一条缓慢漂移的亮带 */}
             <ellipse
@@ -1308,6 +1321,19 @@ export default function Overture() {
                 </text>
               </g>
             ))}
+          </g>
+
+          {/* 前景剪影：一个极小的「人」，用来撑起尺度 */}
+          <g className='y-ov-human' aria-hidden='true'>
+            <ellipse
+              className='y-ov-human-shadow'
+              cx='500'
+              cy='812'
+              rx='18'
+              ry='3'
+            />
+            <circle cx='500' cy='780' r='2.8' />
+            <path d='M496.5 784 L503.5 784 L505.5 800 L503 806 L502 800 L500 806 L498 800 L497 806 L494.5 800 Z' />
           </g>
 
           {/* 前景散景：微距镜头的失焦光斑 */}
