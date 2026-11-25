@@ -363,14 +363,55 @@ async function playVoiceShifted(): Promise<boolean> {
     const buffer = await loadVoiceBuffer();
     if (!buffer) return false;
 
-    const src = audio.ctx.createBufferSource();
+    const ctx = audio.ctx;
+    const src = ctx.createBufferSource();
     src.buffer = buffer;
-    /* 原声直出：不做降调 / EQ / 滤波 / 归一化，只保留静音开关 */
-    src.connect(audio.master);
+
+    /* 只降噪、不变声：100Hz 高通 + 7.5kHz 低通 + 噪声门 */
+    const highpass = ctx.createBiquadFilter();
+    highpass.type = 'highpass';
+    highpass.frequency.value = 100;
+
+    const lowpass = ctx.createBiquadFilter();
+    lowpass.type = 'lowpass';
+    lowpass.frequency.value = 7500;
+
+    const gate = ctx.createGain();
+    gate.gain.value = 1;
+    const analyser = ctx.createAnalyser();
+    analyser.fftSize = 512;
+
+    src.connect(highpass);
+    highpass.connect(lowpass);
+    lowpass.connect(gate);
+    gate.connect(audio.master);
+    gate.connect(analyser);
+
+    /* 噪声门：说话时全开，停下 140ms 后压到 6%，句间底噪变轻但不切字 */
+    const samples = new Uint8Array(analyser.fftSize);
+    let lastLoud = 0;
+    const tick = () => {
+      const now = performance.now();
+      analyser.getByteTimeDomainData(samples);
+      let p2 = 0;
+      for (let i = 0; i < samples.length; i += 1) {
+        const v = Math.abs(samples[i] - 128) / 128;
+        if (v > p2) p2 = v;
+      }
+      if (p2 > 0.008) lastLoud = now;
+      const open = now - lastLoud < 140;
+      gate.gain.setTargetAtTime(open ? 1 : 0.06, ctx.currentTime, open ? 0.01 : 0.05);
+      voiceGateRaf = requestAnimationFrame(tick);
+    };
+    voiceGateRaf = requestAnimationFrame(tick);
 
     voiceSource = src;
     src.onended = () => {
       if (voiceSource === src) voiceSource = null;
+      if (voiceGateRaf) {
+        cancelAnimationFrame(voiceGateRaf);
+        voiceGateRaf = 0;
+      }
     };
     src.start();
     return true;
