@@ -199,73 +199,105 @@ function narrationAllowed(): boolean {
   }
 }
 
+/* ----------------------------- 合成音景 ----------------------------- */
 /**
- * 用浏览器自带的语音合成朗诵两句。
- * 优先低音的中文男声；不支持、没有中文嗓音或被自动播放策略拦截时静默降级，
- * 画面本身不受影响。
+ * 不用系统 TTS 朗读 —— 机械感太重。
+ * 改为 Web Audio 合成的音景：落水低频、逐字磬音、退潮钟声。
+ * 所有声音共用一个 AudioContext；被自动播放策略拦截时静默降级。
  */
-function speakVerse(): void {
-  try {
-    if (!('speechSynthesis' in window)) return;
-    const synth = window.speechSynthesis;
-    synth.cancel();
-    const voices = synth.getVoices();
-    const zh = voices.filter((v) => /^zh/i.test(v.lang));
-    const cn = zh.filter((v) => /CN|Hans/i.test(v.lang));
-    const pool = cn.length ? cn : zh;
-    const preferred =
-      pool.find((v) => /Yunjian|Yunxi|Kangkang|Male|男/i.test(v.name)) ??
-      pool[0];
-    const u = new SpeechSynthesisUtterance(
-      '泻水置平地。各自东西南北流。'
-    );
-    u.lang = 'zh-CN';
-    if (preferred) u.voice = preferred;
-    u.rate = 0.84;
-    u.pitch = 0.82;
-    u.volume = 1;
-    synth.speak(u);
-  } catch {
-    /* 静默：保留纯视觉版本 */
-  }
-}
+let audioCtx: AudioContext | null = null;
+let masterGain: GainNode | null = null;
 
-function stopVerse(): void {
+function getAudio(): { ctx: AudioContext; master: GainNode } | null {
   try {
-    window.speechSynthesis?.cancel();
-  } catch {
-    /* ignore */
-  }
-}
-
-/** 名句落定前的一次低频轰鸣，给「落地」一点重量；被拦截时静默 */
-function playImpact(): void {
-  try {
+    if (audioCtx && masterGain) return { ctx: audioCtx, master: masterGain };
     const Ctor =
       window.AudioContext ??
       (window as unknown as { webkitAudioContext?: typeof AudioContext })
         .webkitAudioContext;
-    if (!Ctor) return;
+    if (!Ctor) return null;
     const ctx = new Ctor();
-    void ctx.resume().catch(() => undefined);
-    const now = ctx.currentTime;
+    const master = ctx.createGain();
+    master.gain.value = 0.85;
+    master.connect(ctx.destination);
+    audioCtx = ctx;
+    masterGain = master;
+    return { ctx, master };
+  } catch {
+    return null;
+  }
+}
+
+type ToneType = 'sine' | 'square' | 'sawtooth' | 'triangle';
+
+function playTone(
+  freq: number,
+  duration: number,
+  delay = 0,
+  level = 0.05,
+  type: ToneType = 'sine'
+): void {
+  const audio = getAudio();
+  if (!audio) return;
+  const { ctx, master } = audio;
+  void ctx.resume().catch(() => undefined);
+  try {
+    const t0 = ctx.currentTime + delay;
     const osc = ctx.createOscillator();
     const gain = ctx.createGain();
-    osc.type = 'sine';
-    osc.frequency.setValueAtTime(56, now);
-    osc.frequency.exponentialRampToValueAtTime(36, now + 2.6);
-    gain.gain.setValueAtTime(0.0001, now);
-    gain.gain.exponentialRampToValueAtTime(0.055, now + 0.16);
-    gain.gain.exponentialRampToValueAtTime(0.0001, now + 2.8);
+    osc.type = type;
+    osc.frequency.setValueAtTime(freq, t0);
+    gain.gain.setValueAtTime(0.0001, t0);
+    gain.gain.exponentialRampToValueAtTime(level, t0 + 0.014);
+    gain.gain.exponentialRampToValueAtTime(0.0001, t0 + duration);
     osc.connect(gain);
-    gain.connect(ctx.destination);
-    osc.start(now);
-    osc.stop(now + 2.9);
-    osc.onended = () => {
-      void ctx.close().catch(() => undefined);
-    };
+    gain.connect(master);
+    osc.start(t0);
+    osc.stop(t0 + duration + 0.06);
   } catch {
     /* 静默 */
+  }
+}
+
+/** 落水低频：给「砸到水面」一点重量 */
+function playImpact(): void {
+  playTone(56, 2.8, 0, 0.06, 'sine');
+  playTone(36, 3.1, 0.02, 0.04, 'sine');
+}
+
+/** 五声音阶：宫商角徵羽 */
+const PENTATONIC = [261.63, 293.66, 329.63, 392.0, 440.0];
+
+/**
+ * 每个字落下时的一声轻磬：第一行在高八度，第二行低八度。
+ * 与 CSS 的逐字节奏（0.11s / 字）对齐。
+ */
+function playCharChime(index: number): void {
+  const octave = index < 5 ? 1 : 0.5;
+  const note = PENTATONIC[index % PENTATONIC.length] * octave;
+  playTone(note, 1.1, 0, 0.045, 'triangle');
+  playTone(note * 2, 0.6, 0.006, 0.018, 'sine');
+}
+
+/** 退潮钟声：低频钟体 + 三个泛音，余韵比开篇更长 */
+function playBell(): void {
+  const base = 110;
+  [1, 1.5, 2.02, 2.74].forEach((ratio, i) => {
+    playTone(base * ratio, 4.4 - i * 0.7, i * 0.012, 0.05 / (i + 1), 'sine');
+  });
+}
+
+/** 静音 / 恢复所有合成声 */
+function setAudioMuted(muted: boolean): void {
+  if (!audioCtx || !masterGain) return;
+  try {
+    masterGain.gain.setTargetAtTime(
+      muted ? 0.0001 : 0.85,
+      audioCtx.currentTime,
+      0.06
+    );
+  } catch {
+    /* ignore */
   }
 }
 
@@ -322,6 +354,12 @@ export default function Overture() {
   /** 路演模式：强制有声、并显示一枚小标签；由「更多 → 路演模式」或 `?demo=1` 触发 */
   const [demo, setDemo] = useState(() => readFlag('demo'));
   const demoRef = useRef(demo);
+  /** 逐字磬音与钟声的定时器，跳过 / 静音 / 卸载时统一清掉 */
+  const chimeTimers = useRef<number[]>([]);
+  const stopChimes = useCallback(() => {
+    chimeTimers.current.forEach((t) => window.clearTimeout(t));
+    chimeTimers.current = [];
+  }, []);
 
   const toggleSound = useCallback(() => {
     const next = !soundRef.current;
@@ -333,19 +371,21 @@ export default function Overture() {
       /* 存储不可用时只影响下次打开 */
     }
     if (next) {
+      setAudioMuted(false);
       playImpact();
-      speakVerse();
     } else {
-      stopVerse();
+      stopChimes();
+      setAudioMuted(true);
       /* 手动静音即退出「强制有声」，但路演标记保留 */
       demoRef.current = false;
     }
-  }, []);
+  }, [stopChimes]);
 
   const skip = useCallback(() => {
-    stopVerse();
+    stopChimes();
+    setAudioMuted(true);
     setSeq((s) => (s.phase === 'playing' ? { ...s, phase: 'leaving' } : s));
-  }, []);
+  }, [stopChimes]);
 
   /** 「更多 → 重看开篇」：手动重播绕过会话记录，但仍尊重减弱动效 */
   useEffect(() => {
@@ -361,9 +401,9 @@ export default function Overture() {
     window.addEventListener('yutu:overture', onReplay);
     return () => {
       window.removeEventListener('yutu:overture', onReplay);
-      stopVerse();
+      stopChimes();
     };
-  }, []);
+  }, [stopChimes]);
 
   /** 播放中：写会话记录、锁住页面滚动，到点收场 */
   useEffect(() => {
@@ -371,22 +411,35 @@ export default function Overture() {
     const body = document.body;
     const prevOverflow = body.style.overflow;
     body.style.overflow = 'hidden';
+    if (soundRef.current || demoRef.current) setAudioMuted(false);
     const timer = window.setTimeout(() => {
       setSeq((s) => (s.phase === 'playing' ? { ...s, phase: 'leaving' } : s));
     }, PLAY_MS);
-    /* 名句浮现前读诗；自然退潮不打断，留一点余音 */
+    /* 名句逐字落下时，每个字一声磬；退潮前再补一声钟 */
     const voiceTimer = window.setTimeout(() => {
       if (!narrationAllowed()) return;
       if (!soundRef.current && !demoRef.current) return;
+      setAudioMuted(false);
       playImpact();
-      speakVerse();
+      const timers = chimeTimers.current;
+      for (let i = 0; i < 5; i += 1) {
+        timers.push(window.setTimeout(() => playCharChime(i), 80 + i * 110));
+      }
+      for (let i = 0; i < 7; i += 1) {
+        timers.push(
+          window.setTimeout(() => playCharChime(5 + i), 1130 + i * 110)
+        );
+      }
+      /* 比退潮早 150ms，确保不会被清理掉 */
+      timers.push(window.setTimeout(playBell, PLAY_MS - NARRATE_AT - 150));
     }, NARRATE_AT);
     return () => {
       window.clearTimeout(timer);
       window.clearTimeout(voiceTimer);
+      stopChimes();
       body.style.overflow = prevOverflow;
     };
-  }, [seq.id, seq.phase]);
+  }, [seq.id, seq.phase, stopChimes]);
 
   /**
    * 退潮：水向四周散开、背景褪去，系统从下面显形。
