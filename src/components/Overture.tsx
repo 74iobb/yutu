@@ -1,4 +1,5 @@
 import {
+  Fragment,
   useCallback,
   useEffect,
   useRef,
@@ -408,6 +409,20 @@ export default function Overture() {
     >
       <span className='y-ov-halo' aria-hidden='true' />
 
+      {/* 展陈取景框与标识：只做氛围，不承载信息 */}
+      <span className='y-ov-corner y-ov-corner-tl' aria-hidden='true' />
+      <span className='y-ov-corner y-ov-corner-tr' aria-hidden='true' />
+      <span className='y-ov-corner y-ov-corner-bl' aria-hidden='true' />
+      <span className='y-ov-corner y-ov-corner-br' aria-hidden='true' />
+      <span className='y-ov-mark' aria-hidden='true'>
+        域途 · 序
+      </span>
+      <span className='y-ov-mark y-ov-mark-r' aria-hidden='true'>
+        YUTU / OVERTURE
+      </span>
+      <span className='y-ov-vignette' aria-hidden='true' />
+      <span className='y-ov-progress' aria-hidden='true' />
+
       <div className='y-ov-scene'>
         <svg
           className='y-ov-art'
@@ -457,6 +472,11 @@ export default function Overture() {
               <stop offset='80%' stopColor='#c08bff' stopOpacity='0.26' />
               <stop offset='100%' stopColor='#ffa8e0' stopOpacity='0.28' />
             </linearGradient>
+            <linearGradient id='y-ov-sheen' x1='0' y1='0' x2='1' y2='0'>
+              <stop offset='0%' stopColor='#ffffff' stopOpacity='0' />
+              <stop offset='50%' stopColor='#ffffff' stopOpacity='0.6' />
+              <stop offset='100%' stopColor='#ffffff' stopOpacity='0' />
+            </linearGradient>
             <radialGradient id='y-ov-mist' cx='50%' cy='50%' r='50%'>
               <stop offset='0%' stopColor='#ffffff' stopOpacity='0.55' />
               <stop offset='38%' stopColor='#9be8ff' stopOpacity='0.3' />
@@ -497,6 +517,15 @@ export default function Overture() {
               cy={DISC.cy}
               r={DISC.r}
               fill='url(#y-ov-iris-2)'
+            />
+            {/* 水面镜面高光：一条缓慢漂移的亮带 */}
+            <ellipse
+              className='y-ov-sheen'
+              cx={DISC.cx}
+              cy={DISC.cy - 90}
+              rx='220'
+              ry='10'
+              fill='url(#y-ov-sheen)'
             />
             {/* 落点水雾：水砸下来后一直不散的湿气 */}
             <circle
@@ -683,7 +712,14 @@ export default function Overture() {
                   } as CSSProperties
                 }
               >
-                <circle cx={plate.cx} cy={plate.cy - 34} r='2.2' />
+                <text
+                  className='y-ov-label-no'
+                  x={plate.cx}
+                  y={plate.cy - 44}
+                  textAnchor='middle'
+                >
+                  0{i + 1}
+                </text>
                 <text
                   x={plate.cx}
                   y={plate.cy}
@@ -701,23 +737,28 @@ export default function Overture() {
           className='y-ov-verse'
           aria-label='开篇引言：泻水置平地，各自东西南北流'
         >
-          {VERSE_LINES.map((line) => (
-            <p className='y-ov-line' key={line.text}>
-              {Array.from(line.text).map((ch, i) => (
-                <span
-                  key={i}
-                  className='y-ov-char'
-                  style={
-                    {
-                      '--i': i,
-                      '--start': line.start,
-                    } as CSSProperties
-                  }
-                >
-                  {ch}
-                </span>
-              ))}
-            </p>
+          {VERSE_LINES.map((line, lineIndex) => (
+            <Fragment key={line.text}>
+              {lineIndex === 1 ? (
+                <span className='y-ov-rule' aria-hidden='true' />
+              ) : null}
+              <p className='y-ov-line'>
+                {Array.from(line.text).map((ch, i) => (
+                  <span
+                    key={i}
+                    className='y-ov-char'
+                    style={
+                      {
+                        '--i': i,
+                        '--start': line.start,
+                      } as CSSProperties
+                    }
+                  >
+                    {ch}
+                  </span>
+                ))}
+              </p>
+            </Fragment>
           ))}
           <p className='y-ov-sub'>流向不同，不等于走错</p>
           <p className='y-ov-source'>—— 鲍照《拟行路难·其四》</p>
