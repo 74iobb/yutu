@@ -80,3 +80,11 @@
 | `src/assets/photos/step3-sea-hand.jpg` | 裁底部（VKAH） | 第 2 / 3 步探索 |
 | `src/assets/photos/step4-salt-flat.jpg` | 裁底部（POISON） | 第 3 / 4 步方向与归属（试点） |
 | `src/assets/photos/step5-birds.jpg` | 裁底部（POISON） | 第 5 步成长/休整（试点） |
+
+## 开篇朗诵录音（2026-11-25）
+
+- 来源：用户提供的一段朗诵录音（m4a / AAC），用于 `/#/` 开篇名句「泻水置平地，各自东西南北流」。
+- 地址：`https://agent.nuwax.com/api/f/s3/app-dev/20261125/e432e071e971417e9707a6e08adf96b3.m4a`
+  - 该地址需要平台登录态，服务端直接下载返回 401；前端在平台预览域内同源加载，浏览器自带登录 cookie。
+  - 加载失败或自动播放被拦截时，`Overture` 自动回退为 Web Audio 合成的逐字磬音，不会静音或报错。
+- 版权：录音由用户提供，仅用于本项目开篇演示；对外发布前请先确认所有权与使用范围。
