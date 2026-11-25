@@ -294,7 +294,7 @@ function playBell(): void {
  * 加载失败或被拦截时自动回退到合成磬音，不会没有声音或报错。
  */
 const VOICE_URL =
-  'https://agent.nuwax.com/api/f/s3/app-dev/20261125/e432e071e971417e9707a6e08adf96b3.m4a';
+  'https://agent.nuwax.com/api/f/s3/app-dev/20261125/64465fff87744c84bbc0073a89c03b92.m4a';
 
 let voiceAudio: HTMLAudioElement | null = null;
 
