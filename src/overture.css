@@ -87,6 +87,37 @@
   transition: opacity 0.3s ease;
 }
 
+/* 开篇底光：第一帧就在呼吸，避免开头是一块死黑 */
+.y-ov-halo {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  z-index: 0;
+  width: min(76vmin, 680px);
+  height: min(76vmin, 680px);
+  border-radius: 50%;
+  background: radial-gradient(
+    50% 50% at 50% 50%,
+    rgba(112, 196, 255, 0.18),
+    rgba(180, 140, 255, 0.09) 46%,
+    transparent 72%
+  );
+  filter: blur(26px);
+  pointer-events: none;
+  animation: yOvHalo 9s ease-in-out infinite alternate;
+}
+
+@keyframes yOvHalo {
+  from {
+    opacity: 0.45;
+    transform: translate(-50%, -50%) scale(0.9);
+  }
+  to {
+    opacity: 0.85;
+    transform: translate(-50%, -50%) scale(1.08);
+  }
+}
+
 .y-ov-scene {
   position: relative;
   z-index: 1;
@@ -102,6 +133,11 @@
   height: 100%;
   /* 水落到水面的那一下，整幅画面轻微一震 */
   animation: yOvShake 0.36s ease-out 1.62s;
+}
+
+/* 水与水面叠加发光，颜色会互相透出来 */
+.y-ov-stream {
+  mix-blend-mode: screen;
 }
 
 /* ------------------------------ 水束与水滴 ------------------------------ */
@@ -285,6 +321,34 @@
   }
 }
 
+/* 第二层虹彩反向转，颜色叠加更斑斓 */
+.y-ov-iris-2 {
+  animation:
+    yOvIrisIn2 1.4s ease 2.8s both,
+    yOvIrisSpin2 28s linear 3.4s infinite;
+}
+
+@keyframes yOvIrisIn2 {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 0.32;
+  }
+}
+
+@keyframes yOvIrisSpin2 {
+  from {
+    transform: rotate(0deg) scale(1.04);
+  }
+  50% {
+    transform: rotate(-180deg) scale(1);
+  }
+  to {
+    transform: rotate(-360deg) scale(1.04);
+  }
+}
+
 /* 落点湿气：水砸下后一直不散的水雾 */
 .y-ov-mist {
   opacity: 0;
@@ -363,6 +427,21 @@
 .y-ov-ripple-c {
   stroke: rgba(255, 224, 138, 0.55);
   animation-delay: 2.25s;
+}
+
+/* 持续波纹：水一直在落，水面就一直有圈 */
+.y-ov-ripple-live {
+  animation: yOvRipple 2.7s cubic-bezier(0.2, 0.7, 0.3, 1) infinite;
+}
+
+.y-ov-ripple-live-a {
+  stroke: rgba(142, 233, 255, 0.34);
+  animation-delay: 2.5s;
+}
+
+.y-ov-ripple-live-b {
+  stroke: rgba(255, 168, 224, 0.3);
+  animation-delay: 3.8s;
 }
 
 @keyframes yOvRipple {
@@ -607,7 +686,7 @@
   color: rgba(198, 222, 247, 0.72);
   text-shadow: 0 1px 10px rgba(0, 0, 0, 0.8);
   opacity: 0;
-  animation: yOvFadeUp 0.8s var(--ov-ease) 6.9s both;
+  animation: yOvFadeUp 0.8s var(--ov-ease) 6.85s both;
 }
 
 /* 名句出现时的一圈极淡声波，替代音效 */
@@ -626,7 +705,19 @@
   );
   opacity: 0;
   transform: translateX(-50%) scaleX(0.2);
-  animation: yOvEchoLine 1.5s ease-out 6.95s both;
+  animation: yOvEchoLine 1.5s ease-out 6.9s both;
+}
+
+/* 诗句落款：不抢主句，只把出处放稳 */
+.y-ov-source {
+  margin: 8px 0 0;
+  font-family: var(--ov-serif);
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  color: rgba(190, 214, 240, 0.5);
+  text-shadow: 0 1px 10px rgba(0, 0, 0, 0.8);
+  opacity: 0;
+  animation: yOvFadeUp 0.8s var(--ov-ease) 7.1s both;
 }
 
 @keyframes yOvEchoLine {
@@ -846,6 +937,11 @@
     margin-top: 6px;
     font-size: 11px;
     letter-spacing: 0.24em;
+  }
+  .y-ov-source {
+    margin-top: 5px;
+    font-size: 10px;
+    letter-spacing: 0.14em;
   }
   .y-ov-label text {
     font-size: 17px;

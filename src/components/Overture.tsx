@@ -23,8 +23,8 @@ import { Delaunay } from 'd3-delaunay';
  * 在 SPA 内从沙盘返回首页则不会重复打扰。
  */
 let autoPlayed = false;
-/** 名句逐字读完、小字落定后再退潮（落水与铺开占前 3.3s） */
-const PLAY_MS = 7500;
+/** 名句逐字读完、小字与落款落定后再退潮（落水与铺开占前 3.3s） */
+const PLAY_MS = 7800;
 /** 退潮 + 系统显影的总时长 */
 const LEAVE_MS = 1150;
 /** 朗诵与低频轰鸣的起点，略早于名句浮现 */
@@ -406,6 +406,8 @@ export default function Overture() {
       className={`y-overture${seq.phase === 'leaving' ? ' is-leaving' : ''}`}
       onClick={skip}
     >
+      <span className='y-ov-halo' aria-hidden='true' />
+
       <div className='y-ov-scene'>
         <svg
           className='y-ov-art'
@@ -448,6 +450,13 @@ export default function Overture() {
               <stop offset='75%' stopColor='#ffd166' stopOpacity='0.26' />
               <stop offset='100%' stopColor='#6bffc8' stopOpacity='0.34' />
             </linearGradient>
+            <linearGradient id='y-ov-iris-2' x1='1' y1='0' x2='0' y2='1'>
+              <stop offset='0%' stopColor='#ffe08a' stopOpacity='0.3' />
+              <stop offset='30%' stopColor='#8dffcf' stopOpacity='0.26' />
+              <stop offset='58%' stopColor='#8ee9ff' stopOpacity='0.3' />
+              <stop offset='80%' stopColor='#c08bff' stopOpacity='0.26' />
+              <stop offset='100%' stopColor='#ffa8e0' stopOpacity='0.28' />
+            </linearGradient>
             <radialGradient id='y-ov-mist' cx='50%' cy='50%' r='50%'>
               <stop offset='0%' stopColor='#ffffff' stopOpacity='0.55' />
               <stop offset='38%' stopColor='#9be8ff' stopOpacity='0.3' />
@@ -474,13 +483,20 @@ export default function Overture() {
               r={DISC.r}
               fill='url(#y-ov-pool)'
             />
-            {/* 水面油膜：一层缓慢自转的虹彩 */}
+            {/* 水面油膜：两层反向自转的虹彩，颜色互相叠加 */}
             <circle
               className='y-ov-iris'
               cx={DISC.cx}
               cy={DISC.cy}
               r={DISC.r}
               fill='url(#y-ov-iris)'
+            />
+            <circle
+              className='y-ov-iris y-ov-iris-2'
+              cx={DISC.cx}
+              cy={DISC.cy}
+              r={DISC.r}
+              fill='url(#y-ov-iris-2)'
             />
             {/* 落点水雾：水砸下来后一直不散的湿气 */}
             <circle
@@ -525,6 +541,19 @@ export default function Overture() {
             />
             <circle
               className='y-ov-ripple y-ov-ripple-c'
+              cx={DISC.cx}
+              cy={DISC.cy}
+              r='64'
+            />
+            {/* 水一直在落，水面就一直有波纹 */}
+            <circle
+              className='y-ov-ripple y-ov-ripple-live y-ov-ripple-live-a'
+              cx={DISC.cx}
+              cy={DISC.cy}
+              r='64'
+            />
+            <circle
+              className='y-ov-ripple y-ov-ripple-live y-ov-ripple-live-b'
               cx={DISC.cx}
               cy={DISC.cy}
               r='64'
@@ -691,6 +720,7 @@ export default function Overture() {
             </p>
           ))}
           <p className='y-ov-sub'>流向不同，不等于走错</p>
+          <p className='y-ov-source'>—— 鲍照《拟行路难·其四》</p>
         </section>
       </div>
 
