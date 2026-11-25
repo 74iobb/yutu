@@ -238,7 +238,7 @@ async function unlockAudio(): Promise<boolean> {
  * 仍受录音本身底噪限制；若还不够干净，需要更干净的录音源。
  */
 const VOICE_URL =
-  'https://agent.nuwax.com/api/f/s3/app-dev/20261125/077b86a54b174ddd8f8b6ec675e36f9b.m4a';
+  'https://agent.nuwax.com/api/f/s3/app-dev/20261125/64465fff87744c84bbc0073a89c03b92.m4a';
 const VOICE_RATE = 0.96;
 
 let voiceBufferPromise: Promise<AudioBuffer | null> | null = null;
