@@ -8,6 +8,7 @@ import { AnimatedNumber, BrandLogo } from './bits';
 import Companion from './Companion';
 import MascotVisual from './MascotVisual';
 import DataSourcesPanel from './DataSourcesPanel';
+import OpticalBand from './OpticalBand';
 
 const STEP_META = [
   { t: '填写信息', d: '城市、年龄与处境' },
@@ -846,6 +847,7 @@ export function Shell({ children }: { children: ReactNode }) {
           }`}
           key={state.step}
         >
+          <OpticalBand step={state.step} />
           {children}
         </div>
       </div>

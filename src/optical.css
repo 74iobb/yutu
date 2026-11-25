@@ -1,0 +1,103 @@
+/* ==========================================================================
+   V11.17 每步光学带（纯 SVG/CSS）
+   水下焦散 / 退潮海岸 / 彩玻璃 / 年轮光环
+   低对比、只做环境层，不承载数据、不拦截点击。
+   ========================================================================== */
+
+#yutu2 .y-optical-band {
+  position: absolute;
+  top: -12px;
+  left: 0;
+  right: 0;
+  height: 236px;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+  opacity: 0.9;
+  -webkit-mask-image: linear-gradient(
+    180deg,
+    #000 0%,
+    #000 48%,
+    transparent 100%
+  );
+  mask-image: linear-gradient(180deg, #000 0%, #000 48%, transparent 100%);
+}
+#yutu2 .y-optical-band svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+#yutu2 .y-step-stage {
+  position: relative;
+}
+#yutu2 .y-step-stage > *:not(.y-optical-band) {
+  position: relative;
+  z-index: 1;
+}
+
+/* 水下：8 条焦散线缓慢横向漂移 */
+@keyframes obWaterDrift {
+  from {
+    transform: translateX(-14px);
+  }
+  to {
+    transform: translateX(14px);
+  }
+}
+#yutu2 .ob-water-lines {
+  animation: obWaterDrift 24s ease-in-out infinite alternate;
+}
+
+/* 退潮：潮线下的沙纹缓慢移动 */
+@keyframes obTide {
+  from {
+    transform: translateX(-10px);
+  }
+  to {
+    transform: translateX(12px);
+  }
+}
+#yutu2 .ob-ripples {
+  animation: obTide 30s ease-in-out infinite alternate;
+}
+
+/* 彩玻璃：进入本步时，一束暖光从左扫到右（只播一次） */
+@keyframes obGlassSweep {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(1500px);
+  }
+}
+#yutu2 .ob-glass-sweep {
+  animation: obGlassSweep 3.2s ease-out 0.2s both;
+}
+
+/* 年轮光环：静态，避免和闭环图争抢动画 */
+
+@media (max-width: 860px) {
+  #yutu2 .y-optical-band {
+    top: -8px;
+    height: 150px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #yutu2 .ob-water-lines,
+  #yutu2 .ob-ripples,
+  #yutu2 .ob-glass-sweep {
+    animation: none !important;
+  }
+  #yutu2 .ob-glass-sweep {
+    display: none;
+  }
+}
+html.y-motion-off #yutu2 .ob-water-lines,
+html.y-motion-off #yutu2 .ob-ripples,
+html.y-motion-off #yutu2 .ob-glass-sweep {
+  animation: none !important;
+}
+html.y-motion-off #yutu2 .ob-glass-sweep {
+  display: none;
+}
