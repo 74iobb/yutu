@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { currentStage, stageDirections } from '@/lib/model';
-import { openStep34, readStep34View, type Step34View } from '@/lib/stepNav';
+import { consumeStep34View, type Step34View } from '@/lib/stepNav';
 import { useYutu } from '@/store/YutuContext';
 import Step3 from './Step3';
 import Step4 from './Step4';
@@ -15,11 +15,10 @@ import StepSummary from './StepSummary';
  */
 export default function Step34() {
   const { state, setPick, toggleShortlist, clearShortlist } = useYutu();
-  const [view, setViewState] = useState<Step34View>(() => readStep34View());
-  /** 切换视图时同时写入会话记忆，切步回来仍停在原视图 */
+  /* 进入本步永远先看方向清单；只有「回看落点」这类跨步跳转会一次性指定目标视图。 */
+  const [view, setViewState] = useState<Step34View>(() => consumeStep34View());
   const setView = (v: Step34View) => {
     setViewState(v);
-    openStep34(v);
   };
   const topRef = useRef<HTMLDivElement>(null);
 
