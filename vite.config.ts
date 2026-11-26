@@ -5,6 +5,8 @@ import appdevDesignMode from '@xagi/vite-plugin-design-mode';
 
 // https://vitejs.dev/config/
 export default defineConfig({
+  /* 相对基路径：GitHub Pages / 任意子目录部署时资源不会 404 */
+  base: './',
   plugins: [
     
   // <!-- DEV-INJECT-START -->
