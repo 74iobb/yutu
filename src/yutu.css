@@ -12528,15 +12528,15 @@ html.y-motion-off #yutu2 .y-step-stage.is-page-dragging {
   background:
     radial-gradient(
       70% 62% at 50% 42%,
-      rgba(255, 253, 248, 0.95) 0%,
-      rgba(255, 251, 244, 0.84) 55%,
-      rgba(255, 249, 240, 0.7) 100%
+      rgba(255, 253, 248, 0.87) 0%,
+      rgba(255, 251, 244, 0.74) 55%,
+      rgba(255, 249, 240, 0.56) 100%
     ),
     linear-gradient(
       112deg,
-      rgba(255, 255, 255, 0.22) 0%,
+      rgba(255, 255, 255, 0.14) 0%,
       transparent 32%,
-      rgba(255, 250, 236, 0.22) 50%,
+      rgba(255, 250, 236, 0.14) 50%,
       transparent 68%
     );
   pointer-events: none;
@@ -12606,8 +12606,8 @@ html.y-motion-off #yutu2 .y-step-stage.is-page-dragging {
   font-size: 10px;
   font-weight: 600;
   paint-order: stroke;
-  stroke: rgba(255, 253, 246, 0.6);
-  stroke-width: 2px;
+  stroke: rgba(255, 253, 246, 0.7);
+  stroke-width: 2.2px;
 }
 #yutu2 .y-radar-value {
   fill: rgba(107, 86, 54, 0.78);
