@@ -94,6 +94,8 @@ export default function GrowthRadar({
 
   return (
     <figure className={`y-radar${compact ? ' is-compact' : ''}`}>
+      {/* 缓慢扫过的玻璃光带 */}
+      <span className='y-radar-sheen' aria-hidden='true' />
       <svg
         viewBox='0 0 340 300'
         role='img'

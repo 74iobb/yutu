@@ -12515,8 +12515,10 @@ html.y-motion-off #yutu2 .y-step-stage.is-page-dragging {
   background-position: 50% 38%;
   background-repeat: no-repeat;
   box-shadow:
-    0 24px 55px -40px rgba(150, 110, 40, 0.42),
-    inset 0 1px 0 rgba(255, 255, 255, 0.7);
+    0 26px 60px -40px rgba(120, 70, 20, 0.48),
+    inset 0 1px 0 rgba(255, 255, 255, 0.85),
+    inset 0 0 0 1px rgba(255, 250, 235, 0.35),
+    inset 0 -22px 44px -32px rgba(80, 40, 10, 0.35);
   overflow: hidden;
   isolation: isolate;
 }
@@ -12528,9 +12530,9 @@ html.y-motion-off #yutu2 .y-step-stage.is-page-dragging {
   background:
     radial-gradient(
       70% 62% at 50% 42%,
-      rgba(255, 253, 248, 0.87) 0%,
-      rgba(255, 251, 244, 0.74) 55%,
-      rgba(255, 249, 240, 0.56) 100%
+      rgba(255, 253, 248, 0.84) 0%,
+      rgba(255, 251, 244, 0.7) 55%,
+      rgba(255, 249, 240, 0.52) 100%
     ),
     linear-gradient(
       112deg,
@@ -12539,8 +12541,45 @@ html.y-motion-off #yutu2 .y-step-stage.is-page-dragging {
       rgba(255, 250, 236, 0.14) 50%,
       transparent 68%
     );
+  /* 磨砂玻璃：让彩玻璃变成柔焦底纹，而不是加一层白 */
+  -webkit-backdrop-filter: blur(9px) saturate(1.08);
+  backdrop-filter: blur(9px) saturate(1.08);
   pointer-events: none;
   z-index: 0;
+}
+/* 缓慢扫过的玻璃光带 */
+#yutu2 .y-radar > .y-radar-sheen {
+  position: absolute;
+  top: -30%;
+  bottom: -30%;
+  left: -45%;
+  width: 38%;
+  z-index: 0;
+  background: linear-gradient(
+    100deg,
+    transparent,
+    rgba(255, 255, 255, 0.38),
+    rgba(255, 248, 226, 0.18),
+    transparent
+  );
+  transform: skewX(-14deg) translateX(-50%);
+  animation: yRadarGlassSheen 18s ease-in-out infinite;
+  mix-blend-mode: screen;
+  pointer-events: none;
+}
+@keyframes yRadarGlassSheen {
+  0%,
+  62% {
+    transform: skewX(-14deg) translateX(-50%);
+    opacity: 0;
+  }
+  68% {
+    opacity: 0.8;
+  }
+  100% {
+    transform: skewX(-14deg) translateX(430%);
+    opacity: 0;
+  }
 }
 /* 顶部金线 */
 #yutu2 .y-radar::after {
@@ -12594,17 +12633,20 @@ html.y-motion-off #yutu2 .y-step-stage.is-page-dragging {
 #yutu2 .y-radar-area.is-after {
   fill: rgba(70, 150, 210, 0.18);
   stroke: #2f86c8;
+  filter: drop-shadow(0 4px 8px rgba(40, 100, 160, 0.18));
 }
 #yutu2 .y-radar-dot.is-before {
   fill: #b0781f;
 }
 #yutu2 .y-radar-dot.is-after {
   fill: #2f86c8;
+  filter: drop-shadow(0 0 4px rgba(47, 134, 200, 0.45));
 }
 #yutu2 .y-radar-label {
   fill: #6b5636;
   font-size: 10px;
   font-weight: 600;
+  letter-spacing: 0.02em;
   paint-order: stroke;
   stroke: rgba(255, 253, 246, 0.7);
   stroke-width: 2.2px;
@@ -12623,6 +12665,13 @@ html.y-motion-off #yutu2 .y-step-stage.is-page-dragging {
   display: flex;
   flex-wrap: wrap;
   gap: 12px;
+  width: fit-content;
+  padding: 3px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(186, 150, 86, 0.22);
+  background: rgba(255, 253, 247, 0.58);
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
   font-size: 11.5px;
   color: #5a4a30;
 }
@@ -13375,6 +13424,10 @@ html.y-motion-off #yutu2 .y-step-stage.is-page-dragging {
 
 /* 关闭动效：系统 prefers-reduced-motion 与顶栏「动效 关」双重降级 */
 @media (prefers-reduced-motion: reduce) {
+  #yutu2 .y-radar-sheen {
+    animation: none;
+    opacity: 0;
+  }
   #yutu2 .y-gap-photo-poster,
   #yutu2 .y-gap-photo-sheen,
   #yutu2 .y-radar-sweep,
@@ -13405,6 +13458,10 @@ html.y-motion-off #yutu2 .y-river-sheen {
 html.y-motion-off #yutu2 .y-radar-stamen,
 html.y-motion-off #yutu2 .y-radar-bloom-sheen {
   animation: none;
+}
+html.y-motion-off #yutu2 .y-radar-sheen {
+  animation: none;
+  opacity: 0;
 }
 html.y-motion-off #yutu2 .y-gap-photo-poster {
   transform: none;
