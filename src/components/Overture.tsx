@@ -125,21 +125,21 @@ const LOW_POWER =
 
 const REDUCED_EFFECTS = SMALL_SCREEN || LOW_POWER;
 
-/** 下落粒子：每 4 颗里 1 条速度线，其余是水珠；错峰持续约 2s */
+/** 下落粒子：每 3 颗里 1 条速度线，其余是水珠；错峰持续约 2s */
 const FALL_PARTICLES = Array.from(
-  { length: REDUCED_EFFECTS ? 96 : 156 },
+  { length: REDUCED_EFFECTS ? 140 : 260 },
   (_, i) => {
     const a = noise(i * 3 + 1);
     const b = noise(i * 3 + 2);
     const c = noise(i * 3 + 3);
     return {
-      x: 500 + (a - 0.5) * 96,
-      r: 0.55 + b * 2,
-      lift: 470 + c * 340,
-      drift: (a - 0.5) * 34,
+      x: 500 + (a - 0.5) * 150,
+      r: 0.5 + b * 2.6,
+      lift: 440 + c * 380,
+      drift: (a - 0.5) * 40,
       delay: Math.round(b * 1950),
-      duration: Math.round(720 + c * 620),
-      line: i % 4 === 0,
+      duration: Math.round(700 + c * 680),
+      line: i % 3 === 0,
       color: WATER_COLORS[i % WATER_COLORS.length],
     };
   }
@@ -176,14 +176,14 @@ const STREAMS = Array.from(
 
 /** 落点溅水：从水面向两侧上方抛起的水星 */
 const SPLASH_PARTICLES = Array.from(
-  { length: REDUCED_EFFECTS ? 24 : 38 },
+  { length: REDUCED_EFFECTS ? 36 : 60 },
   (_, i) => {
     const a = noise(i * 5 + 100);
     const b = noise(i * 5 + 101);
     const dir = i % 2 === 0 ? -1 : 1;
     return {
-      sx: dir * (20 + a * 112),
-      sy: -(16 + b * 70),
+      sx: dir * (18 + a * 150),
+      sy: -(14 + b * 86),
       r: 0.6 + a * 1.4,
       delay: Math.round(1350 + b * 1100),
       duration: Math.round(720 + a * 400),
@@ -194,10 +194,10 @@ const SPLASH_PARTICLES = Array.from(
 
 /** 撞击瞬间的星尘：从落点向四面八方飞散 */
 const STAR_DUST = Array.from(
-  { length: REDUCED_EFFECTS ? 32 : 58 },
+  { length: REDUCED_EFFECTS ? 56 : 96 },
   (_, i) => {
     const angle = noise(i * 7 + 200) * Math.PI * 2;
-    const dist = 40 + noise(i * 7 + 201) * 210;
+    const dist = 36 + noise(i * 7 + 201) * 250;
     return {
       dx: Math.cos(angle) * dist,
       dy: Math.sin(angle) * dist * 0.7,
@@ -205,6 +205,53 @@ const STAR_DUST = Array.from(
       delay: Math.round(1500 + noise(i * 7 + 203) * 700),
       duration: Math.round(900 + noise(i * 7 + 204) * 1000),
       color: WATER_COLORS[i % WATER_COLORS.length],
+    };
+  }
+);
+
+/**
+ * 悬浮微尘：贯穿全场、缓慢上浮的循环粒子层。
+ * 前面几组都是一次性爆发，3 秒后就淡没了；这一层保证
+ * 名句浮现到退潮之间画面依然「有粒子在动」。
+ */
+const MOTES = Array.from(
+  { length: REDUCED_EFFECTS ? 52 : 96 },
+  (_, i) => {
+    const a = noise(i * 17 + 800);
+    const b = noise(i * 17 + 801);
+    const c = noise(i * 17 + 802);
+    return {
+      x: 40 + a * 920,
+      y: 90 + b * 700,
+      r: 0.3 + c * 1.5,
+      dx: (a - 0.5) * 50,
+      dy: -(16 + c * 46),
+      duration: Math.round(9000 + b * 9000),
+      /* 负延迟：首帧就已经散布在各自的循环中段，不会齐刷刷一起出现 */
+      delay: -Math.round(a * 14000),
+      color: WATER_COLORS[i % WATER_COLORS.length],
+    };
+  }
+);
+
+/** 持续水花：落点附近循环上飘的细小水沫，填补一次性溅水的空档 */
+const SPRAY = Array.from(
+  { length: REDUCED_EFFECTS ? 26 : 48 },
+  (_, i) => {
+    const a = noise(i * 19 + 900);
+    const b = noise(i * 19 + 901);
+    const c = noise(i * 19 + 902);
+    const angle = a * Math.PI * 2;
+    const radius = 12 + b * 170;
+    return {
+      x: DISC.cx + Math.cos(angle) * radius,
+      y: DISC.cy + Math.sin(angle) * radius * 0.3 - 10,
+      r: 0.35 + c * 1.15,
+      dx: Math.cos(angle) * (8 + c * 26),
+      dy: -(16 + b * 52),
+      duration: Math.round(2200 + a * 2800),
+      delay: -Math.round(b * 5000),
+      color: WATER_COLORS[(i + 1) % WATER_COLORS.length],
     };
   }
 );
@@ -1302,6 +1349,50 @@ export default function Overture() {
                     '--ov-dx': `${p.dx}px`,
                     '--ov-dy': `${p.dy}px`,
                     '--ov-dur': `${p.duration}ms`,
+                    fill: p.color,
+                  } as CSSProperties
+                }
+              />
+            ))}
+          </g>
+
+          {/* 落点水沫：持续循环的小水花，让撞击处一直「活」着 */}
+          <g className='y-ov-sprays' aria-hidden='true'>
+            {SPRAY.map((p, i) => (
+              <circle
+                key={i}
+                className='y-ov-spray'
+                cx={p.x}
+                cy={p.y}
+                r={p.r}
+                style={
+                  {
+                    animationDelay: `${p.delay}ms`,
+                    '--ov-px': `${p.dx}px`,
+                    '--ov-py': `${p.dy}px`,
+                    '--ov-pdur': `${p.duration}ms`,
+                    fill: p.color,
+                  } as CSSProperties
+                }
+              />
+            ))}
+          </g>
+
+          {/* 悬浮微尘：贯穿全场的循环粒子层 */}
+          <g className='y-ov-motes' aria-hidden='true'>
+            {MOTES.map((p, i) => (
+              <circle
+                key={i}
+                className='y-ov-mote'
+                cx={p.x}
+                cy={p.y}
+                r={p.r}
+                style={
+                  {
+                    animationDelay: `${p.delay}ms`,
+                    '--ov-mdx': `${p.dx}px`,
+                    '--ov-mdy': `${p.dy}px`,
+                    '--ov-mdur': `${p.duration}ms`,
                     fill: p.color,
                   } as CSSProperties
                 }

@@ -1211,6 +1211,50 @@
   }
 }
 
+/* 落点水沫：循环上飘、边升边淡 */
+.y-ov-spray {
+  opacity: 0;
+  animation: yOvSpray var(--ov-pdur, 3000ms) ease-out infinite;
+}
+
+@keyframes yOvSpray {
+  0% {
+    transform: translate(0, 0) scale(0.6);
+    opacity: 0;
+  }
+  22% {
+    opacity: 0.9;
+  }
+  100% {
+    transform: translate(var(--ov-px, 0px), var(--ov-py, -30px)) scale(1);
+    opacity: 0;
+  }
+}
+
+/* 悬浮微尘：全场缓慢上浮 + 明暗呼吸 */
+.y-ov-mote {
+  opacity: 0;
+  animation: yOvMote var(--ov-mdur, 14000ms) ease-in-out infinite;
+}
+
+@keyframes yOvMote {
+  0% {
+    transform: translate(0, 0);
+    opacity: 0;
+  }
+  28% {
+    opacity: 0.85;
+  }
+  70% {
+    transform: translate(var(--ov-mdx, 0px), var(--ov-mdy, -30px));
+    opacity: 0.5;
+  }
+  100% {
+    transform: translate(var(--ov-mdx, 0px), var(--ov-mdy, -30px));
+    opacity: 0;
+  }
+}
+
 /* 神光：斜射的丁达尔光 */
 .y-ov-godray {
   opacity: 0;
@@ -1310,6 +1354,8 @@
 .y-overture.is-leaving .y-ov-fog,
 .y-overture.is-leaving .y-ov-rays,
 .y-overture.is-leaving .y-ov-dusts,
+.y-overture.is-leaving .y-ov-sprays,
+.y-overture.is-leaving .y-ov-motes,
 .y-overture.is-leaving .y-ov-bokehs {
   animation: none;
   opacity: 0;
@@ -1557,7 +1603,9 @@ html.y-motion-off .y-overture {
 }
 
 .y-ov-bright .y-ov-particle,
-.y-ov-bright .y-ov-splash {
+.y-ov-bright .y-ov-splash,
+.y-ov-bright .y-ov-spray,
+.y-ov-bright .y-ov-mote {
   stroke: rgba(110, 155, 205, 0.28);
   stroke-width: 0.25;
 }
