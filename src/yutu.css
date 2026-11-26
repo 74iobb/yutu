@@ -14568,3 +14568,53 @@ html.y-motion-off #yutu2 .y-wall-grid *,
 html.y-motion-off #yutu2 .y-station-pane {
   animation: none !important;
 }
+
+/* ==========================================================================
+   头部主视觉：用户提供的「无日程的海边清晨」照片
+   ========================================================================== */
+#yutu2 .y-head {
+  position: relative;
+  min-height: 104px;
+  overflow: hidden;
+  background-color: #1a1510;
+  background-image: url('./assets/y-head-sea.jpg');
+  background-image:
+    image-set(
+      url('./assets/y-head-sea.webp') type('image/webp'),
+      url('./assets/y-head-sea.jpg') type('image/jpeg')
+    );
+  background-size: cover;
+  background-position: 50% 58%;
+  background-repeat: no-repeat;
+  border-bottom: 1px solid rgba(255, 226, 190, 0.18);
+}
+/* 左侧压暗保标题，右侧让照片透出来 */
+#yutu2 .y-head::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(
+      90deg,
+      rgba(10, 8, 6, 0.8) 0%,
+      rgba(14, 10, 7, 0.56) 46%,
+      rgba(14, 10, 7, 0.28) 100%
+    ),
+    linear-gradient(
+      180deg,
+      rgba(10, 8, 6, 0.2) 0%,
+      rgba(8, 6, 4, 0.5) 100%
+    );
+  pointer-events: none;
+  z-index: 0;
+}
+#yutu2 .y-head > * {
+  position: relative;
+  z-index: 1;
+}
+@media (max-width: 640px) {
+  #yutu2 .y-head {
+    min-height: 0;
+    background-position: 50% 62%;
+  }
+}
