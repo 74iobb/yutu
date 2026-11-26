@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="robots" content="noindex, nofollow" />
+<title>域途 · 录制提词器</title>
+<style>
+  :root{
+    --bg:#0d1117; --fg:#f2ecdc; --gold:#f0d29a; --dim:#8b949e; --line:#2a3340;
+    --size:26px;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;height:100%;background:var(--bg);color:var(--fg);
+    font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;}
+  #bar{position:fixed;top:0;left:0;right:0;z-index:10;display:flex;gap:8px;align-items:center;
+    padding:10px 12px calc(10px + env(safe-area-inset-top));
+    background:rgba(13,17,23,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--line);}
+  #bar button{flex:0 0 auto;min-width:44px;height:38px;padding:0 12px;border-radius:9px;
+    border:1px solid var(--line);background:#161b22;color:var(--fg);font-size:14px;font-weight:600;}
+  #bar button:active{background:#232b36}
+  #bar .title{flex:1;text-align:center;font-size:13px;color:var(--dim);letter-spacing:.08em;}
+  #wrap{position:fixed;inset:0;overflow-y:auto;overflow-x:hidden;scroll-behavior:auto;
+    padding:78px 20px calc(50vh + 40px);}
+  #text{font-size:var(--size);line-height:1.75;letter-spacing:.02em;max-width:760px;margin:0 auto;}
+  h2{color:var(--gold);font-size:calc(var(--size) * .82);letter-spacing:.1em;
+    margin:1.6em 0 .5em;border-bottom:1px solid var(--line);padding-bottom:.3em;}
+  h2:first-child{margin-top:0}
+  p{margin:0 0 .85em;white-space:pre-wrap;}
+  .act{color:#7fd0ff;font-weight:700;}
+  .say{color:var(--fg);}
+  .tip{color:var(--dim);font-size:calc(var(--size) * .74);}
+  .cue{display:inline-block;background:#1f2937;color:#f0d29a;border-radius:6px;
+    padding:1px 8px;margin-right:6px;font-weight:700;font-size:calc(var(--size) * .78);}
+  #hint{position:fixed;left:0;right:0;bottom:0;z-index:10;padding:8px 12px calc(8px + env(safe-area-inset-bottom));
+    text-align:center;font-size:12px;color:var(--dim);background:linear-gradient(transparent,rgba(13,17,23,.95) 40%);}
+  #progress{position:fixed;top:0;left:0;height:3px;background:var(--gold);width:0;z-index:11;transition:width .1s linear;}
+  @media (min-width:820px){ :root{--size:30px} }
+</style>
+</head>
+<body>
+<div id="progress"></div>
+<div id="bar">
+  <button id="back">−</button>
+  <button id="play">▶ 开始</button>
+  <button id="speed">1.0×</button>
+  <button id="fwd">+</button>
+  <button id="reset">↺</button>
+  <span class="title" id="st">提词器</span>
+</div>
+
+<div id="wrap">
+  <div id="text">
+    <h2>① 开场（20 秒）</h2>
+    <p class="say">这是域途。它不告诉小林该不该辞职，也不告诉他哪条路更好。</p>
+    <p class="say">它只做一件事：把小林此刻站在哪、能往哪走、走一步要付什么，摆到桌面上。</p>
+    <p class="say">开篇那句「泻水置平地，各自东西南北流」——每个人被放到地上，会流向不同的方向。问题不是谁流得更远，是<strong>你现在站在哪块地上</strong>。</p>
+    <p class="tip">注意：开篇完整播放 8.65 秒，什么都别点。</p>
+
+    <h2>② 第 1 步：把处境填清楚（2 分钟）</h2>
+    <p><span class="cue">城市</span><span class="act">点「深圳」</span></p>
+    <p class="say">城市决定机会密度。同样是 27 岁，在深圳和在县城，能走的路完全不同。</p>
+    <p><span class="cue">城乡</span><span class="act">点「主城区」</span></p>
+    <p class="say">同一个城市，核心区、近郊、县域，是三种完全不同的处境。</p>
+    <p><span class="cue">身份</span><span class="act">点「已工作」</span></p>
+    <p class="say">已工作意味着时间成本高、试错空间小，后面所有代价都按这个算。</p>
+    <p><span class="cue">方向</span><span class="act">输入「土木工程」</span></p>
+    <p class="say">这一步决定后面检索什么。系统会判断它属于哪个专业大类。</p>
+    <p><span class="cue">年龄</span><span class="act">拖到「27」</span></p>
+    <p class="say">年龄在这里不是标签，是你能承受几年试错的刻度。</p>
+    <p><span class="cue">量表</span><span class="act">按真实感受填完</span></p>
+    <p class="say">注意，这不是考试。它只检查一件事——你的回答有没有自相矛盾。</p>
+    <p><span class="cue">制造矛盾</span><span class="act">经济压力选最低、家庭支持选最低</span></p>
+    <p class="say">看，它没有替小林圆过去，也没有说「你这样想不对」。它只是把矛盾指出来：你说经济压力不大，但家庭支持最低——这两件事放在一起，可能说明你还没跟家里谈过。</p>
+    <p class="say">这一步最有价值的地方，不是算出一个分数，是<strong>让你自己看见自己没说清楚的地方</strong>。</p>
+
+    <h2>③ 第 2 步：了解你所处的环境（1 分 20 秒）</h2>
+    <p><span class="cue">地图</span><span class="act">停留 3 秒</span></p>
+    <p class="say">这是深圳。蓝圈是当前城市的影响范围，飞线只表示信息密度，不代表任何人流向了哪里。</p>
+    <p><span class="cue">区块</span><span class="act">点「主城区」</span></p>
+    <p class="say">区域构成会告诉小林：核心区、近郊、县域，各自的机会密度和生活成本差多少。</p>
+    <p><span class="cue">切换</span><span class="act">「岗位密度」↔「生活成本」</span></p>
+    <p class="say">切换一下就会发现：岗位多的地方，生活成本也高。这是他要自己权衡的第一笔账。</p>
+    <p><span class="cue">讨论</span><span class="act">滚到「近期讨论」</span></p>
+    <p class="say">这里的内容全部来自知乎真实讨论，不是模型编的。</p>
+    <p><span class="cue">原文</span><span class="act">点「查看原文」</span></p>
+    <p class="say">每一条都能点回原文。页头写着快照时间——数据是什么时候抓的，一目了然。</p>
+    <p class="say">域途不做实时爬虫，也不假装知道现在正在发生什么。它给你的是一份有明确时间戳的快照，并且每一条都能回到原文。你信不信，可以自己去核对。</p>
+
+    <h2>④ 第 3 步：看方向、看代价（1 分 40 秒）</h2>
+    <p><span class="cue">方向</span><span class="act">浏览 3–4 条</span></p>
+    <p class="say">18 条方向，不是模板。每一条都是从真实经验里抽出来的。</p>
+    <p><span class="cue">展开</span><span class="act">看「前置条件 / 代价 / 风险」</span></p>
+    <p class="say">拿转行做产品举例：前置条件是什么、要花多少时间、可能踩什么坑，一条条列着。</p>
+    <p><span class="cue">深挖</span><span class="act">点「选它 · 二阶深挖」</span></p>
+    <p class="say">想再深一点，可以做第二次检索。系统只做索引，不下结论。</p>
+    <p><span class="cue">搜索</span><span class="act">输入关键词</span></p>
+    <p class="say">二次检索会带出更具体的讨论——比如「27 岁转产品还来得及吗」。</p>
+    <p><span class="cue">作战图</span><span class="act">切视图，点选一条方向</span></p>
+    <p class="say">这是空间尺度：55、105、155 公里的推进圈，全国网络是另一个尺度。选定之后，代价、资源消耗、推进阻力就会摊开。</p>
+    <p><span class="cue">归属</span><span class="act">切「归属摘要」</span></p>
+    <p class="say">归属摘要回答的是「你和谁更像」，但它不参与你自己的判断。相似度高，不等于这条路适合你。它只说明，在那个处境坐标上，你们离得近。</p>
+
+    <h2>⑤ 沙盘：先推演，再决定（50 秒）</h2>
+    <p><span class="cue">进入</span><span class="act">「更多 → 沙盘推演」</span></p>
+    <p class="say">六个格子，每格代表一个季度。你可以先在这里活一遍。</p>
+    <p><span class="cue">动作</span><span class="act">拖入 2 个预设动作</span></p>
+    <p class="say">比如报名一个产品训练营、做一次转岗内部沟通。</p>
+    <p><span class="cue">推进</span><span class="act">前进一格</span></p>
+    <p class="say">时间往前走，投入和成本开始累积。</p>
+    <p><span class="cue">自定义</span><span class="act">加一条「自定义的路」</span></p>
+    <p class="say">规则是确定的，没有随机。你放什么，它就如实记录什么。</p>
+    <p><span class="cue">对照</span><span class="act">切对照视图</span></p>
+    <p class="say">沙盘不预测成功率，也不给你打分。它只是把两种走法的投入、时间成本、检索原文并排放着。选哪个？它不管。这就是域途和「人生规划 AI」最大的区别。</p>
+
+    <h2>⑥ 第 4 步：把想法变成下一步（40 秒）</h2>
+    <p><span class="cue">工作台</span><span class="act">展示体验任务</span></p>
+    <p class="say">六体分类，每条都有前置条件、风险、完成标准。</p>
+    <p><span class="cue">完成</span><span class="act">标「完成」</span></p>
+    <p class="say">做完一件，不是打卡结束，是回来复盘。</p>
+    <p><span class="cue">三问</span><span class="act">点「回答三问」，写两句</span></p>
+    <p class="say">停靠驿站会让你回答三个问题：发生了什么、你学到什么、下一步怎么改。</p>
+    <p><span class="cue">归档</span><span class="act">点「归档」</span></p>
+    <p class="say">归档后，七维向量会小幅漂移——你的处境真的变了。三问留空的记录不会进入公共池，系统宁可少收，也不收空话。</p>
+
+    <h2>⑦ 收尾（10 秒）</h2>
+    <p><span class="act">停在数据来源面板</span></p>
+    <p class="say">最后看一眼这些标着来源的结论。哪些来自真实原文，哪些是近似估算，哪些暂时没有依据——它都写着。</p>
+    <p class="say">域途相信的事只有一件：<strong>看清处境，比得到一个答案更重要</strong>。</p>
+  </div>
+</div>
+
+<div id="hint">空格 / 点 ▶ 暂停 ·「−」「+」调字号 ·「1.0×」调速度 ·「↺」回到顶部</div>
+
+<script>
+(function () {
+  const wrap = document.getElementById('wrap');
+  const playBtn = document.getElementById('play');
+  const speedBtn = document.getElementById('speed');
+  const st = document.getElementById('st');
+  const bar = document.getElementById('progress');
+  let playing = false, raf = 0, speed = 1, last = 0;
+  const SPEEDS = [0.5, 0.75, 1, 1.25, 1.5, 2];
+  let si = 2;
+  const BASE = 26; // px / second at 1.0x
+
+  function setSize(delta) {
+    const cur = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--size')) || 26;
+    const next = Math.max(18, Math.min(44, cur + delta));
+    document.documentElement.style.setProperty('--size', next + 'px');
+  }
+  function tick(t) {
+    if (!playing) return;
+    if (!last) last = t;
+    const dt = (t - last) / 1000; last = t;
+    wrap.scrollTop += BASE * speed * dt;
+    const max = wrap.scrollHeight - wrap.clientHeight;
+    bar.style.width = (max > 0 ? (wrap.scrollTop / max) * 100 : 0) + '%';
+    if (wrap.scrollTop >= max - 1) { pause(); return; }
+    raf = requestAnimationFrame(tick);
+  }
+  function play() {
+    playing = true; last = 0;
+    playBtn.textContent = '❚❚ 暂停';
+    st.textContent = '录制中';
+    raf = requestAnimationFrame(tick);
+  }
+  function pause() {
+    playing = false;
+    cancelAnimationFrame(raf);
+    playBtn.textContent = '▶ 继续';
+    st.textContent = '已暂停';
+  }
+  playBtn.onclick = () => { playing ? pause() : play(); };
+  document.getElementById('back').onclick = () => setSize(-2);
+  document.getElementById('fwd').onclick = () => setSize(2);
+  speedBtn.onclick = () => { si = (si + 1) % SPEEDS.length; speed = SPEEDS[si]; speedBtn.textContent = speed.toFixed(2).replace(/0$/, '') + '×'; };
+  document.getElementById('reset').onclick = () => { pause(); wrap.scrollTop = 0; bar.style.width = '0%'; playBtn.textContent = '▶ 开始'; st.textContent = '提词器'; };
+  document.addEventListener('keydown', (e) => {
+    if (e.code === 'Space') { e.preventDefault(); playing ? pause() : play(); }
+    if (e.code === 'ArrowDown') { wrap.scrollTop += 60; }
+    if (e.code === 'ArrowUp') { wrap.scrollTop -= 60; }
+  });
+  // 手动滚动时自动暂停，避免和自动滚动打架
+  wrap.addEventListener('wheel', () => { if (playing) pause(); }, { passive: true });
+  wrap.addEventListener('touchstart', () => { if (playing) pause(); }, { passive: true });
+  wrap.addEventListener('scroll', () => {
+    const max = wrap.scrollHeight - wrap.clientHeight;
+    bar.style.width = (max > 0 ? (wrap.scrollTop / max) * 100 : 0) + '%';
+  }, { passive: true });
+})();
+</script>
+</body>
+</html>
