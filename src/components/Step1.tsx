@@ -314,7 +314,7 @@ export default function Step1() {
             </div>
           </div>
           <GapPhoto
-            variant='morning'
+            variant='writing'
             quote='你每写下一项，这张图就清晰一点。'
             still
           />
