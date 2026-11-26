@@ -13218,6 +13218,11 @@ html.y-motion-off #yutu2 .y-step-stage.is-page-dragging {
     transform: rotate(360deg);
   }
 }
+#yutu2 .y-radar-bloom-grain {
+  opacity: 0.16;
+  mix-blend-mode: overlay;
+  pointer-events: none;
+}
 #yutu2 .y-radar-bloom-ring {
   stroke: rgba(220, 240, 255, 0.22);
   stroke-width: 1;
