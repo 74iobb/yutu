@@ -465,7 +465,6 @@ export default function Sandbox() {
           </Link>
           <div className='y-sb-brand'>
             <b>沙盘</b>
-            <em>显影 · 不是预测</em>
           </div>
           <div className='y-sb-top-meta'>
             <span className='y-chip y-chip-b'>
@@ -487,10 +486,6 @@ export default function Sandbox() {
             <div>
               <p className='y-eyebrow'>决策沙盘 · 不提供解法</p>
               <h2>把未来 18 个月摆上桌面</h2>
-              <p className='y-sb-lead-p'>
-                每一格是一个季度，每格只做一个动作。预设动作与你自己写下的路都可以放上沙盘；
-                系统只列已知条件、资源消耗与检索到的真实原文，不判断哪条更值得走。
-              </p>
               <div className='y-sb-facts'>
                 <span>6 格 · 18 个月</span>
                 <span>每格 1 个动作</span>
@@ -558,9 +553,6 @@ export default function Sandbox() {
                 <div>
                   <p className='y-eyebrow'>01 / 沙盘</p>
                   <h3>六格推演</h3>
-                  <p className='y-sb-sub'>
-                    点亮的一格可以落子；已落的格可以回看，只能撤回最后一格。
-                  </p>
                 </div>
                 <span className='y-sb-live'>
                   <i className={full ? 'is-done' : ''} />
@@ -627,7 +619,6 @@ export default function Sandbox() {
                   <i className='is-cost' /> 每格另有时间成本：经济压力 +1
                 </span>
               </div>
-              <p className='y-sb-board-hint'>小屏可左右滑动棋盘</p>
             </section>
 
             <aside className='y-sb-side'>
@@ -863,9 +854,6 @@ export default function Sandbox() {
                               })}
                             </div>
                           </div>
-                          <p className='y-sb-custom-hint'>
-                            投入由你决定；系统不判断多少合适，也不推断这一步的七维变化。
-                          </p>
                           {customErr ? (
                             <p className='y-sb-custom-err' role='alert'>
                               {customErr}
@@ -949,11 +937,7 @@ export default function Sandbox() {
                                     </li>
                                   ))}
                                 </ul>
-                              ) : (
-                                <p className='y-sb-custom-hint'>
-                                  没有命中就不补结论；你仍然可以加入这一步，但系统不会编造阻力。
-                                </p>
-                              )}
+                              ) : null}
 
                               <div className='y-sb-facts-list'>
                                 <div>
@@ -1067,9 +1051,6 @@ export default function Sandbox() {
               <div>
                 <p className='y-eyebrow'>03 / 结果对照</p>
                 <h3>这条路线走到哪里</h3>
-                <p className='y-sb-sub'>
-                  与「现在」「维持现状」放在一起看；数字来自同一套七维模型。
-                </p>
               </div>
               <DataSourceBadge source='sandbox' />
             </div>

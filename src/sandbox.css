@@ -105,12 +105,6 @@
   color: var(--y-ink);
   text-shadow: 0 2px 14px rgba(0, 0, 0, 0.45);
 }
-.y-sb-lead-p {
-  max-width: 62ch;
-  font-size: 13px;
-  line-height: 1.8;
-  color: var(--y-ink2);
-}
 .y-sb-facts {
   display: flex;
   flex-wrap: wrap;
@@ -471,13 +465,6 @@
   height: 6px;
   border-radius: 50%;
 }
-.y-sb-board-hint {
-  display: none;
-  margin-top: 6px;
-  font-size: 10px;
-  color: var(--y-muted);
-}
-
 /* 右侧动作面板 */
 .y-sb-side {
   display: grid;
@@ -747,11 +734,6 @@
 }
 .y-sb-custom-int button.is-on b {
   color: #f7d9a0;
-}
-.y-sb-custom-hint {
-  font-size: 10.5px;
-  line-height: 1.65;
-  color: var(--y-muted);
 }
 .y-sb-custom-err {
   font-size: 10.5px;
@@ -1214,9 +1196,6 @@
   }
   .y-sb-notice .y-btn {
     width: 100%;
-  }
-  .y-sb-board-hint {
-    display: block;
   }
   .y-sb-strip {
     grid-template-columns: repeat(3, minmax(0, 1fr));
