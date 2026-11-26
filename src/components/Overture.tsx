@@ -1221,6 +1221,14 @@ export default function Overture() {
             <circle className='y-ov-core' cx={DISC.cx} cy={DISC.cy} r='2.6' />
           </g>
 
+          {/* 退潮水线：水面退去时向外推开的一圈水痕（不在圆盘裁剪里） */}
+          <circle
+            className='y-ov-drain'
+            cx={DISC.cx}
+            cy={DISC.cy}
+            r={DISC.r}
+          />
+
           {/* 体积光：从上方落下的锥形光束 */}
           <polygon
             className='y-ov-beam'
@@ -1308,11 +1316,15 @@ export default function Overture() {
                 d={stream.d}
                 pathLength={1}
                 stroke={`url(#${stream.gradient})`}
-                style={{
-                  strokeWidth: stream.width,
-                  strokeOpacity: stream.opacity,
-                  animationDelay: `${stream.delay}ms`,
-                }}
+                style={
+                  {
+                    strokeWidth: stream.width,
+                    strokeOpacity: stream.opacity,
+                    animationDelay: `${stream.delay}ms`,
+                    /* 退潮时按顺序倒收，间距比入场更紧 */
+                    '--ov-leave-delay': `${i * 12}ms`,
+                  } as CSSProperties
+                }
               />
             ))}
             {FALL_PARTICLES.map((p, i) => {

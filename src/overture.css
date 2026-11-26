@@ -72,7 +72,21 @@
 }
 
 .y-overture.is-leaving .y-ov-pool {
-  animation: yOvPoolOut 0.8s ease forwards;
+  transform-box: view-box;
+  transform-origin: 500px 600px;
+  animation: yOvPoolOut 0.85s var(--ov-ease) forwards;
+}
+
+/* 退潮：水先停，再退。水束从下往上收回，而不是一直往下落 */
+.y-overture.is-leaving .y-ov-fall,
+.y-overture.is-leaving .y-ov-veil {
+  animation: yOvRetract 0.55s cubic-bezier(0.55, 0, 0.75, 0.2)
+    var(--ov-leave-delay, 0ms) forwards !important;
+}
+
+/* 前景人形随水面一起退去 */
+.y-overture.is-leaving .y-ov-human {
+  animation: yOvFadeAway 0.45s ease forwards;
 }
 
 .y-overture.is-leaving .y-ov-crust {
@@ -1166,11 +1180,63 @@
   }
 }
 
+/* 水面退去：向下沉、略微铺开、带一点失焦，像水被地吸走 */
 @keyframes yOvPoolOut {
-  from {
+  0% {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+    filter: blur(0);
+  }
+  100% {
+    transform: scale(1.07) translateY(58px);
+    opacity: 0;
+    filter: blur(1.6px);
+  }
+}
+
+/* 水束倒收：虚线从落点往上退光，落水的动作被「收」回天上 */
+@keyframes yOvRetract {
+  0% {
+    stroke-dashoffset: 0;
     opacity: 1;
   }
+  100% {
+    stroke-dashoffset: 1;
+    opacity: 0.12;
+  }
+}
+
+@keyframes yOvFadeAway {
   to {
+    opacity: 0;
+  }
+}
+
+/* 退潮水线：属于水面的最后一圈涟漪，向外推开后消失 */
+.y-ov-drain {
+  fill: none;
+  stroke: rgba(203, 236, 255, 0.65);
+  stroke-width: 1.1;
+  opacity: 0;
+  transform-box: fill-box;
+  transform-origin: center;
+  pointer-events: none;
+}
+
+.y-overture.is-leaving .y-ov-drain {
+  animation: yOvDrain 0.85s cubic-bezier(0.2, 0.7, 0.3, 1) forwards;
+}
+
+@keyframes yOvDrain {
+  0% {
+    transform: scale(1);
+    opacity: 0;
+  }
+  22% {
+    opacity: 0.55;
+  }
+  100% {
+    transform: scale(1.34);
     opacity: 0;
   }
 }
