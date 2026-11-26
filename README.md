@@ -13,6 +13,13 @@
 
 > 无需注册/登录；个人数据保存在当前浏览器。平台在线时使用数据表，离线时自动降级为 `localStorage`。
 
+## 原创与参赛声明
+
+- 本项目为 **知乎黑客松 S3｜湾区共创季**（2026 年 11 月）赛事期间由参赛团队独立创作，此前**未获奖、未作为商业产品上线运营**。
+- 仓库公开仅用于展示代码结构与工程规范，`git log` 保留完整开发时间线，可作为创作过程的客观记录。
+- 第三方内容与素材的来源、授权边界见 [`docs/IMAGE-SOURCES.md`](docs/IMAGE-SOURCES.md)、[`docs/ZHIHU-RIGHTS.md`](docs/ZHIHU-RIGHTS.md)、[`docs/DATA-SOURCES.md`](docs/DATA-SOURCES.md)。
+- 核心功能与主要创新由团队独立完成；使用到的开源依赖均遵循各自许可证，详见 `package.json` 与 `pnpm-lock.yaml`。
+
 ---
 
 ## 核心能力（V12.4）
