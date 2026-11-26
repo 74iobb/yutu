@@ -66,43 +66,42 @@ function sweepTailPath(spanDeg: number) {
   );
 }
 
-/**
- * 花形背景：r 随角度做花瓣状起伏，叠加随时间的开合与旋转，
- * 三层不同花瓣数的花叠在一起，像一朵缓慢呼吸、转动的花。
- */
-function flowerPath(
-  petals: number,
-  baseR: number,
-  amp: number,
-  phase: number,
-  spin: number,
-  t: number
-) {
-  let d = '';
-  for (let deg = 0; deg <= 360; deg += 2) {
-    const a = deg * RAD + phase;
-    const lobe = Math.pow(
-      Math.abs(Math.sin((petals / 2) * a + spin * t)),
-      0.75
-    );
-    const breathe = 0.84 + 0.16 * Math.sin(t * 0.8 + a * 1.7);
-    const r =
-      baseR * (0.52 + 0.48 * lobe * breathe) +
-      Math.sin(a * 3 - t * 1.4) * amp * 0.16;
-    const p = polar(deg, r);
-    d += `${d ? 'L' : 'M'}${p.x.toFixed(1)},${p.y.toFixed(1)}`;
-  }
-  return d + ' Z';
-}
-
-/** 三层花：花瓣数、半径、振幅、初始相位、旋转速度、配色 */
-const ALL_FLOWERS = [
-  { petals: 8, k: 0.94, amp: 0.14, phase: 0.3, spin: 0.16, tone: 'a' },
-  { petals: 6, k: 0.7, amp: 0.16, phase: 1.4, spin: -0.22, tone: 'b' },
-  { petals: 12, k: 0.46, amp: 0.1, phase: 2.6, spin: 0.3, tone: 'c' },
+/** 七彩：高饱和彩虹色（正常混合下更艳，不被屏幕混合冲淡） */
+const RAINBOW = [
+  '#ff3d6e',
+  '#ff8a3d',
+  '#ffd93d',
+  '#4dff9d',
+  '#2fd8ff',
+  '#4f7dff',
+  '#b45bff',
 ] as const;
 
-/** 手机 / 低配设备只保留两层，避免多条花瓣同时逐帧重算 */
+/** 单片花瓣：从花心到瓣尖的两段二次曲线，spread 控制宽窄、sway 控制摆动 */
+function petalPath(
+  angleDeg: number,
+  len: number,
+  spreadDeg: number,
+  sway: number
+) {
+  const tip = polar(angleDeg + sway, len);
+  const c1 = polar(angleDeg - spreadDeg + sway * 0.4, len * 0.58);
+  const c2 = polar(angleDeg + spreadDeg + sway * 0.4, len * 0.58);
+  return (
+    `M${CX},${CY} ` +
+    `Q${c1.x.toFixed(1)},${c1.y.toFixed(1)} ${tip.x.toFixed(1)},${tip.y.toFixed(1)} ` +
+    `Q${c2.x.toFixed(1)},${c2.y.toFixed(1)} ${CX},${CY} Z`
+  );
+}
+
+/** 三圈花瓣：外 7 / 中 5 / 内 9，颜色与旋向错开 */
+const ALL_PETAL_RINGS = [
+  { count: 7, k: 0.96, spread: 30, phase: 0, spin: 7, tone: 0, wave: 0.16 },
+  { count: 5, k: 0.64, spread: 38, phase: 36, spin: -10, tone: 3, wave: 0.2 },
+  { count: 9, k: 0.44, spread: 20, phase: 20, spin: 12, tone: 5, wave: 0.14 },
+] as const;
+
+/** 手机 / 低配设备去掉最内圈，减少逐帧重算 */
 const LIGHT_DEVICE =
   (typeof window !== 'undefined' &&
     Boolean(window.matchMedia?.('(max-width: 640px)').matches)) ||
@@ -111,7 +110,17 @@ const LIGHT_DEVICE =
       ((navigator as unknown as { deviceMemory?: number }).deviceMemory ?? 8) <=
         4));
 
-const BG_FLOWERS = LIGHT_DEVICE ? ALL_FLOWERS.slice(0, 2) : ALL_FLOWERS;
+const PETAL_RINGS: ReadonlyArray<(typeof ALL_PETAL_RINGS)[number]> =
+  LIGHT_DEVICE ? ALL_PETAL_RINGS.slice(0, 2) : ALL_PETAL_RINGS;
+
+const PETAL_OFFSETS: number[] = [];
+{
+  let acc = 0;
+  PETAL_RINGS.forEach((ring) => {
+    PETAL_OFFSETS.push(acc);
+    acc += ring.count;
+  });
+}
 
 /**
  * 「起点 → 现在」七维雷达对比。
@@ -125,8 +134,8 @@ export default function GrowthRadar({
   compact = false,
 }: GrowthRadarProps) {
   const uid = useId().replace(/:/g, '');
-  /* 花形背景逐帧重算（不触发 React 重渲染），让花瓣开合与旋转 */
-  const flowerRefs = useRef<(SVGPathElement | null)[]>([]);
+  /* 花瓣逐帧重算（不触发 React 重渲染），让花边开合边旋转 */
+  const petalRefs = useRef<(SVGPathElement | null)[]>([]);
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -141,18 +150,24 @@ export default function GrowthRadar({
         last = now;
         if (!document.documentElement.classList.contains('y-motion-off')) {
           const t = now / 1000;
-          BG_FLOWERS.forEach((f, i) => {
-            flowerRefs.current[i]?.setAttribute(
-              'd',
-              flowerPath(
-                f.petals,
-                R * f.k,
-                R * f.amp,
-                f.phase,
-                f.spin,
-                t
-              )
-            );
+          PETAL_RINGS.forEach((ring, ri) => {
+            for (let i = 0; i < ring.count; i += 1) {
+              const idx = PETAL_OFFSETS[ri] + i;
+              const angle =
+                (360 / ring.count) * i + ring.phase + t * ring.spin;
+              const len =
+                R *
+                ring.k *
+                (1 -
+                  ring.wave +
+                  ring.wave *
+                    (0.5 + 0.5 * Math.sin(t * 0.9 + i * 1.7 + ri)));
+              const sway = Math.sin(t * 0.8 + i * 1.3 + ri) * 5;
+              petalRefs.current[idx]?.setAttribute(
+                'd',
+                petalPath(angle, len, ring.spread, sway)
+              );
+            }
           });
         }
       }
@@ -239,43 +254,39 @@ export default function GrowthRadar({
             <stop offset='72%' stopColor='#e6f2ff' stopOpacity='0.5' />
             <stop offset='100%' stopColor='#ffffff' stopOpacity='0.05' />
           </linearGradient>
-          {/* 花形背景：三层不同配色的径向渐变 + 花蕊 */}
-          <radialGradient id={`${uid}-flower-a`} cx='50%' cy='50%' r='52%'>
-            <stop offset='0%' stopColor='#a9f4de' stopOpacity='0.5' />
-            <stop offset='55%' stopColor='#7ec8ff' stopOpacity='0.28' />
-            <stop offset='100%' stopColor='#b9a8ff' stopOpacity='0.03' />
-          </radialGradient>
-          <radialGradient id={`${uid}-flower-b`} cx='50%' cy='50%' r='52%'>
-            <stop offset='0%' stopColor='#c9b8ff' stopOpacity='0.45' />
-            <stop offset='55%' stopColor='#ff9ed6' stopOpacity='0.26' />
-            <stop offset='100%' stopColor='#f0b25a' stopOpacity='0.03' />
-          </radialGradient>
-          <radialGradient id={`${uid}-flower-c`} cx='50%' cy='50%' r='52%'>
-            <stop offset='0%' stopColor='#f7cd78' stopOpacity='0.42' />
-            <stop offset='55%' stopColor='#7ee8c8' stopOpacity='0.24' />
-            <stop offset='100%' stopColor='#7ec8ff' stopOpacity='0.03' />
-          </radialGradient>
+          {/* 花蕊：暖白金到透明 */}
           <radialGradient id={`${uid}-flower-core`} cx='50%' cy='50%' r='50%'>
-            <stop offset='0%' stopColor='#ffffff' stopOpacity='0.85' />
-            <stop offset='45%' stopColor='#a9e8ff' stopOpacity='0.4' />
-            <stop offset='100%' stopColor='#7ec8ff' stopOpacity='0' />
+            <stop offset='0%' stopColor='#fff8e6' stopOpacity='0.95' />
+            <stop offset='42%' stopColor='#ffd93d' stopOpacity='0.55' />
+            <stop offset='100%' stopColor='#ff8a3d' stopOpacity='0' />
           </radialGradient>
         </defs>
 
-        {/* 背景：三层缓慢开合、旋转的彩色花 */}
+        {/* 背景：三圈七彩花瓣，边走边开合、边旋转 */}
         <g className='y-radar-bloom' aria-hidden='true'>
-          {BG_FLOWERS.map((f, i) => (
-            <path
-              key={i}
-              ref={(el) => {
-                flowerRefs.current[i] = el;
-              }}
-              className={`y-radar-flower is-${i}`}
-              d={flowerPath(f.petals, R * f.k, R * f.amp, f.phase, f.spin, 0)}
-              fill={`url(#${uid}-flower-${f.tone})`}
-              stroke={`url(#${uid}-flower-${f.tone})`}
-            />
-          ))}
+          {PETAL_RINGS.map((ring, ri) =>
+            Array.from({ length: ring.count }, (_, i) => {
+              const idx = PETAL_OFFSETS[ri] + i;
+              const angle = (360 / ring.count) * i + ring.phase;
+              const len =
+                R *
+                ring.k *
+                (1 -
+                  ring.wave +
+                  ring.wave * (0.5 + 0.5 * Math.sin(i * 1.7 + ri)));
+              return (
+                <path
+                  key={`${ri}-${i}`}
+                  ref={(el) => {
+                    petalRefs.current[idx] = el;
+                  }}
+                  className={`y-radar-petal is-${ri}`}
+                  d={petalPath(angle, len, ring.spread, Math.sin(i * 1.3) * 5)}
+                  fill={RAINBOW[(i + ring.tone) % RAINBOW.length]}
+                />
+              );
+            })
+          )}
           <circle
             className='y-radar-flower-core'
             cx={CX}
@@ -283,15 +294,16 @@ export default function GrowthRadar({
             r={R * 0.14}
             fill={`url(#${uid}-flower-core)`}
           />
-          {Array.from({ length: 10 }, (_, i) => {
-            const p = polar(i * 36, R * 0.2);
+          {Array.from({ length: 12 }, (_, i) => {
+            const p = polar(i * 30, R * 0.18);
             return (
               <circle
                 key={`st-${i}`}
                 className='y-radar-stamen'
                 cx={p.x}
                 cy={p.y}
-                r={1.6}
+                r={1.5}
+                fill={RAINBOW[i % RAINBOW.length]}
               />
             );
           })}
