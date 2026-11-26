@@ -13177,55 +13177,24 @@ html.y-motion-off #yutu2 .y-step-stage.is-page-dragging {
 #yutu2 .y-radar-sweep-dot {
   fill: #eaf5ff;
 }
-/* 扫描线后的彩色波尾：柔光扇形 + 3D 缎带 + 流动虚线 */
-#yutu2 .y-radar-wave-glass,
-#yutu2 .y-radar-wave,
-#yutu2 .y-radar-wave-core {
+/* 背景：环绕雷达的彩色 3D 缎带（逐帧起伏） */
+#yutu2 .y-radar-ribbons {
   mix-blend-mode: screen;
 }
+#yutu2 .y-radar-bg-ribbon {
+  opacity: 0.55;
+  filter: blur(1.4px);
+}
+#yutu2 .y-radar-bg-ribbon.is-1 {
+  opacity: 0.45;
+}
+#yutu2 .y-radar-bg-ribbon.is-2 {
+  opacity: 0.38;
+}
+/* 扫描线尾部只保留一层柔光扇形 */
 #yutu2 .y-radar-wave-glass {
   opacity: 0.5;
-}
-#yutu2 .y-radar-wave-back {
-  opacity: 0.34;
-  filter: blur(2.6px);
-}
-#yutu2 .y-radar-wave-3d {
-  opacity: 0.92;
-  filter: drop-shadow(0 2px 3px rgba(0, 18, 30, 0.55));
-}
-#yutu2 .y-radar-wave-core {
-  opacity: 0.6;
-  filter: blur(1.1px);
-  animation: yRadarWaveShine 3.4s ease-in-out infinite alternate;
-}
-#yutu2 .y-radar-wave-ridge {
-  fill: none;
-  stroke-width: 1.5;
-  stroke-linecap: round;
-  opacity: 0.95;
-  animation: yRadarWaveShine 3s ease-in-out infinite alternate;
-}
-@keyframes yRadarWaveShine {
-  from {
-    opacity: 0.45;
-  }
-  to {
-    opacity: 1;
-  }
-}
-#yutu2 .y-radar-wave-line {
-  fill: none;
-  stroke-width: 1.2;
-  stroke-linecap: round;
-  stroke-dasharray: 3 10;
-  opacity: 0.72;
-  animation: yRadarWaveFlow 2.8s linear infinite;
-}
-@keyframes yRadarWaveFlow {
-  to {
-    stroke-dashoffset: -52;
-  }
+  mix-blend-mode: screen;
 }
 @keyframes yRadarSweep {
   to {

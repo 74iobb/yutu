@@ -66,78 +66,57 @@ function sweepTailPath(spanDeg: number) {
   );
 }
 
-/**
- * 飘带的中轴：主波沿带长传播，叠一层反向的二次波与阵风式振幅变化，
- * 让形状随时间自然起伏，而不是整条刚性旋转。
- */
-function centerAt(baseR: number, amp: number, u: number, t: number) {
-  const gust = 0.82 + 0.18 * Math.sin(t * 0.7 + u * 0.6);
-  return (
-    baseR +
-    (Math.sin(u + t * 1.5) * amp +
-      Math.sin(u * 2.25 - t * 2.2) * amp * 0.32) *
-      gust
-  );
-}
-
-/** 跟在扫描线后面的波浪线：半径随角度与时间起伏，配合虚线流动 */
-function waveTrailPath(
-  radius: number,
-  amp: number,
-  phase: number,
-  t = 0
-) {
-  let d = '';
-  for (let deg = -96; deg >= -168; deg -= 4) {
-    const u = (deg + phase) * 0.11;
-    const r = centerAt(radius, amp, u, t);
-    const p = polar(deg, r);
-    d += `${d ? 'L' : 'M'}${p.x.toFixed(1)},${p.y.toFixed(1)}`;
-  }
-  return d;
-}
-
-/**
- * 3D 波形缎带：内缘与外缘各自起伏、带宽随角度与时间变化，闭合后像一条
- * 有厚度的飘带；配合渐变与高光脊线制造体积感。
- */
-function ribbonPath(
+/** 背景缎带：绕雷达一整圈的闭合飘带，随角度和时间起伏 */
+function ringRibbonPath(
   baseR: number,
   amp: number,
   phase: number,
   halfW: number,
-  t = 0
+  t: number,
+  speed = 1
 ) {
   const outer: { x: number; y: number }[] = [];
   const inner: { x: number; y: number }[] = [];
-  for (let deg = -94; deg >= -172; deg -= 3) {
-    const u = (deg + phase) * 0.11;
-    const rc = centerAt(baseR, amp, u, t);
-    const w =
-      halfW * (0.64 + 0.36 * Math.sin(u * 1.3 + t * 1.1 + 0.9));
+  for (let deg = 0; deg < 360; deg += 6) {
+    const u = (deg + phase) * 0.09;
+    const rc =
+      baseR +
+      (Math.sin(u + t * speed * 1.2) * amp +
+        Math.sin(u * 2.3 - t * speed * 1.7) * amp * 0.3) *
+        (0.82 + 0.18 * Math.sin(t * 0.5 + u * 0.4));
+    const w = halfW * (0.7 + 0.3 * Math.sin(u * 1.4 + t * speed + 1.1));
     outer.push(polar(deg, rc + w));
     inner.push(polar(deg, rc - w));
   }
   inner.reverse();
-  const pts = [...outer, ...inner];
   return (
-    pts
+    [...outer, ...inner]
       .map((p, i) => `${i ? 'L' : 'M'}${p.x.toFixed(1)},${p.y.toFixed(1)}`)
       .join(' ') + ' Z'
   );
 }
 
-/** 缎带的高光脊线 */
-function ridgePath(baseR: number, amp: number, phase: number, t = 0) {
-  let d = '';
-  for (let deg = -94; deg >= -172; deg -= 4) {
-    const u = (deg + phase) * 0.11;
-    const r = centerAt(baseR, amp, u, t);
-    const p = polar(deg, r);
-    d += `${d ? 'L' : 'M'}${p.x.toFixed(1)},${p.y.toFixed(1)}`;
-  }
-  return d;
-}
+/** 背景缎带的半径、相位与速度（相对雷达半径 R） */
+const ALL_BG_RIBBONS = [
+  { k: 0.32, amp: 4.5, w: 4, phase: 0, speed: 0.9 },
+  { k: 0.47, amp: 6, w: 5.5, phase: 72, speed: 1.1 },
+  { k: 0.63, amp: 5, w: 5, phase: 144, speed: 0.8 },
+  { k: 0.8, amp: 7, w: 6, phase: 216, speed: 1.25 },
+  { k: 0.94, amp: 4.5, w: 3.6, phase: 288, speed: 1 },
+] as const;
+
+/** 手机 / 低配设备只保留三条，避免多条缎带同时逐帧重算 */
+const LIGHT_DEVICE =
+  (typeof window !== 'undefined' &&
+    Boolean(window.matchMedia?.('(max-width: 640px)').matches)) ||
+  (typeof navigator !== 'undefined' &&
+    ((navigator.hardwareConcurrency ?? 8) <= 4 ||
+      ((navigator as unknown as { deviceMemory?: number }).deviceMemory ?? 8) <=
+        4));
+
+const BG_RIBBONS = LIGHT_DEVICE
+  ? ALL_BG_RIBBONS.filter((_, i) => i % 2 === 0)
+  : ALL_BG_RIBBONS;
 
 /**
  * 「起点 → 现在」七维雷达对比。
@@ -151,13 +130,8 @@ export default function GrowthRadar({
   compact = false,
 }: GrowthRadarProps) {
   const uid = useId().replace(/:/g, '');
-  /* 飘带形状逐帧重算（不触发 React 重渲染），让波沿带长自然传播 */
-  const waveBackRef = useRef<SVGPathElement>(null);
-  const waveMainRef = useRef<SVGPathElement>(null);
-  const waveCoreRef = useRef<SVGPathElement>(null);
-  const waveRidgeRef = useRef<SVGPathElement>(null);
-  const waveFlowARef = useRef<SVGPathElement>(null);
-  const waveFlowBRef = useRef<SVGPathElement>(null);
+  /* 背景飘带逐帧重算（不触发 React 重渲染），让波沿着缎带自然传播 */
+  const bgRefs = useRef<(SVGPathElement | null)[]>([]);
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -172,30 +146,12 @@ export default function GrowthRadar({
         last = now;
         if (!document.documentElement.classList.contains('y-motion-off')) {
           const t = now / 1000;
-          waveBackRef.current?.setAttribute(
-            'd',
-            ribbonPath(R * 0.62, 5, 84, 5, t)
-          );
-          waveMainRef.current?.setAttribute(
-            'd',
-            ribbonPath(R * 0.82, 7, 0, 9, t)
-          );
-          waveCoreRef.current?.setAttribute(
-            'd',
-            ribbonPath(R * 0.82, 7, 0, 3.4, t)
-          );
-          waveRidgeRef.current?.setAttribute(
-            'd',
-            ridgePath(R * 0.87, 7, 0, t)
-          );
-          waveFlowARef.current?.setAttribute(
-            'd',
-            waveTrailPath(R * 0.95, 4, 30, t)
-          );
-          waveFlowBRef.current?.setAttribute(
-            'd',
-            waveTrailPath(R * 0.7, 3, 150, t)
-          );
+          BG_RIBBONS.forEach((rb, i) => {
+            bgRefs.current[i]?.setAttribute(
+              'd',
+              ringRibbonPath(R * rb.k, rb.amp, rb.phase, rb.w, t, rb.speed)
+            );
+          });
         }
       }
       raf = window.requestAnimationFrame(tick);
@@ -281,7 +237,38 @@ export default function GrowthRadar({
             <stop offset='72%' stopColor='#e6f2ff' stopOpacity='0.5' />
             <stop offset='100%' stopColor='#ffffff' stopOpacity='0.05' />
           </linearGradient>
+          {/* 背景缎带：三组彩色渐变轮流使用 */}
+          <linearGradient id={`${uid}-bg-a`} x1='0' y1='0' x2='1' y2='1'>
+            <stop offset='0%' stopColor='#7ee8c8' stopOpacity='0.5' />
+            <stop offset='45%' stopColor='#7ec8ff' stopOpacity='0.34' />
+            <stop offset='100%' stopColor='#b9a8ff' stopOpacity='0.12' />
+          </linearGradient>
+          <linearGradient id={`${uid}-bg-b`} x1='0' y1='0' x2='1' y2='1'>
+            <stop offset='0%' stopColor='#b9a8ff' stopOpacity='0.45' />
+            <stop offset='50%' stopColor='#ff9ed6' stopOpacity='0.32' />
+            <stop offset='100%' stopColor='#f0b25a' stopOpacity='0.12' />
+          </linearGradient>
+          <linearGradient id={`${uid}-bg-c`} x1='0' y1='0' x2='1' y2='1'>
+            <stop offset='0%' stopColor='#f0b25a' stopOpacity='0.42' />
+            <stop offset='50%' stopColor='#7ee8c8' stopOpacity='0.3' />
+            <stop offset='100%' stopColor='#7ec8ff' stopOpacity='0.12' />
+          </linearGradient>
         </defs>
+
+        {/* 背景：五条环绕雷达的彩色 3D 缎带 */}
+        <g className='y-radar-ribbons' aria-hidden='true'>
+          {BG_RIBBONS.map((rb, i) => (
+            <path
+              key={i}
+              ref={(el) => {
+                bgRefs.current[i] = el;
+              }}
+              className={`y-radar-bg-ribbon is-${i % 3}`}
+              d={ringRibbonPath(R * rb.k, rb.amp, rb.phase, rb.w, 0, rb.speed)}
+              fill={`url(#${uid}-bg-${['a', 'b', 'c'][i % 3]})`}
+            />
+          ))}
+        </g>
 
         {/* 网格 */}
         {LEVELS.map((lv) => (
@@ -315,48 +302,11 @@ export default function GrowthRadar({
           aria-hidden='true'
           filter={`url(#${uid}-glow)`}
         >
-          {/* 波尾：柔光扇形 + 3D 缎带（暗背带 / 主带 / 亮芯 / 高光脊），随扫描线一起转 */}
+          {/* 扫描线尾部只留一层柔光扇形，缎带已经移到背景 */}
           <path
             className='y-radar-wave-glass'
             d={sweepTailPath(62)}
             fill={`url(#${uid}-trail)`}
-          />
-          <path
-            className='y-radar-wave y-radar-wave-back'
-            ref={waveBackRef}
-            d={ribbonPath(R * 0.62, 5, 84, 5)}
-            fill={`url(#${uid}-ribbon-dark)`}
-          />
-          <path
-            className='y-radar-wave y-radar-wave-3d'
-            ref={waveMainRef}
-            d={ribbonPath(R * 0.82, 7, 0, 9)}
-            fill={`url(#${uid}-ribbon)`}
-          />
-          <path
-            className='y-radar-wave-core'
-            ref={waveCoreRef}
-            d={ribbonPath(R * 0.82, 7, 0, 3.4)}
-            fill={`url(#${uid}-ribbon-core)`}
-          />
-          <path
-            className='y-radar-wave-ridge'
-            ref={waveRidgeRef}
-            d={ridgePath(R * 0.87, 7, 0)}
-            stroke={`url(#${uid}-ribbon)`}
-          />
-          <path
-            className='y-radar-wave-line'
-            ref={waveFlowARef}
-            d={waveTrailPath(R * 0.95, 4, 30)}
-            stroke={`url(#${uid}-trail)`}
-          />
-          <path
-            className='y-radar-wave-line'
-            ref={waveFlowBRef}
-            d={waveTrailPath(R * 0.7, 3, 150)}
-            stroke={`url(#${uid}-trail)`}
-            style={{ animationDelay: '-1.1s' }}
           />
           <line
             x1={CX}
