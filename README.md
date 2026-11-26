@@ -17,7 +17,8 @@
 
 - 本项目为 **知乎黑客松 S3｜湾区共创季**（2026 年 11 月）赛事期间由参赛团队独立创作，此前**未获奖、未作为商业产品上线运营**。
 - 仓库公开仅用于展示代码结构与工程规范，`git log` 保留完整开发时间线，可作为创作过程的客观记录。
-- 第三方内容与素材的来源、授权边界见 [`docs/IMAGE-SOURCES.md`](docs/IMAGE-SOURCES.md)、[`docs/ZHIHU-RIGHTS.md`](docs/ZHIHU-RIGHTS.md)、[`docs/DATA-SOURCES.md`](docs/DATA-SOURCES.md)。
+- 第三方内容与素材的来源、授权边界见 [`docs/ASSET-LICENSES.md`](docs/ASSET-LICENSES.md)、[`docs/IMAGE-SOURCES.md`](docs/IMAGE-SOURCES.md)、[`docs/ZHIHU-RIGHTS.md`](docs/ZHIHU-RIGHTS.md)、[`docs/DATA-SOURCES.md`](docs/DATA-SOURCES.md)。
+- 视觉素材构成：**团队原创 / AI 生成（部分） / Unsplash 免费图库**；不含第三方受版权保护的作品，未使用带水印或来源不明的图片。
 - 核心功能与主要创新由团队独立完成；使用到的开源依赖均遵循各自许可证，详见 `package.json` 与 `pnpm-lock.yaml`。
 
 ---
