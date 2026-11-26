@@ -66,46 +66,43 @@ function sweepTailPath(spanDeg: number) {
   );
 }
 
-/** 背景缎带：绕雷达一整圈的闭合飘带，随角度和时间起伏 */
-function ringRibbonPath(
+/**
+ * 花形背景：r 随角度做花瓣状起伏，叠加随时间的开合与旋转，
+ * 三层不同花瓣数的花叠在一起，像一朵缓慢呼吸、转动的花。
+ */
+function flowerPath(
+  petals: number,
   baseR: number,
   amp: number,
   phase: number,
-  halfW: number,
-  t: number,
-  speed = 1
+  spin: number,
+  t: number
 ) {
-  const outer: { x: number; y: number }[] = [];
-  const inner: { x: number; y: number }[] = [];
-  for (let deg = 0; deg < 360; deg += 6) {
-    const u = (deg + phase) * 0.09;
-    const rc =
-      baseR +
-      (Math.sin(u + t * speed * 1.2) * amp +
-        Math.sin(u * 2.3 - t * speed * 1.7) * amp * 0.3) *
-        (0.82 + 0.18 * Math.sin(t * 0.5 + u * 0.4));
-    const w = halfW * (0.7 + 0.3 * Math.sin(u * 1.4 + t * speed + 1.1));
-    outer.push(polar(deg, rc + w));
-    inner.push(polar(deg, rc - w));
+  let d = '';
+  for (let deg = 0; deg <= 360; deg += 2) {
+    const a = deg * RAD + phase;
+    const lobe = Math.pow(
+      Math.abs(Math.sin((petals / 2) * a + spin * t)),
+      0.75
+    );
+    const breathe = 0.84 + 0.16 * Math.sin(t * 0.8 + a * 1.7);
+    const r =
+      baseR * (0.52 + 0.48 * lobe * breathe) +
+      Math.sin(a * 3 - t * 1.4) * amp * 0.16;
+    const p = polar(deg, r);
+    d += `${d ? 'L' : 'M'}${p.x.toFixed(1)},${p.y.toFixed(1)}`;
   }
-  inner.reverse();
-  return (
-    [...outer, ...inner]
-      .map((p, i) => `${i ? 'L' : 'M'}${p.x.toFixed(1)},${p.y.toFixed(1)}`)
-      .join(' ') + ' Z'
-  );
+  return d + ' Z';
 }
 
-/** 背景缎带的半径、相位与速度（相对雷达半径 R） */
-const ALL_BG_RIBBONS = [
-  { k: 0.32, amp: 4.5, w: 4, phase: 0, speed: 0.9 },
-  { k: 0.47, amp: 6, w: 5.5, phase: 72, speed: 1.1 },
-  { k: 0.63, amp: 5, w: 5, phase: 144, speed: 0.8 },
-  { k: 0.8, amp: 7, w: 6, phase: 216, speed: 1.25 },
-  { k: 0.94, amp: 4.5, w: 3.6, phase: 288, speed: 1 },
+/** 三层花：花瓣数、半径、振幅、初始相位、旋转速度、配色 */
+const ALL_FLOWERS = [
+  { petals: 8, k: 0.94, amp: 0.14, phase: 0.3, spin: 0.16, tone: 'a' },
+  { petals: 6, k: 0.7, amp: 0.16, phase: 1.4, spin: -0.22, tone: 'b' },
+  { petals: 12, k: 0.46, amp: 0.1, phase: 2.6, spin: 0.3, tone: 'c' },
 ] as const;
 
-/** 手机 / 低配设备只保留三条，避免多条缎带同时逐帧重算 */
+/** 手机 / 低配设备只保留两层，避免多条花瓣同时逐帧重算 */
 const LIGHT_DEVICE =
   (typeof window !== 'undefined' &&
     Boolean(window.matchMedia?.('(max-width: 640px)').matches)) ||
@@ -114,9 +111,7 @@ const LIGHT_DEVICE =
       ((navigator as unknown as { deviceMemory?: number }).deviceMemory ?? 8) <=
         4));
 
-const BG_RIBBONS = LIGHT_DEVICE
-  ? ALL_BG_RIBBONS.filter((_, i) => i % 2 === 0)
-  : ALL_BG_RIBBONS;
+const BG_FLOWERS = LIGHT_DEVICE ? ALL_FLOWERS.slice(0, 2) : ALL_FLOWERS;
 
 /**
  * 「起点 → 现在」七维雷达对比。
@@ -130,8 +125,8 @@ export default function GrowthRadar({
   compact = false,
 }: GrowthRadarProps) {
   const uid = useId().replace(/:/g, '');
-  /* 背景飘带逐帧重算（不触发 React 重渲染），让波沿着缎带自然传播 */
-  const bgRefs = useRef<(SVGPathElement | null)[]>([]);
+  /* 花形背景逐帧重算（不触发 React 重渲染），让花瓣开合与旋转 */
+  const flowerRefs = useRef<(SVGPathElement | null)[]>([]);
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -146,10 +141,17 @@ export default function GrowthRadar({
         last = now;
         if (!document.documentElement.classList.contains('y-motion-off')) {
           const t = now / 1000;
-          BG_RIBBONS.forEach((rb, i) => {
-            bgRefs.current[i]?.setAttribute(
+          BG_FLOWERS.forEach((f, i) => {
+            flowerRefs.current[i]?.setAttribute(
               'd',
-              ringRibbonPath(R * rb.k, rb.amp, rb.phase, rb.w, t, rb.speed)
+              flowerPath(
+                f.petals,
+                R * f.k,
+                R * f.amp,
+                f.phase,
+                f.spin,
+                t
+              )
             );
           });
         }
@@ -237,37 +239,62 @@ export default function GrowthRadar({
             <stop offset='72%' stopColor='#e6f2ff' stopOpacity='0.5' />
             <stop offset='100%' stopColor='#ffffff' stopOpacity='0.05' />
           </linearGradient>
-          {/* 背景缎带：三组彩色渐变轮流使用 */}
-          <linearGradient id={`${uid}-bg-a`} x1='0' y1='0' x2='1' y2='1'>
-            <stop offset='0%' stopColor='#7ee8c8' stopOpacity='0.5' />
-            <stop offset='45%' stopColor='#7ec8ff' stopOpacity='0.34' />
-            <stop offset='100%' stopColor='#b9a8ff' stopOpacity='0.12' />
-          </linearGradient>
-          <linearGradient id={`${uid}-bg-b`} x1='0' y1='0' x2='1' y2='1'>
-            <stop offset='0%' stopColor='#b9a8ff' stopOpacity='0.45' />
-            <stop offset='50%' stopColor='#ff9ed6' stopOpacity='0.32' />
-            <stop offset='100%' stopColor='#f0b25a' stopOpacity='0.12' />
-          </linearGradient>
-          <linearGradient id={`${uid}-bg-c`} x1='0' y1='0' x2='1' y2='1'>
-            <stop offset='0%' stopColor='#f0b25a' stopOpacity='0.42' />
-            <stop offset='50%' stopColor='#7ee8c8' stopOpacity='0.3' />
-            <stop offset='100%' stopColor='#7ec8ff' stopOpacity='0.12' />
-          </linearGradient>
+          {/* 花形背景：三层不同配色的径向渐变 + 花蕊 */}
+          <radialGradient id={`${uid}-flower-a`} cx='50%' cy='50%' r='52%'>
+            <stop offset='0%' stopColor='#a9f4de' stopOpacity='0.5' />
+            <stop offset='55%' stopColor='#7ec8ff' stopOpacity='0.28' />
+            <stop offset='100%' stopColor='#b9a8ff' stopOpacity='0.03' />
+          </radialGradient>
+          <radialGradient id={`${uid}-flower-b`} cx='50%' cy='50%' r='52%'>
+            <stop offset='0%' stopColor='#c9b8ff' stopOpacity='0.45' />
+            <stop offset='55%' stopColor='#ff9ed6' stopOpacity='0.26' />
+            <stop offset='100%' stopColor='#f0b25a' stopOpacity='0.03' />
+          </radialGradient>
+          <radialGradient id={`${uid}-flower-c`} cx='50%' cy='50%' r='52%'>
+            <stop offset='0%' stopColor='#f7cd78' stopOpacity='0.42' />
+            <stop offset='55%' stopColor='#7ee8c8' stopOpacity='0.24' />
+            <stop offset='100%' stopColor='#7ec8ff' stopOpacity='0.03' />
+          </radialGradient>
+          <radialGradient id={`${uid}-flower-core`} cx='50%' cy='50%' r='50%'>
+            <stop offset='0%' stopColor='#ffffff' stopOpacity='0.85' />
+            <stop offset='45%' stopColor='#a9e8ff' stopOpacity='0.4' />
+            <stop offset='100%' stopColor='#7ec8ff' stopOpacity='0' />
+          </radialGradient>
         </defs>
 
-        {/* 背景：五条环绕雷达的彩色 3D 缎带 */}
-        <g className='y-radar-ribbons' aria-hidden='true'>
-          {BG_RIBBONS.map((rb, i) => (
+        {/* 背景：三层缓慢开合、旋转的彩色花 */}
+        <g className='y-radar-bloom' aria-hidden='true'>
+          {BG_FLOWERS.map((f, i) => (
             <path
               key={i}
               ref={(el) => {
-                bgRefs.current[i] = el;
+                flowerRefs.current[i] = el;
               }}
-              className={`y-radar-bg-ribbon is-${i % 3}`}
-              d={ringRibbonPath(R * rb.k, rb.amp, rb.phase, rb.w, 0, rb.speed)}
-              fill={`url(#${uid}-bg-${['a', 'b', 'c'][i % 3]})`}
+              className={`y-radar-flower is-${i}`}
+              d={flowerPath(f.petals, R * f.k, R * f.amp, f.phase, f.spin, 0)}
+              fill={`url(#${uid}-flower-${f.tone})`}
+              stroke={`url(#${uid}-flower-${f.tone})`}
             />
           ))}
+          <circle
+            className='y-radar-flower-core'
+            cx={CX}
+            cy={CY}
+            r={R * 0.14}
+            fill={`url(#${uid}-flower-core)`}
+          />
+          {Array.from({ length: 10 }, (_, i) => {
+            const p = polar(i * 36, R * 0.2);
+            return (
+              <circle
+                key={`st-${i}`}
+                className='y-radar-stamen'
+                cx={p.x}
+                cy={p.y}
+                r={1.6}
+              />
+            );
+          })}
         </g>
 
         {/* 网格 */}

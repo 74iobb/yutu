@@ -13177,19 +13177,40 @@ html.y-motion-off #yutu2 .y-step-stage.is-page-dragging {
 #yutu2 .y-radar-sweep-dot {
   fill: #eaf5ff;
 }
-/* 背景：环绕雷达的彩色 3D 缎带（逐帧起伏） */
-#yutu2 .y-radar-ribbons {
+/* 背景：三层缓慢开合、旋转的彩色花 */
+#yutu2 .y-radar-bloom {
   mix-blend-mode: screen;
+  pointer-events: none;
 }
-#yutu2 .y-radar-bg-ribbon {
+#yutu2 .y-radar-flower {
+  opacity: 0.5;
+  filter: blur(1.2px);
+  stroke-width: 1;
+  stroke-opacity: 0.4;
+}
+#yutu2 .y-radar-flower.is-1 {
+  opacity: 0.4;
+  filter: blur(1.8px);
+}
+#yutu2 .y-radar-flower.is-2 {
+  opacity: 0.34;
+  filter: blur(0.9px);
+}
+#yutu2 .y-radar-flower-core {
   opacity: 0.55;
-  filter: blur(1.4px);
 }
-#yutu2 .y-radar-bg-ribbon.is-1 {
-  opacity: 0.45;
+#yutu2 .y-radar-stamen {
+  fill: #eaf7ff;
+  opacity: 0.7;
+  animation: yStamenPulse 2.6s ease-in-out infinite alternate;
 }
-#yutu2 .y-radar-bg-ribbon.is-2 {
-  opacity: 0.38;
+@keyframes yStamenPulse {
+  from {
+    opacity: 0.3;
+  }
+  to {
+    opacity: 0.9;
+  }
 }
 /* 扫描线尾部只保留一层柔光扇形 */
 #yutu2 .y-radar-wave-glass {
@@ -13249,6 +13270,7 @@ html.y-motion-off #yutu2 .y-step-stage.is-page-dragging {
   #yutu2 .y-gap-photo-poster,
   #yutu2 .y-gap-photo-sheen,
   #yutu2 .y-radar-sweep,
+  #yutu2 .y-radar-stamen,
   #yutu2 .y-trend-flow,
   #yutu2 .y-river-sheen {
     animation: none;
@@ -13270,6 +13292,9 @@ html.y-motion-off #yutu2 .y-trend-flow,
 html.y-motion-off #yutu2 .y-river-sheen {
   animation: none;
   opacity: 0;
+}
+html.y-motion-off #yutu2 .y-radar-stamen {
+  animation: none;
 }
 html.y-motion-off #yutu2 .y-gap-photo-poster {
   transform: none;
