@@ -13327,6 +13327,13 @@ html.y-motion-off #yutu2 .y-step-stage.is-page-dragging {
   animation-duration: 14s;
 }
 
+/* 阶段卡下方那张图保持静止：不推拉、不扫光、不播放动图 */
+#yutu2 .y-gap-photo.is-still .y-gap-photo-poster {
+  animation: none;
+  transform: none;
+  will-change: auto;
+}
+
 /* 照片上的缓慢扫光 */
 #yutu2 .y-gap-photo-sheen {
   position: absolute;

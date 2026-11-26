@@ -316,7 +316,7 @@ export default function Step1() {
           <GapPhoto
             variant='morning'
             quote='你每写下一项，这张图就清晰一点。'
-            autoMotion
+            still
           />
         </aside>
       </div>

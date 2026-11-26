@@ -54,6 +54,8 @@ interface Props {
   quote?: string;
   /** 进入视口后自动播放动图；不传则保持「悬停 180ms 后播放」 */
   autoMotion?: boolean;
+  /** 完全静止：不自动播放、不响应悬停，也去掉常驻的推拉与扫光 */
+  still?: boolean;
 }
 
 function useMediaQuery(query: string) {
@@ -84,6 +86,7 @@ export default function GapPhoto({
   variant = 'hills',
   quote,
   autoMotion = false,
+  still = false,
 }: Props) {
   const sources = SOURCES[variant];
   const canHover = useMediaQuery('(hover: hover) and (pointer: fine)');
@@ -109,7 +112,7 @@ export default function GapPhoto({
   /* 自动模式：进入视口才加载动图，离开视口卸载，避免多张图同时常驻播放 */
   useEffect(() => {
     const el = boxRef.current;
-    if (!el || !autoMotion || !canHover || reduced) return;
+    if (!el || !autoMotion || still || !canHover || reduced) return;
     if (typeof IntersectionObserver === 'undefined') return;
     const io = new IntersectionObserver(
       entries => setInView(entries[0]?.isIntersecting ?? false),
@@ -120,7 +123,7 @@ export default function GapPhoto({
   }, [autoMotion, canHover, reduced]);
 
   useEffect(() => {
-    if (!filled || !canHover || reduced) {
+    if (!filled || !canHover || reduced || still) {
       setActive(false);
       return;
     }
@@ -131,14 +134,16 @@ export default function GapPhoto({
     }
     const t = window.setTimeout(() => setActive(true), autoMotion ? 600 : 180);
     return () => window.clearTimeout(t);
-  }, [filled, canHover, reduced, autoMotion, inView, hovered]);
+  }, [filled, canHover, reduced, still, autoMotion, inView, hovered]);
 
-  const hoverable = filled && !autoMotion;
+  const hoverable = filled && !autoMotion && !still;
 
   return (
     <div
       ref={boxRef}
-      className={`y-gap-photo y-gap-photo--${variant}${filled ? ' is-on' : ''}`}
+      className={`y-gap-photo y-gap-photo--${variant}${
+        filled ? ' is-on' : ''
+      }${still ? ' is-still' : ''}`}
       aria-hidden={filled ? 'false' : 'true'}
       onPointerEnter={hoverable ? () => setHovered(true) : undefined}
       onPointerLeave={hoverable ? () => setHovered(false) : undefined}
@@ -152,7 +157,7 @@ export default function GapPhoto({
             loading='lazy'
             decoding='async'
           />
-          {active ? (
+          {active && !still ? (
             <>
               <img
                 className='y-gap-photo-motion'
@@ -168,7 +173,9 @@ export default function GapPhoto({
             </>
           ) : null}
           {/* 常驻扫光：即使没有播放 WebP，静态图也有缓慢的光带流动 */}
-          <span className='y-gap-photo-sheen' aria-hidden='true' />
+          {still ? null : (
+            <span className='y-gap-photo-sheen' aria-hidden='true' />
+          )}
           {/* 极淡胶片颗粒：让照片更像真实拍摄，而不是干净的渲染 */}
           <span className='y-gap-photo-grain' aria-hidden='true' />
           <div className='y-gap-photo-copy'>
