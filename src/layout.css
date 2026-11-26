@@ -1,0 +1,19 @@
+/* ==========================================================================
+   板面层级：页内板块头与共享版式微调
+   规则见 docs/LAYOUT.md：页面级 STEP / 板块级 0N / 局部流程。
+   ========================================================================== */
+
+#yutu2 .y-side-kicker {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 2px 6px;
+  font-size: 10.5px;
+  letter-spacing: 0.12em;
+  color: var(--y-muted);
+}
+#yutu2 .y-side-kicker span {
+  color: #9fc4ff;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  letter-spacing: 0.04em;
+}

@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover, interactive-widget=resizes-content"
+    />
+    <meta
+      name="description"
+      content="域途：多维沃罗诺伊体验式生涯陪伴系统。远方是方向，不是终点；计划是草稿，由你改写。"
+    />
+    <!-- 赛期创作：仅通过链接分享，不进入搜索引擎索引（不影响任何直接访问） -->
+    <meta name="robots" content="noindex, nofollow" />
+    <meta name="theme-color" content="#1a2742" />
+    <!-- 首帧深色底：开篇遮罩接管前不闪白（Tailwind 的 body 白底会覆盖 body，故落在 #root 上） -->
+    <style>
+      #root {
+        min-height: 100vh;
+        min-height: 100dvh;
+        background-color: #1a2742;
+      }
+    </style>
+    <script>
+      /* 在首帧前标记动效就绪，避免「先显示再隐藏」的闪烁；尊重系统减弱动效设置 */
+      try {
+        if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+          document.documentElement.classList.add('y-motion-ready');
+        }
+        if (window.localStorage.getItem('yutu.motionOff') === '1') {
+          document.documentElement.classList.add('y-motion-off');
+        }
+      } catch (e) {}
+    </script>
+    <noscript>
+      <style>
+        html.y-motion-ready #yutu2 .y-lead,
+        html.y-motion-ready #yutu2 .y-zone,
+        html.y-motion-ready #yutu2 .y-insight,
+        html.y-motion-ready #yutu2 .y-card,
+        html.y-motion-ready #yutu2 .y-loop-done {
+          opacity: 1 !important;
+          transform: none !important;
+        }
+      </style>
+    </noscript>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="域途 · 体验式生涯陪伴" />
+    <meta
+      property="og:description"
+      content="用七维向量找到与你处境最接近的域，看清方向、代价与下一步。"
+    />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='6 4 54 54'%3E%3Crect x='29' y='24' width='19' height='20' rx='7' fill='none' stroke='%23e6dcc4' stroke-width='2.2'/%3E%3Cpath d='M46 17.5A20 20 0 1 0 51.5 36' fill='none' stroke='%230e5b4c' stroke-width='8.6' stroke-linecap='round'/%3E%3Cpath d='M25.5 24c-5 7-4 16 3.5 19.5 6 2.5 12-.5 12-7.5h9.5l-5 7.5' fill='none' stroke='%23f5a03b' stroke-width='6.4' stroke-linecap='round' stroke-linejoin='miter'/%3E%3Cpath d='M51 5c1 5 3 7 8 8-5 1-7 3-8 8-1-5-3-7-8-8 5-1 7-3 8-8Z' fill='%23f7c34c'/%3E%3C/svg%3E"
+    />
+    <title>域途 · 体验式生涯陪伴</title>
+  </head>
+
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

@@ -1,0 +1,182 @@
+/* ==========================================================================
+   V11.16 视觉母题：水下 → 退潮 → 彩玻璃
+   - 每步一个光色令牌（Step1/2 水青，Step3 沙金，Step4 玻璃琥珀，沙盘沙金）
+   - 页头场记线 / 板块铅条分隔 / 方向卡玻璃碎片 / 侧栏竖向玻璃轨
+   只使用 CSS，不引入带水印参考图。
+   ========================================================================== */
+
+#yutu2 {
+  --step-accent: #9fc4ff;
+  --step-accent-soft: rgba(159, 196, 255, 0.14);
+  --leading: rgba(160, 190, 255, 0.18);
+}
+#yutu2[data-step='1'],
+#yutu2[data-step='2'] {
+  --step-accent: #4fc9e6;
+  --step-accent-soft: rgba(79, 201, 230, 0.14);
+}
+#yutu2[data-step='3'] {
+  --step-accent: #d8bf8c;
+  --step-accent-soft: rgba(216, 191, 140, 0.14);
+}
+#yutu2[data-step='4'] {
+  --step-accent: #e2aa2e;
+  --step-accent-soft: rgba(226, 170, 46, 0.14);
+}
+#yutu2[data-step='sandbox'] {
+  --step-accent: #d8bf8c;
+  --step-accent-soft: rgba(216, 191, 140, 0.14);
+}
+
+/* 1. 页头场记线：只加在页面级 eyebrow，不碰卡片内的小标签 */
+#yutu2 .y-lead > .y-eyebrow,
+#yutu2 .y-lead > div > .y-eyebrow:first-child,
+#yutu2 .y-sb-lead .y-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--step-accent-soft);
+  color: var(--y-ink);
+}
+#yutu2 .y-lead > .y-eyebrow::before,
+#yutu2 .y-lead > div > .y-eyebrow:first-child::before,
+#yutu2 .y-sb-lead .y-eyebrow::before {
+  content: '';
+  flex: none;
+  width: 22px;
+  height: 2px;
+  border-radius: 1px;
+  background: var(--step-accent);
+  box-shadow: 0 0 8px var(--step-accent-soft);
+  /* 覆盖旧眉标的小圆点呼吸；页面级用静态场记线 */
+  animation: none;
+}
+
+/* 2. 板块铅条：深色底上的一道细线 + 一小段当前光色 */
+#yutu2 .y-zone > .y-zone-head:not(.y-zone-subhead) {
+  position: relative;
+  border-top: 1px solid var(--leading);
+  padding-top: 10px;
+}
+#yutu2 .y-zone > .y-zone-head:not(.y-zone-subhead)::before {
+  content: '';
+  position: absolute;
+  top: -1px;
+  left: 0;
+  width: 30px;
+  height: 2px;
+  border-radius: 1px;
+  background: var(--step-accent);
+}
+
+/* 3. 方向卡：玻璃碎片的一小段彩色边 */
+#yutu2 .y-dir {
+  position: relative;
+  background-image: linear-gradient(
+    160deg,
+    rgba(255, 255, 255, 0.025),
+    transparent 55%
+  );
+}
+#yutu2 .y-dir::before {
+  content: '';
+  position: absolute;
+  top: -1px;
+  left: -1px;
+  width: 48px;
+  height: 2px;
+  border-radius: 2px;
+  pointer-events: none;
+  background: linear-gradient(
+    90deg,
+    var(--dir-hue, var(--step-accent)),
+    transparent
+  );
+  opacity: 0.65;
+  transition:
+    width 0.24s var(--ease-out),
+    opacity 0.24s ease;
+}
+#yutu2 .y-dir:hover::before {
+  width: 64px;
+  opacity: 0.85;
+}
+#yutu2 .y-dir.is-short::before {
+  width: 72px;
+  opacity: 0.9;
+}
+#yutu2 .y-dir.is-picked::before {
+  width: calc(100% + 2px);
+  height: 3px;
+  opacity: 1;
+}
+
+/* 4. 侧栏玻璃轨：Step3 方向清单 / 归属摘要 */
+#yutu2 .y-glass-rail {
+  border-left: 2px solid transparent;
+  border-image: linear-gradient(
+      180deg,
+      #d64923 0%,
+      #e2aa2e 24%,
+      #355240 48%,
+      #54a0b7 72%,
+      #6b4a8a 100%
+    )
+    1;
+}
+@media (max-width: 980px) {
+  #yutu2 .y-glass-rail {
+    border-left: 0;
+    border-top: 2px solid transparent;
+    border-image: linear-gradient(
+        90deg,
+        #d64923 0%,
+        #e2aa2e 24%,
+        #355240 48%,
+        #54a0b7 72%,
+        #6b4a8a 100%
+      )
+      1;
+    padding-top: 10px;
+  }
+}
+
+/* 5. 沙盘：与 Step3 同一套沙金场记线 */
+#yutu2[data-step='sandbox'] .y-sb-lead .y-eyebrow {
+  color: var(--y-ink2);
+}
+
+/* 6. 沙盘的“门槛”：取自真实大厅的琥珀斜板，只用形状与光 */
+#yutu2 .y-sb-lead {
+  position: relative;
+  overflow: hidden;
+}
+#yutu2 .y-sb-lead > div {
+  position: relative;
+  z-index: 1;
+}
+#yutu2 .y-portal {
+  position: absolute;
+  right: 10px;
+  bottom: -16px;
+  z-index: 0;
+  width: min(29%, 280px);
+  height: auto;
+  pointer-events: none;
+  opacity: 0.82;
+  filter: saturate(0.92);
+}
+@media (max-width: 1040px) {
+  #yutu2 .y-portal {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #yutu2 .y-dir::before {
+    transition: none;
+  }
+}
+html.y-motion-off #yutu2 .y-dir::before {
+  transition: none;
+}

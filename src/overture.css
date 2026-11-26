@@ -1,0 +1,1902 @@
+/* ==========================================================================
+   开篇序列 · 泻水置平地
+   - 水束落下 → 涟漪 → 水面凝成 Voronoi 板块 → 名句浮现
+   - 约 4.7s，可跳过；不承载数据，不拦截首页填写
+   - 全部动画可被 prefers-reduced-motion / y-motion-off 一键关闭
+   ========================================================================== */
+
+.y-overture {
+  /* overlay 挂在 #yutu2 之外，衬线字体与缓动需要自带 */
+  --ov-serif:
+    'Songti SC', 'Noto Serif CJK SC', 'Source Han Serif SC', 'STSong',
+    'SimSun', serif;
+  --ov-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  color: #e7f2ff;
+  cursor: pointer;
+  /* 背景放在伪元素上，退潮时才能单独淡出、让系统显形 */
+  background: transparent;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* 沉浸底色：退潮时这一层先褪去 */
+.y-overture::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  /* 暮色天空：顶部深蓝紫、中段暖光、底部沉黑 */
+  background:
+    radial-gradient(
+      72% 52% at 50% 64%,
+      rgba(255, 200, 130, 0.2),
+      transparent 70%
+    ),
+    radial-gradient(
+      95% 62% at 50% 38%,
+      rgba(108, 146, 255, 0.2),
+      transparent 74%
+    ),
+    linear-gradient(180deg, #0a1024 0%, #191a38 36%, #2a2034 62%, #070a12 100%);
+  pointer-events: none;
+}
+
+/* 极淡噪点：压住大面积渐变的色带 */
+.y-overture::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.22'/%3E%3C/svg%3E");
+  background-size: 140px 140px;
+  opacity: 0.06;
+  mix-blend-mode: soft-light;
+  pointer-events: none;
+}
+
+/* 退潮：背景褪去、水面向四周散开，系统在下面显形 */
+.y-overture.is-leaving {
+  pointer-events: none;
+}
+
+.y-overture.is-leaving::before,
+.y-overture.is-leaving::after {
+  animation: yOvBackdropOut 0.72s ease forwards;
+}
+
+.y-overture.is-leaving .y-ov-pool {
+  transform-box: view-box;
+  transform-origin: 500px 600px;
+  animation: yOvPoolOut 0.85s var(--ov-ease) forwards;
+}
+
+/* 退潮：水先停，再退。水束从下往上收回，而不是一直往下落 */
+.y-overture.is-leaving .y-ov-fall,
+.y-overture.is-leaving .y-ov-veil {
+  animation: yOvRetract 0.55s cubic-bezier(0.55, 0, 0.75, 0.2)
+    var(--ov-leave-delay, 0ms) forwards !important;
+}
+
+/* 前景人形随水面一起退去 */
+.y-overture.is-leaving .y-ov-human {
+  animation: yOvFadeAway 0.45s ease forwards;
+}
+
+.y-overture.is-leaving .y-ov-crust {
+  animation: yOvSink 0.85s var(--ov-ease) forwards;
+}
+
+.y-overture.is-leaving .y-ov-label {
+  animation: yOvDrift 0.9s var(--ov-ease) forwards;
+}
+
+.y-overture.is-leaving .y-ov-verse {
+  animation: yOvVerseOut 0.6s ease forwards;
+}
+
+.y-overture.is-leaving .y-ov-controls,
+.y-overture.is-leaving .y-ov-corner,
+.y-overture.is-leaving .y-ov-mark,
+.y-overture.is-leaving .y-ov-progress,
+.y-overture.is-leaving .y-ov-vignette {
+  animation: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+/* ------------------------------ 展陈层 ------------------------------ */
+/* 四角取景框 */
+.y-ov-corner {
+  position: absolute;
+  z-index: 3;
+  width: 20px;
+  height: 20px;
+  border: 1px solid rgba(190, 220, 255, 0.22);
+  pointer-events: none;
+  opacity: 0;
+  animation: yOvFadeIn 0.8s ease 1.1s both;
+}
+
+.y-ov-corner-tl {
+  left: 22px;
+  top: 20px;
+  border-right: 0;
+  border-bottom: 0;
+}
+
+.y-ov-corner-tr {
+  right: 22px;
+  top: 20px;
+  border-left: 0;
+  border-bottom: 0;
+}
+
+.y-ov-corner-bl {
+  left: 22px;
+  bottom: 20px;
+  border-right: 0;
+  border-top: 0;
+}
+
+.y-ov-corner-br {
+  right: 22px;
+  bottom: 20px;
+  border-left: 0;
+  border-top: 0;
+}
+
+/* 左上 / 右上展陈标识 */
+.y-ov-mark {
+  position: absolute;
+  left: 54px;
+  top: 26px;
+  z-index: 3;
+  font-size: 10px;
+  letter-spacing: 0.34em;
+  color: rgba(198, 220, 248, 0.42);
+  pointer-events: none;
+  opacity: 0;
+  animation: yOvFadeIn 0.8s ease 1.4s both;
+}
+
+.y-ov-mark-r {
+  left: auto;
+  right: 54px;
+  font-size: 9px;
+  letter-spacing: 0.28em;
+  color: rgba(198, 220, 248, 0.3);
+}
+
+/* 暗角：把视线收在中间 */
+.y-ov-vignette {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  background: radial-gradient(
+    120% 95% at 50% 48%,
+    transparent 52%,
+    rgba(2, 4, 9, 0.62) 100%
+  );
+  pointer-events: none;
+}
+
+/* 进度线：极细，只在底部安静走完 */
+.y-ov-progress {
+  position: absolute;
+  left: 50%;
+  bottom: 24px;
+  z-index: 3;
+  width: min(320px, 40vw);
+  height: 1px;
+  transform: translateX(-50%);
+  background: rgba(190, 220, 255, 0.08);
+  pointer-events: none;
+  opacity: 0;
+  animation: yOvFadeIn 0.6s ease 1s both;
+}
+
+.y-ov-progress::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  transform: scaleX(0);
+  transform-origin: left center;
+  background: linear-gradient(
+    90deg,
+    rgba(142, 233, 255, 0.55),
+    rgba(245, 193, 90, 0.72)
+  );
+  /* 与 PLAY_MS（7.8s，自 1s 起）保持一致 */
+  animation: yOvProgress 7.8s linear 1s forwards;
+}
+
+@keyframes yOvProgress {
+  to {
+    transform: scaleX(1);
+  }
+}
+
+/* 开篇底光：第一帧就在呼吸，避免开头是一块死黑 */
+.y-ov-halo {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  z-index: 0;
+  width: min(76vmin, 680px);
+  height: min(76vmin, 680px);
+  will-change: transform, opacity;
+  border-radius: 50%;
+  background: radial-gradient(
+    50% 50% at 50% 50%,
+    rgba(255, 206, 140, 0.16),
+    rgba(150, 180, 255, 0.1) 48%,
+    transparent 72%
+  );
+  filter: blur(26px);
+  pointer-events: none;
+  animation: yOvHalo 9s ease-in-out infinite alternate;
+}
+
+@keyframes yOvHalo {
+  from {
+    opacity: 0.45;
+    transform: translate(-50%, -50%) scale(0.9);
+  }
+  to {
+    opacity: 0.85;
+    transform: translate(-50%, -50%) scale(1.08);
+  }
+}
+
+.y-ov-scene {
+  position: relative;
+  z-index: 1;
+  width: min(1000px, 96vw, 102vh);
+  aspect-ratio: 10 / 9;
+  will-change: transform;
+  animation: yOvPush 9s var(--ov-ease) both;
+}
+
+.y-ov-art {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  /* 水落到水面的那一下，整幅画面轻微一震 */
+  animation: yOvShake 0.36s ease-out 1.62s;
+}
+
+/* 水与水面叠加发光，颜色会互相透出来 */
+.y-ov-stream {
+  mix-blend-mode: screen;
+}
+
+/* ------------------------------ 水束与水滴 ------------------------------ */
+.y-ov-fall {
+  fill: none;
+  stroke-width: 3.2;
+  stroke-linecap: round;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  filter: drop-shadow(0 0 8px rgba(180, 220, 255, 0.7));
+  animation: yOvFall 2.2s cubic-bezier(0.35, 0, 0.65, 1) 0.18s both;
+}
+
+/* 模糊水幕：让水流有体积，而不是几根线 */
+.y-ov-veil {
+  fill: none;
+  stroke-width: 30;
+  stroke-linecap: round;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  filter: blur(9px);
+  opacity: 0.16;
+  animation: yOvVeil 2.35s cubic-bezier(0.35, 0, 0.65, 1) 0.2s both;
+}
+
+.y-ov-veil-b {
+  stroke-width: 42;
+  stroke-opacity: 0.55;
+  filter: blur(12px);
+  animation-delay: 0.55s;
+}
+
+@keyframes yOvVeil {
+  0% {
+    stroke-dashoffset: 1;
+    opacity: 0;
+  }
+  20% {
+    opacity: 0.2;
+  }
+  80% {
+    opacity: 0.17;
+  }
+  100% {
+    stroke-dashoffset: 0;
+    opacity: 0.12;
+  }
+}
+
+@keyframes yOvFall {
+  0% {
+    stroke-dashoffset: 1;
+    opacity: 0;
+  }
+  15% {
+    opacity: 1;
+  }
+  82% {
+    opacity: 1;
+  }
+  100% {
+    stroke-dashoffset: 0;
+    opacity: 0.85;
+  }
+}
+
+/* 水粒：水珠与速度线共用一条下落曲线；五彩填充由每颗粒子的确定性色值给出 */
+.y-ov-particle {
+  opacity: 0;
+  animation: yOvParticle var(--ov-dur, 800ms) cubic-bezier(0.45, 0, 0.85, 0.5)
+    both;
+}
+
+.y-ov-particle-line {
+  opacity: 0.85;
+}
+
+@keyframes yOvParticle {
+  0% {
+    transform: translate(0, calc(-1 * var(--ov-lift, 480px)));
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.9;
+  }
+  72% {
+    opacity: 0.72;
+  }
+  100% {
+    transform: translate(var(--ov-drift, 0px), 0);
+    opacity: 0;
+  }
+}
+
+/* 落点溅起的水星；填充同样由每颗水星给出 */
+.y-ov-splash {
+  opacity: 0;
+  animation: yOvSplash var(--ov-sdur, 800ms) cubic-bezier(0.2, 0.7, 0.3, 1)
+    both;
+}
+
+@keyframes yOvSplash {
+  0% {
+    transform: translate(0, 0) scale(0.5);
+    opacity: 0;
+  }
+  16% {
+    opacity: 0.9;
+  }
+  100% {
+    transform: translate(var(--ov-sx, 0px), var(--ov-sy, 0px)) scale(1);
+    opacity: 0;
+  }
+}
+
+/* -------------------------------- 水面 -------------------------------- */
+.y-ov-disc {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation:
+    yOvPool 1.4s var(--ov-ease) 1.9s both,
+    yOvHue 11s linear 2.6s infinite;
+}
+
+/* 水面颜色缓慢流转，像光在彩色水膜上走 */
+@keyframes yOvHue {
+  from {
+    filter: hue-rotate(0deg) saturate(1.2);
+  }
+  to {
+    filter: hue-rotate(360deg) saturate(1.2);
+  }
+}
+
+/* 油膜虹彩：缓慢自转的一层彩光 */
+.y-ov-iris {
+  opacity: 0;
+  mix-blend-mode: screen;
+  transform-box: fill-box;
+  transform-origin: center;
+  animation:
+    yOvIrisIn 1.4s ease 2.2s both,
+    yOvIrisSpin 22s linear 3s infinite;
+}
+
+@keyframes yOvIrisIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 0.55;
+  }
+}
+
+@keyframes yOvIrisSpin {
+  from {
+    transform: rotate(0deg) scale(1);
+  }
+  50% {
+    transform: rotate(180deg) scale(1.05);
+  }
+  to {
+    transform: rotate(360deg) scale(1);
+  }
+}
+
+/* 第二层虹彩反向转，颜色叠加更斑斓 */
+.y-ov-iris-2 {
+  animation:
+    yOvIrisIn2 1.4s ease 2.8s both,
+    yOvIrisSpin2 28s linear 3.4s infinite;
+}
+
+@keyframes yOvIrisIn2 {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 0.32;
+  }
+}
+
+@keyframes yOvIrisSpin2 {
+  from {
+    transform: rotate(0deg) scale(1.04);
+  }
+  50% {
+    transform: rotate(-180deg) scale(1);
+  }
+  to {
+    transform: rotate(-360deg) scale(1.04);
+  }
+}
+
+/* 水面镜面高光带：缓慢左右漂移，像真的反光 */
+.y-ov-sheen {
+  opacity: 0;
+  animation:
+    yOvSheenIn 1.4s ease 2.4s both,
+    yOvSheenDrift 12s ease-in-out 3s infinite alternate;
+}
+
+@keyframes yOvSheenIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 0.45;
+  }
+}
+
+@keyframes yOvSheenDrift {
+  from {
+    transform: translateX(-26px);
+  }
+  to {
+    transform: translateX(26px);
+  }
+}
+
+/* 落点湿气：水砸下后一直不散的水雾 */
+.y-ov-mist {
+  opacity: 0;
+  filter: blur(10px);
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: yOvMist 3.4s ease-out 1.55s both;
+}
+
+@keyframes yOvMist {
+  0% {
+    opacity: 0;
+    transform: scale(0.35);
+  }
+  22% {
+    opacity: 0.9;
+  }
+  100% {
+    opacity: 0.22;
+    transform: scale(1.4);
+  }
+}
+
+@keyframes yOvPool {
+  0% {
+    transform: scale(0.12);
+    opacity: 0;
+  }
+  42% {
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.y-ov-contour {
+  fill: none;
+  stroke: rgba(168, 216, 255, 0.16);
+  stroke-width: 0.9;
+  opacity: 0;
+  animation: yOvFadeIn 1.2s ease 2.5s both;
+}
+
+.y-ov-contour-b {
+  stroke: rgba(200, 160, 255, 0.14);
+  animation-delay: 2.62s;
+}
+
+.y-ov-contour-c {
+  stroke: rgba(255, 200, 150, 0.12);
+  animation-delay: 2.74s;
+}
+
+.y-ov-ripple {
+  fill: none;
+  stroke: #cfeaff;
+  stroke-width: 1.1;
+  opacity: 0;
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: yOvRipple 1.55s cubic-bezier(0.2, 0.7, 0.3, 1) both;
+}
+
+.y-ov-ripple-a {
+  stroke: rgba(142, 233, 255, 0.8);
+  animation-delay: 1.45s;
+}
+
+.y-ov-ripple-b {
+  stroke: rgba(255, 168, 224, 0.66);
+  animation-delay: 1.85s;
+}
+
+.y-ov-ripple-c {
+  stroke: rgba(255, 224, 138, 0.55);
+  animation-delay: 2.25s;
+}
+
+/* 持续波纹：水一直在落，水面就一直有圈 */
+.y-ov-ripple-live {
+  animation: yOvRipple 2.7s cubic-bezier(0.2, 0.7, 0.3, 1) infinite;
+}
+
+.y-ov-ripple-live-a {
+  stroke: rgba(142, 233, 255, 0.34);
+  animation-delay: 2.5s;
+}
+
+.y-ov-ripple-live-b {
+  stroke: rgba(255, 168, 224, 0.3);
+  animation-delay: 3.8s;
+}
+
+@keyframes yOvRipple {
+  0% {
+    transform: scale(0.15);
+    opacity: 0.55;
+  }
+  60% {
+    opacity: 0.18;
+  }
+  100% {
+    transform: scale(2.9);
+    opacity: 0;
+  }
+}
+
+.y-ov-flash {
+  transform-box: fill-box;
+  transform-origin: center;
+  opacity: 0;
+  animation: yOvFlash 0.8s ease-out 1.6s both;
+}
+
+@keyframes yOvFlash {
+  0% {
+    transform: scale(0.2);
+    opacity: 0;
+  }
+  25% {
+    opacity: 0.95;
+  }
+  100% {
+    transform: scale(2.2);
+    opacity: 0;
+  }
+}
+
+.y-ov-core {
+  fill: #f4fbff;
+  opacity: 0;
+  animation: yOvCore 1.4s ease 1.7s both;
+}
+
+@keyframes yOvCore {
+  0% {
+    opacity: 0;
+    transform: scale(0.4);
+  }
+  20% {
+    opacity: 1;
+  }
+  70% {
+    opacity: 0.9;
+  }
+  100% {
+    opacity: 0.35;
+    transform: scale(1);
+  }
+}
+
+/* ------------------------------ 撞击高光 ------------------------------ */
+.y-ov-impact {
+  mix-blend-mode: screen;
+}
+
+/* 冲击波：撞击瞬间向外推开的两圈细环，比涟漪更快、更亮 */
+.y-ov-shock {
+  fill: none;
+  stroke: rgba(239, 249, 255, 0.95);
+  stroke-width: 1.5;
+  transform-box: fill-box;
+  transform-origin: center;
+  opacity: 0;
+  animation: yOvShock 1.15s cubic-bezier(0.15, 0.72, 0.25, 1) 1.56s both;
+}
+
+.y-ov-shock-b {
+  stroke: rgba(198, 231, 255, 0.7);
+  stroke-width: 0.8;
+  animation-duration: 1.9s;
+  animation-delay: 1.74s;
+}
+
+@keyframes yOvShock {
+  0% {
+    transform: scale(0.22);
+    opacity: 0.95;
+  }
+  60% {
+    opacity: 0.38;
+  }
+  100% {
+    transform: scale(3.6);
+    opacity: 0;
+  }
+}
+
+/* 横向镜头光斑：撞击点亮起，随后收成一条余光 */
+.y-ov-flare {
+  transform-box: fill-box;
+  transform-origin: center;
+  opacity: 0;
+  animation: yOvFlare 2.4s cubic-bezier(0.16, 1, 0.3, 1) 1.5s both;
+}
+
+.y-ov-flare-b {
+  animation-duration: 3.2s;
+  animation-delay: 1.68s;
+}
+
+@keyframes yOvFlare {
+  0% {
+    opacity: 0;
+    transform: scaleX(0.2) scaleY(0.5);
+  }
+  10% {
+    opacity: 1;
+  }
+  38% {
+    opacity: 0.55;
+  }
+  100% {
+    opacity: 0.14;
+    transform: scaleX(1) scaleY(1);
+  }
+}
+
+/* 四芒星：一个很短的星芒，收得比名句早，不抢戏 */
+.y-ov-star {
+  transform-box: fill-box;
+  transform-origin: center;
+  opacity: 0;
+  animation: yOvStar 2s cubic-bezier(0.16, 1, 0.3, 1) 1.52s both;
+}
+
+@keyframes yOvStar {
+  0% {
+    opacity: 0;
+    transform: scale(0.3) rotate(-6deg);
+  }
+  9% {
+    opacity: 0.95;
+  }
+  45% {
+    opacity: 0.5;
+    transform: scale(1) rotate(4deg);
+  }
+  100% {
+    opacity: 0.16;
+    transform: scale(1.05) rotate(8deg);
+  }
+}
+
+/* ------------------------------ 板块与标签 ------------------------------ */
+.y-ov-crust {
+  transform-box: view-box;
+  transform-origin: 500px 600px;
+  animation:
+    yOvTurn 1.55s var(--ov-ease) 3s both,
+    yOvDim 0.9s ease 4.5s forwards;
+}
+
+@keyframes yOvTurn {
+  from {
+    transform: rotate(-24deg) scale(0.82);
+  }
+  to {
+    transform: rotate(0deg) scale(1);
+  }
+}
+
+@keyframes yOvDim {
+  to {
+    opacity: 0.55;
+  }
+}
+
+.y-ov-cell {
+  stroke: rgba(168, 214, 255, 0.42);
+  stroke-width: 1.1;
+  filter: drop-shadow(0 0 7px rgba(140, 200, 255, 0.3));
+  opacity: 0;
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: yOvCell 0.95s var(--ov-ease) both;
+}
+
+@keyframes yOvCell {
+  0% {
+    transform: scale(0.6);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.y-ov-labels {
+  animation: yOvDim 0.9s ease 4.5s forwards;
+}
+
+.y-ov-label {
+  opacity: 0;
+  animation: yOvLabel 0.55s var(--ov-ease) var(--ov-delay, 0ms) both;
+}
+
+.y-ov-label circle {
+  fill: rgba(222, 241, 255, 0.85);
+}
+
+.y-ov-label text {
+  fill: #dcecff;
+  font-family:
+    'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans CJK SC',
+    system-ui, sans-serif;
+  font-size: 21px;
+  font-weight: 500;
+  letter-spacing: 4px;
+}
+
+.y-ov-label text.y-ov-label-no {
+  fill: rgba(245, 193, 90, 0.72);
+  font-size: 9px;
+  font-weight: 400;
+  letter-spacing: 2px;
+}
+
+@keyframes yOvLabel {
+  0% {
+    opacity: 0;
+    transform: translateY(7px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* -------------------------------- 名句 -------------------------------- */
+.y-ov-verse {
+  position: absolute;
+  left: 50%;
+  top: 8%;
+  width: min(92%, 780px);
+  transform: translateX(-50%);
+  text-align: center;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.y-ov-line {
+  margin: 0;
+  font-family: var(--ov-serif);
+  font-size: clamp(27px, 4vw, 50px);
+  font-weight: 600;
+  line-height: 1.7;
+  letter-spacing: 0.08em;
+  color: #f7fbff;
+  text-shadow:
+    0 2px 20px rgba(0, 0, 0, 0.86),
+    0 0 34px rgba(150, 205, 255, 0.22),
+    0 0 64px rgba(245, 193, 90, 0.24);
+  white-space: nowrap;
+}
+
+/* 逐字浮现：字与字间隔 0.11s，读到该字时先亮起金色再落回冷白 */
+.y-ov-char {
+  display: inline-block;
+  opacity: 0.1;
+  animation: yOvChar 0.64s var(--ov-ease) both;
+  animation-delay: calc(var(--start) * 1s + var(--i) * 0.11s);
+}
+
+@keyframes yOvChar {
+  0% {
+    opacity: 0.1;
+    filter: blur(3px);
+    transform: translateY(5px) scale(0.96);
+  }
+  55% {
+    opacity: 1;
+    filter: blur(0);
+    color: #fff4d6;
+    text-shadow:
+      0 0 22px rgba(245, 193, 90, 0.55),
+      0 0 46px rgba(245, 193, 90, 0.28);
+  }
+  100% {
+    opacity: 1;
+    filter: blur(0);
+    transform: none;
+    color: #f7fbff;
+  }
+}
+
+/* 两行之间的一根金线：等第二行开始后再长出来 */
+.y-ov-rule {
+  display: block;
+  width: 0;
+  height: 1px;
+  margin: 4px auto 8px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(245, 193, 90, 0.72),
+    transparent
+  );
+  opacity: 0;
+  animation: yOvRule 1s var(--ov-ease) 6.05s both;
+}
+
+@keyframes yOvRule {
+  from {
+    width: 0;
+    opacity: 0;
+  }
+  35% {
+    opacity: 1;
+  }
+  to {
+    width: 96px;
+    opacity: 1;
+  }
+}
+
+/* 名句落下时从背后亮起的一圈金色光，替代音响也能有「震」一下 */
+.y-ov-verse::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  z-index: -1;
+  width: min(104%, 820px);
+  height: 210px;
+  transform: translate(-50%, -50%) scale(0.62);
+  background: radial-gradient(
+    50% 50% at 50% 50%,
+    rgba(245, 193, 90, 0.24),
+    rgba(138, 197, 255, 0.08) 46%,
+    transparent 72%
+  );
+  filter: blur(14px);
+  opacity: 0;
+  animation: yOvAura 2.4s ease-out 4.4s both;
+  pointer-events: none;
+}
+
+@keyframes yOvAura {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.62);
+  }
+  16% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.42;
+    transform: translate(-50%, -50%) scale(1.05);
+  }
+}
+
+
+.y-ov-sub {
+  position: relative;
+  margin: 10px 0 0;
+  font-family:
+    'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans CJK SC',
+    system-ui, sans-serif;
+  font-size: 12.5px;
+  font-weight: 400;
+  letter-spacing: 0.32em;
+  color: rgba(198, 222, 247, 0.72);
+  text-shadow: 0 1px 10px rgba(0, 0, 0, 0.8);
+  opacity: 0;
+  animation: yOvFadeUp 0.8s var(--ov-ease) 6.85s both;
+}
+
+/* 名句出现时的一圈极淡声波，替代音效 */
+.y-ov-sub::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: -14px;
+  width: min(72%, 520px);
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(190, 228, 255, 0.7),
+    transparent
+  );
+  opacity: 0;
+  transform: translateX(-50%) scaleX(0.2);
+  animation: yOvEchoLine 1.5s ease-out 6.9s both;
+}
+
+/* 诗句落款：不抢主句，只把出处放稳 */
+.y-ov-source {
+  margin: 8px 0 0;
+  font-family: var(--ov-serif);
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  color: rgba(190, 214, 240, 0.5);
+  text-shadow: 0 1px 10px rgba(0, 0, 0, 0.8);
+  opacity: 0;
+  animation: yOvFadeUp 0.8s var(--ov-ease) 7.1s both;
+}
+
+@keyframes yOvEchoLine {
+  0% {
+    opacity: 0;
+    transform: translateX(-50%) scaleX(0.2);
+  }
+  24% {
+    opacity: 0.75;
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(-50%) scaleX(1.25);
+  }
+}
+
+/* ------------------------------ 声音提示 ------------------------------ */
+/* 浏览器拦截无手势音频时，这枚按钮是唯一可靠的入口 */
+.y-ov-sound-hint {
+  position: absolute;
+  left: 50%;
+  bottom: 86px;
+  transform: translateX(-50%);
+  z-index: 4;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 16px;
+  border: 1px solid rgba(245, 193, 90, 0.45);
+  border-radius: 999px;
+  background: rgba(10, 14, 24, 0.55);
+  color: rgba(255, 232, 190, 0.92);
+  font-family: inherit;
+  font-size: 12px;
+  letter-spacing: 0.16em;
+  cursor: pointer;
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  animation:
+    yOvFadeIn 0.5s ease 1.2s both,
+    yOvHintPulse 2.2s ease-in-out 1.7s infinite;
+}
+
+.y-ov-sound-hint-note {
+  font-size: 14px;
+  color: #f5c15a;
+}
+
+@keyframes yOvHintPulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(245, 193, 90, 0);
+  }
+  50% {
+    box-shadow: 0 0 0 6px rgba(245, 193, 90, 0.08);
+  }
+}
+
+/* ------------------------------ 路演标记 ------------------------------ */
+.y-ov-demo {
+  position: absolute;
+  left: max(22px, env(safe-area-inset-left));
+  bottom: max(24px, env(safe-area-inset-bottom));
+  z-index: 4;
+  padding: 5px 9px;
+  border: 1px solid rgba(245, 193, 90, 0.32);
+  border-radius: 999px;
+  color: rgba(245, 205, 130, 0.86);
+  font-size: 10.5px;
+  letter-spacing: 0.22em;
+  opacity: 0;
+  animation: yOvFadeIn 0.5s ease 1.2s both;
+}
+
+/* ------------------------------ 声音与跳过 ------------------------------ */
+.y-ov-controls {
+  position: absolute;
+  right: max(22px, env(safe-area-inset-right));
+  bottom: max(20px, env(safe-area-inset-bottom));
+  z-index: 5;
+  display: flex;
+  gap: 2px;
+  opacity: 0;
+  animation: yOvFadeIn 0.5s ease 1.2s both;
+}
+
+.y-ov-sound,
+.y-ov-skip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 10px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: rgba(214, 233, 255, 0.55);
+  font-family: inherit;
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  cursor: pointer;
+  transition:
+    color 0.2s ease,
+    background 0.2s ease;
+}
+
+.y-ov-sound:hover,
+.y-ov-sound:focus-visible,
+.y-ov-skip:hover,
+.y-ov-skip:focus-visible {
+  color: rgba(236, 246, 255, 0.92);
+  background: rgba(140, 190, 255, 0.1);
+  outline: none;
+}
+
+.y-ov-sound-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: rgba(190, 216, 245, 0.32);
+  transition:
+    background 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.y-ov-sound-dot.is-on {
+  background: #f5c15a;
+  box-shadow: 0 0 8px rgba(245, 193, 90, 0.7);
+}
+
+/* ------------------------------ 通用关键帧 ------------------------------ */
+@keyframes yOvPush {
+  from {
+    transform: scale(1);
+  }
+  to {
+    transform: scale(1.045);
+  }
+}
+
+@keyframes yOvShake {
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+  18% {
+    transform: translate(-2px, 1.5px);
+  }
+  36% {
+    transform: translate(2px, -1px);
+  }
+  54% {
+    transform: translate(-1.5px, 1px);
+  }
+  72% {
+    transform: translate(1px, -0.5px);
+  }
+}
+
+@keyframes yOvFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes yOvFadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes yOvBackdropOut {
+  to {
+    opacity: 0;
+  }
+}
+
+/* 水面退去：向下沉、略微铺开、带一点失焦，像水被地吸走 */
+@keyframes yOvPoolOut {
+  0% {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+    filter: blur(0);
+  }
+  100% {
+    transform: scale(1.07) translateY(58px);
+    opacity: 0;
+    filter: blur(1.6px);
+  }
+}
+
+/* 水束倒收：虚线从落点往上退光，落水的动作被「收」回天上 */
+@keyframes yOvRetract {
+  0% {
+    stroke-dashoffset: 0;
+    opacity: 1;
+  }
+  100% {
+    stroke-dashoffset: 1;
+    opacity: 0.12;
+  }
+}
+
+@keyframes yOvFadeAway {
+  to {
+    opacity: 0;
+  }
+}
+
+/* 退潮水线：属于水面的最后一圈涟漪，向外推开后消失 */
+.y-ov-drain {
+  fill: none;
+  stroke: rgba(203, 236, 255, 0.65);
+  stroke-width: 1.1;
+  opacity: 0;
+  transform-box: fill-box;
+  transform-origin: center;
+  pointer-events: none;
+}
+
+.y-overture.is-leaving .y-ov-drain {
+  animation: yOvDrain 0.85s cubic-bezier(0.2, 0.7, 0.3, 1) forwards;
+}
+
+@keyframes yOvDrain {
+  0% {
+    transform: scale(1);
+    opacity: 0;
+  }
+  22% {
+    opacity: 0.55;
+  }
+  100% {
+    transform: scale(1.34);
+    opacity: 0;
+  }
+}
+
+@keyframes yOvSink {
+  from {
+    transform: rotate(0deg) scale(1);
+    opacity: 0.55;
+  }
+  to {
+    transform: rotate(0deg) scale(1.1) translateY(46px);
+    opacity: 0;
+  }
+}
+
+@keyframes yOvDrift {
+  from {
+    opacity: 1;
+    transform: translate(0, 0);
+  }
+  to {
+    opacity: 0;
+    transform: translate(var(--ov-dx, 0px), var(--ov-dy, 0px));
+  }
+}
+
+@keyframes yOvVerseOut {
+  from {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+  to {
+    opacity: 0;
+    transform: translate(-50%, -12px);
+  }
+}
+
+/* 系统从水下显影：由 Overture 在退潮时挂到 #yutu2 上，卸载即移除 */
+#yutu2.y-ov-reveal {
+  animation: yOvSystemIn 0.95s var(--ov-ease) both;
+}
+
+@keyframes yOvSystemIn {
+  from {
+    opacity: 0.22;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* ------------------------------ 黑曜石与光 ------------------------------ */
+/* 黑曜石镜面：把水面沉成深黑底 */
+.y-ov-obsidian {
+  opacity: 0;
+  animation: yOvObsidian 1.6s ease 1.7s both;
+}
+
+@keyframes yOvObsidian {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* 体积光：从上方落下的锥形光束 */
+.y-ov-beam {
+  opacity: 0;
+  animation: yOvBeam 2.6s ease-out 0.35s both;
+}
+
+@keyframes yOvBeam {
+  0% {
+    opacity: 0;
+  }
+  30% {
+    opacity: 0.9;
+  }
+  100% {
+    opacity: 0.5;
+  }
+}
+
+/* 命途光轨：从落点向外扩散 */
+.y-ov-ray {
+  fill: none;
+  stroke: rgba(198, 233, 255, 0.55);
+  stroke-width: 0.9;
+  stroke-linecap: round;
+  opacity: 0;
+  transform-box: view-box;
+  transform-origin: 500px 600px;
+  filter: drop-shadow(0 0 4px rgba(180, 225, 255, 0.6));
+  animation: yOvRay 1.8s ease-out both;
+}
+
+@keyframes yOvRay {
+  0% {
+    opacity: 0;
+    transform: scale(0.2);
+  }
+  18% {
+    opacity: 0.95;
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1);
+  }
+}
+
+/* 撞击星尘：飞散后淡出 */
+.y-ov-dust {
+  opacity: 0;
+  animation: yOvDust var(--ov-dur, 1200ms) cubic-bezier(0.15, 0.7, 0.3, 1)
+    both;
+}
+
+@keyframes yOvDust {
+  0% {
+    transform: translate(0, 0) scale(0.4);
+    opacity: 0;
+  }
+  12% {
+    opacity: 0.95;
+  }
+  100% {
+    transform: translate(var(--ov-dx, 0px), var(--ov-dy, 0px)) scale(1);
+    opacity: 0;
+  }
+}
+
+/* 落点水沫：循环上飘、边升边淡 */
+.y-ov-spray {
+  opacity: 0;
+  animation: yOvSpray var(--ov-pdur, 3000ms) ease-out infinite;
+}
+
+@keyframes yOvSpray {
+  0% {
+    transform: translate(0, 0) scale(0.6);
+    opacity: 0;
+  }
+  22% {
+    opacity: 0.9;
+  }
+  100% {
+    transform: translate(var(--ov-px, 0px), var(--ov-py, -30px)) scale(1);
+    opacity: 0;
+  }
+}
+
+/* 悬浮微尘：全场缓慢上浮 + 明暗呼吸 */
+.y-ov-mote {
+  opacity: 0;
+  animation: yOvMote var(--ov-mdur, 14000ms) ease-in-out infinite;
+}
+
+@keyframes yOvMote {
+  0% {
+    transform: translate(0, 0);
+    opacity: 0;
+  }
+  28% {
+    opacity: 0.85;
+  }
+  70% {
+    transform: translate(var(--ov-mdx, 0px), var(--ov-mdy, -30px));
+    opacity: 0.5;
+  }
+  100% {
+    transform: translate(var(--ov-mdx, 0px), var(--ov-mdy, -30px));
+    opacity: 0;
+  }
+}
+
+/* 神光：斜射的丁达尔光 */
+.y-ov-godray {
+  opacity: 0;
+  filter: blur(14px);
+  animation: yOvGodray 3.2s ease-out both;
+}
+
+.y-ov-godray:nth-child(1) {
+  animation-delay: 0.5s;
+}
+
+.y-ov-godray:nth-child(2) {
+  animation-delay: 0.8s;
+}
+
+.y-ov-godray:nth-child(3) {
+  animation-delay: 1.1s;
+}
+
+@keyframes yOvGodray {
+  0% {
+    opacity: 0;
+  }
+  35% {
+    opacity: 0.5;
+  }
+  100% {
+    opacity: 0.22;
+  }
+}
+
+/* 地平线与发光雾 */
+.y-ov-horizon {
+  opacity: 0;
+  filter: blur(16px);
+  animation: yOvFadeIn 2.2s ease 1.6s both;
+}
+
+.y-ov-horizon-line {
+  stroke: rgba(220, 240, 255, 0.45);
+  stroke-width: 1;
+  filter: blur(2px);
+  opacity: 0;
+  animation: yOvFadeIn 2s ease 1.9s both;
+}
+
+.y-ov-fog {
+  opacity: 0;
+  filter: blur(22px);
+  animation: yOvFog 4s ease-out 1.5s both;
+}
+
+@keyframes yOvFog {
+  0% {
+    opacity: 0;
+  }
+  30% {
+    opacity: 0.8;
+  }
+  100% {
+    opacity: 0.35;
+  }
+}
+
+/* 前景散景：微距失焦光斑 */
+.y-ov-bokeh {
+  opacity: 0;
+  filter: blur(10px);
+  animation:
+    yOvBokehIn 2.4s ease both,
+    yOvBokehDrift 14s ease-in-out infinite alternate;
+}
+
+@keyframes yOvBokehIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 0.3;
+  }
+}
+
+@keyframes yOvBokehDrift {
+  from {
+    transform: translateY(-6px);
+  }
+  to {
+    transform: translateY(6px);
+  }
+}
+
+/* 退潮时这些光一起收掉 */
+.y-overture.is-leaving .y-ov-beam,
+.y-overture.is-leaving .y-ov-godrays,
+.y-overture.is-leaving .y-ov-horizon,
+.y-overture.is-leaving .y-ov-horizon-line,
+.y-overture.is-leaving .y-ov-fog,
+.y-overture.is-leaving .y-ov-rays,
+.y-overture.is-leaving .y-ov-impact,
+.y-overture.is-leaving .y-ov-dusts,
+.y-overture.is-leaving .y-ov-sprays,
+.y-overture.is-leaving .y-ov-motes,
+.y-overture.is-leaving .y-ov-bokehs {
+  animation: none;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+/* ------------------------------ 响应式 ------------------------------ */
+@media (max-width: 640px) {
+  .y-ov-scene {
+    width: min(1000px, 100vw, 96vh);
+  }
+  .y-ov-verse {
+    top: 5.5%;
+    width: 94%;
+  }
+  .y-ov-line {
+    font-size: clamp(24px, 7.6vw, 35px);
+    letter-spacing: 0.08em;
+  }
+  /* 移动端省掉最贵的一层模糊水幕，保留粒子与彩色水束 */
+  .y-ov-veil {
+    display: none;
+  }
+  .y-ov-corner {
+    width: 14px;
+    height: 14px;
+  }
+  .y-ov-corner-tl {
+    left: 12px;
+    top: 10px;
+  }
+  .y-ov-corner-tr {
+    right: 12px;
+    top: 10px;
+  }
+  .y-ov-corner-bl {
+    left: 12px;
+    bottom: 10px;
+  }
+  .y-ov-corner-br {
+    right: 12px;
+    bottom: 10px;
+  }
+  .y-ov-mark {
+    left: 34px;
+    top: 14px;
+    font-size: 9px;
+    letter-spacing: 0.24em;
+  }
+  .y-ov-mark-r {
+    left: auto;
+    right: 34px;
+    font-size: 8px;
+  }
+  /* 窄屏把进度线移到顶边，避免与底部按钮打架 */
+  .y-ov-progress {
+    left: 0;
+    top: 0;
+    bottom: auto;
+    width: 100%;
+    height: 2px;
+    transform: none;
+  }
+  .y-ov-rule {
+    display: none;
+  }
+  .y-ov-sound-hint {
+    bottom: 62px;
+    padding: 8px 12px;
+    font-size: 11px;
+    letter-spacing: 0.1em;
+  }
+  .y-ov-label text.y-ov-label-no {
+    font-size: 8px;
+  }
+  .y-ov-sub {
+    margin-top: 6px;
+    font-size: 11px;
+    letter-spacing: 0.24em;
+  }
+  .y-ov-source {
+    margin-top: 5px;
+    font-size: 10px;
+    letter-spacing: 0.14em;
+  }
+  .y-ov-label text {
+    font-size: 17px;
+    letter-spacing: 2px;
+  }
+  .y-ov-controls {
+    right: max(12px, env(safe-area-inset-right));
+    bottom: max(12px, env(safe-area-inset-bottom));
+  }
+  .y-ov-sound,
+  .y-ov-skip {
+    padding: 7px 8px;
+    font-size: 11px;
+    letter-spacing: 0.06em;
+  }
+  .y-ov-demo {
+    left: max(12px, env(safe-area-inset-left));
+    bottom: max(14px, env(safe-area-inset-bottom));
+    font-size: 9.5px;
+  }
+}
+
+/* ------------------------------ 降级 ------------------------------ */
+/* 低核数 / 低内存设备：保留构图，关掉最贵的模糊、双虹彩与持续滤镜 */
+.y-ov-lite .y-ov-veil,
+.y-ov-lite .y-ov-iris-2 {
+  display: none;
+}
+
+.y-ov-lite .y-ov-halo {
+  filter: blur(14px);
+  animation: none;
+  opacity: 0.6;
+}
+
+.y-ov-lite .y-ov-mist {
+  filter: blur(6px);
+}
+
+.y-ov-lite .y-ov-disc {
+  animation: yOvPool 1.4s var(--ov-ease) 1.9s both;
+}
+
+.y-ov-lite .y-ov-scene {
+  animation: none;
+}
+
+.y-ov-lite .y-ov-bokeh,
+.y-ov-lite .y-ov-fog,
+.y-ov-lite .y-ov-godrays {
+  display: none;
+}
+
+.y-ov-lite .y-ov-ray {
+  filter: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .y-overture {
+    display: none !important;
+  }
+}
+
+html.y-motion-off .y-overture {
+  display: none !important;
+}
+
+/* ==========================================================================
+   高调白光版：白 / 银 / 浅金，文字转深墨，去掉暗角改为亮雾
+   ========================================================================== */
+.y-ov-bright::before {
+  background:
+    radial-gradient(
+      60% 40% at 50% 16%,
+      rgba(255, 255, 255, 0.98),
+      transparent 72%
+    ),
+    radial-gradient(
+      80% 58% at 50% 60%,
+      rgba(255, 247, 228, 0.9),
+      transparent 74%
+    ),
+    linear-gradient(180deg, #ffffff 0%, #f3f7fc 36%, #dbe6f4 100%);
+}
+
+.y-ov-bright::after {
+  opacity: 0.025;
+}
+
+.y-ov-bright .y-ov-halo {
+  background: radial-gradient(
+    50% 50% at 50% 42%,
+    rgba(255, 255, 255, 0.95),
+    rgba(255, 244, 214, 0.55) 46%,
+    transparent 72%
+  );
+  filter: blur(34px);
+}
+
+.y-ov-bright .y-ov-vignette {
+  background: radial-gradient(
+    120% 95% at 50% 42%,
+    transparent 58%,
+    rgba(255, 255, 255, 0.7) 100%
+  );
+}
+
+.y-ov-bright .y-ov-line {
+  color: #1a2433;
+  text-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.9),
+    0 0 26px rgba(255, 255, 255, 0.95);
+}
+
+.y-ov-bright .y-ov-char {
+  animation-name: yOvCharBright;
+}
+
+@keyframes yOvCharBright {
+  0% {
+    opacity: 0.12;
+    filter: blur(3px);
+    transform: translateY(5px) scale(0.96);
+    color: #1a2433;
+  }
+  55% {
+    opacity: 1;
+    filter: blur(0);
+    color: #9a6a1e;
+    text-shadow: 0 0 18px rgba(255, 255, 255, 0.95);
+  }
+  100% {
+    opacity: 1;
+    filter: blur(0);
+    transform: none;
+    color: #1a2433;
+  }
+}
+
+.y-ov-bright .y-ov-sub {
+  color: rgba(38, 58, 84, 0.66);
+  text-shadow: 0 1px 8px rgba(255, 255, 255, 0.9);
+}
+
+.y-ov-bright .y-ov-source {
+  color: rgba(38, 58, 84, 0.5);
+  text-shadow: none;
+}
+
+.y-ov-bright .y-ov-rule {
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(154, 106, 30, 0.6),
+    transparent
+  );
+}
+
+.y-ov-bright .y-ov-stream {
+  mix-blend-mode: normal;
+}
+
+.y-ov-bright .y-ov-particle,
+.y-ov-bright .y-ov-splash,
+.y-ov-bright .y-ov-spray,
+.y-ov-bright .y-ov-mote {
+  stroke: rgba(110, 155, 205, 0.28);
+  stroke-width: 0.25;
+}
+
+/* 亮底上白光会「吃」掉自己，改为靠淡蓝投影显出轮廓 */
+.y-ov-bright .y-ov-impact {
+  mix-blend-mode: normal;
+  opacity: 0.9;
+}
+
+.y-ov-bright .y-ov-flare {
+  filter: drop-shadow(0 0 7px rgba(120, 165, 212, 0.6));
+}
+
+.y-ov-bright .y-ov-star {
+  filter: drop-shadow(0 0 6px rgba(110, 155, 205, 0.55));
+}
+
+.y-ov-bright .y-ov-shock {
+  stroke: rgba(110, 158, 210, 0.6);
+  filter: drop-shadow(0 0 3px rgba(110, 158, 210, 0.45));
+}
+
+.y-ov-bright .y-ov-cell {
+  stroke: rgba(64, 96, 132, 0.32);
+  filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.7));
+}
+
+.y-ov-bright .y-ov-label text {
+  fill: #243447;
+}
+
+.y-ov-bright .y-ov-label text.y-ov-label-no {
+  fill: #a06f1e;
+}
+
+.y-ov-bright .y-ov-iris {
+  display: none;
+}
+
+.y-ov-bright .y-ov-fall {
+  filter: drop-shadow(0 0 3px rgba(90, 140, 190, 0.5));
+}
+
+.y-ov-bright .y-ov-disc {
+  animation: yOvPool 1.4s var(--ov-ease) 1.9s both;
+}
+
+.y-ov-bright .y-ov-ray {
+  stroke: rgba(255, 255, 255, 0.95);
+  filter: drop-shadow(0 0 5px rgba(180, 215, 255, 0.9));
+}
+
+.y-ov-bright .y-ov-corner {
+  border-color: rgba(60, 90, 125, 0.28);
+}
+
+.y-ov-bright .y-ov-mark {
+  color: rgba(50, 74, 104, 0.55);
+}
+
+.y-ov-bright .y-ov-progress {
+  background: rgba(60, 90, 125, 0.12);
+}
+
+.y-ov-bright .y-ov-progress::after {
+  background: linear-gradient(
+    90deg,
+    rgba(120, 160, 210, 0.8),
+    rgba(184, 134, 47, 0.85)
+  );
+}
+
+.y-ov-bright .y-ov-sound,
+.y-ov-bright .y-ov-skip {
+  color: rgba(40, 62, 90, 0.62);
+}
+
+.y-ov-bright .y-ov-sound:hover,
+.y-ov-bright .y-ov-sound:focus-visible,
+.y-ov-bright .y-ov-skip:hover,
+.y-ov-bright .y-ov-skip:focus-visible {
+  color: rgba(20, 34, 52, 0.95);
+  background: rgba(255, 255, 255, 0.65);
+}
+
+.y-ov-bright .y-ov-demo {
+  border-color: rgba(184, 134, 47, 0.4);
+  color: rgba(140, 96, 24, 0.9);
+}
+
+.y-ov-bright .y-ov-sound-hint {
+  border-color: rgba(184, 134, 47, 0.5);
+  background: rgba(255, 255, 255, 0.72);
+  color: rgba(110, 74, 16, 0.95);
+}
+
+/* 人类剪影：深墨，撑起尺度 */
+.y-ov-human {
+  opacity: 0;
+  animation: yOvFadeIn 1.4s ease 2.6s both;
+}
+
+.y-ov-human circle,
+.y-ov-human path {
+  fill: #16202c;
+}
+
+.y-ov-human .y-ov-human-shadow {
+  fill: rgba(20, 32, 44, 0.16);
+}
+
+/* 焦散：湿地面上的细密光纹 */
+.y-ov-caustic {
+  fill: none;
+  stroke: rgba(110, 150, 195, 0.34);
+  stroke-width: 0.8;
+  stroke-dasharray: 8 14;
+  animation: yOvCaustic 9s linear infinite;
+}
+
+.y-ov-caustic-b {
+  animation-delay: -3s;
+}
+
+.y-ov-caustic-c {
+  animation-delay: -6s;
+}
+
+@keyframes yOvCaustic {
+  to {
+    stroke-dashoffset: -220;
+  }
+}

@@ -1,0 +1,3415 @@
+<div id="yutu2">
+<style>
+#yutu2{
+  --y-bg:#f6f4ef; --y-surface:#fffefb; --y-surface2:#f1eee7;
+  --y-ink:#23221f; --y-ink2:#5c5850; --y-muted:#8d887e;
+  --y-line:#e0dbd1; --y-line2:#cfc8bb;
+  --y-accent:#1f6fb2; --y-soft:#e7f0f8;
+  --y-warm:#a9762f; --y-calm:#4f7a58; --y-red:#9c4a3c;
+  --y-r:10px; --y-rs:6px;
+  background:var(--y-bg); color:var(--y-ink);
+  font-family:"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Noto Sans CJK SC",system-ui,sans-serif;
+  font-size:14px; line-height:1.72; border:1px solid var(--y-line);
+  border-radius:14px; overflow:hidden;
+}
+#yutu2 *{box-sizing:border-box}
+#yutu2 h1,#yutu2 h2,#yutu2 h3,#yutu2 h4,#yutu2 p,#yutu2 ul,#yutu2 ol,#yutu2 li{margin:0;padding:0;list-style:none}
+#yutu2 button{font:inherit;color:inherit}
+#yutu2 button:focus-visible,#yutu2 input:focus-visible,#yutu2 select:focus-visible,
+#yutu2 textarea:focus-visible,#yutu2 [tabindex]:focus-visible{outline:2px solid var(--y-accent);outline-offset:2px}
+
+#yutu2 .y-head{padding:18px 22px 14px;background:var(--y-surface);border-bottom:1px solid var(--y-line);
+  display:flex;flex-wrap:wrap;gap:14px;align-items:center;justify-content:space-between}
+#yutu2 .y-brand{display:flex;gap:12px;align-items:center;min-width:0}
+#yutu2 .y-headnote{max-width:420px;font-size:11.5px;color:var(--y-ink2);background:var(--y-surface2);
+  border:1px solid var(--y-line);border-radius:var(--y-rs);padding:8px 11px;line-height:1.65}
+#yutu2 .y-mascot{width:40px;height:40px;flex:0 0 auto}
+#yutu2 .y-title{font-size:21px;font-weight:650;letter-spacing:.04em}
+#yutu2 .y-slogan{font-size:13px;color:var(--y-accent);margin:1px 0 2px}
+#yutu2 .y-sub{font-size:12.5px;color:var(--y-muted);line-height:1.8}
+#yutu2 .y-sub i{font-style:normal;white-space:nowrap}
+
+#yutu2 .y-steps,#yutu2 .y-sub-rail{scrollbar-width:thin}
+#yutu2 .y-steps::-webkit-scrollbar,#yutu2 .y-sub-rail::-webkit-scrollbar{height:6px}
+#yutu2 .y-steps::-webkit-scrollbar-thumb,#yutu2 .y-sub-rail::-webkit-scrollbar-thumb{
+  background:var(--y-line2);border-radius:3px}
+#yutu2 .y-steps::-webkit-scrollbar-track,#yutu2 .y-sub-rail::-webkit-scrollbar-track{background:transparent}
+
+/* 步骤条 */
+/* 窄屏横向滚动：两侧渐隐提示还有内容可滑，避免被误读为裁切 */
+#yutu2 .y-steps{display:flex;gap:0;padding:12px 22px 0;background:var(--y-surface);
+  border-bottom:1px solid var(--y-line);overflow-x:auto;
+  background-image:linear-gradient(to right,var(--y-surface),rgba(255,255,255,0)),
+    linear-gradient(to left,var(--y-surface),rgba(255,255,255,0)),
+    linear-gradient(to right,rgba(35,34,31,.10),rgba(255,255,255,0)),
+    linear-gradient(to left,rgba(35,34,31,.10),rgba(255,255,255,0));
+  background-position:left center,right center,left center,right center;
+  background-repeat:no-repeat;
+  background-size:26px 100%,26px 100%,9px 100%,9px 100%;
+  background-attachment:local,local,scroll,scroll;
+  /* 两端软化：明确表示还能左右滑动，而不是内容被截断 */
+  -webkit-mask-image:linear-gradient(to right,rgba(0,0,0,0) 0,#000 22px,#000 calc(100% - 22px),rgba(0,0,0,0) 100%);
+  mask-image:linear-gradient(to right,rgba(0,0,0,0) 0,#000 22px,#000 calc(100% - 22px),rgba(0,0,0,0) 100%)}
+#yutu2 .y-step{flex:1 1 0;min-width:118px;background:none;border:0;border-bottom:2px solid transparent;
+  padding:8px 9px 11px;cursor:pointer;text-align:left;border-radius:var(--y-rs) var(--y-rs) 0 0}
+#yutu2 .y-step:hover:not(:disabled){background:var(--y-surface2)}
+#yutu2 .y-step:disabled{cursor:not-allowed;opacity:.45}
+#yutu2 .y-step[aria-current="step"]{border-bottom-color:var(--y-accent);background:var(--y-soft)}
+#yutu2 .y-step-n{display:inline-flex;width:18px;height:18px;border-radius:50%;background:var(--y-line2);
+  color:#fff;font-size:11px;align-items:center;justify-content:center;margin-right:6px;font-weight:600}
+#yutu2 .y-step[aria-current="step"] .y-step-n{background:var(--y-accent)}
+#yutu2 .y-step.is-done .y-step-n{background:var(--y-calm)}
+#yutu2 .y-step-t{font-size:13px;font-weight:600;white-space:nowrap}
+#yutu2 .y-step-d{display:block;font-size:11px;color:var(--y-muted);margin-top:1px;font-weight:400;line-height:1.5;
+  white-space:nowrap}
+
+#yutu2 .y-main{padding:18px 22px 22px}
+#yutu2 .y-panel[hidden]{display:none}
+#yutu2 .y-lead{margin-bottom:14px}
+#yutu2 .y-lead h2{font-size:16.5px;font-weight:620}
+#yutu2 .y-lead p{font-size:12.5px;color:var(--y-muted);margin-top:3px}
+
+#yutu2 .y-card{background:var(--y-surface);border:1px solid var(--y-line);border-radius:var(--y-r);padding:16px 18px}
+#yutu2 .y-card + .y-card{margin-top:13px}
+#yutu2 .y-card h3{font-size:14px;font-weight:620;margin-bottom:9px}
+#yutu2 .y-card h3 .y-mini{font-weight:400;color:var(--y-muted);font-size:11.5px;margin-left:7px}
+#yutu2 .y-g2{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:13px;align-items:start}
+#yutu2 .y-g2w{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(0,1fr);gap:13px;align-items:start}
+#yutu2 .y-gs{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px 16px}
+
+#yutu2 .y-btn{background:var(--y-surface);border:1px solid var(--y-line2);border-radius:var(--y-rs);
+  padding:7px 13px;font-size:13px;cursor:pointer;transition:background .14s,border-color .14s}
+#yutu2 .y-btn:hover:not(:disabled){background:var(--y-surface2);border-color:var(--y-muted)}
+#yutu2 .y-btn-main{background:var(--y-accent);border-color:var(--y-accent);color:#fff}
+#yutu2 .y-btn-main:hover:not(:disabled){background:#1a5f99;border-color:#1a5f99}
+#yutu2 .y-btn-s{padding:4px 10px;font-size:12px}
+#yutu2 .y-btn:disabled{opacity:.45;cursor:not-allowed}
+#yutu2 .y-row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+#yutu2 .y-nav{display:flex;justify-content:space-between;gap:10px;margin-top:14px;flex-wrap:wrap}
+
+#yutu2 label{display:block;font-size:12.5px;color:var(--y-ink2);margin-bottom:4px}
+#yutu2 input[type=text],#yutu2 select,#yutu2 textarea{width:100%;background:var(--y-surface);
+  border:1px solid var(--y-line2);border-radius:var(--y-rs);padding:7px 9px;font:inherit;font-size:13px;color:var(--y-ink)}
+#yutu2 textarea{min-height:60px;resize:vertical}
+#yutu2 .y-dim{padding:8px 0;border-bottom:1px dashed var(--y-line)}
+#yutu2 .y-dim:last-child{border-bottom:0}
+#yutu2 .y-dim-top{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+#yutu2 .y-dim-n{font-size:13px;font-weight:600}
+#yutu2 .y-dim-v{font-size:12px;color:var(--y-accent);font-variant-numeric:tabular-nums}
+#yutu2 .y-dim input[type=range]{width:100%;margin:5px 0 2px;accent-color:var(--y-accent)}
+#yutu2 .y-ends{display:flex;justify-content:space-between;font-size:11px;color:var(--y-muted)}
+
+#yutu2 .y-seg{display:inline-flex;border:1px solid var(--y-line2);border-radius:var(--y-rs);overflow:hidden;flex-wrap:wrap}
+#yutu2 .y-seg label{margin:0;display:inline-flex}
+#yutu2 .y-seg input{position:absolute;opacity:0;pointer-events:none}
+#yutu2 .y-seg span{display:block;padding:7px 12px;font-size:12.5px;cursor:pointer;background:var(--y-surface);
+  color:var(--y-ink2);border-right:1px solid var(--y-line2)}
+#yutu2 .y-seg label:last-child span{border-right:0}
+#yutu2 .y-seg span:hover{background:var(--y-surface2)}
+#yutu2 .y-seg input:checked + span{background:var(--y-accent);color:#fff}
+#yutu2 .y-seg input:focus-visible + span{outline:2px solid var(--y-accent);outline-offset:-2px}
+
+/* 地球 */
+#yutu2 .y-globe{background:#0e1a24;border:1px solid var(--y-line);border-radius:var(--y-r);padding:8px}
+#yutu2 .y-globe canvas{display:block;border-radius:var(--y-rs);width:100%;height:auto;max-width:520px;margin:0 auto}
+#yutu2 .y-globe-bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:8px 2px 2px}
+#yutu2 .y-globe-cap{font-size:11.5px;color:#9fb4c4;padding:2px 4px 0;line-height:1.6}
+
+/* 同阶段分布条 */
+#yutu2 .y-peer{padding:7px 0}
+#yutu2 .y-peer + .y-peer{border-top:1px dashed var(--y-line)}
+#yutu2 .y-peer-top{display:flex;justify-content:space-between;gap:10px;font-size:12.5px}
+#yutu2 .y-peer-top b{font-weight:600}
+#yutu2 .y-peer-top span{color:var(--y-accent);font-variant-numeric:tabular-nums}
+#yutu2 .y-bar{height:7px;border-radius:4px;background:var(--y-surface2);overflow:hidden;margin-top:5px}
+#yutu2 .y-bar i{display:block;height:100%;background:var(--y-accent);border-radius:4px}
+
+/* 方向卡 */
+#yutu2 .y-dir{border:1px solid var(--y-line);border-left:3px solid var(--y-line2);
+  border-radius:var(--y-rs);padding:11px 13px;background:var(--y-surface)}
+#yutu2 .y-dir + .y-dir{margin-top:9px}
+#yutu2 .y-dir.f-high{border-left-color:var(--y-calm)}
+#yutu2 .y-dir.f-mid{border-left-color:var(--y-warm)}
+#yutu2 .y-dir.f-low{border-left-color:var(--y-red)}
+#yutu2 .y-dir-top{display:flex;justify-content:space-between;gap:10px;align-items:baseline;flex-wrap:wrap}
+#yutu2 .y-dir-n{font-size:13.5px;font-weight:620}
+#yutu2 .y-dir-b{font-size:12.5px;color:var(--y-ink2);margin-top:5px;line-height:1.7}
+#yutu2 .y-dir-b b{color:var(--y-ink);font-weight:600}
+
+#yutu2 .y-chip{display:inline-block;padding:1px 8px;border-radius:9px;font-size:11.5px;
+  border:1px solid var(--y-line2);background:var(--y-surface2);color:var(--y-ink2);margin:2px 5px 2px 0}
+#yutu2 .y-chip-b{background:var(--y-soft);border-color:#c6dcee;color:var(--y-accent)}
+#yutu2 .y-chip-c{background:#e8f0e9;border-color:#cadfcd;color:var(--y-calm)}
+#yutu2 .y-chip-w{background:#f6eedf;border-color:#e4d4b4;color:var(--y-warm)}
+#yutu2 .y-chip-r{background:#f5e6e3;border-color:#e3c6c0;color:var(--y-red)}
+
+/* 来源卡 */
+#yutu2 .y-src{border:1px solid var(--y-line);border-radius:var(--y-rs);padding:10px 12px;background:var(--y-surface)}
+#yutu2 .y-src + .y-src{margin-top:8px}
+#yutu2 .y-src-t{font-size:13px;font-weight:600;line-height:1.55}
+#yutu2 .y-src-g{font-size:12.5px;color:var(--y-ink2);margin-top:4px;line-height:1.7}
+#yutu2 .y-src-u{font-size:11.5px;color:var(--y-accent);word-break:break-all;margin-top:4px;
+  font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+#yutu2 .y-fact{border:1px solid var(--y-line);border-left:3px solid var(--y-accent);
+  border-radius:var(--y-rs);padding:10px 12px;background:var(--y-surface)}
+#yutu2 .y-fact + .y-fact{margin-top:8px}
+
+#yutu2 .y-note{font-size:11.5px;color:var(--y-muted);line-height:1.7;padding:2px 0}
+#yutu2 .y-warn{border:1px solid #e4d4b4;background:#f9f3e7;color:#7a5520;
+  border-radius:var(--y-rs);padding:9px 11px;font-size:12.5px;line-height:1.7}
+#yutu2 .y-say{display:flex;gap:10px;align-items:flex-start;background:var(--y-soft);
+  border:1px solid #d3e4f1;border-radius:var(--y-rs);padding:10px 12px;font-size:12.5px;color:#1d4f78;line-height:1.7}
+#yutu2 .y-say svg{width:21px;height:21px;flex:0 0 auto;margin-top:1px}
+#yutu2 .y-flash{font-size:12.5px;color:var(--y-calm);min-height:20px}
+#yutu2 .y-kv li{padding:3px 0;display:flex;gap:8px;font-size:12.5px;color:var(--y-ink2)}
+#yutu2 .y-kv b{flex:0 0 84px;font-weight:600;color:var(--y-ink)}
+#yutu2 .y-empty{padding:20px 14px;text-align:center;color:var(--y-muted);font-size:13px;
+  border:1px dashed var(--y-line2);border-radius:var(--y-rs);background:var(--y-surface2)}
+
+/* 资源与窗口态势图 */
+#yutu2 .y-asset{border:1px solid var(--y-line);border-radius:var(--y-rs);padding:11px 13px;background:var(--y-surface)}
+#yutu2 .y-asset + .y-asset{margin-top:9px}
+#yutu2 .y-asset.is-spent{background:var(--y-surface2);border-style:dashed}
+#yutu2 .y-asset-top{display:flex;justify-content:space-between;gap:10px;align-items:baseline;flex-wrap:wrap}
+#yutu2 .y-asset-n{font-size:13.5px;font-weight:620}
+#yutu2 .y-gauge{height:9px;border-radius:5px;background:var(--y-surface2);overflow:hidden;margin:8px 0 5px;
+  border:1px solid var(--y-line)}
+#yutu2 .y-gauge i{display:block;height:100%;border-radius:5px;transition:width .2s}
+#yutu2 .y-gauge i.g-full{background:var(--y-calm)}
+#yutu2 .y-gauge i.g-part{background:var(--y-warm)}
+#yutu2 .y-gauge i.g-none{background:var(--y-red)}
+#yutu2 .y-asset-b{font-size:12.5px;color:var(--y-ink2);line-height:1.7}
+#yutu2 .y-asset-b b{color:var(--y-ink);font-weight:600}
+#yutu2 .y-quote{border-left:2px solid var(--y-line2);padding:4px 0 4px 9px;margin-top:6px;
+  font-size:12px;color:var(--y-ink2);line-height:1.65}
+#yutu2 .y-quote cite{display:block;font-style:normal;font-size:11px;color:var(--y-muted);margin-top:3px}
+#yutu2 .y-quote a{color:var(--y-accent);word-break:break-all}
+
+#yutu2 .y-board{background:var(--y-surface);border:1px solid var(--y-line);border-radius:var(--y-r);padding:10px 10px 4px}
+#yutu2 .y-board svg{width:100%;height:auto;display:block}
+#yutu2 .y-opt{cursor:pointer}
+#yutu2 .y-opt:focus{outline:none}
+#yutu2 .y-opt:focus-visible rect.y-opt-box{stroke:var(--y-accent);stroke-width:2.5}
+#yutu2 .y-tension{border:1px solid var(--y-line);border-left:3px solid var(--y-warm);
+  border-radius:var(--y-rs);padding:10px 12px;background:var(--y-surface)}
+#yutu2 .y-tension + .y-tension{margin-top:8px}
+#yutu2 .y-tension.t-exclusive{border-left-color:var(--y-red)}
+#yutu2 .y-tension.t-shared{border-left-color:var(--y-accent)}
+
+/* 成长闭环：工作台 / 驿站 / 档案墙 / 经验域 */
+#yutu2 .y-sub-rail{display:flex;gap:4px;overflow-x:auto;border-bottom:1px solid var(--y-line);
+  margin:-2px 0 12px;
+  background-image:linear-gradient(to left,var(--y-bg),rgba(255,255,255,0)),
+    linear-gradient(to left,rgba(35,34,31,.10),rgba(255,255,255,0));
+  background-position:right center,right center;background-repeat:no-repeat;
+  background-size:20px 100%,8px 100%;background-attachment:local,scroll}
+#yutu2 .y-sub-tab{flex:0 0 auto;background:none;border:0;border-bottom:2px solid transparent;
+  padding:7px 12px 9px;font-size:13px;color:var(--y-ink2);cursor:pointer;border-radius:var(--y-rs) var(--y-rs) 0 0;
+  white-space:nowrap}
+#yutu2 .y-sub-tab:hover{background:var(--y-surface2);color:var(--y-ink)}
+#yutu2 .y-sub-tab[aria-selected="true"]{color:var(--y-accent);border-bottom-color:var(--y-accent);font-weight:600}
+#yutu2 .y-flag{display:inline-block;margin-left:5px;min-width:17px;padding:0 5px;border-radius:9px;
+  background:var(--y-soft);color:var(--y-accent);font-size:11px;font-weight:600;text-align:center}
+#yutu2 .y-sub-panel[hidden]{display:none}
+
+#yutu2 .y-task{border:1px solid var(--y-line);border-radius:var(--y-rs);padding:11px 13px;background:var(--y-surface)}
+#yutu2 .y-task + .y-task{margin-top:9px}
+#yutu2 .y-task.is-hold{background:var(--y-surface2)}
+#yutu2 .y-task.is-drop{opacity:.6}
+#yutu2 .y-task-top{display:flex;gap:10px;justify-content:space-between;align-items:flex-start}
+#yutu2 .y-task-ttl{font-size:13.5px;font-weight:600;line-height:1.55}
+#yutu2 .y-task-meta{margin-top:7px;font-size:12px;color:var(--y-muted);line-height:1.7}
+#yutu2 .y-task-meta b{color:var(--y-ink2);font-weight:600}
+#yutu2 .y-task-act{display:flex;gap:7px;align-items:center;flex:0 0 auto}
+#yutu2 .y-task-act select{width:auto;min-width:96px;font-size:12px;padding:4px 7px}
+
+#yutu2 .y-opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin-top:4px}
+#yutu2 .y-opt-card{display:flex;gap:8px;align-items:flex-start;border:1px solid var(--y-line2);
+  border-radius:var(--y-rs);padding:9px 11px;background:var(--y-surface);cursor:pointer;font-size:13px;margin:0}
+#yutu2 .y-opt-card:hover{background:var(--y-surface2)}
+#yutu2 .y-opt-card input{margin:4px 0 0;accent-color:var(--y-accent);width:auto}
+#yutu2 .y-opt-card em{display:block;font-style:normal;font-size:11.5px;color:var(--y-muted);line-height:1.55}
+
+#yutu2 .y-vic{border:1px solid var(--y-line);border-left:3px solid var(--y-accent);
+  border-radius:var(--y-rs);padding:11px 13px;background:var(--y-surface)}
+#yutu2 .y-vic + .y-vic{margin-top:9px}
+#yutu2 .y-vic-top{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:baseline}
+#yutu2 .y-vic-ts{font-size:11.5px;color:var(--y-muted);font-variant-numeric:tabular-nums}
+#yutu2 .y-vic-body{margin-top:6px;font-size:12.5px;color:var(--y-ink2);line-height:1.7}
+#yutu2 .y-cmp{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px;margin-top:10px;align-items:stretch}
+#yutu2 .y-cmp figure{margin:0;border:1px solid var(--y-line);border-radius:var(--y-rs);padding:9px;background:var(--y-surface);
+  display:flex;flex-direction:column;height:100%}
+#yutu2 .y-cmp figcaption{font-size:11.5px;color:var(--y-muted);margin:auto 0 0;padding-top:5px;text-align:center;line-height:1.6}
+#yutu2 .y-cmp figcaption b{display:block;color:var(--y-ink2);font-weight:600}
+#yutu2 .y-cmp svg{width:100%;height:auto;display:block}
+#yutu2 .y-cmp-pick{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:9px;margin-top:9px}
+#yutu2 .y-cmp-f{display:flex;flex-direction:column;gap:4px;min-width:0}
+#yutu2 .y-cmp-f label{font-size:12px;color:var(--y-muted)}
+#yutu2 .y-cmp-f select{width:100%}
+
+#yutu2 .y-pool{border:1px solid var(--y-line);border-radius:var(--y-rs);padding:11px 13px;background:var(--y-surface)}
+#yutu2 .y-pool + .y-pool{margin-top:9px}
+#yutu2 .y-meter{height:5px;border-radius:3px;background:var(--y-surface2);overflow:hidden;margin:7px 0 4px}
+#yutu2 .y-meter i{display:block;height:100%;background:var(--y-accent);border-radius:3px}
+#yutu2 .y-loop{border:1px solid #d3e4f1;background:var(--y-soft);border-radius:var(--y-rs);
+  padding:10px 12px;font-size:12.5px;color:#1d4f78;line-height:1.75}
+#yutu2 .y-vor{background:var(--y-surface);border:1px solid var(--y-line);border-radius:var(--y-r);padding:10px 10px 4px}
+#yutu2 .y-vor svg{width:100%;height:auto;display:block}
+#yutu2 .y-legend{display:flex;flex-wrap:wrap;gap:6px 14px;padding:8px 4px 6px;font-size:11.5px;color:var(--y-ink2)}
+#yutu2 .y-legend span{display:inline-flex;align-items:center;gap:5px}
+#yutu2 .y-dot{width:9px;height:9px;border-radius:50%;flex:0 0 auto}
+
+@media (max-width:820px){
+  #yutu2 .y-g2,#yutu2 .y-g2w{grid-template-columns:minmax(0,1fr)}
+}
+@media (max-width:520px){
+  #yutu2 .y-head{padding:14px 12px 11px}
+  #yutu2 .y-main{padding:14px 11px 18px}
+  #yutu2 .y-steps{padding:10px 8px 0}
+  #yutu2 .y-card{padding:13px 12px}
+  #yutu2 .y-step{min-width:116px}
+  #yutu2 .y-sub-tab{padding:7px 9px 9px;font-size:12.5px}
+  #yutu2 .y-btn{min-height:40px}
+  #yutu2 .y-btn-s{min-height:34px}
+  #yutu2 .y-kv b{flex-basis:72px}
+}
+@media (prefers-reduced-motion:reduce){
+  #yutu2 .y-btn{transition:none}
+}
+</style>
+
+<div class="y-head">
+  <div class="y-brand">
+    <svg class="y-mascot" viewBox="0 0 48 48" aria-hidden="true">
+      <circle cx="24" cy="24" r="23" fill="#e7f0f8" stroke="#c6dcee"/>
+      <path d="M11 19c0-6 6-10 13-10s13 4 13 10c0 3-1 5-2 7 1 3 1 7-1 10-3 4-17 4-20 0-2-3-2-7-1-10-1-2-2-4-2-7z" fill="#fffefb" stroke="#8d887e" stroke-width="1.2"/>
+      <path d="M11.5 16.5 8 10.5l7 1.8zM36.5 16.5 40 10.5l-7 1.8z" fill="#cfc8bb" stroke="#8d887e" stroke-width="1.1"/>
+      <ellipse cx="18.5" cy="23" rx="3.5" ry="3.9" fill="#23221f"/>
+      <ellipse cx="29.5" cy="23" rx="3.5" ry="3.9" fill="#23221f"/>
+      <circle cx="19.6" cy="21.8" r="1.2" fill="#fffefb"/><circle cx="30.6" cy="21.8" r="1.2" fill="#fffefb"/>
+      <ellipse cx="24" cy="30.5" rx="3.6" ry="2.6" fill="#f1eee7" stroke="#8d887e" stroke-width="1"/>
+    </svg>
+    <div>
+      <h1 class="y-title">域途</h1>
+      <p class="y-slogan">远方是方向，不是终点；计划是草稿，由你改写</p>
+      <p class="y-sub"><i>填写</i> → <i>同阶段的人</i> → <i>方向与案例</i> → <i>资源与窗口</i> → <i>你的沃罗诺伊</i> → <i>成长闭环</i></p>
+    </div>
+  </div>
+  <p class="y-headnote">第 2 步的去向分布为演示用示意数据；第 2、3 步的地域与案例、第 4 步的资源与窗口约束，均由知乎开放平台实际检索取得，保留原文可自行核对。</p>
+</div>
+
+<div class="y-steps" role="tablist" aria-label="域途六步流程">
+  <button type="button" class="y-step" role="tab" id="y-s1" aria-controls="y-p1" aria-current="step">
+    <span class="y-step-t"><i class="y-step-n">1</i>填写信息</span>
+    <span class="y-step-d">城市、年龄与处境</span>
+  </button>
+  <button type="button" class="y-step" role="tab" id="y-s2" aria-controls="y-p2" disabled>
+    <span class="y-step-t"><i class="y-step-n">2</i>同阶段的人</span>
+    <span class="y-step-d">三维地球上的这片区域</span>
+  </button>
+  <button type="button" class="y-step" role="tab" id="y-s3" aria-controls="y-p3" disabled>
+    <span class="y-step-t"><i class="y-step-n">3</i>方向与案例</span>
+    <span class="y-step-d">知乎检索 × 年龄 × 阶段</span>
+  </button>
+  <button type="button" class="y-step" role="tab" id="y-s5" aria-controls="y-p5" disabled>
+    <span class="y-step-t"><i class="y-step-n">4</i>资源与窗口</span>
+    <span class="y-step-d">从现有位置看方向代价</span>
+  </button>
+  <button type="button" class="y-step" role="tab" id="y-s4" aria-controls="y-p4" disabled>
+    <span class="y-step-t"><i class="y-step-n">5</i>你的沃罗诺伊</span>
+    <span class="y-step-d">多维相似度归属</span>
+  </button>
+  <button type="button" class="y-step" role="tab" id="y-s6" aria-controls="y-p6" disabled>
+    <span class="y-step-t"><i class="y-step-n">6</i>成长闭环<span class="y-flag" id="y-flag-loop">0</span></span>
+    <span class="y-step-d">体验 · 自省 · 档案 · 共建</span>
+  </button>
+</div>
+
+<div class="y-main">
+
+  <!-- 第一步 -->
+  <section class="y-panel" id="y-p1" role="tabpanel" aria-labelledby="y-s1">
+    <div class="y-lead">
+      <h2>第一步：先把你的情况填清楚</h2>
+      <p>这一步只采集，不给结论。城市决定地理维度与本地机会，年龄与处境共同决定你处在哪个阶段。</p>
+    </div>
+    <div class="y-g2">
+      <div class="y-card">
+        <h3>基本信息<span class="y-mini">必填</span></h3>
+        <div class="y-gs">
+          <div>
+            <label for="y-city">常住城市</label>
+            <select id="y-city"></select>
+          </div>
+          <div>
+            <label for="y-age-in">年龄</label>
+            <select id="y-age-in"></select>
+          </div>
+        </div>
+        <div style="margin-top:11px">
+          <label>城乡属性</label>
+          <div class="y-seg" role="group" aria-label="城乡属性">
+            <label><input type="radio" name="y-urban" value="core" checked><span>主城区</span></label>
+            <label><input type="radio" name="y-urban" value="suburb"><span>近郊/新区</span></label>
+            <label><input type="radio" name="y-urban" value="county"><span>下辖县镇</span></label>
+          </div>
+        </div>
+        <div style="margin-top:11px">
+          <label>当前身份</label>
+          <div class="y-seg" role="group" aria-label="当前身份">
+            <label><input type="radio" name="y-ident" value="study" checked><span>在校/待业</span></label>
+            <label><input type="radio" name="y-ident" value="work"><span>已工作</span></label>
+          </div>
+        </div>
+        <div style="margin-top:11px">
+          <label for="y-field">所学或所从事的方向</label>
+          <input type="text" id="y-field" placeholder="例：土木 / 造价 / 互联网 / 体制内" value="土木">
+        </div>
+      </div>
+      <div class="y-card">
+        <h3>处境量表<span class="y-mini">区间滑动，不做是非选择</span></h3>
+        <div id="y-sliders"></div>
+        <p class="y-note" style="padding-top:6px">地理位置不在此处自评，由你选择的城市属性导出。</p>
+      </div>
+    </div>
+    <div class="y-card">
+      <h3>系统据此判定的阶段</h3>
+      <ul class="y-kv" id="y-stage-box"></ul>
+      <p class="y-say" style="margin-top:10px">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="11" fill="#fff" stroke="#1f6fb2"/><ellipse cx="9" cy="11" rx="1.7" ry="2" fill="#1f6fb2"/><ellipse cx="15" cy="11" rx="1.7" ry="2" fill="#1f6fb2"/><ellipse cx="12" cy="16" rx="2.2" ry="1.6" fill="none" stroke="#1f6fb2"/></svg>
+        <span id="y-stage-say">填完就能看见和你同城、同阶段的人现在在做什么。</span>
+      </p>
+      <div class="y-nav">
+        <span></span>
+        <button type="button" class="y-btn y-btn-main" id="y-go2">看看同阶段的人在做什么 →</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- 第二步 -->
+  <section class="y-panel" id="y-p2" role="tabpanel" aria-labelledby="y-s2" hidden>
+    <div class="y-lead">
+      <h2>第二步：这片区域，和你同阶段的人在做什么</h2>
+      <p id="y-p2-lead">地球自动转到你所在的位置，高亮这片区域，右侧是同阶段者的去向分布。</p>
+    </div>
+    <div class="y-g2w">
+      <div>
+        <div class="y-globe">
+          <canvas id="y-globe" width="520" height="420" role="img"
+            aria-label="三维地球，已定位到你所在的城市并高亮该区域"></canvas>
+          <div class="y-globe-bar">
+            <div class="y-seg" role="group" aria-label="地球显示模式" style="margin-right:2px">
+              <label><input type="radio" name="y-gmode" value="geo" checked><span>地理模式</span></label>
+              <label><input type="radio" name="y-gmode" value="net"><span>网络模式</span></label>
+            </div>
+            <button type="button" class="y-btn y-btn-s" id="y-spin">暂停自转</button>
+            <button type="button" class="y-btn y-btn-s" id="y-recenter">回到我的位置</button>
+            <button type="button" class="y-btn y-btn-s" id="y-geoloc">精确到实际地点</button>
+            <span class="y-globe-cap" id="y-globe-cap"></span>
+          </div>
+        </div>
+        <p class="y-note" style="padding-top:7px" id="y-globe-note">地球为等距方位投影的示意渲染，城市坐标为近似经纬度，山脉为主要山系的脊线示意，均不用于地理测量。光点大小表示该城市的岗位密度。</p>
+        <div class="y-legend" id="y-globe-legend"></div>
+        <div class="y-card" id="y-geo-card" style="margin-top:11px">
+          <h3>精确到实际地点<span class="y-mini">需要你主动授权</span></h3>
+          <p class="y-note" id="y-geo-state" style="padding-bottom:7px"></p>
+          <ul class="y-kv" id="y-geo-detail"></ul>
+          <p class="y-note" style="padding-top:5px">授权只用于把落点从城市级细化到实际坐标；坐标仅保存在本次会话内存中，不上传、不写入档案。你可以随时撤销。</p>
+          <div class="y-row" style="margin-top:8px">
+            <button type="button" class="y-btn y-btn-s" id="y-geo-revoke" hidden>撤销并回到城市级</button>
+          </div>
+        </div>
+        <div class="y-card" style="margin-top:11px">
+          <h3>这片区域的构成<span class="y-mini">蓝圈范围内</span></h3>
+          <ul class="y-kv" id="y-area-box"></ul>
+        </div>
+      </div>
+      <div>
+        <div class="y-card">
+          <h3 id="y-peer-h">同阶段者的去向分布</h3>
+          <p class="y-note" style="padding-bottom:6px">以下比例为演示用示意分布，非真实统计；正式版本需接入平台侧样本。</p>
+          <div id="y-peer-list"></div>
+        </div>
+        <div class="y-card">
+          <h3>这片区域的真实情况<span class="y-mini">知乎检索</span></h3>
+          <div id="y-regional"></div>
+        </div>
+      </div>
+    </div>
+    <div class="y-nav">
+      <button type="button" class="y-btn" id="y-back1">← 返回修改信息</button>
+      <button type="button" class="y-btn y-btn-main" id="y-go3">看这一阶段有哪些方向 →</button>
+    </div>
+  </section>
+
+  <!-- 第三步 -->
+  <section class="y-panel" id="y-p3" role="tabpanel" aria-labelledby="y-s3" hidden>
+    <div class="y-lead">
+      <h2>第三步：这一阶段的所有方向，以及你当下能走的那些</h2>
+      <p id="y-p3-lead">先列全可选方向，再按你的城市与处境标出可行性，最后给出同类处境者的真实记述。</p>
+    </div>
+    <div class="y-card">
+      <h3>可行性判定依据</h3>
+      <ul class="y-kv" id="y-feas-basis"></ul>
+      <div class="y-row" style="margin-top:9px">
+        <span class="y-chip y-chip-c">当前可做</span>
+        <span class="y-chip y-chip-w">需补条件</span>
+        <span class="y-chip y-chip-r">暂不建议</span>
+        <label for="y-only-feasible" style="margin:0 0 0 6px;display:inline-flex;align-items:center;gap:6px">
+          <input type="checkbox" id="y-only-feasible" style="width:auto;accent-color:var(--y-accent)">
+          只看当前可做的
+        </label>
+      </div>
+    </div>
+    <div class="y-g2">
+      <div class="y-card">
+        <h3 id="y-dir-h">这一阶段的全部方向</h3>
+        <div id="y-dir-list"></div>
+      </div>
+      <div class="y-card">
+        <h3>同类处境者的真实记述<span class="y-mini">知乎检索，保留原文链接</span></h3>
+        <p class="y-note" style="padding-bottom:6px">以下为本次由知乎开放平台检索取得的真实内容，摘要来自原文；标注类型以便区分亲历与推测。</p>
+        <div id="y-case-list"></div>
+      </div>
+    </div>
+    <div class="y-nav">
+      <button type="button" class="y-btn" id="y-back2">← 返回同阶段分布</button>
+      <button type="button" class="y-btn y-btn-main" id="y-go5">看资源与窗口态势 →</button>
+    </div>
+  </section>
+
+  <!-- 第四步：资源与窗口态势图 -->
+  <section class="y-panel" id="y-p5" role="tabpanel" aria-labelledby="y-s5" hidden>
+    <div class="y-lead">
+      <h2>第四步：资源与窗口态势</h2>
+      <p>这一步不推荐方向，只呈现代价：你手上还有哪些一次性资源、哪些窗口正在关闭、走某条路会消耗掉什么。</p>
+    </div>
+    <div class="y-card">
+      <p class="y-say">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="11" fill="#fff" stroke="#1f6fb2"/><ellipse cx="9" cy="11" rx="1.7" ry="2" fill="#1f6fb2"/><ellipse cx="15" cy="11" rx="1.7" ry="2" fill="#1f6fb2"/><ellipse cx="12" cy="16" rx="2.2" ry="1.6" fill="none" stroke="#1f6fb2"/></svg>
+        <span>这里不设主攻目标，也不给成功率。阻力来自条件，不是来自任何人。看清代价之后，选哪条仍然由你决定。</span>
+      </p>
+    </div>
+    <div class="y-g2w">
+      <div>
+        <div class="y-board">
+          <svg id="y-board" viewBox="0 0 620 430" role="img" aria-labelledby="y-board-alt"></svg>
+          <p id="y-board-alt" class="y-note">态势图：左侧为你的当前位置，右侧按推进阻力分三层排布可选方向。连线表示该方向会消耗哪一项一次性资源。点选任一方向可查看它的代价明细。</p>
+          <div class="y-legend">
+            <span><i class="y-dot" style="background:#1f6fb2"></i>你的位置</span>
+            <span><i class="y-dot" style="background:#4f7a58"></i>当前可做</span>
+            <span><i class="y-dot" style="background:#a9762f"></i>需补条件</span>
+            <span><i class="y-dot" style="background:#9c4a3c"></i>暂不建议</span>
+            <span><i class="y-dot" style="background:#cfc8bb"></i>消耗资源连线</span>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="y-card">
+          <h3>一次性资源存量<span class="y-mini">用掉或过期即不可逆</span></h3>
+          <div id="y-assets"></div>
+        </div>
+      </div>
+    </div>
+    <div class="y-card">
+      <h3 id="y-pick-h">点选方向后显示代价明细</h3>
+      <div id="y-pick"></div>
+    </div>
+    <div class="y-card">
+      <h3>方向之间的张力<span class="y-mini">互斥、共用资源与条件判定，均附检索依据</span></h3>
+      <div id="y-tensions"></div>
+    </div>
+    <div class="y-nav">
+      <button type="button" class="y-btn" id="y-back3b">← 返回方向与案例</button>
+      <button type="button" class="y-btn y-btn-main" id="y-go4">生成属于我的沃罗诺伊 →</button>
+    </div>
+  </section>
+
+  <!-- 第四步 -->
+  <section class="y-panel" id="y-p4" role="tabpanel" aria-labelledby="y-s4" hidden>
+    <div class="y-lead">
+      <h2>第四步：属于你自己的多维沃罗诺伊</h2>
+      <p>前三步是公共信息：同阶段的人、这一阶段的方向、可查的真实案例。这一步才落到你个人——用七维向量找出与你处境最接近的节点。</p>
+    </div>
+    <div class="y-g2w">
+      <div>
+        <div class="y-vor">
+          <svg id="y-vor-map" viewBox="0 0 520 390" role="img" aria-labelledby="y-vor-alt"></svg>
+          <p id="y-vor-alt" class="y-note">横轴为资源余量（经济宽裕、时间余量与家庭负担的合成），纵轴为探索倾向（认知惯性、行业机会与体验积累的合成），均为 0–100。光点为你，圆点为环境原型节点，标签后的百分比是与你的带权余弦相似度。</p>
+          <div class="y-legend">
+            <span><i class="y-dot" style="background:#1f6fb2"></i>你的位置</span>
+            <span><i class="y-dot" style="background:#23221f"></i>归属节点</span>
+            <span><i class="y-dot" style="background:#a9762f"></i>过渡带内</span>
+            <span><i class="y-dot" style="background:#8d887e"></i>其他节点</span>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="y-card">
+          <h3 id="y-vor-name">你的归属域</h3>
+          <p class="y-note" id="y-vor-sim" style="padding-bottom:7px"></p>
+          <div id="y-vor-warn"></div>
+          <h4 style="font-size:12.5px;font-weight:620;margin:8px 0 4px">本域高频困扰</h4>
+          <ul class="y-kv" id="y-vor-pains"></ul>
+          <h4 style="font-size:12.5px;font-weight:620;margin:10px 0 4px">相对这一域，你的位置偏在哪里</h4>
+          <ul class="y-kv" id="y-vor-delta"></ul>
+        </div>
+        <div class="y-card">
+          <h3>向量明细</h3>
+          <ul class="y-kv" id="y-vec-detail"></ul>
+          <p class="y-note" style="padding-top:5px">相似度为带权余弦：各维先以 50 为中心、按权重缩放后比较方向。</p>
+        </div>
+      </div>
+    </div>
+    <div class="y-card">
+      <h3>模型边界<span class="y-mini">必须明示</span></h3>
+      <ul class="y-kv">
+        <li><b>只比方向</b><span>余弦不区分强度：处境类型相同但严峻程度不同的两人，可能落入同一域。</span></li>
+        <li><b>中性不稳</b><span>各维都接近 50 时向量模长极小，归属对 1 分变化也敏感，此时百分比参考价值低。</span></li>
+        <li><b>不做预测</b><span>沃罗诺伊是相似度理解框架，不预测结果，也不保证任何路线的成功率。</span></li>
+      </ul>
+    </div>
+    <div class="y-nav">
+      <button type="button" class="y-btn" id="y-back3">← 返回资源与窗口</button>
+      <button type="button" class="y-btn y-btn-main" id="y-go6">进入成长闭环 →</button>
+    </div>
+  </section>
+
+  <!-- 第六步：成长闭环 -->
+  <section class="y-panel" id="y-p6" role="tabpanel" aria-labelledby="y-s6" hidden>
+    <div class="y-lead">
+      <h2>第六步：成长闭环</h2>
+      <p>前五步是一次性的认知，这一步开始循环：领任务 → 线下体验 → 停靠自省 → 阶段性胜利 → 位置漂移 → 回到地图重新定位。</p>
+    </div>
+    <div class="y-card">
+      <p class="y-loop" id="y-loop-state"></p>
+    </div>
+
+    <div class="y-sub-rail" role="tablist" aria-label="成长闭环模块">
+      <button type="button" class="y-sub-tab" role="tab" id="y-t1" aria-controls="y-m1" aria-selected="true">体验工作台<span class="y-flag" id="y-flag-bench">0</span></button>
+      <button type="button" class="y-sub-tab" role="tab" id="y-t2" aria-controls="y-m2" aria-selected="false">停靠驿站</button>
+      <button type="button" class="y-sub-tab" role="tab" id="y-t3" aria-controls="y-m3" aria-selected="false">胜利档案墙<span class="y-flag" id="y-flag-wall">0</span></button>
+      <button type="button" class="y-sub-tab" role="tab" id="y-t4" aria-controls="y-m4" aria-selected="false">同伴经验域</button>
+    </div>
+
+    <!-- 体验工作台 -->
+    <div class="y-sub-panel" id="y-m1" role="tabpanel" aria-labelledby="y-t1">
+      <div class="y-card">
+        <h3>体验工作台<span class="y-mini">系统只给草稿，编辑权完全归你</span></h3>
+        <p class="y-note" style="padding-bottom:8px">状态只有四种中性标签，没有逾期提醒，也没有红色警示。暂停、修改、放弃都是被接纳的合法选择。</p>
+        <div class="y-row" style="justify-content:space-between">
+          <div class="y-row">
+            <label for="y-filter" style="margin:0 2px 0 0;display:inline">按状态筛选</label>
+            <select id="y-filter" style="width:auto;min-width:118px">
+              <option value="all">全部</option>
+              <option value="doing">进行中</option>
+              <option value="done">已完成</option>
+              <option value="hold">暂时搁置</option>
+              <option value="drop">选择放弃</option>
+            </select>
+            <span class="y-chip" id="y-count-chip"></span>
+          </div>
+          <div class="y-row">
+            <button type="button" class="y-btn y-btn-s" id="y-load-tasks">从当前域载入参考任务</button>
+            <button type="button" class="y-btn y-btn-s" id="y-add-open">＋ 新增自定义任务</button>
+          </div>
+        </div>
+        <p class="y-flash" id="y-load-flash" role="status"></p>
+        <div id="y-add-form" hidden style="margin-top:10px;border-top:1px dashed var(--y-line);padding-top:11px">
+          <div class="y-gs">
+            <div>
+              <label for="y-add-title">任务内容</label>
+              <input type="text" id="y-add-title" placeholder="例：找两位在施工单位做过一年的师兄做访谈">
+            </div>
+            <div>
+              <label for="y-add-type">六体分类</label>
+              <select id="y-add-type">
+                <option>亲情体验</option><option>团队体验</option><option>非营利组织体验</option>
+                <option selected>营利组织体验</option><option>创新创业体验</option><option>全球事务体验</option>
+              </select>
+            </div>
+          </div>
+          <p class="y-flash" id="y-add-err" style="color:var(--y-warm)" role="alert"></p>
+          <div class="y-row" style="margin-top:8px">
+            <button type="button" class="y-btn y-btn-main y-btn-s" id="y-add-submit">加入清单</button>
+            <button type="button" class="y-btn y-btn-s" id="y-add-cancel">取消</button>
+          </div>
+        </div>
+      </div>
+      <div class="y-card">
+        <h3>当前阶段任务<span class="y-mini">按六体分类；来自公共经验的任务标注出处，自定义与亲情类任务无出处</span></h3>
+        <div id="y-tasks"></div>
+        <p class="y-flash" id="y-bench-flash" role="status"></p>
+      </div>
+    </div>
+
+    <!-- 停靠驿站 -->
+    <div class="y-sub-panel" id="y-m2" role="tabpanel" aria-labelledby="y-t2" hidden>
+      <div class="y-g2">
+        <div class="y-card">
+          <h3>停靠驿站<span class="y-mini">不推送新任务，不做成败判定</span></h3>
+          <div id="y-stop-ctx" class="y-say" style="margin-bottom:12px"></div>
+          <div style="margin-bottom:11px">
+            <label for="y-q1">这段体验带给我的真实感受是什么</label>
+            <textarea id="y-q1" placeholder="不必写得完整，想到什么写什么。"></textarea>
+          </div>
+          <div style="margin-bottom:11px">
+            <label for="y-q2">出发时的处境参数现在变了没有</label>
+            <textarea id="y-q2" placeholder="经济压力、家庭责任、时间余量——哪一项和出发时不一样了。"></textarea>
+          </div>
+          <div style="margin-bottom:11px">
+            <label for="y-q3">原来的远方愿景对我还重要吗</label>
+            <textarea id="y-q3" placeholder="愿景是方向，可以长期保留，也可以修改。"></textarea>
+          </div>
+          <div>
+            <label>下一步打算怎么走<span style="color:var(--y-muted)">（四者权重相同，没有哪一个更高级）</span></label>
+            <div class="y-opts">
+              <label class="y-opt-card"><input type="radio" name="y-next" value="keep" checked><span>维持方向<em>继续当前路线</em></span></label>
+              <label class="y-opt-card"><input type="radio" name="y-next" value="revise"><span>修改计划<em>方向不变，换做法</em></span></label>
+              <label class="y-opt-card"><input type="radio" name="y-next" value="rest"><span>暂时休整<em>不推送新任务</em></span></label>
+              <label class="y-opt-card"><input type="radio" name="y-next" value="switch"><span>更换方向<em>排除也是胜利</em></span></label>
+            </div>
+          </div>
+          <div class="y-row" style="margin-top:13px">
+            <button type="button" class="y-btn y-btn-main" id="y-archive">归档这次阶段性胜利</button>
+          </div>
+          <p class="y-flash" id="y-stop-flash" role="status"></p>
+        </div>
+        <div class="y-card">
+          <h3>可归档的已完成体验</h3>
+          <p class="y-note" style="padding-bottom:6px">阶段性胜利指在当前处境下完整走通一轮体验学习循环：完成体验、做出反思、形成一个对下一步有效的判断。</p>
+          <div id="y-stop-list"></div>
+          <h4 style="font-size:12.5px;font-weight:620;margin:12px 0 5px">本次停靠将带来的向量漂移</h4>
+          <ul class="y-kv" id="y-drift"></ul>
+          <p class="y-note" style="padding-top:5px">所有更新都是小幅调整，不做跳变；地图上的移动呈现为缓慢漂移而非瞬间跳转。</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 胜利档案墙 -->
+    <div class="y-sub-panel" id="y-m3" role="tabpanel" aria-labelledby="y-t3" hidden>
+      <div class="y-card">
+        <h3>两点对比<span class="y-mini">用两张地图的落点变化直观呈现位置移动</span></h3>
+        <div class="y-cmp-pick">
+          <div class="y-cmp-f">
+            <label for="y-cmp-a">起点</label>
+            <select id="y-cmp-a"></select>
+          </div>
+          <div class="y-cmp-f">
+            <label for="y-cmp-b">终点</label>
+            <select id="y-cmp-b"></select>
+          </div>
+        </div>
+        <div class="y-cmp" id="y-cmp"></div>
+        <ul class="y-kv" id="y-cmp-diff" style="margin-top:10px"></ul>
+      </div>
+      <div class="y-card">
+        <h3>阶段性胜利时间轴<span class="y-mini">每个节点绑定当时的向量快照与自省原文</span></h3>
+        <div id="y-wall"></div>
+      </div>
+    </div>
+
+    <!-- 同伴经验域 -->
+    <div class="y-sub-panel" id="y-m4" role="tabpanel" aria-labelledby="y-t4" hidden>
+      <div class="y-g2">
+        <div class="y-card">
+          <h3>我的校验池</h3>
+          <p class="y-note" style="padding-bottom:8px">需 3 位同处境用户标记有效后升级为公共节点。系统不设排行榜，不展示薪资与结果对比。</p>
+          <div id="y-pool"></div>
+          <p class="y-flash" id="y-peer-flash" role="status"></p>
+        </div>
+        <div class="y-card">
+          <h3>同处境者的真实复盘<span class="y-mini">虚构示例</span></h3>
+          <div id="y-peer-review"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="y-nav">
+      <button type="button" class="y-btn" id="y-back5">← 返回沃罗诺伊</button>
+      <button type="button" class="y-btn" id="y-restart6">重新填写</button>
+    </div>
+  </section>
+
+</div>
+
+<script>
+/* 域途 · 四步流程数据层
+   来源分两类：
+   - verified：本次由 zhihu-cli 真实检索取得，保留原文链接
+   - demo：演示用示意数据，界面明确标注 */
+window.YUTU_DATA = {
+  /* ---------- 阶段定义：年龄 + 处境共同决定 ---------- */
+  stages: [
+    {id:"explore", name:"在校探索期", ageMin:16, ageMax:23,
+     desc:"身份尚未定型，试错成本最低，核心任务是把下游岗位摊开看清。"},
+    {id:"entry",   name:"初入职场期", ageMin:22, ageMax:27,
+     desc:"第一份工作定调，核心任务是积累可迁移能力而非薪资最大化。"},
+    {id:"pivot",   name:"转向抉择期", ageMin:26, ageMax:33,
+     desc:"已有存量经验，核心任务是判断哪些能力可迁移、迁移窗口还剩多久。"},
+    {id:"anchor",  name:"稳态深耕期", ageMin:32, ageMax:45,
+     desc:"家庭与现金流约束变硬，核心任务是在可承受范围内做增量而非归零重来。"}
+  ],
+
+  /* ---------- 同阶段同地区的人在做什么（演示用分布，标注为示意） ---------- */
+  peerActivity: {
+    explore: [
+      {label:"摊开本专业下游岗位做调研", share:31},
+      {label:"准备专升本 / 考研",        share:24},
+      {label:"找第一份实习",             share:22},
+      {label:"自学一门可验证的技能",      share:15},
+      {label:"还没想清楚，先观望",        share:8}
+    ],
+    entry: [
+      {label:"在第一家单位积累经验",      share:34},
+      {label:"边做边准备换方向",          share:23},
+      {label:"考证补学历",               share:18},
+      {label:"做副业试水",               share:14},
+      {label:"已在准备离职",             share:11}
+    ],
+    pivot: [
+      {label:"盘点可迁移能力找交叉地带",   share:29},
+      {label:"不离职做小规模验证",        share:26},
+      {label:"考证 / 进修换门槛",         share:19},
+      {label:"直接跳同行业更好的坑",      share:16},
+      {label:"暂缓决定，先稳住现金流",     share:10}
+    ],
+    anchor: [
+      {label:"在现有岗位做纵深",          share:33},
+      {label:"用业余时间做第二曲线",       share:25},
+      {label:"转管理 / 带团队",           span:0, share:18},
+      {label:"回流本地求稳定",            share:15},
+      {label:"准备创业或接私活",          share:9}
+    ]
+  },
+
+  /* ---------- 阶段 × 方向：所有可选方向 ---------- */
+  directions: {
+    explore: [
+      {name:"本专业对口就业", feasible:"high",
+       note:"路径最短，但需先确认对口岗位的真实日常是否可接受。",
+       prereq:"能拿到实习或访谈渠道"},
+      {name:"本专业横向岗位", feasible:"high",
+       note:"同一行业内换岗位，经验不归零，已有大量可查的真实转向记录。",
+       prereq:"在校期间把本专业的核心工具练到能独立出活"},
+      {name:"专升本 / 考研提升学历", feasible:"mid",
+       note:"打开部分学历门槛，但会占用 1–3 年试错窗口。",
+       prereq:"家庭现金流能支撑非收入期"},
+      {name:"考公 / 事业单位 / 编制", feasible:"mid",
+       note:"稳定性高，但岗位数量受本地编制规模限制。",
+       prereq:"能承受较长备考期"},
+      {name:"国企 / 央企校招", feasible:"mid",
+       note:"门槛介于编制与民企之间，常要求应届身份，错过即难补。",
+       prereq:"在应届窗口内投递"},
+      {name:"跨行业转技术岗（IT / 数据 / 设计）", feasible:"mid",
+       note:"对学历相对友好，但需要完整的自学闭环与可展示作品。",
+       prereq:"每周可稳定投入 10 小时以上"},
+      {name:"技能型硬手艺（数控 / 机电 / 维修）", feasible:"mid",
+       note:"不依赖学历，年限越久越值钱，但前期强度高、环境较差。",
+       prereq:"能接受车间或现场工作环境"},
+      {name:"考证换准入资格", feasible:"mid",
+       note:"部分行业证书是硬准入，拿到才有投递资格，但证书不等于经验。",
+       prereq:"确认目标岗位把该证作为硬门槛"},
+      {name:"参军 / 定向士官", feasible:"mid",
+       note:"提供两年确定性与退役后的政策通道，期间无法并行其他规划。",
+       prereq:"符合体检与年龄条件"},
+      {name:"升学留学（含高职单招专升硕）", feasible:"low",
+       note:"费用门槛高，需长期资金规划，适合家庭可支持者。",
+       prereq:"有明确的资金来源与语言准备"},
+      {name:"自由职业 / 接单起步", feasible:"low",
+       note:"收入不稳定且无社保，适合已有作品与客源者，不宜作为首选。",
+       prereq:"已有可交付的作品集"},
+      {name:"创业 / 家里生意接手", feasible:"low",
+       note:"试错成本最高，但若家中已有存量资源则路径不同。",
+       prereq:"有可依托的现成资源或渠道"},
+      {name:"先就业再定方向（过渡性岗位）", feasible:"high",
+       note:"明确把它当过渡而非终点，用来换现金流与社会经验，需设定退出时间。",
+       prereq:"给自己定一个明确的到期复盘日"}
+    ],
+    entry: [
+      {name:"在现单位积累可迁移能力", feasible:"high",
+       note:"成本最低的一条，关键是区分哪些经验出了这家公司还算数。",
+       prereq:"能拿到核心业务的参与机会"},
+      {name:"同行业换更好的平台", feasible:"high",
+       note:"保留行业积累，只换平台，折价最小。",
+       prereq:"已有 1 年以上可讲清的业绩"},
+      {name:"行业内换职能方向", feasible:"mid",
+       note:"经验部分可迁移，需补齐新职能的硬技能。",
+       prereq:"目标职能的技能缺口已盘点清楚"},
+      {name:"跨行业重启", feasible:"low",
+       note:"需要接受起点归零，窗口期随年龄收窄。",
+       prereq:"有 6 个月以上的现金流缓冲"}
+    ],
+    pivot: [
+      {name:"可迁移能力盘点后渐进迁移", feasible:"high",
+       note:"在交叉地带落脚，不必归零，是这一阶段最稳的路径。",
+       prereq:"能列出 3 个交叉岗位与各自缺口"},
+      {name:"不离职做小规模验证", feasible:"high",
+       note:"用 8 周业余投入换一个明确结论，成本可控。",
+       prereq:"每周 8 小时且不影响本职"},
+      {name:"考证换门槛", feasible:"mid",
+       note:"证书能开门但不能替代经验，需与实做并行。",
+       prereq:"目标岗位确实把证书作为硬门槛"},
+      {name:"彻底转行", feasible:"low",
+       note:"房贷与家庭责任会放大失败代价，社区成功案例常未披露家庭支持条件。",
+       prereq:"算清最低现金流底线并与家人对齐"}
+    ],
+    anchor: [
+      {name:"现岗位纵深 + 内部转岗", feasible:"high",
+       note:"存量经验利用率最高，风险最低。",
+       prereq:"单位内部有可见的通道"},
+      {name:"业余第二曲线", feasible:"mid",
+       note:"只选能在碎片时间闭环的最小单元，先记录两周真实可用时间。",
+       prereq:"家庭已知情并同意"},
+      {name:"转管理或带团队", feasible:"mid",
+       note:"从做事转为带人，所需能力与原岗位不同。",
+       prereq:"有带人或跨部门协作的实际经历"},
+      {name:"创业 / 接私活", feasible:"low",
+       note:"收入波动大，需以现金流底线倒推可承受周期。",
+       prereq:"有可自带的客户或渠道"}
+    ]
+  },
+
+  /* ---------- 一次性资源与窗口期：全部由 zhihu-cli 真实检索验证 ----------
+     这些是消耗型资源，用掉或过期即不可逆，构成态势图的主轴。 */
+  assets: [
+    {id:"fresh", name:"应届生身份",
+     desc:"校招、考公考编、国企央企专项通道的入场券。",
+     rule:"毕业当年为当年应届；毕业后未落实工作单位的，择业期两年内仍按应届认定。",
+     expiry:"择业期 2 年",
+     consumedBy:["国企 / 央企校招","本专业对口就业","先就业再定方向（过渡性岗位）"],
+     evidence:[
+       {quote:"国家规定的择业期是两年。",
+        title:"应届生身份，进央国企最值钱的一张“入场券”",
+        url:"https://zhuanlan.zhihu.com/p/2095907609199097409"},
+       {quote:"应届生从去年秋天拿到 offer 开始，就自动放弃了考公、考编、春招、其他国企央企的校招通道……这个身份在就业市场上只认一次，错过了就是错过了。",
+        title:"星宇股份董事长就集体劝退应届生再次道歉",
+        url:"https://www.zhihu.com/question/2078469348969146079"}
+     ]},
+    {id:"upgrade", name:"统招专升本报考资格",
+     desc:"取得全日制本科文凭的唯一通道，直接决定能否报考卡本科门槛的岗位。",
+     rule:"在校期间可报考；一旦毕业即失去报考机会，之后只能走非全日制。",
+     expiry:"毕业即失效",
+     consumedBy:["本专业对口就业","国企 / 央企校招","先就业再定方向（过渡性岗位）","技能型硬手艺（数控 / 机电 / 维修）"],
+     evidence:[
+       {quote:"全日制学历含金量更高，一旦毕业就失去报考机会，权衡清楚再决定。",
+        title:"专升本还是选择上班？",
+        url:"https://www.zhihu.com/question/2091372681946052079"},
+       {quote:"很多岗位的报考门槛直接卡在“本科及以上”，专科连报名入口都没有。",
+        title:"专科到底是专升本还是直接就业啊？",
+        url:"https://www.zhihu.com/question/2100884786210461201"}
+     ]},
+    {id:"window", name:"低成本试错窗口",
+     desc:"可承受非收入期的时间长度，由经济压力与家庭负担共同决定。",
+     rule:"经济压力与家庭负担越高，窗口越短；年龄增长会进一步压缩归零类路径的可行性。",
+     expiry:"随处境变化",
+     consumedBy:["专升本 / 考研提升学历","升学留学（含高职单招专升硕）","考公 / 事业单位 / 编制","创业 / 家里生意接手"],
+     evidence:[
+       {quote:"若家庭尚可、想进考公/国企/更好岗位，选专升本，全日制本科是硬门槛。如果急需收入、专业偏向实操岗位，可先上班，后续读非全日制。",
+        title:"专升本还是选择上班？",
+        url:"https://www.zhihu.com/question/2091372681946052079"},
+       {quote:"统招专升本考上再读两年，学费加生活费少说三四万。",
+        title:"专科到底是专升本还是直接就业啊？",
+        url:"https://www.zhihu.com/question/2100884786210461201"}
+     ]}
+  ],
+
+  /* 互斥与判定条件：同样来自检索 */
+  tensions: [
+    {a:"专升本 / 考研提升学历", b:"本专业对口就业", kind:"exclusive",
+     note:"二选一，且专升本资格毕业即失效，选就业等于关闭该通道。",
+     basis:"能稳定、体面、有发展的工作，优先工作；工作一般、没前景、没编制，优先专升本。",
+     url:"https://www.zhihu.com/question/1582218641"},
+    {a:"考证换准入资格", b:"本专业对口就业", kind:"conditional",
+     note:"先后顺序取决于目标岗位是否持证准入，没有适用所有人的统一顺序。",
+     basis:"岗位有持证准入要求，优先备考对应资格证书；没有强制持证要求，优先补齐实习里刚需的实用技能，再挑选证书。",
+     url:"https://zhuanlan.zhihu.com/p/2101632384890422322"},
+    {a:"国企 / 央企校招", b:"考公 / 事业单位 / 编制", kind:"shared",
+     note:"共用应届身份这一份资源，接受其中一方的 offer 会影响另一方的通道。",
+     basis:"拿到 offer 就自动放弃了考公、考编、春招、其他国企央企的校招通道。",
+     url:"https://www.zhihu.com/question/2078469348969146079"},
+    {a:"技能型硬手艺（数控 / 机电 / 维修）", b:"专升本 / 考研提升学历", kind:"conditional",
+     note:"实操型专业的学历边际收益较低，文科类则相反。",
+     basis:"如果你的专业是技术型（如计算机、护理、机电），实操能力比文凭更重要；如果是文科类（如管理、营销），学历提升的边际收益可能更高。",
+     url:"https://www.zhihu.com/question/659698324"}
+  ],
+
+  /* ---------- 按专业大类的真实检索来源：由 zhihu-cli search zhihu 取得 ----------
+     用户在第一步填写的方向会匹配到对应大类；未命中时回落到通用结果。 */
+  fieldCases: {
+    civil: {
+      label:"土木 / 建筑 / 工程",
+      kw:/土木|建筑|施工|造价|监理|测绘|市政|路桥|工地/, loose:/工程/,
+      items:[
+        {title:"施工转造价的自述",url:"https://zhuanlan.zhihu.com/p/29546968296",kind:"亲历记述",
+         gist:"毕业入职省城国企施工单位做技术，一年多后因常驻工地流动而转造价，已三年。"},
+        {title:"土木工程转工程造价，有什么利弊呢？",url:"https://www.zhihu.com/question/454344508",kind:"亲历记述",
+         gist:"本科土木工民建方向，签约中字头央企后因商务缺人被挑去做商务，意外完成转向。"},
+        {title:"那些从土木工程转行出去的前辈，现在怎么样了？",url:"https://www.zhihu.com/question/312801231",kind:"亲历记述",
+         gist:"第一学历大专、非全专升本，工作 12 年从测量放线做到即将再次跳槽的长期轨迹。"},
+        {title:"献给造价新人：一位转行做造价朋友的自述",url:"https://zhuanlan.zhihu.com/p/346888014",kind:"亲历记述",
+         gist:"海投阶段面试销售、资料员、实习造价生，描述了入行难这一环的具体卡点。"},
+        {title:"土木往届生：网络安全赛道还向你敞开吗",url:"https://zhuanlan.zhihu.com/p/-259860870334945436",kind:"个人推测",
+         gist:"主张土木转网络安全可行，并区分大专与本科可解锁的方向。含明显招生推广立场，仅作线索。"}
+      ]
+    },
+    nursing: {
+      label:"护理 / 医学相关",
+      kw:/护理|护士|医学|临床|药学|检验|康复|口腔|助产/,
+      items:[
+        {title:"今年毕业，大专护理专业的女生出路在那里？",url:"https://www.zhihu.com/question/2008730331705017443",kind:"亲历记述",
+         gist:"大专护理毕业、现在三甲手术室工作者的自述，按亲身踩坑给出真实路线，明确不画大饼。"},
+        {title:"大专护理最后都做了什么？山东真实出路盘点",url:"https://zhuanlan.zhihu.com/p/2097264834807181723",kind:"行业共识",
+         gist:"盘点体检中心、健康管理机构等转型方向：工作强度相对较低、基本无夜班，主要负责采血、心电图、导诊与流程质控。"},
+        {title:"大专护理生毕业后适合做什么？",url:"https://www.zhihu.com/question/1888549697825767721",kind:"亲历记述",
+         gist:"带教老师记录一位实习生想改做健身教练或销售的对话，逐条分析销售真实情况、健身教练门槛与护理的护城河。"},
+        {title:"专科一战上岸211护理学硕，毕业后彻底转行",url:"https://zhuanlan.zhihu.com/p/399857063",kind:"亲历记述",
+         gist:"护理专科毕业、一战考上 211 护理学硕，毕业后进入制药企业再转金融行业的完整路径。"}
+      ]
+    },
+    it: {
+      label:"计算机 / IT / 数据",
+      kw:/计算机|软件|编程|程序|代码|IT|互联网|算法|数据|前端|后端|运维|网络|通信|人工智能|大模型|信息技术/,
+      items:[
+        {title:"大专计算机何去何从？",url:"https://www.zhihu.com/question/2089876120854344147",kind:"亲历记述",
+         gist:"针对“大专学计算机找不到工作”的焦虑论调逐条回应，指出制造焦虑者并不解决专业选择问题。"},
+        {title:"专科毕业，计算机专业不转行，怎么找工作？",url:"https://zhuanlan.zhihu.com/p/1976952241370965144",kind:"亲历记述",
+         gist:"22 年专科通信专业毕业被派往上海换故障服务器硬盘，后决定转大模型应用开发的完整过程。"},
+        {title:"工作8年的普通专科程序员的一些感悟",url:"https://zhuanlan.zhihu.com/p/449049027",kind:"亲历记述",
+         gist:"以具体薪资结构测算高薪门槛，说明年薪百万对应的月薪量级与所需平台层级。"},
+        {title:"大专学历23岁，想自学或者报培训班转IT行业，可行吗？",url:"https://www.zhihu.com/question/484058160",kind:"亲历记述",
+         gist:"大专毕业后月薪不足四千、在校所学只是皮毛、实际工作上不了手的真实处境描述。"}
+      ]
+    },
+    edu: {
+      label:"学前教育 / 师范",
+      kw:/学前|幼师|幼儿|教育|师范|教师|小学|中学/,
+      items:[
+        {title:"学前教育的出路在哪里？",url:"https://www.zhihu.com/question/658306149",kind:"亲历记述",
+         gist:"同宿舍 6 位学前教育女生毕业后的真实去向跟踪，含最早准备考编者的时间线。"},
+        {title:"大专学前教育专业找不到工作怎么办？",url:"https://www.zhihu.com/question/2101133816987502268",kind:"亲历记述",
+         gist:"描述上班辛苦、钱少甚至倒贴，想换成长型岗位却被本科门槛卡住的具体困境。"},
+        {title:"专科幼师在江西真实就业出路怎么样？",url:"https://zhuanlan.zhihu.com/p/2062108601028702721",kind:"行业共识",
+         gist:"以一所幼儿师范高等专科学校为样本，回应“工资两三千”“只能去私立园”“编制有希望吗”等疑问。"}
+      ]
+    },
+    finance: {
+      label:"会计 / 财务 / 经管",
+      kw:/会计|财务|审计|税务|金融|出纳|经管|电商|营销|工商/, loose:/经济|管理/,
+      items:[
+        {title:"大专会计有什么出路？",url:"https://www.zhihu.com/question/663252252",kind:"亲历记述",
+         gist:"作者第一学历大专、所学移动通信与会计无关，从工厂出纳兼人事行政起步的转入过程。"},
+        {title:"会计专业大专读了三年，找工作前我先把真账和专升本都安排上了",url:"https://zhuanlan.zhihu.com/p/2096559720756790995",kind:"亲历记述",
+         gist:"记录以商贸企业真账练习为主的学习路径：期初建账到月底出报表，小规模与一般纳税人两套账套都拆过。"},
+        {title:"一个来自逛完校招的会计大专生的自述",url:"https://zhuanlan.zhihu.com/p/2023176032463648153",kind:"亲历记述",
+         gist:"五年一贯制会计专业在校生的校招观察记录，含学制与课程结构说明。"}
+      ]
+    },
+    craft: {
+      label:"机电 / 数控 / 技能型",
+      kw:/机电|数控|机械|汽修|汽车|电气|自动化|焊接|模具|轨道|烹饪|维修|电工/,
+      items:[
+        {title:"专科生最好就业的十个专业？",url:"https://www.zhihu.com/question/647105842",kind:"行业共识",
+         gist:"列举纯手艺技术路线专业，并给出机电一体化的典型晋升节奏：新手设备维修工，约 3 年成设备技术员负责调试排故。"},
+        {title:"“毕业即上岗”的中职专业清单+就业方式",url:"https://zhuanlan.zhihu.com/p/2076726536535857082",kind:"行业共识",
+         gist:"随地铁线路扩张，城市轨道交通成为就业稳定、国企比例最高的专业之一，并列出所学课程范围。"},
+        {title:"大专毕业不等于稳就业！不想毕业即失业，这门硬核技术值得考虑",url:"https://zhuanlan.zhihu.com/p/2099502570884560425",kind:"个人推测",
+         gist:"指出大专生缺少可直接上岗的硬技能、易落入低薪高替代岗位。含培训推广立场，仅作线索。"}
+      ]
+    }
+  },
+
+  /* ---------- 真实检索来源：由 zhihu-cli search zhihu 取得 ---------- */
+  cases: {
+    explore: [
+      {title:"25届大专生毕业生求职经历",
+       url:"https://zhuanlan.zhihu.com/p/1963253025431877608",
+       kind:"亲历记述",
+       gist:"记录了专科应届从投递到入职的完整过程，含被拒与调整方向的节点。"},
+      {title:"专科的你毕业后怎么样了？",
+       url:"https://www.zhihu.com/question/268689633",
+       kind:"亲历记述",
+       gist:"大量专科毕业生的长期跟踪自述，可用于对照不同起点的实际走向。"},
+      {title:"专科生找工作是一种什么体验？",
+       url:"https://www.zhihu.com/question/56125105",
+       kind:"亲历记述",
+       gist:"集中描述学历门槛在投递环节的具体表现，适合提前校准预期。"},
+      {title:"大专毕业后2年的工作记录",
+       url:"https://zhuanlan.zhihu.com/p/2099129468950410411",
+       kind:"亲历记述",
+       gist:"按时间线记录毕业两年内的岗位变化，可见早期选择的连带影响。"}
+    ],
+    entry: [
+      {title:"施工转造价的自述",
+       url:"https://zhuanlan.zhihu.com/p/29546968296",
+       kind:"亲历记述",
+       gist:"硕士毕业入职省城国企施工单位做技术，一年多后因常驻工地流动而转造价，已三年。"},
+      {title:"施工转造价，结果是好的吗？",
+       url:"https://www.zhihu.com/question/365873976",
+       kind:"亲历记述",
+       gist:"顶岗实习进入施工单位，遇到愿意带人的师傅，记录了工地初期的真实观感与转向过程。"},
+      {title:"献给造价新人：一位转行做造价朋友的自述",
+       url:"https://zhuanlan.zhihu.com/p/346888014",
+       kind:"亲历记述",
+       gist:"海投阶段面试销售、资料员、实习造价生，描述了入行难这一环的具体卡点。"}
+    ],
+    pivot: [
+      {title:"土木工程转工程造价，有什么利弊呢？",
+       url:"https://www.zhihu.com/question/454344508",
+       kind:"亲历记述",
+       gist:"本科土木工民建方向，签约中字头央企后因商务缺人被挑去做商务，意外完成转向。"},
+      {title:"那些从土木工程转行出去的前辈，现在怎么样了？",
+       url:"https://www.zhihu.com/question/312801231",
+       kind:"亲历记述",
+       gist:"第一学历大专、非全专升本，工作 12 年从测量放线做到即将再次跳槽的长期轨迹。"},
+      {title:"我的造价师之路——一个外行转造价的心路历程",
+       url:"https://zhuanlan.zhihu.com/p/300156637",
+       kind:"亲历记述",
+       gist:"外行转造价，详述以教材为基础、视频辅助理解的备考方法与四门课的投入分配。"},
+      {title:"土木往届生：网络安全赛道还向你敞开吗",
+       url:"https://zhuanlan.zhihu.com/p/-259860870334945436",
+       kind:"个人推测",
+       gist:"主张土木转网络安全可行，并区分大专与本科可解锁的方向数量。含明显招生推广立场，仅作线索。"}
+    ],
+    anchor: [
+      {title:"那些从土木工程转行出去的前辈，现在怎么样了？",
+       url:"https://www.zhihu.com/question/312801231",
+       kind:"亲历记述",
+       gist:"含多位工作十年以上者的转向记录，可见家庭与年限对可选方案的压缩。"},
+      {title:"offer 帮选 各位大佬？",
+       url:"https://www.zhihu.com/question/2042229719014397593",
+       kind:"行业共识",
+       gist:"讨论在川居住多年者是否必须去一线，涉及本地深耕与异地迁移的权衡。"}
+    ]
+  },
+
+  /* ---------- 地域机会：真实检索取得 ---------- */
+  regional: {
+    chengdu: [
+      {title:"2026成都找工作靠谱平台推荐｜如何规避虚假岗位",
+       url:"https://zhuanlan.zhihu.com/p/2078963039903209221",
+       fact:"该文称 2026 年成都本地高校应届毕业生规模突破 25 万人，叠加往届回流，线上招聘平均虚假岗位投诉率 3.7%。"},
+      {title:"成都AI就业指南，薪资岗位全解析",
+       url:"https://zhuanlan.zhihu.com/p/2083949721668810707",
+       fact:"汇总 48 条成都在招岗位明细与投递链接，含网易雷火等用人单位。"},
+      {title:"成都，工位大拆迁！",
+       url:"https://zhuanlan.zhihu.com/p/2017305233936635767",
+       fact:"记述外包团队收缩过程，提出本轮岗位变动与 AI 替代相关，不同于此前地产、教培的行业下行。"}
+    ],
+    generic: [
+      {title:"2026.4.1｜成都最新急招大全",
+       url:"https://zhuanlan.zhihu.com/p/2022703912889644809",
+       fact:"汇总全职、兼职、日结岗位，文内自带免责声明，信息来自外部提供。"}
+    ]
+  },
+
+  /* ---------- 城市属性（公开统计的近似示意值） ---------- */
+  cities: [
+    {id:"beijing", name:"北京",   tier:"一线",   jobs:98, cost:95, x:398, y:150},
+    {id:"shanghai",name:"上海",   tier:"一线",   jobs:97, cost:97, x:458, y:226},
+    {id:"guangzhou",name:"广州",  tier:"一线",   jobs:93, cost:86, x:376, y:328},
+    {id:"shenzhen",name:"深圳",   tier:"一线",   jobs:95, cost:93, x:396, y:352},
+    {id:"hangzhou",name:"杭州",   tier:"新一线", jobs:88, cost:84, x:444, y:250},
+    {id:"chengdu", name:"成都",   tier:"新一线", jobs:82, cost:62, x:280, y:254},
+    {id:"wuhan",   name:"武汉",   tier:"新一线", jobs:81, cost:64, x:380, y:243},
+    {id:"xian",    name:"西安",   tier:"新一线", jobs:76, cost:58, x:318, y:196},
+    {id:"chongqing",name:"重庆",  tier:"新一线", jobs:78, cost:60, x:306, y:272},
+    {id:"nanjing", name:"南京",   tier:"新一线", jobs:84, cost:76, x:430, y:222},
+    {id:"qingdao", name:"青岛",   tier:"二线",   jobs:70, cost:63, x:424, y:181},
+    {id:"changsha",name:"长沙",   tier:"二线",   jobs:72, cost:57, x:372, y:268},
+    {id:"hefei",   name:"合肥",   tier:"二线",   jobs:66, cost:56, x:414, y:246},
+    {id:"kunming", name:"昆明",   tier:"二线",   jobs:58, cost:52, x:272, y:306},
+    {id:"shenyang",name:"沈阳",   tier:"二线",   jobs:60, cost:50, x:452, y:120},
+    {id:"lanzhou", name:"兰州",   tier:"三线",   jobs:44, cost:42, x:268, y:182},
+    {id:"mianyang",name:"绵阳",   tier:"三线",   jobs:40, cost:38, x:268, y:226},
+    {id:"nanchong",name:"南充",   tier:"三线",   jobs:34, cost:34, x:300, y:232},
+    {id:"ganzhou", name:"赣州",   tier:"三线",   jobs:36, cost:38, x:402, y:290},
+    {id:"zunyi",   name:"遵义",   tier:"四线",   jobs:28, cost:32, x:302, y:294},
+    {id:"yulin",   name:"榆林",   tier:"四线",   jobs:26, cost:33, x:324, y:170},
+    {id:"county",  name:"县域乡镇",tier:"县域",  jobs:12, cost:22, x:340, y:308}
+  ]
+};
+</script>
+
+<script>
+(function(){
+  "use strict";
+  var root=document.getElementById("yutu2");
+  if(!root) return;
+  var $=function(id){return root.querySelector("#"+id);};
+  var D=window.YUTU_DATA;
+  if(!D){ root.innerHTML='<p style="padding:20px">数据未加载。</p>'; return; }
+
+  /* ---------- 维度与相似度 ---------- */
+  var DIMS=[
+    {k:"place",  n:"地理位置", lo:"县域乡镇", hi:"一线城市", min:0,max:100,w:1.00,derived:true},
+    {k:"econ",   n:"经济压力", lo:"完全没有负担", hi:"必须立刻赚钱", min:0,max:100,w:1.25},
+    {k:"family", n:"家庭负担", lo:"无赡养抚养", hi:"责任很重", min:0,max:100,w:1.15},
+    {k:"age",    n:"年龄", lo:"18 岁", hi:"45 岁", min:18,max:45,w:0.85,unit:"岁",derived:true},
+    {k:"cycle",  n:"行业周期", lo:"收缩期", hi:"扩张期", min:0,max:100,w:0.90},
+    {k:"inertia",n:"认知惯性", lo:"稳健型", hi:"探索型", min:0,max:100,w:1.05},
+    {k:"history",n:"体验历史", lo:"尚未开始", hi:"大量积累", min:0,max:100,w:0.80}
+  ];
+  function norm(k,v){ return k==="age"?(v-18)/27*100:v; }
+  function vec(s){ return DIMS.map(function(d){return norm(d.k,s[d.k]);}); }
+  function cosSim(a,b){
+    var dot=0,na=0,nb=0;
+    for(var i=0;i<a.length;i++){
+      var w=DIMS[i].w, x=(a[i]-50)/50*w, y=(b[i]-50)/50*w;
+      dot+=x*y; na+=x*x; nb+=y*y;
+    }
+    if(na<1e-9||nb<1e-9) return 0;
+    return dot/Math.sqrt(na*nb);
+  }
+  function mag(s){
+    var v=vec(s),t=0;
+    for(var i=0;i<v.length;i++){ var x=(v[i]-50)/50*DIMS[i].w; t+=x*x; }
+    return Math.sqrt(t);
+  }
+
+  var URBAN={core:{n:"主城区",adj:0},suburb:{n:"近郊/新区",adj:-6},county:{n:"下辖县镇",adj:-14}};
+  function cityById(id){
+    for(var i=0;i<D.cities.length;i++) if(D.cities[i].id===id) return D.cities[i];
+    return null;
+  }
+  function placeFrom(id,urban){
+    var c=cityById(id); if(!c) return 50;
+    return Math.max(0,Math.min(100,Math.round(c.jobs*0.7+c.cost*0.3+(URBAN[urban]||URBAN.core).adj)));
+  }
+
+  /* ---------- 环境原型节点 ---------- */
+  /* T() 构造六体体验任务：id/六体分类/内容/经验出处/前置条件/风险提示/完成标准 */
+  function T(id,type,title,src,pre,risk,std){
+    return {id:id,type:type,title:title,src:src,pre:pre,risk:risk,std:std};
+  }
+  var NODES=[
+    {id:"n1",name:"川内专科在读 · 土木相关 · 经济一般",hue:"#1f6fb2",
+     s:{place:28,econ:68,family:55,age:22,cycle:25,inertia:55,history:18},
+     pains:["学的土木但不确定要不要进工地，怕一进去就被路径锁死","家里能支撑到毕业，之后必须自己赚钱，试错窗口只有一年左右","专升本、考证、直接就业三条路同时压过来"],
+     tasks:[
+       T("n1t1","营利组织体验","摊开本专业四类下游岗位的真实日常，各写 200 字","社区亲历记述 × 6 篇，含 2 篇反向意见","能上网检索，预留 2 周","容易被单一高赞回答带偏，要求每类岗位至少两个来源","四类岗位各能说清一天干什么、代价是什么"),
+       T("n1t2","团队体验","约访 2 位毕业 1–3 年的同校师兄","同处境者复盘 × 3 条","已找到联系渠道","对方经验仅代表其个人路径，不作为普遍结论","拿到两份带具体数字的回答记录"),
+       T("n1t3","创新创业体验","用 4 周自学造价软件并完成一份小体量算量练习","行业共识类回答 × 4 篇","每周可投入 6 小时以上","4 周不足以判断长期适配，只用于排除明显不合","交付一份可被人检查的算量成果"),
+       T("n1t4","亲情体验","和家里谈一次：试错窗口到底有多长","—","选一个双方都不急的时间","谈话可能触发期待压力，允许中止","双方对时间与底线有一致说法")
+     ]},
+    {id:"n2",name:"一线城市本科应届 · 无家庭负担",hue:"#7a4fa0",
+     s:{place:92,econ:35,family:18,age:25,cycle:62,inertia:78,history:35},
+     pains:["投递量大但面试转化低，不清楚卡在哪一环","岗位名称相近但实际工作差异很大","同辈比较带来的焦虑超过了信息本身的价值"],
+     tasks:[
+       T("n2t1","营利组织体验","拆解 20 份目标 JD，统计高频能力项","岗位要求公开信息 × 20 条","已确定 2–3 个目标方向","JD 常含理想化描述，需与在职者校准","得到一张排序后的能力项清单"),
+       T("n2t2","创新创业体验","针对高频能力项做一个可展示的小项目","亲历记述 × 5 篇","能连续投入 3 周","项目可能偏离真实业务场景","项目能在 10 分钟内讲清问题与取舍"),
+       T("n2t3","团队体验","约访 2 位在职一年内的从业者","同处境者复盘 × 4 条","已有可触达渠道","单一公司经验不能代表整个行业","记录两份 JD 与真实工作的差异点")
+     ]},
+    {id:"n3",name:"二线在职三年 · 房贷初期 · 考虑转行",hue:"#a9762f",
+     s:{place:62,econ:72,family:62,age:29,cycle:45,inertia:48,history:52},
+     pains:["房贷让脱产几乎不可行，只能在下班后挤时间","现有经验在目标行业被折价，担心从零开始","家里不反对也不支持，决策缺少外部确认"],
+     tasks:[
+       T("n3t1","营利组织体验","做一次可迁移能力盘点，标出交叉地带","亲历记述 × 7 篇，含 3 篇失败复盘","能拿到现岗位的工作记录","容易高估自己经验的可迁移度","列出 3 个交叉岗位与各自缺口"),
+       T("n3t2","创新创业体验","不离职，用 8 周做一次小规模实做验证","行业共识 × 5 篇","每周 8 小时以上且不影响本职","业余投入强度不等于全职状态","产出一份可对外说明的阶段成果"),
+       T("n3t3","亲情体验","算清最低现金流底线并与家人对齐","—","掌握完整收支数据","数字可能引发焦虑，允许分次完成","得到一个双方认可的可承受周期")
+     ]},
+    {id:"n4",name:"县域体制内 · 稳定但看不到上限",hue:"#4f7a58",
+     s:{place:15,econ:38,family:58,age:31,cycle:50,inertia:28,history:40},
+     pains:["本地岗位选择少，离开即意味着迁移","稳定带来的沉没成本让任何变动都显得昂贵","缺少同处境参照，身边人普遍不理解探索"],
+     tasks:[
+       T("n4t1","非营利组织体验","参与一次本地公共项目，测试自己的真实动力","亲历记述 × 4 篇","周末可安排","短期参与难以判断长期意愿","完成一次有交付物的协作"),
+       T("n4t2","全球事务体验","核实目标方向的远程切入可行性","岗位要求公开信息 × 8 条","能稳定上网","远程机会描述常夸大，需看用工合同形式","给出可行/不可行的明确结论与依据"),
+       T("n4t3","团队体验","做一次目标城市的短期实地走访","同处境者复盘 × 2 条","能请出 3 天假","三天观察不足以代表长期生活","记录住行成本与岗位密度的实际观察")
+     ]},
+    {id:"n5",name:"三线已婚育 · 时间碎片 · 想做副业",hue:"#b0527a",
+     s:{place:42,econ:65,family:85,age:34,cycle:48,inertia:58,history:45},
+     pains:["可支配时间以半小时为单位，长链条计划无法执行","副业信息噪声极大，难辨哪些需要前期投入","一旦占用家庭时间，推进就会被迫中断"],
+     tasks:[
+       T("n5t1","亲情体验","如实记录两周可支配时间，得到真实预算","—","随手可记","记录本身会轻微改变行为","得到一张按半小时切分的时间表"),
+       T("n5t2","营利组织体验","筛出 3 个可在碎片时间闭环的最小单元","行业共识 × 6 篇，含 2 篇成本披露","已有时间预算表","“轻松上手”类描述通常省略前期投入","每个单元标出首次产出所需时间"),
+       T("n5t3","创新创业体验","用一个月跑完一次最小闭环","同处境者复盘 × 3 条","家庭已知情并同意","一次闭环不能证明可持续","完成一次从投入到产出的完整记录")
+     ]},
+    {id:"n6",name:"新一线硕士在读 · 家里可支持脱产",hue:"#2f7d8c",
+     s:{place:78,econ:22,family:25,age:24,cycle:68,inertia:82,history:30},
+     pains:["选择过多难以收敛，容易在探索中消耗掉窗口期","学术路径与产业路径的切换成本判断不清","支持条件良好，缺少真实约束来校准判断"],
+     tasks:[
+       T("n6t1","创新创业体验","为三个候选方向各设定 6 周验证窗口","亲历记述 × 6 篇","已初步列出候选方向","并行探索容易全部半途而废","三个方向各有明确的到期判断标准"),
+       T("n6t2","团队体验","在学术与产业各访谈一位已做出选择的人","同处境者复盘 × 4 条","已有联系渠道","已做选择者倾向为自己的选择辩护","记录两种路径各自的放弃成本"),
+       T("n6t3","全球事务体验","完成一次对外公开交付，接受外部反馈","行业共识 × 3 篇","方向已收敛到一个","外部反馈可能与自我评价冲突","拿到至少 3 条具体的外部意见")
+     ]},
+    {id:"n7",name:"川内专科 → 成都造价员 · 已走通",hue:"#4f7a58",
+     s:{place:55,econ:52,family:50,age:24,cycle:32,inertia:50,history:72},
+     pains:["从专科到成都落脚，最卡的是前三个月的现金流","造价方向上手快，但天花板需要更早规划","同批同学里一半转行，缺少持续的同处境参照"],
+     tasks:[
+       T("n7t1","营利组织体验","把算量软件练到能独立完成一份完整出量","贡献者本人复盘 × 1 条（已升级为公共节点）","能拿到练习图纸","软件熟练不等于能承担工程责任","独立完成一份可被复核的出量"),
+       T("n7t2","团队体验","找一份有师傅带的岗位，优先学习密度","同处境者复盘 × 3 条","已有可独立出量的作品","低薪起点需要家庭现金流支撑","入职并明确带教关系")
+     ]}
+  ];
+
+  /* ---------- 状态 ---------- */
+  var ST={
+    city:"nanchong", urban:"core", identity:"study", field:"土木",
+    s:{place:34,econ:68,family:55,age:22,cycle:25,inertia:55,history:18},
+    step:1, maxStep:1, onlyFeasible:false, pick:null,
+    tasks:[], loadedNode:null, victories:[], pool:[], filter:"all", seq:0, sub:1,
+    coords:null, geoState:"idle", geoError:null,
+    spin:true, lon:0, targetLon:0, raf:null, gmode:"geo", flowT:0
+  };
+
+  /* 初始向量快照：重新填写时复位（闭环漂移会改写 ST.s） */
+  var INIT={};
+  DIMS.forEach(function(d){ INIT[d.k]=ST.s[d.k]; });
+  var BASE_NODES=NODES.length;
+
+  /* ---------- 阶段判定：身份优先，再由年龄与体验积累细分 ---------- */
+  function currentStage(){
+    var age=ST.s.age, work=ST.identity==="work", hist=ST.s.history;
+    /* 在校/待业者一律处于探索期：尚未进入职场，不按年龄推进阶段 */
+    if(!work) return D.stages[0];
+    var cands=D.stages.filter(function(st){
+      return st.id!=="explore"&&age>=st.ageMin&&age<=st.ageMax;
+    });
+    if(!cands.length){
+      cands=[age<D.stages[1].ageMin?D.stages[1]:D.stages[D.stages.length-1]];
+    }
+    /* 重叠年龄段取更靠后的阶段，再按体验积累回调 */
+    var pick=cands[cands.length-1];
+    if(hist>=65&&pick.id==="entry") pick=D.stages[2];
+    if(hist<=25&&pick.id==="pivot"&&age<=28) pick=D.stages[1];
+    return pick;
+  }
+  function stageReason(){
+    var st=currentStage(), work=ST.identity==="work";
+    return "年龄 "+ST.s.age+" 岁 ｜ "+(work?"已工作":"在校/待业")+" ｜ 体验积累 "+ST.s.history+"/100";
+  }
+
+  /* ---------- 三维地球：等距方位投影 ---------- */
+  /* 城市近似经纬度，仅用于定位示意 */
+  var GEO={
+    beijing:[116.4,39.9], shanghai:[121.5,31.2], guangzhou:[113.3,23.1], shenzhen:[114.1,22.5],
+    hangzhou:[120.2,30.3], chengdu:[104.1,30.7], wuhan:[114.3,30.6], xian:[108.9,34.3],
+    chongqing:[106.6,29.6], nanjing:[118.8,32.1], qingdao:[120.4,36.1], changsha:[113.0,28.2],
+    hefei:[117.3,31.8], kunming:[102.7,25.0], shenyang:[123.4,41.8], lanzhou:[103.8,36.1],
+    mianyang:[104.7,31.5], nanchong:[106.1,30.8], ganzhou:[114.9,25.8], zunyi:[106.9,27.7],
+    yulin:[109.7,38.3], county:[107.5,29.5]
+  };
+  /* 简化海岸线轮廓（经纬度折线），仅为地球表面提供陆地参照，不用于地理测量 */
+  var LANDS=[
+    /* 欧亚大陆主体 */
+    [[26,70],[33,69],[41,67],[45,68],[55,69],[60,71],[69,73],[75,73],[82,72],[90,76],[100,77],
+     [106,77],[113,74],[120,73],[128,73],[136,72],[142,72],[150,70],[159,70],[162,68],[170,69],
+     [179,69],[180,66],[172,63],[163,60],[157,57],[156,52],[150,47],[143,44],[140,42],[135,43],
+     [131,43],[130,42],[128,41],[125,40],[122,40],[121,39],[119,39],[118,38],[119,37],[122,37],
+     [122,35],[120,34],[121,32],[122,31],[121,29],[120,28],[119,26],[117,24],[114,23],[113,22],
+     [111,21],[110,21],[108,22],[106,20],[107,18],[109,15],[108,13],[106,11],[104,9],[101,10],
+     [100,13],[99,16],[97,17],[94,18],[92,21],[89,22],[87,21],[84,21],[80,16],[77,8],[74,13],
+     [73,19],[70,21],[67,24],[64,25],[61,25],[57,27],[53,28],[50,30],[48,34],[44,38],[40,40],
+     [36,41],[32,41],[29,41],[26,38],[23,38],[19,40],[16,38],[13,38],[16,41],[14,43],[12,44],
+     [8,44],[4,43],[0,42],[-3,37],[-6,37],[-9,38],[-9,43],[-4,44],[-2,48],[2,51],[5,53],
+     [8,54],[10,57],[13,56],[18,59],[22,60],[21,63],[21,65],[25,68],[26,70]],
+    /* 中国东南沿海与渤海湾细化 */
+    [[117,41],[119,40],[122,39],[122,37],[120,37],[119,38],[117,38],[117,41]],
+    /* 印度次大陆（与欧亚主体相接，避免视觉断裂） */
+    [[68,24],[71,21],[73,16],[76,9],[80,10],[80,16],[84,19],[87,21],[89,22],[88,26],[85,27],
+     [80,28],[76,31],[72,32],[69,28],[68,24]],
+    /* 南亚—东南亚连接带 */
+    [[88,26],[92,24],[95,21],[97,19],[98,17],[100,20],[103,22],[105,23],[101,25],[97,26],
+     [93,27],[89,27],[88,26]],
+    /* 中南半岛 */
+    [[98,17],[101,14],[104,10],[106,9],[109,12],[108,16],[106,18],[103,19],[100,20],[98,17]],
+    /* 日本 */
+    [[130,31],[132,34],[136,35],[139,35],[141,39],[141,43],[145,44],[144,42],[140,38],[137,37],
+     [135,34],[131,33],[130,31]],
+    /* 朝鲜半岛 */
+    [[126,38],[128,39],[129,38],[129,35],[127,34],[126,36],[126,38]],
+    /* 台湾 */
+    [[120,25],[122,25],[121,22],[120,23],[120,25]],
+    /* 海南 */
+    [[109,20],[111,20],[110,18],[109,19],[109,20]],
+    /* 东南亚岛群 */
+    [[95,6],[99,4],[103,2],[106,-3],[110,-7],[114,-8],[112,-7],[106,-6],[102,-2],[98,2],[95,6]],
+    [[109,2],[113,3],[117,4],[119,1],[117,-3],[113,-4],[110,-3],[109,2]],
+    [[120,18],[122,16],[124,13],[126,9],[126,6],[123,7],[121,12],[120,15],[120,18]],
+    /* 斯里兰卡 */
+    [[80,9],[82,8],[81,6],[80,7],[80,9]],
+    /* 非洲 */
+    [[10,37],[15,36],[20,33],[25,32],[32,31],[35,28],[35,24],[38,18],[39,15],[43,11],[47,12],
+     [51,12],[50,8],[48,5],[44,1],[41,-2],[40,-7],[40,-11],[37,-16],[35,-20],[32,-26],[29,-31],
+     [26,-34],[22,-34],[18,-34],[15,-28],[14,-23],[12,-18],[12,-15],[11,-8],[9,-1],[9,4],
+     [6,5],[3,6],[0,5],[-6,5],[-10,7],[-13,9],[-16,12],[-17,15],[-16,19],[-16,22],[-14,25],
+     [-10,28],[-10,32],[-6,35],[0,36],[5,37],[10,37]],
+    /* 北美 */
+    [[-168,66],[-162,70],[-157,71],[-148,70],[-140,70],[-132,70],[-125,70],[-115,69],[-110,68],
+     [-100,69],[-95,68],[-88,66],[-82,63],[-78,58],[-70,60],[-65,60],[-60,55],[-57,52],[-62,48],
+     [-66,45],[-70,43],[-71,41],[-74,39],[-76,35],[-79,32],[-81,25],[-83,28],[-87,30],[-90,29],
+     [-94,29],[-97,26],[-100,25],[-105,22],[-108,23],[-110,24],[-113,29],[-115,32],[-118,34],
+     [-122,37],[-124,42],[-125,48],[-128,51],[-131,55],[-136,58],[-140,60],[-146,60],[-152,59],
+     [-158,57],[-162,64],[-168,66]],
+    /* 南美 */
+    [[-81,-4],[-79,0],[-76,2],[-72,8],[-70,10],[-65,10],[-62,10],[-57,6],[-52,4],[-48,0],
+     [-44,-3],[-38,-6],[-35,-9],[-38,-13],[-39,-18],[-42,-22],[-48,-25],[-51,-30],[-54,-34],
+     [-58,-38],[-62,-40],[-64,-43],[-66,-45],[-68,-50],[-70,-53],[-74,-50],[-74,-45],[-73,-42],
+     [-73,-37],[-72,-32],[-71,-26],[-70,-20],[-72,-17],[-76,-14],[-79,-8],[-81,-4]],
+    /* 澳洲 */
+    [[113,-22],[115,-20],[122,-18],[126,-14],[130,-12],[133,-12],[137,-12],[140,-17],[142,-11],
+     [146,-18],[149,-21],[150,-25],[153,-28],[153,-32],[150,-37],[146,-39],[143,-39],[140,-38],
+     [136,-35],[132,-32],[129,-32],[125,-33],[121,-34],[117,-35],[115,-34],[113,-26],[113,-22]],
+    /* 新西兰 */
+    [[173,-35],[176,-37],[178,-38],[177,-40],[174,-41],[172,-43],[168,-45],[167,-46],[169,-45],
+     [171,-42],[173,-39],[173,-35]],
+    /* 格陵兰 */
+    [[-45,60],[-38,65],[-30,68],[-22,70],[-18,72],[-20,76],[-25,79],[-30,82],[-40,83],[-50,82],
+     [-58,80],[-60,76],[-55,72],[-52,68],[-50,65],[-47,62],[-45,60]]
+  ];
+
+  /* ---------- 山脉：脊线 + 强度（0–1），用于绘制山形与高程阴影 ---------- */
+  var RANGES=[
+    {name:"喜马拉雅",  h:1.00, line:[[74,35],[77,34],[81,31],[85,28],[88,27],[91,28],[95,29]]},
+    {name:"昆仑",      h:0.82, line:[[76,36],[82,36],[88,35],[94,36],[98,36]]},
+    {name:"天山",      h:0.78, line:[[75,42],[80,42],[85,43],[89,43]]},
+    {name:"横断山",    h:0.80, line:[[98,31],[99,28],[100,26],[101,24]]},
+    {name:"秦岭",      h:0.62, line:[[105,34],[108,34],[111,34],[113,33]]},
+    {name:"大巴山",    h:0.55, line:[[106,32],[109,32],[111,31]]},
+    {name:"太行",      h:0.55, line:[[113,36],[113,38],[114,40]]},
+    {name:"大兴安岭",  h:0.58, line:[[121,49],[123,46],[124,43]]},
+    {name:"长白",      h:0.52, line:[[127,42],[128.6,42],[128,41.6]]},
+    {name:"武夷",      h:0.48, line:[[116.6,27],[117.2,26],[117.6,25.4]]},
+    {name:"阿尔泰",    h:0.66, line:[[86,48],[89,48],[92,47]]},
+    {name:"阿尔卑斯",  h:0.70, line:[[6,45],[10,46],[14,47]]},
+    {name:"高加索",    h:0.68, line:[[42,43],[45,42],[48,42]]},
+    {name:"乌拉尔",    h:0.52, line:[[59,66],[59,60],[58,55]]},
+    {name:"扎格罗斯",  h:0.62, line:[[49,32],[51,31],[54,28.5]]},
+    {name:"落基",      h:0.76, line:[[-116,52],[-113,47],[-110,42],[-106,38],[-105,33]]},
+    {name:"内华达",    h:0.60, line:[[-120,40],[-118,36],[-116,33]]},
+    {name:"阿巴拉契亚",h:0.45, line:[[-78,42],[-80,38],[-83,35]]},
+    {name:"安第斯",    h:0.90, line:[[-71,5],[-75,-5],[-71,-16],[-69,-24],[-70,-33],[-71,-42]]},
+    {name:"东非高地",  h:0.55, line:[[36,0],[37,-5],[34,-10]]},
+    {name:"阿特拉斯",  h:0.50, line:[[-6,32],[0,33],[6,35]]},
+    {name:"大分水岭",  h:0.48, line:[[146,-20],[150,-28],[147,-36]]}
+  ];
+
+  /* ---------- 网络模式：点阵陆地 ---------- */
+  /* 经纬网格采样，命中陆地多边形的格点才生成；结果缓存，避免每帧重算 */
+  var DOTS=null;
+  function pointInPoly(lon,lat,poly){
+    var n=poly.length, inside=false, j=n-1;
+    for(var i=0;i<n;i++){
+      var xi=poly[i][0], yi=poly[i][1], xj=poly[j][0], yj=poly[j][1];
+      if(((yi>lat)!==(yj>lat)) &&
+         (lon < (xj-xi)*(lat-yi)/((yj-yi)||1e-12)+xi)) inside=!inside;
+      j=i;
+    }
+    return inside;
+  }
+  function buildDots(){
+    /* 按纬度等步长采样会在球体边缘把纬线压成横条。
+       改用斐波那契球面均匀采样，再筛出落在陆地内的点，分布无方向性。 */
+    var N=5200, out=[];
+    var ga=Math.PI*(3-Math.sqrt(5));
+    for(var i=0;i<N;i++){
+      var y=1-(i/(N-1))*2;
+      var rad=Math.sqrt(Math.max(0,1-y*y));
+      var th=ga*i;
+      var lat=Math.asin(y)*180/Math.PI;
+      if(lat<-60||lat>80) continue;
+      var lon=Math.atan2(Math.sin(th)*rad,Math.cos(th)*rad)*180/Math.PI;
+      for(var k=0;k<LANDS.length;k++){
+        if(pointInPoly(lon,lat,LANDS[k])){ out.push([lon,lat]); break; }
+      }
+    }
+    return out;
+  }
+  function drawDotLand(ctx){
+    if(!DOTS) DOTS=buildDots();
+    for(var i=0;i<DOTS.length;i++){
+      var p=proj3(DOTS[i][0],DOTS[i][1]);
+      if(!p.front||p.z<0.2) continue;
+      var fade=Math.min(1,(p.z-0.2)/0.42);
+      var r=0.9+p.z*1.1;
+      ctx.beginPath(); ctx.arc(p.x,p.y,r,0,Math.PI*2);
+      ctx.fillStyle="rgba(126,212,196,"+(0.3+fade*0.62).toFixed(3)+")";
+      ctx.fill();
+    }
+  }
+
+  /* ---------- 网络模式：飞线 ---------- */
+  /* 语义：从你的城市连向可迁移的目标城市。
+     近邻（AREA_SPAN 内）全部连上；再补若干跨区域、岗位密度更高的城市，
+     否则同城市群跨度仅 2–3 度，弧线在球面上不足 10px，看不出是弧。
+     线宽表示两地岗位密度差，流光方向由当前城市指向目标城市。 */
+  function flightTargets(){
+    var ll=GEO[ST.city], me=cityById(ST.city);
+    if(!ll||!me) return [];
+    var near=[], far=[];
+    D.cities.forEach(function(c){
+      var g=GEO[c.id]; if(!g||c.id===ST.city) return;
+      var d=Math.hypot((g[0]-ll[0])*Math.cos(ll[1]*Math.PI/180), g[1]-ll[1]);
+      var item={city:c, diff:c.jobs-me.jobs, dist:d};
+      if(d<=AREA_SPAN) near.push(item);
+      else far.push(item);
+    });
+    /* 跨区域候选按岗位密度降序，取前 4 个，保证弧线有足够跨度 */
+    far.sort(function(a,b){ return b.city.jobs-a.city.jobs; });
+    return near.concat(far.slice(0,4));
+  }
+  /* 大圆插值，返回球面三维坐标（不抬升）。
+     轴序与 toXYZ 一致：x=cos(lat)sin(lon)，y=sin(lat)，z=cos(lat)cos(lon) */
+  function arcPoint(a,b,t){
+    var la=a[1]*Math.PI/180, lo=a[0]*Math.PI/180;
+    var lb=b[1]*Math.PI/180, lo2=b[0]*Math.PI/180;
+    var v1=[Math.cos(la)*Math.sin(lo),Math.sin(la),Math.cos(la)*Math.cos(lo)];
+    var v2=[Math.cos(lb)*Math.sin(lo2),Math.sin(lb),Math.cos(lb)*Math.cos(lo2)];
+    var x=v1[0]+(v2[0]-v1[0])*t, y=v1[1]+(v2[1]-v1[1])*t, z=v1[2]+(v2[2]-v1[2])*t;
+    var len=Math.sqrt(x*x+y*y+z*z)||1;
+    return {x:x/len, y:y/len, z:z/len};
+  }
+  /* 按当前自转角绕 y 轴旋转后正交投影到画布 */
+  function projVec(v){
+    var a=-ST.lon*Math.PI/180;
+    var ca=Math.cos(a), sa=Math.sin(a);
+    var x=v.x*ca + v.z*sa;
+    var z=-v.x*sa + v.z*ca;
+    return {x:GL.cx+x*GL.R, y:GL.cy-v.y*GL.R, depth:z};
+  }
+  function drawFlights(ctx){
+    var ll=GEO[ST.city]; if(!ll) return;
+    var list=flightTargets();
+    list.forEach(function(item,idx){
+      var g=GEO[item.city.id]; if(!g) return;
+      /* 先投影两端，再在屏幕平面内沿两端连线的法向抬起，
+         这样无论弧线正对还是侧对观察者，抬升都可见 */
+      var e0=projVec(arcPoint(ll,g,0));
+      var e1=projVec(arcPoint(ll,g,1));
+      var vx=e1.x-e0.x, vy=e1.y-e0.y;
+      var vlen=Math.hypot(vx,vy)||1;
+      /* 弧高按屏幕跨度的固定比例，并设上下限：
+         比例过大会让近距离城市的弧线竖成发卡，过小则看不出拱起 */
+      /* 同源多条线若法向幅度相同会叠成一团，按序号轻微错开 */
+      var spread=1+(idx%3)*0.26;
+      var lift=(Math.max(20,Math.min(70,vlen*0.38))+Math.abs(item.diff)*0.12)*spread;
+      /* 法向统一朝向远离球心的一侧，避免弧线扎进球体 */
+      var nx=-vy/vlen, ny=vx/vlen;
+      var mx=(e0.x+e1.x)/2, my=(e0.y+e1.y)/2;
+      if((mx-GL.cx)*nx+(my-GL.cy)*ny<0){ nx=-nx; ny=-ny; }
+      /* 采样弧线，仅保留可见半球的连续段 */
+      var segs=[], cur=[];
+      for(var s=0;s<=48;s++){
+        var t=s/48;
+        var ap=arcPoint(ll,g,t);
+        var p=projVec(ap);
+        var bump=lift*Math.sin(Math.PI*t);
+        if(p.depth>-0.1){ cur.push({x:p.x+nx*bump, y:p.y+ny*bump, t:t}); }
+        else if(cur.length){ segs.push(cur); cur=[]; }
+      }
+      if(cur.length) segs.push(cur);
+      if(!segs.length) return;
+
+      var up=item.diff>0;
+      var base=up?"126,212,196":"196,166,120";
+      var w=1.8+Math.min(2.4,Math.abs(item.diff)/100*3.4);
+      segs.forEach(function(seg){
+        if(seg.length<2) return;
+        ctx.beginPath();
+        ctx.moveTo(seg[0].x,seg[0].y);
+        for(var i=1;i<seg.length;i++) ctx.lineTo(seg[i].x,seg[i].y);
+        ctx.strokeStyle="rgba("+base+",.3)"; ctx.lineWidth=w+1.6; ctx.stroke();
+        ctx.strokeStyle="rgba("+base+",.78)"; ctx.lineWidth=w; ctx.stroke();
+      });
+
+      /* 流光：沿弧线按时间推进的一段高亮，相位按序号错开。
+         head 从 -span 起算并循环，保证流光能完整扫过弧线首尾 */
+      var span=0.22;
+      var head=((ST.flowT*0.3+idx*0.27)%(1+span))-span;
+      segs.forEach(function(seg){
+        var pts=seg.filter(function(q){
+          return q.t>=head&&q.t<=head+span;
+        });
+        if(pts.length<2) return;
+        ctx.beginPath();
+        ctx.moveTo(pts[0].x,pts[0].y);
+        for(var i=1;i<pts.length;i++) ctx.lineTo(pts[i].x,pts[i].y);
+        ctx.strokeStyle="rgba(255,255,255,.55)"; ctx.lineWidth=w*1.8; ctx.stroke();
+        ctx.strokeStyle="rgba(255,255,255,.98)"; ctx.lineWidth=w*0.9; ctx.stroke();
+      });
+
+      /* 目标端光点 */
+      var endP=proj3(g[0],g[1]);
+      if(endP.front){
+        var pulse=0.5+0.5*Math.sin(ST.flowT*2.4+idx);
+        ctx.beginPath(); ctx.arc(endP.x,endP.y,3.2+pulse*2.4,0,Math.PI*2);
+        ctx.fillStyle="rgba("+base+","+(0.16+pulse*0.22).toFixed(3)+")"; ctx.fill();
+        ctx.beginPath(); ctx.arc(endP.x,endP.y,2.4,0,Math.PI*2);
+        ctx.fillStyle="rgba("+base+",.95)"; ctx.fill();
+      }
+    });
+  }
+
+  /* 山脉绘制：沿脊线叠加锯齿山形，强度决定高度与颜色。
+     整体用陆地多边形裁剪，保证山形不会溢出到海面。 */
+  function drawRanges(ctx){
+    ctx.save();
+    /* 裁剪路径 = 可见半球内的全部陆地。
+       跨越球体边界时折线会断开，必须按连续段分别闭合，否则裁剪区会缺失。 */
+    ctx.beginPath();
+    LANDS.forEach(function(poly){
+      var seg=[];
+      var flush=function(){
+        if(seg.length>2){
+          ctx.moveTo(seg[0].x,seg[0].y);
+          for(var k=1;k<seg.length;k++) ctx.lineTo(seg[k].x,seg[k].y);
+          ctx.closePath();
+        }
+        seg=[];
+      };
+      poly.forEach(function(pt){
+        var p=proj3(pt[0],pt[1]);
+        if(p.front) seg.push(p); else flush();
+      });
+      flush();
+    });
+    ctx.clip("nonzero");
+    RANGES.forEach(function(rg){
+      var pts=rg.line.map(function(p){ return proj3(p[0],p[1]); });
+      /* 只在可见半球绘制，且按 z 值淡出 */
+      for(var i=0;i<pts.length-1;i++){
+        var a=pts[i], b=pts[i+1];
+        if(!a.front||!b.front) continue;
+        var z=(a.z+b.z)/2, fade=Math.max(0,Math.min(1,(z-0.12)/0.5));
+        if(fade<=0.02) continue;
+        var dx=b.x-a.x, dy=b.y-a.y, len=Math.hypot(dx,dy);
+        if(len<1) continue;
+        var steps=Math.max(2,Math.round(len/9));
+        var peak=(8+rg.h*16)*Math.max(.6,z);
+        /* 山体底色：先铺一条加宽的山麓带，使山脉在陆地底色上可分辨 */
+        ctx.beginPath();
+        ctx.moveTo(a.x,a.y-peak*0.22);
+        ctx.lineTo(b.x,b.y-peak*0.22);
+        ctx.lineTo(b.x,b.y+peak*0.3);
+        ctx.lineTo(a.x,a.y+peak*0.3);
+        ctx.closePath();
+        ctx.fillStyle="rgba(86,70,48,"+(0.55*fade)+")"; ctx.fill();
+        ctx.beginPath();
+        ctx.moveTo(a.x,a.y);
+        for(var s=1;s<=steps;s++){
+          var t0=(s-0.5)/steps, t1=s/steps;
+          /* 锯齿：中点抬升形成尖峰，端点回到脊线 */
+          var mx=a.x+dx*t0, my=a.y+dy*t0;
+          var jitter=0.62+0.72*(Math.sin(s*1.7+rg.h*11)*0.5+0.5);
+          ctx.lineTo(mx,my-peak*jitter);
+          ctx.lineTo(a.x+dx*t1,a.y+dy*t1);
+        }
+        ctx.closePath();
+        /* 高海拔偏灰白（雪线），中等偏棕 */
+        var snow=rg.h>=0.72;
+        ctx.fillStyle=snow?"rgba(238,244,249,"+(0.92*fade)+")"
+                          :"rgba(172,149,110,"+(0.9*fade)+")";
+        ctx.fill();
+        ctx.strokeStyle=snow?"rgba(255,255,255,"+(0.95*fade)+")"
+                            :"rgba(214,192,150,"+(0.85*fade)+")";
+        ctx.lineWidth=1.2; ctx.stroke();
+      }
+    });
+    ctx.restore();
+  }
+
+  var GL={cx:260,cy:205,R:160};
+  /* 区域半径（度）：约对应一个城市群的尺度，地球高亮圈与区域统计共用 */
+  var AREA_SPAN=2.5;
+  function toXYZ(lon,lat){
+    var a=(lon-ST.lon)*Math.PI/180, b=lat*Math.PI/180;
+    return {x:Math.cos(b)*Math.sin(a), y:Math.sin(b), z:Math.cos(b)*Math.cos(a)};
+  }
+  function proj3(lon,lat){
+    var p=toXYZ(lon,lat);
+    return {x:GL.cx+p.x*GL.R, y:GL.cy-p.y*GL.R, z:p.z, front:p.z>0};
+  }
+  function drawGlobe(){
+    var cv=$("y-globe"); if(!cv) return;
+    var ctx=cv.getContext("2d");
+    var W=cv.width,H=cv.height;
+    var net=ST.gmode==="net";
+    ctx.clearRect(0,0,W,H);
+    ctx.fillStyle=net?"#070d14":"#0e1a24"; ctx.fillRect(0,0,W,H);
+
+    /* 海洋球体：网络模式下压暗，让点阵与飞线成为视觉主体 */
+    var g=ctx.createRadialGradient(GL.cx-50,GL.cy-55,20,GL.cx,GL.cy,GL.R);
+    if(net){ g.addColorStop(0,"#11323f"); g.addColorStop(1,"#071820"); }
+    else { g.addColorStop(0,"#1d4b63"); g.addColorStop(1,"#0f2d3d"); }
+    ctx.beginPath(); ctx.arc(GL.cx,GL.cy,GL.R,0,Math.PI*2); ctx.fillStyle=g; ctx.fill();
+    ctx.strokeStyle=net?"#2d7f91":"#2b5f78"; ctx.lineWidth=net?1.4:1; ctx.stroke();
+    if(net){
+      /* 外层辉光：多层半透明圆环近似 bloom */
+      for(var b=1;b<=3;b++){
+        ctx.beginPath(); ctx.arc(GL.cx,GL.cy,GL.R+b*5,0,Math.PI*2);
+        ctx.strokeStyle="rgba(120,214,214,"+(0.1/b).toFixed(3)+")";
+        ctx.lineWidth=5; ctx.stroke();
+      }
+    }
+
+    /* 经纬网 */
+    ctx.strokeStyle=net?"rgba(110,200,205,.16)":"rgba(120,170,195,.22)"; ctx.lineWidth=.8;
+    for(var lat=-60;lat<=60;lat+=30){
+      ctx.beginPath(); var on=false;
+      for(var lo=-180;lo<=180;lo+=4){
+        var p=proj3(lo,lat);
+        if(p.front){ if(!on){ctx.moveTo(p.x,p.y);on=true;} else ctx.lineTo(p.x,p.y); } else on=false;
+      }
+      ctx.stroke();
+    }
+    for(var lo2=0;lo2<360;lo2+=30){
+      ctx.beginPath(); var on2=false;
+      for(var la=-88;la<=88;la+=4){
+        var q=proj3(lo2,la);
+        if(q.front){ if(!on2){ctx.moveTo(q.x,q.y);on2=true;} else ctx.lineTo(q.x,q.y); } else on2=false;
+      }
+      ctx.stroke();
+    }
+
+    /* 陆地：地理模式实心填充，网络模式改为发光点阵 */
+    if(ST.gmode==="net"){
+      drawDotLand(ctx);
+    }else{
+      LANDS.forEach(function(poly){
+        ctx.beginPath(); var started=false;
+        poly.forEach(function(pt){
+          var p=proj3(pt[0],pt[1]);
+          if(p.front){ if(!started){ctx.moveTo(p.x,p.y);started=true;} else ctx.lineTo(p.x,p.y); }
+          else started=false;
+        });
+        ctx.fillStyle="rgba(104,142,110,.9)"; ctx.fill();
+        ctx.strokeStyle="rgba(176,206,180,.95)"; ctx.lineWidth=1.1; ctx.stroke();
+      });
+      /* 山脉：画在陆地之上、城市光点之下。网络模式下陆地无实心依托，不画山脉 */
+      drawRanges(ctx);
+    }
+
+    /* 城市光点：半径随岗位密度 */
+    var me=cityById(ST.city), mePt=null;
+    D.cities.forEach(function(c){
+      var ll=GEO[c.id]; if(!ll) return;
+      var p=proj3(ll[0],ll[1]);
+      if(!p.front) return;
+      var isMe=c.id===ST.city;
+      var r=1.8+c.jobs/100*3.2;
+      var fade=Math.max(.25,p.z);
+      if(isMe) mePt=p;
+      ctx.beginPath(); ctx.arc(p.x,p.y,r,0,Math.PI*2);
+      ctx.fillStyle=isMe?"rgba(90,190,255,"+fade+")":"rgba(215,225,235,"+(fade*.7)+")";
+      ctx.fill();
+    });
+
+
+    /* 高亮所在区域：以我为圆心的地表圆。已授权定位时以实际坐标为圆心 */
+    if(mePt&&me){
+      var ll=ST.coords?[ST.coords.lon,ST.coords.lat]:GEO[ST.city];
+      if(ST.coords){
+        var cp=proj3(ll[0],ll[1]);
+        if(cp.front) mePt=cp;
+      }
+      ctx.save();
+      ctx.beginPath(); var st=false;
+      for(var a=0;a<=360;a+=6){
+        var rad=a*Math.PI/180, span=AREA_SPAN;
+        var dLat=Math.sin(rad)*span;
+        var dLon=Math.cos(rad)*span/Math.max(.3,Math.cos(ll[1]*Math.PI/180));
+        var pp=proj3(ll[0]+dLon,ll[1]+dLat);
+        if(pp.front){ if(!st){ctx.moveTo(pp.x,pp.y);st=true;} else ctx.lineTo(pp.x,pp.y); } else st=false;
+      }
+      ctx.closePath();
+      ctx.fillStyle="rgba(90,190,255,.17)"; ctx.fill();
+      ctx.strokeStyle="rgba(120,205,255,.85)"; ctx.lineWidth=1.5; ctx.stroke();
+      ctx.restore();
+
+      /* 标注：先压暗周边灰点，再画引线与定位点，确保蓝点不被点簇淹没 */
+      ctx.beginPath(); ctx.arc(mePt.x,mePt.y,19,0,Math.PI*2);
+      ctx.fillStyle="rgba(14,26,36,.5)"; ctx.fill();
+      ctx.beginPath(); ctx.arc(mePt.x,mePt.y,14,0,Math.PI*2);
+      ctx.strokeStyle="rgba(150,220,255,.7)"; ctx.lineWidth=1.6; ctx.stroke();
+      ctx.beginPath(); ctx.arc(mePt.x,mePt.y,9,0,Math.PI*2);
+      ctx.fillStyle="#0e1a24"; ctx.fill();
+      ctx.beginPath(); ctx.arc(mePt.x,mePt.y,7.5,0,Math.PI*2);
+      ctx.fillStyle="#9ddcff"; ctx.fill();
+      ctx.beginPath(); ctx.arc(mePt.x,mePt.y,3,0,Math.PI*2);
+      ctx.fillStyle="#0e1a24"; ctx.fill();
+
+      var label=ST.coords
+        ? (me.name+" · 实际坐标 ±"+Math.round(ST.coords.acc)+"m")
+        : (me.name+"（"+me.tier+"）");
+      ctx.font="600 13px system-ui,-apple-system,'PingFang SC',sans-serif";
+      var tw=ctx.measureText(label).width;
+      /* 标签尽量贴近定位点，仅在越界时才退回画布边缘，避免长引线横穿球体 */
+      var ly=mePt.y+44;
+      if(ly>H-12) ly=mePt.y-30;
+      if(ly<20) ly=Math.min(H-12,mePt.y+44);
+      var lx=mePt.x-tw/2;
+      lx=Math.max(14,Math.min(W-tw-14,lx));
+      /* 引线加粗并带暗色描边，保证跨越球面与背景时都可见 */
+      ctx.beginPath();
+      ctx.moveTo(mePt.x,mePt.y+(ly>mePt.y?14:-14));
+      ctx.lineTo(lx+tw/2, ly>mePt.y?(ly-16):(ly+6));
+      ctx.strokeStyle="rgba(8,16,24,.85)"; ctx.lineWidth=4; ctx.stroke();
+      ctx.strokeStyle="#9ddcff"; ctx.lineWidth=2; ctx.stroke();
+      ctx.fillStyle="rgba(14,26,36,.95)";
+      ctx.fillRect(lx-7,ly-15,tw+14,21);
+      ctx.strokeStyle="rgba(150,220,255,.8)"; ctx.lineWidth=1.2;
+      ctx.strokeRect(lx-7,ly-15,tw+14,21);
+      ctx.fillStyle="#d2ecff"; ctx.fillText(label,lx,ly);
+    }
+
+    /* 网络模式：飞线画在高亮圈与标签之上，避免被覆盖 */
+    if(net) drawFlights(ctx);
+
+    /* 球体明暗 */
+    var sh=ctx.createRadialGradient(GL.cx-55,GL.cy-60,30,GL.cx,GL.cy,GL.R);
+    sh.addColorStop(0,"rgba(255,255,255,.05)"); sh.addColorStop(.75,"rgba(0,0,0,0)");
+    sh.addColorStop(1,"rgba(0,0,0,.38)");
+    ctx.beginPath(); ctx.arc(GL.cx,GL.cy,GL.R,0,Math.PI*2); ctx.fillStyle=sh; ctx.fill();
+  }
+
+  var reduceMotion=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var lastT=0;
+  function loop(t){
+    ST.raf=null;
+    var dt=lastT?Math.min(.12,(t-lastT)/1000):0;
+    lastT=t;
+    var moving=false;
+    /* 先转到目标经度，到位后再按需自转 */
+    var diff=ST.targetLon-ST.lon;
+    if(Math.abs(diff)>0.35){
+      ST.lon+=diff*Math.min(1,dt*3.2);
+      moving=true;
+    }else{
+      ST.lon=ST.targetLon;
+      if(ST.spin&&!reduceMotion){ ST.lon+=dt*6; ST.targetLon=ST.lon; moving=true; }
+    }
+    /* 网络模式的流光独立于自转：即便停转也继续推进 */
+    if(ST.gmode==="net"&&!reduceMotion){ ST.flowT+=dt; moving=true; }
+    drawGlobe();
+    if(moving) ST.raf=requestAnimationFrame(loop);
+    else lastT=0;
+  }
+  function kick(){
+    if(ST.raf) return;
+    lastT=0;
+    ST.raf=requestAnimationFrame(loop);
+  }
+  function recenter(){
+    var ll=ST.coords?[ST.coords.lon,ST.coords.lat]:GEO[ST.city];
+    if(!ll) return;
+    ST.targetLon=ll[0];
+    kick();
+  }
+
+  /* 模式切换时同步说明文字与图例 */
+  function applyGlobeMode(){
+    var net=ST.gmode==="net";
+    var note=$("y-globe-note");
+    if(note) note.textContent=net
+      ? "网络模式：陆地以发光点阵呈现，弧线为从你所在城市飞向可迁移城市的连线：同区域城市全部连上，另补四个岗位密度更高的跨区域城市。线宽表示两地岗位密度差，青色为目标城市岗位密度更高，棕色为更低。不显示山脉。"
+      : "地球为等距方位投影的示意渲染，城市坐标为近似经纬度，山脉为主要山系的脊线示意，均不用于地理测量。光点大小表示该城市的岗位密度。";
+    var lg=$("y-globe-legend");
+    if(lg){
+      lg.textContent="";
+      var items=net
+        ? [["#9ddcff","你的位置"],["#7ed4c4","目标岗位更密"],["#c4a678","目标岗位更稀"],["#ffffff","流光方向"]]
+        : [["#9ddcff","你的位置"],["#688e6e","陆地"],["#eef4f9","高海拔雪线"],["#ac956e","中等山体"]];
+      items.forEach(function(p){
+        var s=document.createElement("span");
+        var i=document.createElement("i"); i.className="y-dot"; i.style.background=p[0];
+        s.appendChild(i); s.appendChild(document.createTextNode(p[1]));
+        lg.appendChild(s);
+      });
+    }
+  }
+
+  /* ---------- 位置权限：按需申请，仅用于把落点细化到实际坐标 ---------- */
+  function renderGeoState(){
+    var st=$("y-geo-state"), det=$("y-geo-detail"), rev=$("y-geo-revoke"), btn=$("y-geoloc");
+    if(!st) return;
+    det.textContent="";
+    if(ST.coords){
+      st.textContent="已授权，落点已细化到实际坐标。";
+      var near=nearestCity(ST.coords.lon,ST.coords.lat);
+      kv(det,[
+        ["经纬度",ST.coords.lon.toFixed(4)+"°E, "+ST.coords.lat.toFixed(4)+"°N"],
+        ["定位精度","±"+Math.round(ST.coords.acc)+" 米"],
+        ["最近样本城市",near.city.name+"（直线约 "+Math.round(near.km)+" 公里）"],
+        ["对模型的影响",near.city.id===ST.city
+          ? "与你填写的城市一致，地理维度不变。"
+          : "与填写的「"+cityById(ST.city).name+"」不同；是否改用"+near.city.name+"由你决定。"]
+      ]);
+      rev.hidden=false;
+      btn.textContent="重新定位";
+      btn.disabled=false;
+    }else if(ST.geoState==="pending"){
+      st.textContent="正在等待浏览器返回定位结果…";
+      rev.hidden=true; btn.disabled=true;
+    }else if(ST.geoState==="denied"){
+      st.textContent="定位被拒绝或不可用，已继续使用城市级落点。原因："+(ST.geoError||"未提供");
+      kv(det,[["当前精度","城市级（由你选择的城市与城乡属性导出）"],
+              ["恢复方式","在浏览器站点权限中允许定位后，再点一次「精确到实际地点」。"]]);
+      rev.hidden=true; btn.textContent="重试定位"; btn.disabled=false;
+    }else{
+      st.textContent="当前使用城市级落点。需要精确到实际地点时，点上方按钮授权定位。";
+      rev.hidden=true; btn.textContent="精确到实际地点"; btn.disabled=false;
+    }
+  }
+  function nearestCity(lon,lat){
+    var best=null,bestD=Infinity;
+    D.cities.forEach(function(c){
+      var g=GEO[c.id]; if(!g) return;
+      var dLon=(g[0]-lon)*Math.cos(lat*Math.PI/180)*111, dLat=(g[1]-lat)*111;
+      var d=Math.sqrt(dLon*dLon+dLat*dLat);
+      if(d<bestD){ bestD=d; best=c; }
+    });
+    return {city:best,km:bestD};
+  }
+  function requestGeo(){
+    if(!navigator.geolocation){
+      ST.geoState="denied"; ST.geoError="该环境未提供 Geolocation 接口";
+      renderGeoState(); return;
+    }
+    ST.geoState="pending"; renderGeoState();
+    navigator.geolocation.getCurrentPosition(function(pos){
+      ST.coords={lon:pos.coords.longitude,lat:pos.coords.latitude,
+                 acc:pos.coords.accuracy||0};
+      ST.geoState="granted";
+      renderGeoState(); renderStep2(); recenter();
+    },function(err){
+      ST.geoState="denied";
+      ST.geoError=(err&&err.message)?err.message:("错误码 "+(err&&err.code));
+      ST.coords=null;
+      renderGeoState(); renderStep2(); recenter();
+    },{enableHighAccuracy:true,timeout:8000,maximumAge:0});
+  }
+
+  /* ---------- 第一步渲染 ---------- */
+  function buildSliders(){
+    var box=$("y-sliders"); if(!box) return;
+    box.textContent="";
+    DIMS.forEach(function(d){
+      if(d.derived) return;
+      var wrap=document.createElement("div"); wrap.className="y-dim";
+      var top=document.createElement("div"); top.className="y-dim-top";
+      var nm=document.createElement("span"); nm.className="y-dim-n"; nm.textContent=d.n;
+      var out=document.createElement("output"); out.className="y-dim-v"; out.id="y-out-"+d.k;
+      out.setAttribute("for","y-in-"+d.k);
+      top.appendChild(nm); top.appendChild(out);
+      var inp=document.createElement("input");
+      inp.type="range"; inp.id="y-in-"+d.k; inp.min=d.min; inp.max=d.max; inp.step=1;
+      inp.value=ST.s[d.k]; inp.setAttribute("aria-label",d.n);
+      var ends=document.createElement("div"); ends.className="y-ends";
+      var a=document.createElement("span"); a.textContent=d.lo;
+      var b=document.createElement("span"); b.textContent=d.hi;
+      ends.appendChild(a); ends.appendChild(b);
+      inp.addEventListener("input",function(){
+        ST.s[d.k]=Number(inp.value);
+        syncOutputs(); renderStageBox();
+      });
+      wrap.appendChild(top); wrap.appendChild(inp); wrap.appendChild(ends);
+      box.appendChild(wrap);
+    });
+  }
+  function syncOutputs(){
+    DIMS.forEach(function(d){
+      if(d.derived) return;
+      var o=$("y-out-"+d.k), i=$("y-in-"+d.k);
+      if(o) o.textContent=ST.s[d.k]+" / 100";
+      if(i&&document.activeElement!==i&&Number(i.value)!==ST.s[d.k]) i.value=ST.s[d.k];
+    });
+  }
+  function kv(box,rows){
+    box.textContent="";
+    rows.forEach(function(p){
+      var li=document.createElement("li");
+      var b=document.createElement("b"); b.textContent=p[0];
+      var s=document.createElement("span"); s.textContent=p[1];
+      li.appendChild(b); li.appendChild(s); box.appendChild(li);
+    });
+  }
+  function renderStageBox(){
+    var st=currentStage(), c=cityById(ST.city);
+    kv($("y-stage-box"),[
+      ["所在阶段",st.name],
+      ["判定依据",stageReason()],
+      ["阶段任务",st.desc],
+      ["地理位置",ST.s.place+" / 100（由 "+c.name+"·"+(URBAN[ST.urban]||URBAN.core).n+
+        " 导出：岗位密度 "+c.jobs+"×0.7 + 生活成本 "+c.cost+"×0.3"+
+        ((URBAN[ST.urban]||URBAN.core).adj?("，"+(URBAN[ST.urban]||URBAN.core).adj):"")+"）"]
+    ]);
+    var say=$("y-stage-say");
+    if(say) say.textContent="按你填的情况，你处在「"+st.name+"」。下一步会显示"+c.name+
+      "同阶段的人现在都在做什么。";
+  }
+  function applyCity(){
+    ST.s.place=placeFrom(ST.city,ST.urban);
+    renderStageBox();
+  }
+
+  /* ---------- 第二步渲染 ---------- */
+  function renderStep2(){
+    var st=currentStage(), c=cityById(ST.city);
+    /* 模式单选是持久状态，重渲染时按 ST.gmode 回填，避免被重置 */
+    var mr=root.querySelector('input[name="y-gmode"][value="'+ST.gmode+'"]');
+    if(mr&&!mr.checked) mr.checked=true;
+    applyGlobeMode();
+    var lead=$("y-p2-lead");
+    if(lead) lead.textContent="地球已转到"+c.name+"，蓝圈是你所在的这片区域。右侧为「"+st.name+"」阶段同类人群的去向分布。";
+    var h=$("y-peer-h");
+    if(h) h.textContent=c.name+" · "+st.name+" 的人在做什么";
+    var cap=$("y-globe-cap");
+    if(cap) cap.textContent=c.name+"（"+c.tier+"）· 岗位密度 "+c.jobs+" · 生活成本 "+c.cost;
+
+    /* 蓝圈范围内的同片区域构成：按近似经纬度距离取邻近城市 */
+    var ll=GEO[ST.city];
+    var near=D.cities.filter(function(x){
+      var g=GEO[x.id]; if(!g||x.id===ST.city) return false;
+      var dLon=(g[0]-ll[0])*Math.cos(ll[1]*Math.PI/180), dLat=g[1]-ll[1];
+      return Math.sqrt(dLon*dLon+dLat*dLat)<=AREA_SPAN;
+    });
+    var pool=[c].concat(near);
+    var avgJobs=Math.round(pool.reduce(function(a,b){return a+b.jobs;},0)/pool.length);
+    var avgCost=Math.round(pool.reduce(function(a,b){return a+b.cost;},0)/pool.length);
+    kv($("y-area-box"),[
+      ["覆盖城市",pool.map(function(x){return x.name;}).join("、")],
+      ["岗位密度",c.jobs+"（区域均值 "+avgJobs+"）"],
+      ["生活成本",c.cost+"（区域均值 "+avgCost+"）"],
+      ["你的阶段",st.name],
+      ["说明",near.length?("该区域内还有 "+near.length+" 个可选城市，迁移成本通常低于跨区域。")
+                        :"蓝圈内暂无其他样本城市，跨城意味着跨区域迁移。"]
+    ]);
+
+    var box=$("y-peer-list"); box.textContent="";
+    var list=D.peerActivity[st.id]||[];
+    var total=list.reduce(function(a,b){return a+b.share;},0);
+    list.forEach(function(it){
+      var row=document.createElement("div"); row.className="y-peer";
+      var top=document.createElement("div"); top.className="y-peer-top";
+      var b=document.createElement("b"); b.textContent=it.label;
+      var s=document.createElement("span"); s.textContent=it.share+"%";
+      top.appendChild(b); top.appendChild(s); row.appendChild(top);
+      var bar=document.createElement("div"); bar.className="y-bar";
+      var i=document.createElement("i");
+      i.style.width=(it.share/Math.max(1,total)*100).toFixed(1)+"%";
+      bar.appendChild(i); row.appendChild(bar);
+      box.appendChild(row);
+    });
+
+    var reg=$("y-regional"); reg.textContent="";
+    var items=(ST.city==="chengdu"||ST.city==="mianyang"||ST.city==="nanchong")
+      ? D.regional.chengdu : D.regional.chengdu.slice(0,2).concat(D.regional.generic);
+    var hint=document.createElement("p");
+    hint.className="y-note"; hint.style.paddingBottom="6px";
+    hint.textContent=(ST.city==="chengdu"||ST.city==="mianyang"||ST.city==="nanchong")
+      ? "以下为针对成都及周边的真实检索结果。"
+      : "暂未针对"+c.name+"单独检索，以下为成都样例，仅示意检索形态。";
+    reg.appendChild(hint);
+    items.forEach(function(it){
+      var card=document.createElement("div"); card.className="y-fact";
+      var t=document.createElement("p"); t.className="y-src-t"; t.textContent=it.title;
+      var g=document.createElement("p"); g.className="y-src-g"; g.textContent=it.fact;
+      var u=document.createElement("p"); u.className="y-src-u"; u.textContent=it.url;
+      card.appendChild(t); card.appendChild(g); card.appendChild(u);
+      reg.appendChild(card);
+    });
+  }
+
+  /* ---------- 第三步：专业匹配与可行性判定 ---------- */
+  /* 用户填写的方向匹配到内置专业大类。
+     先用精确关键词匹配，再回落到宽泛词；避免「通信工程」被"工程"误判为土木。 */
+  function matchField(){
+    var txt=(ST.field||"").trim();
+    if(!txt) return null;
+    var best=null,bestLen=0;
+    /* 第一轮：精确关键词 */
+    Object.keys(D.fieldCases).forEach(function(k){
+      var f=D.fieldCases[k];
+      if(!f.kw) return;
+      var m=txt.match(f.kw);
+      if(m&&m[0].length>bestLen){ best=f; bestLen=m[0].length; }
+    });
+    if(best) return best;
+    /* 第二轮：宽泛词，仅在精确词全部未命中时才启用 */
+    Object.keys(D.fieldCases).forEach(function(k){
+      var f=D.fieldCases[k];
+      if(!f.loose) return;
+      var m=txt.match(f.loose);
+      if(m&&m[0].length>bestLen){ best=f; bestLen=m[0].length; }
+    });
+    return best;
+  }
+  function feasibility(dir){
+    var base=dir.feasible, c=cityById(ST.city);
+    var econ=ST.s.econ, fam=ST.s.family, age=ST.s.age, place=ST.s.place;
+    var reasons=[];
+    var score=base==="high"?2:(base==="mid"?1:0);
+    /* 本地岗位密度过低会压制需要岗位供给的方向 */
+    if(c.jobs<40&&/就业|岗位|平台|转技术|管理|创业/.test(dir.name)){ score-=1; reasons.push("本地岗位密度仅 "+c.jobs+"，供给有限"); }
+    /* 经济压力大时，需要非收入期的方向被压制 */
+    if(econ>=65&&/升本|考研|脱产|考证|重启|创业|转行/.test(dir.name)){ score-=1; reasons.push("经济压力 "+econ+"，难以承受非收入期"); }
+    /* 家庭负担重时，需要大块时间的方向被压制 */
+    if(fam>=70&&/脱产|创业|重启|转行|升本|考研/.test(dir.name)){ score-=1; reasons.push("家庭负担 "+fam+"，大块时间难以挤出"); }
+    /* 年龄越大，归零类方向代价越高 */
+    if(age>=30&&/重启|彻底转行|升本|考研/.test(dir.name)){ score-=1; reasons.push("年龄 "+age+"，归零类路径代价上升"); }
+    /* 资源宽裕则放开 */
+    if(econ<=35&&fam<=35&&score<2){ score+=1; reasons.push("经济与家庭约束较轻，可承受试错"); }
+    score=Math.max(0,Math.min(2,score));
+    return {level:score===2?"high":(score===1?"mid":"low"), reasons:reasons};
+  }
+  var FEAS={high:{t:"当前可做",cls:"y-chip-c"},mid:{t:"需补条件",cls:"y-chip-w"},low:{t:"暂不建议",cls:"y-chip-r"}};
+
+  function renderStep3(){
+    var st=currentStage(), c=cityById(ST.city);
+    var lead=$("y-p3-lead");
+    if(lead) lead.textContent="「"+st.name+"」阶段共有以下方向。可行性结合"+c.name+
+      "的岗位密度与你的经济、家庭、年龄约束判定，不代表对你的评价。";
+    kv($("y-feas-basis"),[
+      ["所在城市",c.name+"（"+c.tier+"）· 岗位密度 "+c.jobs+" · 生活成本 "+c.cost],
+      ["经济压力",ST.s.econ+" / 100"],
+      ["家庭负担",ST.s.family+" / 100"],
+      ["年龄",ST.s.age+" 岁"],
+      ["所在阶段",st.name]
+    ]);
+
+    var h=$("y-dir-h");
+    var all=(D.directions[st.id]||[]).map(function(d){
+      var f=feasibility(d); return {d:d,f:f};
+    });
+    var show=ST.onlyFeasible?all.filter(function(x){return x.f.level==="high";}):all;
+    if(h) h.textContent="「"+st.name+"」的全部方向（"+all.length+" 条"+
+      (ST.onlyFeasible?("，当前可做 "+show.length+" 条"):"")+"）";
+
+    var box=$("y-dir-list"); box.textContent="";
+    if(!show.length){
+      var e=document.createElement("div"); e.className="y-empty";
+      var p=document.createElement("p");
+      p.textContent="当前筛选下没有「当前可做」的方向，共 "+all.length+" 条被隐藏。这通常说明约束较紧，可先从「需补条件」里挑成本最低的一条。";
+      var btn=document.createElement("button");
+      btn.type="button"; btn.className="y-btn y-btn-s"; btn.style.marginTop="9px";
+      btn.textContent="显示全部方向";
+      btn.addEventListener("click",function(){
+        ST.onlyFeasible=false; $("y-only-feasible").checked=false; renderStep3();
+      });
+      e.appendChild(p); e.appendChild(btn); box.appendChild(e);
+    }else{
+      show.forEach(function(x){
+        var card=document.createElement("div"); card.className="y-dir f-"+x.f.level;
+        var top=document.createElement("div"); top.className="y-dir-top";
+        var n=document.createElement("span"); n.className="y-dir-n"; n.textContent=x.d.name;
+        var chip=document.createElement("span");
+        chip.className="y-chip "+FEAS[x.f.level].cls; chip.textContent=FEAS[x.f.level].t;
+        top.appendChild(n); top.appendChild(chip); card.appendChild(top);
+        var body=document.createElement("p"); body.className="y-dir-b";
+        body.textContent=x.d.note;
+        card.appendChild(body);
+        var pre=document.createElement("p"); pre.className="y-dir-b";
+        var pb=document.createElement("b"); pb.textContent="前置条件：";
+        pre.appendChild(pb); pre.appendChild(document.createTextNode(x.d.prereq));
+        card.appendChild(pre);
+        if(x.f.reasons.length){
+          var rs=document.createElement("p"); rs.className="y-dir-b";
+          var rb=document.createElement("b"); rb.textContent="判定依据：";
+          rs.appendChild(rb); rs.appendChild(document.createTextNode(x.f.reasons.join("；")));
+          card.appendChild(rs);
+        }
+        box.appendChild(card);
+      });
+    }
+
+    var cb=$("y-case-list"); cb.textContent="";
+    /* 先按用户填写的专业方向匹配检索结果，未命中再回落到阶段通用结果 */
+    var matched=matchField();
+    var cases, srcNote;
+    if(matched){
+      cases=matched.items;
+      srcNote="已按你填写的「"+ST.field+"」匹配到「"+matched.label+"」大类的检索结果（"+cases.length+" 条）。";
+    }else{
+      cases=D.cases[st.id]||[];
+      srcNote=ST.field
+        ? "「"+ST.field+"」暂未命中已内置的专业大类，以下为该阶段的通用检索结果。正式版本会按你填写的词现场检索。"
+        : "以下为该阶段的通用检索结果。";
+    }
+    var note=document.createElement("p");
+    note.className="y-note"; note.style.paddingBottom="7px";
+    note.textContent=srcNote;
+    cb.appendChild(note);
+    if(!cases.length){
+      var e2=document.createElement("div"); e2.className="y-empty";
+      e2.textContent="这一阶段暂未检索到可引用的真实记述。";
+      cb.appendChild(e2);
+    }
+    cases.forEach(function(it){
+      var card=document.createElement("div"); card.className="y-src";
+      var t=document.createElement("p"); t.className="y-src-t"; t.textContent=it.title;
+      var chip=document.createElement("span");
+      chip.className="y-chip "+(it.kind==="亲历记述"?"y-chip-c":(it.kind==="行业共识"?"y-chip-b":"y-chip-w"));
+      chip.textContent=it.kind;
+      var g=document.createElement("p"); g.className="y-src-g"; g.textContent=it.gist;
+      var u=document.createElement("p"); u.className="y-src-u"; u.textContent=it.url;
+      card.appendChild(t); card.appendChild(chip); card.appendChild(g); card.appendChild(u);
+      cb.appendChild(card);
+    });
+  }
+
+  /* ---------- 第四步：资源与窗口态势 ---------- */
+  var SVGNS="http://www.w3.org/2000/svg";
+  function mk(t,a){ var e=document.createElementNS(SVGNS,t); for(var k in a) e.setAttribute(k,a[k]); return e; }
+
+  /* 资源存量：由处境推导，非预测，只反映当前条件 */
+  function assetLevel(a){
+    if(a.id==="fresh"){
+      var work=ST.identity==="work", age=ST.s.age, hist=ST.s.history;
+      if(!work) return {pct:100,label:"完整保留",tone:"full",
+        why:"在校/待业，尚未落实工作单位，校招与考编通道都还开着。"};
+      if(hist<=30&&age<=25) return {pct:45,label:"部分保留",tone:"part",
+        why:"已工作但年限尚浅，若仍在择业期两年内可能按应届认定，需按岗位口径核实。"};
+      return {pct:0,label:"已消耗",tone:"none",
+        why:"已落实工作单位且超出择业期，校招专项通道通常不再适用。"};
+    }
+    if(a.id==="upgrade"){
+      if(ST.identity!=="work") return {pct:100,label:"完整保留",tone:"full",
+        why:"在校期间仍可报考统招专升本。"};
+      return {pct:0,label:"已失效",tone:"none",
+        why:"已毕业，统招专升本报考资格不可恢复，后续只能走非全日制。"};
+    }
+    /* 试错窗口：经济压力与家庭负担越高越短，年龄进一步压缩 */
+    var load=ST.s.econ*0.5+ST.s.family*0.3+norm("age",ST.s.age)*0.2;
+    var pct=Math.max(0,Math.min(100,Math.round(100-load)));
+    var tone=pct>=55?"full":(pct>=28?"part":"none");
+    var label=pct>=55?"较充裕":(pct>=28?"偏紧":"几乎没有");
+    return {pct:pct,label:label,tone:tone,
+      why:"按经济压力 "+ST.s.econ+"、家庭负担 "+ST.s.family+"、年龄 "+ST.s.age+" 岁综合估算，仅反映当前条件。"};
+  }
+
+  function renderAssets(){
+    var box=$("y-assets"); if(!box) return;
+    box.textContent="";
+    D.assets.forEach(function(a){
+      var lv=assetLevel(a);
+      var card=document.createElement("div");
+      card.className="y-asset"+(lv.pct===0?" is-spent":"");
+      var top=document.createElement("div"); top.className="y-asset-top";
+      var n=document.createElement("span"); n.className="y-asset-n"; n.textContent=a.name;
+      var chip=document.createElement("span");
+      chip.className="y-chip "+(lv.tone==="full"?"y-chip-c":(lv.tone==="part"?"y-chip-w":"y-chip-r"));
+      chip.textContent=lv.label;
+      top.appendChild(n); top.appendChild(chip); card.appendChild(top);
+
+      var g=document.createElement("div"); g.className="y-gauge";
+      var i=document.createElement("i");
+      i.className="g-"+lv.tone; i.style.width=lv.pct+"%";
+      g.appendChild(i); card.appendChild(g);
+
+      var meta=document.createElement("p"); meta.className="y-asset-b";
+      var b1=document.createElement("b"); b1.textContent="有效期：";
+      meta.appendChild(b1); meta.appendChild(document.createTextNode(a.expiry));
+      card.appendChild(meta);
+      var why=document.createElement("p"); why.className="y-asset-b"; why.textContent=lv.why;
+      card.appendChild(why);
+      var rule=document.createElement("p"); rule.className="y-asset-b";
+      var b2=document.createElement("b"); b2.textContent="规则：";
+      rule.appendChild(b2); rule.appendChild(document.createTextNode(a.rule));
+      card.appendChild(rule);
+
+      a.evidence.forEach(function(ev){
+        var q=document.createElement("blockquote"); q.className="y-quote";
+        q.appendChild(document.createTextNode("「"+ev.quote+"」"));
+        var c=document.createElement("cite");
+        c.appendChild(document.createTextNode(ev.title+" · "));
+        var link=document.createElement("a");
+        link.href=ev.url; link.target="_blank"; link.rel="noopener";
+        link.textContent=ev.url;
+        c.appendChild(link);
+        q.appendChild(c);
+        card.appendChild(q);
+      });
+      box.appendChild(card);
+    });
+  }
+
+  /* 态势图：左为当前位置，右按阻力分三层；连线表示消耗哪项资源 */
+  var TIERS=[{k:"high",n:"当前可做",color:"#4f7a58",y:96},
+             {k:"mid", n:"需补条件",color:"#a9762f",y:222},
+             {k:"low", n:"暂不建议",color:"#9c4a3c",y:348}];
+  function renderBoard(){
+    var svg=$("y-board"); if(!svg) return;
+    svg.textContent="";
+    var st=currentStage();
+    var all=(D.directions[st.id]||[]).map(function(d){ return {d:d,f:feasibility(d)}; });
+
+    /* 左侧：当前位置 */
+    var c=cityById(ST.city);
+    svg.appendChild(mk("rect",{x:12,y:166,width:124,height:104,rx:8,
+      fill:"#e7f0f8",stroke:"#1f6fb2","stroke-width":1.5}));
+    var t1=mk("text",{x:74,y:190,"text-anchor":"middle","font-size":12.5,fill:"#1f6fb2","font-weight":"600"});
+    t1.textContent="当前位置"; svg.appendChild(t1);
+    [[c.name+"·"+st.name,208],["经济压力 "+ST.s.econ,224],["家庭负担 "+ST.s.family,238],
+     ["年龄 "+ST.s.age+" 岁",252]].forEach(function(p){
+      var t=mk("text",{x:74,y:p[1],"text-anchor":"middle","font-size":10.5,fill:"#5c5850"});
+      t.textContent=p[0]; svg.appendChild(t);
+    });
+
+    /* 资源槽：画在最右，供连线落点 */
+    var slots={};
+    D.assets.forEach(function(a,idx){
+      var lv=assetLevel(a);
+      var y=74+idx*138;
+      slots[a.name]={x:560,y:y};
+      svg.appendChild(mk("rect",{x:512,y:y-16,width:100,height:32,rx:5,
+        fill:lv.pct===0?"#f1eee7":"#fffefb",
+        stroke:lv.pct===0?"#cfc8bb":"#8d887e","stroke-width":1,
+        "stroke-dasharray":lv.pct===0?"3 2":"none"}));
+      var tx=mk("text",{x:562,y:y-2,"text-anchor":"middle","font-size":10,
+        fill:lv.pct===0?"#8d887e":"#23221f","font-weight":"600"});
+      tx.textContent=a.name.length>9?a.name.slice(0,9)+"…":a.name;
+      svg.appendChild(tx);
+      var ty=mk("text",{x:562,y:y+11,"text-anchor":"middle","font-size":9.5,
+        fill:lv.tone==="full"?"#4f7a58":(lv.tone==="part"?"#a9762f":"#9c4a3c")});
+      ty.textContent=lv.label; svg.appendChild(ty);
+    });
+
+    /* 三层阻力带 */
+    TIERS.forEach(function(ti){
+      svg.appendChild(mk("line",{x1:146,y1:ti.y-48,x2:500,y2:ti.y-48,
+        stroke:"#e0dbd1","stroke-width":1,"stroke-dasharray":"3 3"}));
+      var lb=mk("text",{x:150,y:ti.y-52,"font-size":10.5,fill:ti.color,"font-weight":"600"});
+      lb.textContent=ti.n; svg.appendChild(lb);
+    });
+
+    /* 方向节点 */
+    var byTier={high:[],mid:[],low:[]};
+    all.forEach(function(x){ byTier[x.f.level].push(x); });
+    var nodes=[];
+    Object.keys(byTier).forEach(function(k){
+      var tier=TIERS.filter(function(t){return t.k===k;})[0];
+      var arr=byTier[k];
+      arr.forEach(function(x,i){
+        var perRow=2;
+        var col=i%perRow, row=Math.floor(i/perRow);
+        var bw=128, gap=10;
+        var x0=152+col*(bw+gap);
+        var y0=tier.y-34+row*29;
+        nodes.push({x:x0,y:y0,w:bw,h:25,item:x,tier:tier});
+      });
+    });
+
+    /* 先画连线，再画节点 */
+    nodes.forEach(function(nd){
+      D.assets.forEach(function(a){
+        if(a.consumedBy.indexOf(nd.item.d.name)<0) return;
+        var s=slots[a.name]; if(!s) return;
+        var sel=ST.pick===nd.item.d.name;
+        svg.appendChild(mk("path",{
+          d:"M"+(nd.x+nd.w)+" "+(nd.y+nd.h/2)+" C "+(nd.x+nd.w+40)+" "+(nd.y+nd.h/2)+
+            ", "+(s.x-60)+" "+s.y+", "+(s.x-48)+" "+s.y,
+          fill:"none",stroke:sel?"#a9762f":"#9b9183","stroke-width":sel?2.4:1.4,
+          opacity:sel?1:0.8}));
+      });
+    });
+
+    nodes.forEach(function(nd){
+      var sel=ST.pick===nd.item.d.name;
+      var g=mk("g",{"class":"y-opt",tabindex:"0",role:"button",
+        "data-dir":nd.item.d.name,"aria-pressed":sel?"true":"false"});
+      g.setAttribute("aria-label",nd.item.d.name+"，"+nd.tier.n);
+      var tip=mk("title",{}); tip.textContent=nd.item.d.name; g.appendChild(tip);
+      g.appendChild(mk("rect",{x:nd.x,y:nd.y,width:nd.w,height:nd.h,rx:5,
+        "class":"y-opt-box",
+        fill:sel?nd.tier.color:"#fffefb",
+        stroke:nd.tier.color,"stroke-width":sel?2:1.2}));
+      var label=nd.item.d.name.replace(/（[^）]*）/,"");
+      if(label.length>11) label=label.slice(0,11)+"…";
+      var tx=mk("text",{x:nd.x+nd.w/2,y:nd.y+16.5,"text-anchor":"middle","font-size":10.5,
+        fill:sel?"#fffefb":"#23221f","font-weight":sel?"600":"400"});
+      tx.textContent=label; g.appendChild(tx);
+      function pick(){ ST.pick=nd.item.d.name; renderBoard(); renderPick();
+        var back=svg.querySelector('.y-opt[data-dir="'+nd.item.d.name+'"]');
+        if(back&&back.focus) back.focus(); }
+      g.addEventListener("click",pick);
+      g.addEventListener("keydown",function(ev){
+        if(ev.key==="Enter"||ev.key===" "){ ev.preventDefault(); pick(); }
+      });
+      svg.appendChild(g);
+    });
+  }
+
+  function renderPick(){
+    var box=$("y-pick"), h=$("y-pick-h");
+    if(!box) return;
+    box.textContent="";
+    if(!ST.pick){
+      h.textContent="点选方向后显示代价明细";
+      var e=document.createElement("div"); e.className="y-empty";
+      e.textContent="在左侧态势图上点选任一方向，这里会列出它会消耗哪些一次性资源、受哪些条件限制。";
+      box.appendChild(e); return;
+    }
+    var st=currentStage();
+    var hit=(D.directions[st.id]||[]).filter(function(d){return d.name===ST.pick;})[0];
+    if(!hit){ ST.pick=null; renderPick(); return; }
+    var f=feasibility(hit);
+    h.textContent="走「"+hit.name+"」的代价";
+
+    var rows=[["推进阻力",{high:"当前可做",mid:"需补条件",low:"暂不建议"}[f.level]],
+              ["前置条件",hit.prereq],
+              ["说明",hit.note]];
+    if(f.reasons.length) rows.push(["判定依据",f.reasons.join("；")]);
+    var consumed=D.assets.filter(function(a){ return a.consumedBy.indexOf(hit.name)>=0; });
+    rows.push(["消耗资源",consumed.length
+      ? consumed.map(function(a){
+          var lv=assetLevel(a);
+          return a.name+"（当前"+lv.label+"）";
+        }).join("、")
+      : "不消耗一次性资源，可与其他方向并行。"]);
+    var rel=D.tensions.filter(function(t){ return t.a===hit.name||t.b===hit.name; });
+    if(rel.length){
+      rows.push(["相关张力",rel.map(function(t){
+        var other=t.a===hit.name?t.b:t.a;
+        return other+"（"+{exclusive:"互斥",conditional:"条件相关",shared:"共用资源"}[t.kind]+"）";
+      }).join("、")]);
+    }
+    var ul=document.createElement("ul"); ul.className="y-kv";
+    rows.forEach(function(p){
+      var li=document.createElement("li");
+      var b=document.createElement("b"); b.textContent=p[0];
+      var s=document.createElement("span"); s.textContent=p[1];
+      li.appendChild(b); li.appendChild(s); ul.appendChild(li);
+    });
+    box.appendChild(ul);
+    var note=document.createElement("p");
+    note.className="y-note"; note.style.paddingTop="7px";
+    note.textContent="以上是代价，不是建议。系统不判定这条路线会不会成功，也不替你排序。";
+    box.appendChild(note);
+  }
+
+  function renderTensions(){
+    var box=$("y-tensions"); if(!box) return;
+    box.textContent="";
+    var st=currentStage();
+    var names=(D.directions[st.id]||[]).map(function(d){return d.name;});
+    var rel=D.tensions.filter(function(t){
+      return names.indexOf(t.a)>=0&&names.indexOf(t.b)>=0;
+    });
+    if(!rel.length){
+      var e=document.createElement("div"); e.className="y-empty";
+      e.textContent="这一阶段的方向之间暂无已检索到的硬性互斥关系。";
+      box.appendChild(e); return;
+    }
+    var KIND={exclusive:["互斥","t-exclusive","y-chip-r"],
+              conditional:["条件相关","","y-chip-w"],
+              shared:["共用资源","t-shared","y-chip-b"]};
+    rel.forEach(function(t){
+      var k=KIND[t.kind];
+      var card=document.createElement("div"); card.className="y-tension "+k[1];
+      var top=document.createElement("div"); top.className="y-asset-top";
+      var n=document.createElement("span"); n.className="y-asset-n";
+      n.textContent=t.a+"　×　"+t.b;
+      n.style.fontSize="12.5px";
+      var chip=document.createElement("span"); chip.className="y-chip "+k[2]; chip.textContent=k[0];
+      top.appendChild(n); top.appendChild(chip); card.appendChild(top);
+      var p=document.createElement("p"); p.className="y-asset-b"; p.textContent=t.note;
+      card.appendChild(p);
+      var q=document.createElement("blockquote"); q.className="y-quote";
+      q.appendChild(document.createTextNode("「"+t.basis+"」"));
+      var c=document.createElement("cite");
+      var link=document.createElement("a");
+      link.href=t.url; link.target="_blank"; link.rel="noopener"; link.textContent=t.url;
+      c.appendChild(link); q.appendChild(c);
+      card.appendChild(q);
+      box.appendChild(card);
+    });
+  }
+
+  function renderStep5(){
+    renderAssets(); renderBoard(); renderPick(); renderTensions();
+  }
+
+  /* ---------- 第五步：沃罗诺伊 ---------- */
+  function ranked(){
+    var v=vec(ST.s);
+    /* own:true 是自己贡献的公共节点——对他人可见，但不参与自己的归属计算，
+       否则会与自己的快照 100% 重合，变成自己匹配自己 */
+    return NODES.filter(function(n){ return !n.own; })
+      .map(function(n){ return {node:n,sim:cosSim(v,vec(n.s))}; })
+      .sort(function(a,b){ return b.sim-a.sim; });
+  }
+  function inBand(r){ return r.slice(1).filter(function(x){ return r[0].sim-x.sim<0.06; }); }
+  function proj(s){
+    var res=(100-s.econ)*0.55+(100-norm("age",s.age))*0.2+(100-s.family)*0.25;
+    var exp=s.inertia*0.6+s.cycle*0.25+s.history*0.15;
+    return {x:30+res/100*460, y:348-exp/100*316};
+  }
+  function placeLabels(items,reserved){
+    var placed=[],out=[];
+    var CAND=[[0,-14,"middle"],[0,22,"middle"],[13,4,"start"],[-13,4,"end"],
+              [13,-12,"start"],[-13,-12,"end"],[13,20,"start"],[-13,20,"end"],
+              [0,-28,"middle"],[0,36,"middle"],[26,4,"start"],[-26,4,"end"]];
+    function box(x,y,w,an){
+      var x0=an==="middle"?x-w/2:(an==="end"?x-w:x);
+      return {x0:x0-2,x1:x0+w+2,y0:y-11,y1:y+4};
+    }
+    function hits(b){
+      for(var i=0;i<placed.length;i++){ var o=placed[i];
+        if(b.x0<o.x1&&b.x1>o.x0&&b.y0<o.y1&&b.y1>o.y0) return true; }
+      for(var j=0;j<reserved.length;j++){ var p=reserved[j];
+        if(b.x0<p.x+p.r&&b.x1>p.x-p.r&&b.y0<p.y+p.r&&b.y1>p.y-p.r) return true; }
+      return false;
+    }
+    items.forEach(function(it){
+      var w=it.text.length*it.size*0.92, best=null;
+      for(var c=0;c<CAND.length;c++){
+        var x=it.x+CAND[c][0], y=it.y+CAND[c][1], an=CAND[c][2];
+        var b=box(x,y,w,an);
+        if(b.x0<4||b.x1>516||b.y0<12||b.y1>356) continue;
+        if(hits(b)) continue;
+        best={x:x,y:y,anchor:an,bbox:b,lead:c>=2}; break;
+      }
+      if(!best){ var fb=box(it.x,it.y-14,w,"middle");
+        best={x:it.x,y:it.y-14,anchor:"middle",bbox:fb,lead:false,crowded:true}; }
+      if(!best.crowded) placed.push(best.bbox);
+      out.push({item:it,pos:best});
+    });
+    return out;
+  }
+  function renderVor(){
+    var svg=$("y-vor-map"); if(!svg) return;
+    svg.textContent="";
+    var r=ranked(), cur=r[0], bandIds=inBand(r).map(function(b){return b.node.id;});
+
+    for(var x=30;x<=490;x+=46) svg.appendChild(mk("line",{x1:x,y1:22,x2:x,y2:348,stroke:"#e0dbd1","stroke-width":1}));
+    for(var y=32;y<=348;y+=39.5) svg.appendChild(mk("line",{x1:30,y1:y,x2:490,y2:y,stroke:"#e0dbd1","stroke-width":1}));
+    svg.appendChild(mk("line",{x1:30,y1:348,x2:490,y2:348,stroke:"#cfc8bb","stroke-width":1.5}));
+    svg.appendChild(mk("line",{x1:30,y1:22,x2:30,y2:348,stroke:"#cfc8bb","stroke-width":1.5}));
+    [0,25,50,75,100].forEach(function(v){
+      var px=30+v/100*460;
+      svg.appendChild(mk("line",{x1:px,y1:348,x2:px,y2:353,stroke:"#cfc8bb","stroke-width":1.2}));
+      var tx=mk("text",{x:px,y:364,"text-anchor":v===0?"start":(v===100?"end":"middle"),"font-size":9.5,fill:"#8d887e"});
+      tx.textContent=v; svg.appendChild(tx);
+      var py=348-v/100*316;
+      svg.appendChild(mk("line",{x1:25,y1:py,x2:30,y2:py,stroke:"#cfc8bb","stroke-width":1.2}));
+      var ty=mk("text",{x:22,y:py+3.5,"text-anchor":"end","font-size":9.5,fill:"#8d887e"});
+      ty.textContent=v; svg.appendChild(ty);
+    });
+    var lx=mk("text",{x:490,y:376,"text-anchor":"end","font-size":10.5,fill:"#8d887e"});
+    lx.textContent="资源余量 →"; svg.appendChild(lx);
+    var ly=mk("text",{x:30,y:14,"font-size":10.5,fill:"#8d887e"});
+    ly.textContent="↑ 探索倾向"; svg.appendChild(ly);
+
+    r.forEach(function(it){
+      var p=proj(it.node.s);
+      svg.appendChild(mk("circle",{cx:p.x,cy:p.y,r:26+Math.max(0,it.sim)*44,
+        fill:it.node.hue,opacity:it.node.id===cur.node.id?0.14:0.06}));
+    });
+    var me=proj(ST.s);
+    var reserved=r.map(function(it){ var p=proj(it.node.s);
+      return {x:p.x,y:p.y,r:it.node.id===cur.node.id?9:7}; });
+    reserved.push({x:me.x,y:me.y,r:16});
+
+    r.forEach(function(it){
+      var p=proj(it.node.s), isCur=it.node.id===cur.node.id;
+      var isBand=bandIds.indexOf(it.node.id)>=0;
+      svg.appendChild(mk("circle",{cx:p.x,cy:p.y,r:isCur?7.5:5.5,
+        fill:isCur?"#23221f":(isBand?"#a9762f":"#8d887e"),stroke:"#fffefb","stroke-width":1.6}));
+    });
+    var items=r.map(function(it){
+      var p=proj(it.node.s), isCur=it.node.id===cur.node.id;
+      return {x:p.x,y:p.y,size:isCur?10.5:9.5,isCur:isCur,
+        isBand:bandIds.indexOf(it.node.id)>=0,
+        text:it.node.name.split(" · ")[0]+" "+(it.sim*100).toFixed(0)+"%"};
+    });
+    placeLabels(items,reserved).forEach(function(res){
+      var it=res.item, ps=res.pos;
+      if(ps.crowded) return;
+      if(ps.lead) svg.appendChild(mk("line",{x1:it.x,y1:it.y,
+        x2:ps.anchor==="start"?ps.x-3:(ps.anchor==="end"?ps.x+3:ps.x),y2:ps.y-3,
+        stroke:"#cfc8bb","stroke-width":1}));
+      var w=it.text.length*it.size*0.92;
+      var bx=ps.anchor==="middle"?ps.x-w/2:(ps.anchor==="end"?ps.x-w:ps.x);
+      svg.appendChild(mk("rect",{x:bx-1.5,y:ps.y-10,width:w+3,height:13,rx:2,
+        fill:"#fffefb",opacity:it.isCur?0.9:0.78}));
+      var t=mk("text",{x:ps.x,y:ps.y,"text-anchor":ps.anchor,"font-size":it.size,
+        fill:it.isCur?"#23221f":(it.isBand?"#a9762f":"#8d887e"),"font-weight":it.isCur?"600":"400"});
+      t.textContent=it.text; svg.appendChild(t);
+    });
+    svg.appendChild(mk("circle",{cx:me.x,cy:me.y,r:15,fill:"#1f6fb2",opacity:.16}));
+    svg.appendChild(mk("circle",{cx:me.x,cy:me.y,r:8.5,fill:"#1f6fb2",stroke:"#fffefb","stroke-width":2.6}));
+    svg.appendChild(mk("circle",{cx:me.x,cy:me.y,r:3,fill:"#fffefb"}));
+    svg.appendChild(mk("rect",{x:me.x-11,y:me.y+14,width:22,height:14,rx:3,fill:"#1f6fb2"}));
+    var ml=mk("text",{x:me.x,y:me.y+24.5,"text-anchor":"middle","font-size":10,fill:"#fffefb","font-weight":"600"});
+    ml.textContent="你"; svg.appendChild(ml);
+  }
+
+  function renderStep4(){
+    renderVor();
+    var r=ranked(), cur=r[0], band=inBand(r);
+    var nm=$("y-vor-name"); if(nm) nm.textContent=cur.node.name;
+    var sim=$("y-vor-sim");
+    if(sim) sim.textContent="相似度 "+(cur.sim*100).toFixed(1)+"% ｜ "+
+      (band.length?("处于过渡带，可同时参考："+band.map(function(b){return b.node.name.split(" · ")[0];}).join("、"))
+                  :"不在过渡带内，参考内容来自单一域");
+
+    /* 中性区与方向歧义的真实提示 */
+    var warn=$("y-vor-warn"); warn.textContent="";
+    var m=mag(ST.s), msgs=[];
+    if(m<0.35) msgs.push("你的各维都接近中性（向量模长 "+m.toFixed(2)+"），此时归属对 1 分变化都敏感，上面的百分比参考价值很低。");
+    if(cur.sim>0.75){
+      var mn=mag(cur.node.s), dm=Math.abs(m-mn);
+      if(dm>0.3) msgs.push("与该节点方向接近（"+(cur.sim*100).toFixed(0)+"%），但严峻程度差距明显：你的模长 "+
+        m.toFixed(2)+"，该域 "+mn.toFixed(2)+"。余弦只比方向、不比强度，"+
+        (m>mn?"你的处境比该域更极端":"你的处境比该域更缓和")+"，参考时请自行折算。");
+    }
+    if(msgs.length){
+      msgs.forEach(function(t){
+        var w=document.createElement("p"); w.className="y-warn"; w.style.marginBottom="7px";
+        w.textContent=t; warn.appendChild(w);
+      });
+    }
+
+    $("y-vor-pains").textContent="";
+    cur.node.pains.forEach(function(p,i){
+      var li=document.createElement("li");
+      var b=document.createElement("b"); b.textContent="困扰 "+(i+1);
+      var s=document.createElement("span"); s.textContent=p;
+      li.appendChild(b); li.appendChild(s); $("y-vor-pains").appendChild(li);
+    });
+
+    var rows=[];
+    DIMS.forEach(function(d){
+      var mine=ST.s[d.k], theirs=cur.node.s[d.k], diff=mine-theirs;
+      if(Math.abs(diff)<4) return;
+      rows.push([d.n,(diff>0?"高 ":"低 ")+Math.abs(diff)+(d.unit||"")+"（你 "+mine+" ／ 该域 "+theirs+"）"]);
+    });
+    if(!rows.length) rows.push(["差异","各维与该域基本一致。"]);
+    kv($("y-vor-delta"),rows);
+
+    kv($("y-vec-detail"),DIMS.map(function(d){
+      return [d.n,ST.s[d.k]+(d.unit||"")+"（权重 "+d.w.toFixed(2)+"）"];
+    }).concat([["向量模长",mag(ST.s).toFixed(3)+"（越接近 0 越不稳定）"]]));
+  }
+
+  /* ---------- 闭环桥接：供第六步模块调用 ---------- */
+  function clampDim(d,v){
+    if(!d) return v;
+    return Math.max(d.min,Math.min(d.max,Math.round(v)));
+  }
+  /* 当前归属域（第五步同一套排序，供闭环各处复用） */
+  function current(){ return ranked()[0]; }
+  /* 按任意向量快照求最近节点，用于档案墙小地图回看历史落点 */
+  function nearestNode(snap){
+    var v=vec(snap),best=null;
+    NODES.forEach(function(n){
+      if(n.own) return;
+      var sim=cosSim(v,vec(n.s));
+      if(!best||sim>best.sim) best={node:n,sim:sim};
+    });
+    return best;
+  }
+  /* 归档引起向量漂移后，把变化回流到前面所有步骤 */
+  function refreshAll(){
+    syncOutputs();
+    var ag=$("y-age-in"); if(ag&&Number(ag.value)!==ST.s.age) ag.value=ST.s.age;
+    renderStageBox();
+    if(ST.step===2){ renderStep2(); renderGeoState(); }
+    else { renderGeoState(); }
+    if(ST.step===3) renderStep3();
+    if(ST.step===4) renderStep5();
+    if(ST.step===5) renderStep4();
+    drawGlobe();
+    var fl=$("y-flag-loop");
+    if(fl) fl.textContent=String(ST.victories.length);
+  }
+  window.__YUTU_LOOP__={
+    ST:ST, DIMS:DIMS, NODES:NODES,
+    current:current, clampDim:clampDim, proj:proj,
+    nearestNode:nearestNode, refreshAll:refreshAll
+  };
+
+  /* ---------- 步骤导航 ---------- */
+  var PANELS=[["y-s1","y-p1"],["y-s2","y-p2"],["y-s3","y-p3"],["y-s5","y-p5"],["y-s4","y-p4"],["y-s6","y-p6"]];
+  function show(n){
+    ST.step=n;
+    ST.maxStep=Math.max(ST.maxStep,n);
+    PANELS.forEach(function(p,i){
+      var tab=$(p[0]), panel=$(p[1]);
+      var on=(i+1)===n;
+      if(tab){
+        if(on) tab.setAttribute("aria-current","step"); else tab.removeAttribute("aria-current");
+        tab.disabled=(i+1)>ST.maxStep;
+        if((i+1)<n) tab.classList.add("is-done"); else tab.classList.remove("is-done");
+      }
+      if(panel) panel.hidden=!on;
+      /* 窄屏下步骤条横向滚动：把当前步滚入可视区，避免看起来像被裁切 */
+      if(on&&tab&&tab.scrollIntoView){
+        try{ tab.scrollIntoView({block:"nearest",inline:"nearest"}); }catch(e){}
+      }
+    });
+    if(n===1) renderStageBox();
+    if(n===2){ renderStep2(); renderGeoState(); recenter(); }
+    if(n===3) renderStep3();
+    if(n===4) renderStep5();
+    if(n===5) renderStep4();
+    if(n===6){
+      var A=window.__YUTU_LOOP__;
+      if(A&&A.renderLoop) A.renderLoop();
+    }
+    var fl=$("y-flag-loop");
+    if(fl) fl.textContent=String(ST.victories.length);
+    if(n!==2&&ST.raf){ cancelAnimationFrame(ST.raf); ST.raf=null; }
+  }
+
+  /* ---------- 事件 ---------- */
+  (function initSelects(){
+    var cs=$("y-city");
+    D.cities.forEach(function(c){
+      var o=document.createElement("option");
+      o.value=c.id; o.textContent=c.name+"（"+c.tier+"）";
+      cs.appendChild(o);
+    });
+    cs.value=ST.city;
+    var ag=$("y-age-in");
+    for(var a=16;a<=45;a++){
+      var o2=document.createElement("option"); o2.value=a; o2.textContent=a+" 岁";
+      ag.appendChild(o2);
+    }
+    ag.value=ST.s.age;
+  })();
+  $("y-city").addEventListener("change",function(){
+    ST.city=$("y-city").value; applyCity();
+    if(ST.step===2){ renderStep2(); recenter(); }
+  });
+  $("y-age-in").addEventListener("change",function(){
+    ST.s.age=Number($("y-age-in").value); renderStageBox();
+  });
+  $("y-field").addEventListener("input",function(){ ST.field=$("y-field").value; });
+  root.querySelectorAll('input[name="y-urban"]').forEach(function(rb){
+    rb.addEventListener("change",function(){ if(rb.checked){ ST.urban=rb.value; applyCity(); } });
+  });
+  root.querySelectorAll('input[name="y-ident"]').forEach(function(rb){
+    rb.addEventListener("change",function(){ if(rb.checked){ ST.identity=rb.value; renderStageBox(); } });
+  });
+  $("y-go2").addEventListener("click",function(){ show(2); $("y-s2").focus(); });
+  $("y-back1").addEventListener("click",function(){ show(1); $("y-s1").focus(); });
+  $("y-go3").addEventListener("click",function(){ show(3); $("y-s3").focus(); });
+  $("y-back2").addEventListener("click",function(){ show(2); $("y-s2").focus(); });
+  $("y-go5").addEventListener("click",function(){ show(4); $("y-s5").focus(); });
+  $("y-back3b").addEventListener("click",function(){ show(3); $("y-s3").focus(); });
+  $("y-go4").addEventListener("click",function(){ show(5); $("y-s4").focus(); });
+  $("y-back3").addEventListener("click",function(){ show(4); $("y-s5").focus(); });
+  $("y-go6").addEventListener("click",function(){ show(6); $("y-s6").focus(); });
+  $("y-back5").addEventListener("click",function(){ show(5); $("y-s4").focus(); });
+  function restart(){
+    var A=window.__YUTU_LOOP__;
+    if(A&&A.resetLoop) A.resetLoop();
+    NODES.length=BASE_NODES;
+    DIMS.forEach(function(d){ ST.s[d.k]=INIT[d.k]; });
+    ST.maxStep=1; ST.pick=null;
+    syncOutputs();
+    var ag=$("y-age-in"); if(ag) ag.value=ST.s.age;
+    applyCity();
+    drawGlobe();
+    show(1); $("y-s1").focus();
+  }
+  $("y-restart6").addEventListener("click",restart);
+  $("y-only-feasible").addEventListener("change",function(){
+    ST.onlyFeasible=$("y-only-feasible").checked; renderStep3();
+  });
+  $("y-spin").addEventListener("click",function(){
+    ST.spin=!ST.spin;
+    $("y-spin").textContent=ST.spin?"暂停自转":"继续自转";
+    $("y-spin").setAttribute("aria-pressed",ST.spin?"false":"true");
+    if(ST.spin) kick();
+  });
+  $("y-recenter").addEventListener("click",function(){ recenter(); });
+  root.querySelectorAll('input[name="y-gmode"]').forEach(function(rb){
+    rb.addEventListener("change",function(){
+      if(!rb.checked) return;
+      ST.gmode=rb.value;
+      applyGlobeMode();
+      drawGlobe();
+      kick();
+    });
+  });
+  $("y-geoloc").addEventListener("click",requestGeo);
+  $("y-geo-revoke").addEventListener("click",function(){
+    ST.coords=null; ST.geoState="idle"; ST.geoError=null;
+    renderGeoState(); renderStep2(); recenter();
+  });
+  PANELS.forEach(function(p,i){
+    var tab=$(p[0]);
+    tab.addEventListener("click",function(){ if(!tab.disabled) show(i+1); });
+  });
+
+  /* ---------- 初始化 ---------- */
+  buildSliders();
+  syncOutputs();
+  applyCity();
+  var ll0=GEO[ST.city]; if(ll0){ ST.lon=ll0[0]; ST.targetLon=ll0[0]; }
+  if(reduceMotion){ ST.spin=false; $("y-spin").textContent="继续自转"; }
+  applyGlobeMode();
+  drawGlobe();
+  show(1);
+})();
+</script>
+
+<script>
+/* ---------- 第六步：成长闭环（工作台 / 驿站 / 档案墙 / 经验域） ---------- */
+(function(){
+  var R=document.getElementById("yutu2");
+  if(!R) return;
+  var Q=function(id){return R.querySelector("#"+id);};
+  var A=window.__YUTU_LOOP__;   /* 由主脚本注入的共享引用 */
+  if(!A) return;
+
+  var STATUS={doing:"进行中",done:"已完成",hold:"暂时搁置",drop:"选择放弃"};
+  var CHOICE={keep:"维持方向",revise:"修改计划",rest:"暂时休整",switch:"更换方向"};
+  var DRIFT={keep:{history:4,inertia:1},revise:{history:4,inertia:3},
+             rest:{history:2,econ:-2},switch:{history:5,inertia:6,cycle:2}};
+  var NEED=3;
+  var PEERS=[
+    {who:"同处境者 · 川内专科 2024 届",kind:"亲历记述",marks:7,
+     text:"我也是土木专科，先去工地待了一个暑假才确定不适合。这个暑假没白花——它把一条路彻底排除了，后面选造价时就不再犹豫。"},
+    {who:"同处境者 · 二线在职转行",kind:"亲历记述",marks:12,
+     text:"不离职做验证这件事，最大的难点不是时间而是情绪。建议把验证窗口写死在日历上，到期就出结论，否则会无限期拖延。"},
+    {who:"行业共识",kind:"行业共识",marks:9,
+     text:"造价与施工的起薪差距在前两年并不明显，差异主要体现在工作地点稳定性与加班强度上。"},
+    {who:"同处境者 · 县域体制内",kind:"个人推测",marks:3,
+     text:"我的判断是远程岗位对本地身份的要求在变低，但这只是我的观察，没有数据支撑。"}
+  ];
+
+  function fmtTime(d){
+    var p=function(n){return n<10?"0"+n:""+n;};
+    return d.getFullYear()+"-"+p(d.getMonth()+1)+"-"+p(d.getDate())+
+           " "+p(d.getHours())+":"+p(d.getMinutes());
+  }
+  function flash(id,msg){
+    var el=Q(id); if(!el) return;
+    el.textContent=msg||"";
+    if(!msg) return;
+    var tk=(el.__t||0)+1; el.__t=tk;
+    setTimeout(function(){ if(el.__t===tk) el.textContent=""; },4200);
+  }
+
+  /* ---- 工作台 ---- */
+  function syncLoadedNode(){
+    if(!A.ST.loadedNode) return;
+    var still=A.ST.tasks.some(function(t){ return t.node===A.ST.loadedNode; });
+    if(!still) A.ST.loadedNode=null;
+  }
+  function loadTasks(node){
+    var added=0;
+    (node.tasks||[]).forEach(function(t){
+      if(A.ST.tasks.some(function(x){return x.src===t.id;})) return;
+      A.ST.seq+=1;
+      A.ST.tasks.push({id:"k"+A.ST.seq,src:t.id,node:node.id,nodeName:node.name,
+        type:t.type,title:t.title,origin:t.src,pre:t.pre,risk:t.risk,std:t.std,
+        status:"doing",custom:false,archived:false});
+      added+=1;
+    });
+    A.ST.loadedNode=node.id;
+    return added;
+  }
+  function visibleTasks(){
+    return A.ST.tasks.filter(function(t){
+      return A.ST.filter==="all"||t.status===A.ST.filter;
+    });
+  }
+  function archivable(){
+    return A.ST.tasks.filter(function(t){ return t.status==="done"&&!t.archived; });
+  }
+
+  function renderTasks(){
+    var box=Q("y-tasks"); if(!box) return;
+    var vis=visibleTasks();
+    box.textContent="";
+    var doing=A.ST.tasks.filter(function(t){return t.status==="doing";}).length;
+    var done=A.ST.tasks.filter(function(t){return t.status==="done";}).length;
+    var chip=Q("y-count-chip");
+    if(chip) chip.textContent="共 "+A.ST.tasks.length+" 项 ｜ 进行中 "+doing+" ｜ 已完成 "+done+
+      (A.ST.filter==="all"?"":" ｜ 当前筛选 "+vis.length+" 项");
+    var f1=Q("y-flag-bench"); if(f1) f1.textContent=String(doing);
+
+    if(!A.ST.tasks.length){
+      var e=document.createElement("div"); e.className="y-empty";
+      e.textContent="清单还是空的。点「从当前域载入参考任务」，或直接新增一条自定义任务。";
+      box.appendChild(e); return;
+    }
+    if(!vis.length){
+      var e2=document.createElement("div"); e2.className="y-empty";
+      var p=document.createElement("p");
+      p.textContent="当前筛选条件下没有任务，共有 "+A.ST.tasks.length+" 项被隐藏。";
+      var b=document.createElement("button");
+      b.type="button"; b.className="y-btn y-btn-s"; b.style.marginTop="9px";
+      b.textContent="清除筛选";
+      b.addEventListener("click",function(){
+        A.ST.filter="all"; var sel=Q("y-filter"); if(sel) sel.value="all"; renderTasks();
+      });
+      e2.appendChild(p); e2.appendChild(b); box.appendChild(e2); return;
+    }
+
+    vis.forEach(function(t){
+      var card=document.createElement("div");
+      card.className="y-task"+(t.status==="hold"?" is-hold":"")+(t.status==="drop"?" is-drop":"");
+      var top=document.createElement("div"); top.className="y-task-top";
+      var left=document.createElement("div"); left.style.minWidth="0";
+      var ttl=document.createElement("p"); ttl.className="y-task-ttl"; ttl.textContent=t.title;
+      left.appendChild(ttl);
+      var tags=document.createElement("div"); tags.style.marginTop="4px";
+      [[t.type,"y-chip-b"],[STATUS[t.status],""]].forEach(function(c){
+        var sp=document.createElement("span"); sp.className="y-chip "+c[1];
+        sp.textContent=c[0]; tags.appendChild(sp);
+      });
+      if(t.custom){ var c3=document.createElement("span"); c3.className="y-chip y-chip-c";
+        c3.textContent="自定义"; tags.appendChild(c3); }
+      if(t.archived){ var c4=document.createElement("span"); c4.className="y-chip y-chip-w";
+        c4.textContent="已归档"; tags.appendChild(c4); }
+      left.appendChild(tags);
+      var meta=document.createElement("p"); meta.className="y-task-meta";
+      [["经验出处",t.origin],["前置条件",t.pre],["风险提示",t.risk],["完成标准",t.std]]
+        .forEach(function(r){
+          if(!r[1]||r[1]==="—") return;
+          if(meta.childNodes.length) meta.appendChild(document.createElement("br"));
+          var b=document.createElement("b"); b.textContent=r[0]+"：";
+          meta.appendChild(b); meta.appendChild(document.createTextNode(r[1]));
+        });
+      left.appendChild(meta);
+      top.appendChild(left);
+
+      var act=document.createElement("div"); act.className="y-task-act";
+      var sel=document.createElement("select");
+      sel.setAttribute("aria-label","任务状态："+t.title);
+      Object.keys(STATUS).forEach(function(k){
+        var o=document.createElement("option"); o.value=k; o.textContent=STATUS[k];
+        if(t.status===k) o.selected=true;
+        sel.appendChild(o);
+      });
+      sel.disabled=t.archived;
+      sel.addEventListener("change",function(){
+        t.status=sel.value;
+        var hidden=A.ST.filter!=="all"&&t.status!==A.ST.filter;
+        renderTasks(); renderStopList(); renderDrift(); renderLoopState();
+        flash("y-bench-flash", hidden
+          ? "已保存为「"+STATUS[t.status]+"」，但当前筛选条件下不显示该任务。"
+          : "已更新为「"+STATUS[t.status]+"」。"+(t.status==="done"?"可以去驿站停靠了。":""));
+      });
+      act.appendChild(sel);
+      var del=document.createElement("button");
+      del.type="button"; del.className="y-btn y-btn-s"; del.textContent="移除";
+      del.setAttribute("aria-label","移除任务："+t.title);
+      del.disabled=t.archived;
+      del.addEventListener("click",function(){
+        A.ST.tasks=A.ST.tasks.filter(function(x){return x.id!==t.id;});
+        syncLoadedNode();
+        renderTasks(); renderStopList(); renderDrift(); renderLoopState();
+        flash("y-bench-flash","已移除「"+t.title.slice(0,14)+"…」。不适用的任务可以直接删掉。");
+      });
+      act.appendChild(del);
+      top.appendChild(act);
+      card.appendChild(top);
+      box.appendChild(card);
+    });
+  }
+
+  /* ---- 停靠驿站 ---- */
+  function nextChoice(){
+    var el=R.querySelector('input[name="y-next"]:checked');
+    return el?el.value:"keep";
+  }
+  function renderStopCtx(){
+    var box=Q("y-stop-ctx"); if(!box) return;
+    box.textContent="";
+    var NS="http://www.w3.org/2000/svg";
+    var svg=document.createElementNS(NS,"svg");
+    svg.setAttribute("viewBox","0 0 24 24"); svg.setAttribute("aria-hidden","true");
+    function mk(t,a){ var e=document.createElementNS(NS,t);
+      for(var k in a) e.setAttribute(k,a[k]); return e; }
+    svg.appendChild(mk("circle",{cx:12,cy:12,r:11,fill:"#fff",stroke:"#1f6fb2"}));
+    svg.appendChild(mk("ellipse",{cx:9,cy:11,rx:1.7,ry:2,fill:"#1f6fb2"}));
+    svg.appendChild(mk("ellipse",{cx:15,cy:11,rx:1.7,ry:2,fill:"#1f6fb2"}));
+    svg.appendChild(mk("ellipse",{cx:12,cy:16,rx:2.2,ry:1.6,fill:"none",stroke:"#1f6fb2"}));
+    box.appendChild(svg);
+    var span=document.createElement("span");
+    var cur=A.current();
+    span.textContent="先回到你出发时的处境：经济压力 "+A.ST.s.econ+"，家庭负担 "+A.ST.s.family+
+      "，年龄 "+A.ST.s.age+" 岁，当时归属「"+cur.node.name.split(" · ")[0]+"」。现在变了没有？";
+    box.appendChild(span);
+  }
+  function renderStopList(){
+    var box=Q("y-stop-list"); if(!box) return;
+    box.textContent="";
+    var arr=archivable();
+    if(!arr.length){
+      var e=document.createElement("div"); e.className="y-empty";
+      e.textContent="还没有标记为「已完成」的体验。驿站不催促——等真的完成一段再回来。";
+      box.appendChild(e);
+    }else{
+      arr.forEach(function(t){
+        var row=document.createElement("div"); row.className="y-pool";
+        var s=document.createElement("strong"); s.style.fontSize="13px"; s.textContent=t.title;
+        row.appendChild(s);
+        var m=document.createElement("p"); m.className="y-vic-body";
+        m.textContent=t.type+" ｜ 完成标准："+t.std;
+        row.appendChild(m);
+        box.appendChild(row);
+      });
+    }
+    var btn=Q("y-archive");
+    if(btn) btn.disabled=!arr.length;
+  }
+  function renderDrift(){
+    var box=Q("y-drift"); if(!box) return;
+    box.textContent="";
+    var d=DRIFT[nextChoice()], n=archivable().length, any=false;
+    A.DIMS.forEach(function(dim){
+      var base=d[dim.k]; if(!base) return;
+      any=true;
+      var cur=A.ST.s[dim.k], next=n?A.clampDim(dim,cur+base):cur;
+      var li=document.createElement("li");
+      var b=document.createElement("b"); b.textContent=dim.n;
+      var s=document.createElement("span");
+      if(!n){
+        s.textContent="+"+base+"（需先有可归档的体验）";
+      }else if(next===cur){
+        s.textContent=(base>0?"+":"")+base+"（当前 "+cur+"，已达"+(base>0?"上":"下")+"限 "+
+          (base>0?dim.max:dim.min)+"，本次不再变化）";
+      }else{
+        s.textContent=(base>0?"+":"")+base+"（当前 "+cur+" → "+next+"）";
+      }
+      li.appendChild(b); li.appendChild(s); box.appendChild(li);
+    });
+    if(!any||!n){
+      var li2=document.createElement("li");
+      var b2=document.createElement("b"); b2.textContent="说明";
+      var s2=document.createElement("span");
+      s2.textContent=n?"该选项不改变向量，只记录判断。":"没有可归档的体验时不产生漂移。";
+      li2.appendChild(b2); li2.appendChild(s2); box.appendChild(li2);
+    }
+  }
+
+  /* ---- 归档：闭环的关键一环 ---- */
+  function archive(){
+    var arr=archivable();
+    if(!arr.length){ flash("y-stop-flash","还没有已完成的体验可以归档。"); return; }
+    var choice=nextChoice();
+    var snap={}; A.DIMS.forEach(function(d){ snap[d.k]=A.ST.s[d.k]; });
+    var cur=A.current();
+    var answers={
+      feel:(Q("y-q1").value||"").trim(),
+      ctx:(Q("y-q2").value||"").trim(),
+      vision:(Q("y-q3").value||"").trim()
+    };
+    A.ST.seq+=1;
+    A.ST.victories.push({
+      id:"v"+A.ST.seq, no:A.ST.victories.length+1, at:fmtTime(new Date()),
+      snap:snap, domain:cur.node.name, sim:cur.sim,
+      tasks:arr.map(function(t){return {title:t.title,type:t.type};}),
+      choice:choice, answers:answers
+    });
+    arr.forEach(function(t){ t.archived=true; });
+
+    /* 向量小幅漂移：位置因此成为动态的 */
+    var d=DRIFT[choice];
+    A.DIMS.forEach(function(dim){
+      if(d[dim.k]) A.ST.s[dim.k]=A.clampDim(dim,A.ST.s[dim.k]+d[dim.k]);
+    });
+    /* 年龄随时间平滑漂移 */
+    var ageDim=A.DIMS.filter(function(x){return x.k==="age";})[0];
+    A.ST.s.age=A.clampDim(ageDim,A.ST.s.age+(A.ST.victories.length%3===0?1:0));
+
+    ["y-q1","y-q2","y-q3"].forEach(function(id){ var el=Q(id); if(el) el.value=""; });
+
+    /* 回流到前面的步骤：滑块、地球、方向、态势、沃罗诺伊全部跟着更新 */
+    A.refreshAll();
+    renderAll();
+
+    var msg="第 "+A.ST.victories.length+" 次阶段性胜利已归档";
+    if(choice==="rest") msg+="。选择了暂时休整，系统不推送新任务，只确认记录已存档。";
+    else if(choice==="switch") msg+="。排除一条路线同样是胜利——它以可控成本换来了清晰结论。";
+    else msg+="。位置已小幅漂移，回到第 2 步地图可以看到新的落点。";
+    flash("y-stop-flash",msg);
+  }
+
+  /* ---- 胜利档案墙 ---- */
+  function miniMap(snap){
+    var NS="http://www.w3.org/2000/svg";
+    function mk(t,a){ var e=document.createElementNS(NS,t);
+      for(var k in a) e.setAttribute(k,a[k]); return e; }
+    var svg=mk("svg",{viewBox:"0 0 260 190",role:"img",
+      "aria-label":"二维投影小地图：横轴资源余量，纵轴探索倾向，蓝点为该时间点的位置"});
+    svg.appendChild(mk("rect",{x:0,y:0,width:260,height:190,fill:"#fffefb"}));
+    for(var x=26;x<=246;x+=27.5)
+      svg.appendChild(mk("line",{x1:x,y1:12,x2:x,y2:176,stroke:"#f1eee7","stroke-width":1}));
+    for(var y=12;y<=176;y+=27.3)
+      svg.appendChild(mk("line",{x1:26,y1:y,x2:246,y2:y,stroke:"#f1eee7","stroke-width":1}));
+    var sc=function(p){ return {x:26+(p.x-30)/460*220, y:12+(p.y-32)/316*164}; };
+    var best=A.nearestNode(snap);
+    A.NODES.forEach(function(n){
+      if(n.own) return;
+      var p=sc(A.proj(n.s));
+      svg.appendChild(mk("circle",{cx:p.x,cy:p.y,r:n.id===best.node.id?5:3.2,
+        fill:n.id===best.node.id?"#23221f":"#cfc8bb"}));
+    });
+    var m=sc(A.proj(snap));
+    svg.appendChild(mk("circle",{cx:m.x,cy:m.y,r:8,fill:"#1f6fb2",opacity:.18}));
+    svg.appendChild(mk("circle",{cx:m.x,cy:m.y,r:4,fill:"#1f6fb2",
+      stroke:"#fffefb","stroke-width":1.5}));
+    /* 与第五步沃罗诺伊同一套坐标，标出两轴以免小图失去量纲 */
+    /* 刻度：与第五步沃罗诺伊同一量纲 0–100，避免小图失去量级参照 */
+    [0,50,100].forEach(function(v){
+      var px=26+v/100*220, py=176-v/100*164;
+      var tx=mk("text",{x:px,y:186,"text-anchor":v===0?"start":(v===100?"end":"middle"),
+        "font-size":8.5,fill:"#aba79e"});
+      tx.textContent=v; svg.appendChild(tx);
+      var ty=mk("text",{x:23,y:py+3,"text-anchor":"end","font-size":8.5,fill:"#aba79e"});
+      ty.textContent=v; svg.appendChild(ty);
+    });
+    var ax=mk("text",{x:246,y:9,"text-anchor":"end","font-size":9.5,fill:"#8d887e"});
+    ax.textContent="横轴 资源余量 ／ 纵轴 探索倾向"; svg.appendChild(ax);
+    return {svg:svg,domain:best.node.name};
+  }
+
+  function renderWall(){
+    var box=Q("y-wall"); if(!box) return;
+    box.textContent="";
+    var f=Q("y-flag-wall"); if(f) f.textContent=String(A.ST.victories.length);
+    var f2=Q("y-flag-loop"); if(f2) f2.textContent=String(A.ST.victories.length);
+    if(!A.ST.victories.length){
+      var e=document.createElement("div"); e.className="y-empty";
+      e.textContent="档案墙还是空的。完成一段体验、在驿站做完反思之后，第一次阶段性胜利就会出现在这里。";
+      box.appendChild(e); return;
+    }
+    A.ST.victories.slice().reverse().forEach(function(v){
+      var card=document.createElement("div"); card.className="y-vic";
+      var top=document.createElement("div"); top.className="y-vic-top";
+      var t=document.createElement("strong"); t.style.fontSize="13.5px";
+      t.textContent="第 "+v.no+" 次阶段性胜利 · "+CHOICE[v.choice];
+      var ts=document.createElement("span"); ts.className="y-vic-ts"; ts.textContent=v.at;
+      top.appendChild(t); top.appendChild(ts); card.appendChild(top);
+      var tags=document.createElement("div"); tags.style.margin="5px 0 2px";
+      v.tasks.forEach(function(x){
+        var c=document.createElement("span"); c.className="y-chip y-chip-b";
+        c.textContent=x.type; tags.appendChild(c);
+      });
+      var cd=document.createElement("span"); cd.className="y-chip";
+      cd.textContent=v.domain.split(" · ")[0]; tags.appendChild(cd);
+      card.appendChild(tags);
+      var body=document.createElement("p"); body.className="y-vic-body";
+      body.textContent="完成体验："+v.tasks.map(function(x){return x.title;}).join("；");
+      card.appendChild(body);
+      var ref=document.createElement("p"); ref.className="y-vic-body";
+      var parts=[];
+      if(v.answers.feel) parts.push("真实感受："+v.answers.feel);
+      if(v.answers.ctx) parts.push("处境变化："+v.answers.ctx);
+      if(v.answers.vision) parts.push("愿景："+v.answers.vision);
+      if(parts.length){ ref.textContent="自省原文 — "+parts.join(" ／ "); }
+      else { ref.textContent="自省原文 — 本次未填写文字，仅记录了下一步选择。";
+             ref.style.color="var(--y-muted)"; }
+      card.appendChild(ref);
+      var sn=document.createElement("p"); sn.className="y-vic-body";
+      sn.style.color="var(--y-muted)";
+      sn.textContent="向量快照 — "+A.DIMS.map(function(d){
+        return d.n+" "+v.snap[d.k];
+      }).join("，");
+      card.appendChild(sn);
+      box.appendChild(card);
+    });
+  }
+
+  function snapOptions(){
+    var opts=A.ST.victories.map(function(v){
+      return {id:v.id,label:"第 "+v.no+" 次胜利（"+v.at.slice(0,10)+"）",snap:v.snap};
+    });
+    opts.push({id:"now",label:"当前位置",snap:A.ST.s});
+    return opts;
+  }
+  function renderCompare(){
+    var a=Q("y-cmp-a"), b=Q("y-cmp-b"), box=Q("y-cmp"), diff=Q("y-cmp-diff");
+    if(!a||!b||!box) return;
+    var opts=snapOptions();
+    var prevA=a.value, prevB=b.value;
+    function fill(sel,keep){
+      sel.textContent="";
+      opts.forEach(function(o){
+        var el=document.createElement("option"); el.value=o.id; el.textContent=o.label;
+        sel.appendChild(el);
+      });
+      if(keep&&opts.some(function(o){return o.id===keep;})) sel.value=keep;
+    }
+    fill(a,prevA); fill(b,prevB);
+    if(!prevA) a.value=opts[0].id;
+    if(!prevB) b.value=opts[opts.length-1].id;
+    if(a.value===b.value&&opts.length>1){
+      b.value=opts[opts.length-1].id;
+      if(a.value===b.value) a.value=opts[0].id;
+    }
+    var oa=opts.filter(function(o){return o.id===a.value;})[0]||opts[0];
+    var ob=opts.filter(function(o){return o.id===b.value;})[0]||opts[opts.length-1];
+
+    box.textContent="";
+    [[oa,"起点"],[ob,"终点"]].forEach(function(pair){
+      var fig=document.createElement("figure");
+      var m=miniMap(pair[0].snap);
+      fig.appendChild(m.svg);
+      var cap=document.createElement("figcaption");
+      var lb=document.createElement("b"); lb.textContent=pair[1]+"：" +pair[0].label;
+      cap.appendChild(lb);
+      cap.appendChild(document.createTextNode("归属 "+m.domain.split(" · ")[0]));
+      fig.appendChild(cap);
+      box.appendChild(fig);
+    });
+
+    diff.textContent="";
+    function row(k,v){
+      var li=document.createElement("li");
+      var b2=document.createElement("b"); b2.textContent=k;
+      var s=document.createElement("span"); s.textContent=v;
+      li.appendChild(b2); li.appendChild(s); diff.appendChild(li);
+    }
+    if(oa.id===ob.id){ row("提示","起点与终点相同，暂无可比较的变化。"); return; }
+    var moved=false;
+    A.DIMS.forEach(function(d){
+      var va=oa.snap[d.k], vb=ob.snap[d.k];
+      if(va===vb) return;
+      moved=true;
+      row(d.n, va+" → "+vb+"（"+(vb>va?"+":"")+(vb-va)+(d.unit||"")+"）");
+    });
+    if(!moved) row("变化","两个时间点的向量完全一致。");
+  }
+
+  /* ---- 同伴经验域：外层共建闭环 ---- */
+  function renderPool(){
+    var box=Q("y-pool"); if(!box) return;
+    box.textContent="";
+    var unsub=A.ST.victories.filter(function(v){
+      return !A.ST.pool.some(function(p){return p.vid===v.id;});
+    });
+    if(!A.ST.victories.length){
+      var e=document.createElement("div"); e.className="y-empty";
+      e.textContent="还没有可提交的复盘。先在驿站归档一次阶段性胜利。";
+      box.appendChild(e);
+    }
+    unsub.forEach(function(v){
+      /* 质量门槛：无有效自省内容的记录不进入校验池 */
+      var filled=[v.answers.feel,v.answers.ctx,v.answers.vision]
+        .filter(function(x){ return x&&x.length>=8; }).length;
+      var ok=filled>0;
+      var card=document.createElement("div"); card.className="y-pool";
+      var top=document.createElement("div"); top.className="y-vic-top";
+      var t=document.createElement("strong"); t.style.fontSize="13px";
+      t.textContent="第 "+v.no+" 次胜利 · "+CHOICE[v.choice];
+      var c=document.createElement("span");
+      c.className="y-chip"+(ok?"":" y-chip-w");
+      c.textContent=ok?"尚未提交":"内容不足，不可提交";
+      top.appendChild(t); top.appendChild(c); card.appendChild(top);
+      var p=document.createElement("p"); p.className="y-vic-body";
+      p.textContent=ok
+        ? "提交后以处境区间呈现，不包含精确个人数据；初始仅本人可见。"
+        : "这次停靠没有留下自省文字。无有效内容的记录不进入校验池——回驿站补写后即可提交。";
+      card.appendChild(p);
+      var row=document.createElement("div"); row.className="y-row"; row.style.marginTop="7px";
+      var btn=document.createElement("button");
+      btn.type="button"; btn.className="y-btn y-btn-s"; btn.textContent="提交到校验池";
+      btn.disabled=!ok;
+      btn.addEventListener("click",function(){
+        if(!ok) return;
+        A.ST.pool.push({vid:v.id,no:v.no,choice:v.choice,marks:0,public:false,domain:v.domain});
+        renderPool();
+        flash("y-peer-flash","已提交。当前仅本人可见，需 "+NEED+" 位同处境用户标记有效后升级为公共节点。");
+      });
+      row.appendChild(btn); card.appendChild(row);
+      box.appendChild(card);
+    });
+
+    A.ST.pool.forEach(function(p){
+      var card=document.createElement("div"); card.className="y-pool";
+      var top=document.createElement("div"); top.className="y-vic-top";
+      var t=document.createElement("strong"); t.style.fontSize="13px";
+      t.textContent="第 "+p.no+" 次胜利 · "+CHOICE[p.choice];
+      var c=document.createElement("span");
+      c.className="y-chip "+(p.public?"y-chip-c":"y-chip-b");
+      c.textContent=p.public?"已升级为公共节点":"仅本人可见";
+      top.appendChild(t); top.appendChild(c); card.appendChild(top);
+      var meter=document.createElement("div"); meter.className="y-meter";
+      var fill=document.createElement("i");
+      fill.style.width=Math.min(100,p.marks/NEED*100)+"%";
+      meter.appendChild(fill); card.appendChild(meter);
+      var info=document.createElement("p"); info.className="y-vic-body";
+      info.textContent=p.public
+        ? "影响力：已被 "+(p.marks+4)+" 位处境相近的用户参考，其中 "+p.marks+
+          " 人标记有用。该节点对他人可见，不参与你自己的归属计算。"
+        : "有效标记 "+p.marks+" / "+NEED+"。无有效内容的记录不进入校验池。";
+      card.appendChild(info);
+      if(!p.public){
+        var row=document.createElement("div"); row.className="y-row"; row.style.marginTop="6px";
+        var btn=document.createElement("button");
+        btn.type="button"; btn.className="y-btn y-btn-s";
+        btn.textContent="模拟一位同处境用户标记有效";
+        btn.addEventListener("click",function(){
+          p.marks+=1;
+          if(p.marks>=NEED){
+            p.public=true;
+            var src=A.ST.victories.filter(function(v){return v.id===p.vid;})[0];
+            if(src&&!A.NODES.some(function(n){return n.id==="u"+p.vid;})){
+              A.NODES.push({
+                id:"u"+p.vid, name:"用户贡献 · 第 "+p.no+" 次胜利复盘", hue:"#4f7a58", own:true,
+                s:(function(){var o={};A.DIMS.forEach(function(d){o[d.k]=src.snap[d.k];});return o;})(),
+                pains:["该节点来自真实复盘，困扰清单由贡献者填写"],
+                tasks:src.tasks.map(function(x,i){
+                  return {id:"u"+p.vid+"t"+i,type:x.type,title:x.title,
+                    src:"用户贡献节点 · 已通过 "+NEED+" 位同处境用户校验",
+                    pre:"与贡献者处境相近",risk:"前置条件可能不同，需自行核对",std:"由你自行设定"};
+                })
+              });
+            }
+            A.refreshAll();
+            flash("y-peer-flash","已达到 "+NEED+" 个有效标记，该复盘升级为公共节点，已进入知识网络。");
+          }else{
+            flash("y-peer-flash","已记录 1 个有效标记（"+p.marks+"/"+NEED+"）。单条反馈不直接改变公共知识。");
+          }
+          renderPool();
+        });
+        row.appendChild(btn); card.appendChild(row);
+      }
+      box.appendChild(card);
+    });
+  }
+
+  function renderPeers(){
+    var box=Q("y-peer-review"); if(!box) return;
+    box.textContent="";
+    PEERS.forEach(function(p){
+      var card=document.createElement("div"); card.className="y-pool";
+      var top=document.createElement("div"); top.className="y-vic-top";
+      var t=document.createElement("strong"); t.style.fontSize="12.5px"; t.textContent=p.who;
+      var c=document.createElement("span");
+      c.className="y-chip "+(p.kind==="亲历记述"?"y-chip-c":
+        (p.kind==="行业共识"?"y-chip-b":"y-chip-w"));
+      c.textContent=p.kind;
+      top.appendChild(t); top.appendChild(c); card.appendChild(top);
+      var b=document.createElement("p"); b.className="y-vic-body"; b.textContent=p.text;
+      card.appendChild(b);
+      var m=document.createElement("p"); m.className="y-vic-ts"; m.style.marginTop="5px";
+      m.textContent=p.marks+" 位处境相近的用户标记有用";
+      card.appendChild(m);
+      box.appendChild(card);
+    });
+  }
+
+  /* ---- 闭环状态提示 ---- */
+  function renderLoopState(){
+    var el=Q("y-loop-state"); if(!el) return;
+    var n=A.ST.victories.length;
+    var doing=A.ST.tasks.filter(function(t){return t.status==="doing";}).length;
+    var ready=archivable().length;
+    var cur=A.current();
+    if(!A.ST.tasks.length){
+      el.textContent="当前处于「"+cur.node.name.split(" · ")[0]+"」域。闭环从领取任务开始："+
+        "到工作台载入本域参考任务，或自己新增一条。";
+    }else if(ready){
+      el.textContent="有 "+ready+" 段体验已标记完成，可以去驿站停靠了。"+
+        "停靠会归档为阶段性胜利，并让你的位置发生小幅漂移。";
+    }else if(doing){
+      el.textContent="工作台有 "+doing+" 项进行中。完成后在任务上标记「已完成」，再到驿站停靠。"+
+        (n?"已累计 "+n+" 次阶段性胜利。":"");
+    }else{
+      el.textContent="已累计 "+n+" 次阶段性胜利。可以回到第 2 步地图看看落点变化，"+
+        "或在工作台领取新一轮任务。";
+    }
+  }
+
+  function renderAll(){
+    renderTasks(); renderStopCtx(); renderStopList(); renderDrift();
+    renderWall(); renderCompare(); renderPool(); renderPeers(); renderLoopState();
+  }
+
+  /* ---- 子页签 ---- */
+  var SUBS=[["y-t1","y-m1"],["y-t2","y-m2"],["y-t3","y-m3"],["y-t4","y-m4"]];
+  function showSub(n){
+    A.ST.sub=n;
+    SUBS.forEach(function(p,i){
+      var tab=Q(p[0]), panel=Q(p[1]);
+      var on=(i+1)===n;
+      if(tab) tab.setAttribute("aria-selected",on?"true":"false");
+      if(panel) panel.hidden=!on;
+    });
+    if(n===1) renderTasks();
+    if(n===2){ renderStopCtx(); renderStopList(); renderDrift(); }
+    if(n===3){ renderWall(); renderCompare(); }
+    if(n===4){ renderPool(); renderPeers(); }
+  }
+  SUBS.forEach(function(p,i){
+    var tab=Q(p[0]); if(!tab) return;
+    tab.addEventListener("click",function(){ showSub(i+1); });
+    tab.addEventListener("keydown",function(ev){
+      var j=-1;
+      if(ev.key==="ArrowRight") j=(i+1)%SUBS.length;
+      else if(ev.key==="ArrowLeft") j=(i-1+SUBS.length)%SUBS.length;
+      else if(ev.key==="Home") j=0;
+      else if(ev.key==="End") j=SUBS.length-1;
+      if(j<0) return;
+      ev.preventDefault(); showSub(j+1);
+      var nx=Q(SUBS[j][0]); if(nx) nx.focus();
+    });
+  });
+
+  /* ---- 事件绑定 ---- */
+  Q("y-load-tasks").addEventListener("click",function(){
+    var node=A.current().node;
+    var added=loadTasks(node);
+    renderTasks(); renderStopList(); renderDrift(); renderLoopState();
+    flash("y-load-flash", added
+      ? "已把「"+node.name.split(" · ")[0]+"」的 "+added+" 条参考任务载入工作台。这是草稿，增删改都在你手上。"
+      : "该域的任务已经全部在工作台里了。");
+  });
+  Q("y-filter").addEventListener("change",function(){
+    A.ST.filter=Q("y-filter").value; renderTasks();
+  });
+  Q("y-add-open").addEventListener("click",function(){
+    var f=Q("y-add-form");
+    f.hidden=!f.hidden;
+    if(!f.hidden) Q("y-add-title").focus();
+  });
+  Q("y-add-cancel").addEventListener("click",function(){
+    Q("y-add-form").hidden=true;
+    Q("y-add-title").value=""; Q("y-add-err").textContent="";
+  });
+  function submitTask(){
+    var title=(Q("y-add-title").value||"").trim();
+    if(title.length<4){
+      Q("y-add-err").textContent="请把任务写清楚一些（至少 4 个字），已输入的内容不会丢失。";
+      Q("y-add-title").focus();
+      return;
+    }
+    Q("y-add-err").textContent="";
+    A.ST.seq+=1;
+    A.ST.tasks.push({id:"k"+A.ST.seq,src:"custom-"+A.ST.seq,node:"custom",nodeName:"自定义",
+      type:Q("y-add-type").value,title:title,
+      origin:"由你自己添加",pre:"由你自行设定",risk:"—",std:"由你自行设定",
+      status:"doing",custom:true,archived:false});
+    Q("y-add-title").value="";
+    Q("y-add-form").hidden=true;
+    var hidden=A.ST.filter!=="all"&&A.ST.filter!=="doing";
+    renderTasks(); renderStopList(); renderDrift(); renderLoopState();
+    flash("y-bench-flash", hidden
+      ? "已加入清单（进行中），但当前筛选条件下不显示。"
+      : "已加入清单。自定义任务与系统草稿在系统里权重相同。");
+  }
+  Q("y-add-submit").addEventListener("click",submitTask);
+  Q("y-add-title").addEventListener("keydown",function(ev){
+    if(ev.key==="Enter"){ ev.preventDefault(); submitTask(); }
+  });
+  R.querySelectorAll('input[name="y-next"]').forEach(function(rb){
+    rb.addEventListener("change",renderDrift);
+  });
+  Q("y-archive").addEventListener("click",archive);
+  Q("y-cmp-a").addEventListener("change",renderCompare);
+  Q("y-cmp-b").addEventListener("change",renderCompare);
+
+  /* 暴露给主脚本：进入第 6 步时整体刷新 */
+  A.renderLoop=function(){ renderAll(); showSub(A.ST.sub||1); };
+  A.resetLoop=function(){
+    A.ST.tasks=[]; A.ST.victories=[]; A.ST.pool=[];
+    A.ST.loadedNode=null; A.ST.filter="all"; A.ST.sub=1;
+    var sel=Q("y-filter"); if(sel) sel.value="all";
+    ["y-q1","y-q2","y-q3"].forEach(function(id){ var el=Q(id); if(el) el.value=""; });
+    var keep=R.querySelector('input[name="y-next"][value="keep"]');
+    if(keep) keep.checked=true;
+    renderAll();
+  };
+  renderAll();
+})();
+</script>
+</div>

@@ -1,0 +1,256 @@
+/* ==========================================================================
+   数据依据审计（「数据来源与口径」面板 · 按图表看依据）
+   作用域：#yutu2，沿用暗色玻璃令牌
+   ========================================================================== */
+
+#yutu2 .y-audit-tabs {
+  display: flex;
+  gap: 6px;
+  width: fit-content;
+  margin-top: 12px;
+  padding: 3px;
+  border: 1px solid var(--y-line);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.03);
+}
+#yutu2 .y-audit-tabs button {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 12px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--y-muted);
+  font-size: 11.5px;
+  cursor: pointer;
+  transition:
+    background 0.18s ease,
+    color 0.18s ease;
+}
+#yutu2 .y-audit-tabs button:hover {
+  color: var(--y-ink);
+  background: rgba(120, 160, 255, 0.1);
+}
+#yutu2 .y-audit-tabs button.is-on {
+  background: rgba(127, 182, 255, 0.18);
+  color: #fff;
+}
+#yutu2 .y-audit-tabs em {
+  padding: 0 5px;
+  border-radius: 999px;
+  background: rgba(245, 193, 90, 0.2);
+  color: #f7d9a0;
+  font-size: 9.5px;
+  font-style: normal;
+}
+
+.y-audit-summary {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin-top: 12px;
+}
+.y-audit-summary > span {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 4px;
+  padding: 3px 9px;
+  border: 1px solid var(--y-line);
+  border-radius: 999px;
+  font-size: 10.5px;
+  color: var(--y-ink2);
+}
+.y-audit-summary > span b {
+  font-size: 12px;
+}
+.y-audit-summary > span.is-c {
+  color: #8fd6c0;
+  border-color: rgba(143, 214, 192, 0.4);
+  background: rgba(143, 214, 192, 0.08);
+}
+.y-audit-summary > span.is-w {
+  color: #f7d9a0;
+  border-color: rgba(245, 193, 90, 0.4);
+  background: rgba(245, 193, 90, 0.08);
+}
+.y-audit-summary > span.is-r {
+  color: #ffb3a6;
+  border-color: rgba(255, 155, 139, 0.4);
+  background: rgba(255, 155, 139, 0.08);
+}
+.y-audit-filter {
+  margin-left: auto;
+  padding: 4px 10px;
+  border: 1px solid var(--y-line2);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--y-ink2);
+  font-size: 10.5px;
+  cursor: pointer;
+}
+.y-audit-filter:hover,
+.y-audit-filter.is-on {
+  border-color: rgba(245, 193, 90, 0.6);
+  background: rgba(245, 193, 90, 0.1);
+  color: #f7d9a0;
+}
+
+.y-audit-note {
+  margin-top: 8px;
+  font-size: 10.5px;
+  line-height: 1.65;
+  color: var(--y-muted);
+}
+
+.y-audit-group {
+  margin-top: 14px;
+}
+.y-audit-group h4 {
+  margin: 0 0 6px;
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  color: var(--y-muted);
+}
+.y-audit-list {
+  display: grid;
+  gap: 7px;
+}
+.y-audit-item {
+  padding: 9px 10px;
+  border: 1px solid var(--y-line);
+  border-left: 3px solid transparent;
+  border-radius: 9px;
+  background: rgba(255, 255, 255, 0.025);
+}
+.y-audit-item.is-grounded {
+  border-left-color: rgba(143, 214, 192, 0.8);
+}
+.y-audit-item.is-partial {
+  border-left-color: rgba(245, 193, 90, 0.8);
+}
+.y-audit-item.is-unfounded {
+  border-left-color: rgba(255, 155, 139, 0.85);
+}
+.y-audit-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+.y-audit-head b {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--y-ink);
+}
+.y-audit-head em {
+  font-size: 9px;
+  font-style: normal;
+  letter-spacing: 0.06em;
+  color: var(--y-muted);
+}
+.y-audit-head .y-chip {
+  padding: 1px 7px;
+  font-size: 9.5px;
+}
+.y-audit-intake {
+  padding: 1px 7px;
+  border: 1px dashed rgba(245, 193, 90, 0.6);
+  border-radius: 999px;
+  color: #f7d9a0;
+  font-size: 9.5px;
+  white-space: nowrap;
+}
+.y-audit-where {
+  margin-top: 2px;
+  font-size: 10px;
+  color: var(--y-muted);
+}
+.y-audit-detail {
+  margin-top: 4px;
+  font-size: 10.5px;
+  line-height: 1.65;
+  color: var(--y-ink2);
+}
+.y-audit-gap,
+.y-audit-fix {
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr);
+  gap: 6px;
+  margin-top: 4px;
+  font-size: 10.5px;
+  line-height: 1.6;
+  color: var(--y-ink2);
+}
+.y-audit-gap > span,
+.y-audit-fix > span {
+  padding-top: 1px;
+  font-size: 9.5px;
+  letter-spacing: 0.06em;
+  color: var(--y-muted);
+}
+.y-audit-gap {
+  color: rgba(247, 217, 160, 0.92);
+}
+.y-audit-fix {
+  padding-top: 4px;
+  border-top: 1px dashed rgba(160, 190, 255, 0.14);
+}
+
+/* 修掉 V6 时期遗留的浅色来源小标签（暗色面板上会形成亮点） */
+#yutu2 .y-data-group h4 span {
+  border-color: var(--y-line2);
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--y-ink2);
+}
+#yutu2 .y-data-group.is-real h4 span {
+  border-color: rgba(143, 214, 192, 0.4);
+  background: rgba(143, 214, 192, 0.12);
+  color: #8fd6c0;
+}
+#yutu2 .y-data-group.is-self h4 span {
+  border-color: rgba(160, 190, 255, 0.35);
+  background: rgba(160, 190, 255, 0.1);
+  color: #cfe0ff;
+}
+#yutu2 .y-data-group.is-curated h4 span {
+  border-color: rgba(127, 182, 255, 0.4);
+  background: rgba(127, 182, 255, 0.12);
+  color: #9fc4ff;
+}
+#yutu2 .y-data-group.is-approx h4 span {
+  border-color: rgba(245, 193, 90, 0.4);
+  background: rgba(245, 193, 90, 0.12);
+  color: #f7d9a0;
+}
+#yutu2 .y-data-group.is-heuristic h4 span {
+  border-color: rgba(183, 156, 255, 0.4);
+  background: rgba(183, 156, 255, 0.12);
+  color: #c9b3e8;
+}
+#yutu2 .y-data-group.is-demo h4 span {
+  border-color: rgba(255, 155, 139, 0.4);
+  background: rgba(255, 155, 139, 0.12);
+  color: #ffb3a6;
+}
+
+@media (max-width: 640px) {
+  #yutu2 .y-audit-tabs {
+    width: 100%;
+  }
+  #yutu2 .y-audit-tabs button {
+    flex: 1;
+    justify-content: center;
+    padding: 5px 8px;
+  }
+  .y-audit-filter {
+    margin-left: 0;
+  }
+  .y-audit-gap,
+  .y-audit-fix {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1px;
+  }
+}
