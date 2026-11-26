@@ -13207,8 +13207,9 @@ html.y-motion-off #yutu2 .y-step-stage.is-page-dragging {
 #yutu2 .y-radar-bloom-sheen {
   opacity: 0.5;
   mix-blend-mode: screen;
-  transform-box: view-box;
-  transform-origin: 170px 150px;
+  /* 依自身中心旋转，七维雷达与闭环图共用 */
+  transform-box: fill-box;
+  transform-origin: center;
   animation: yBloomSheen 20s linear infinite;
 }
 @keyframes yBloomSheen {

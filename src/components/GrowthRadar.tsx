@@ -1,6 +1,7 @@
-import { useEffect, useId, useRef } from 'react';
+import { useId } from 'react';
 import { DIMS } from '@/lib/model';
 import type { Scores } from '@/types';
+import FlowerBloom from './FlowerBloom';
 
 interface GrowthRadarProps {
   /** 起点快照（第一次离开「填写信息」时的七维） */
@@ -67,86 +68,6 @@ function sweepTailPath(spanDeg: number) {
 }
 
 /** 七彩：高饱和彩虹色（正常混合下更艳，不被屏幕混合冲淡） */
-const RAINBOW = [
-  '#ff3b6b',
-  '#ff7a45',
-  '#ffcf4d',
-  '#3fe8a0',
-  '#35cfff',
-  '#4f7dff',
-  '#a96bff',
-] as const;
-
-/** 把颜色往白色里调，用作瓣尖高光 */
-function tint(hex: string, amount: number) {
-  const n = parseInt(hex.slice(1), 16);
-  const r = (n >> 16) & 255;
-  const g = (n >> 8) & 255;
-  const b = n & 255;
-  const mix = (v: number) => Math.round(v + (255 - v) * amount);
-  return (
-    '#' +
-    [mix(r), mix(g), mix(b)]
-      .map((v) => v.toString(16).padStart(2, '0'))
-      .join('')
-  );
-}
-
-const RAINBOW_TIP = RAINBOW.map((c) => tint(c, 0.48));
-
-/** 彩绘玻璃颗粒：预先栅格化的噪点图，用 pattern 平铺，避免逐帧跑 SVG 滤镜 */
-const GRAIN_URI =
-  "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)' opacity='0.55'/%3E%3C/svg%3E";
-
-/** 单片花瓣：从花心到瓣尖的两段二次曲线，spread 控制宽窄、sway 控制摆动 */
-function petalPath(
-  angleDeg: number,
-  len: number,
-  spreadDeg: number,
-  sway: number
-) {
-  const tip = polar(angleDeg + sway, len);
-  const c1 = polar(angleDeg - spreadDeg + sway * 0.4, len * 0.58);
-  const c2 = polar(angleDeg + spreadDeg + sway * 0.4, len * 0.58);
-  return (
-    `M${CX},${CY} ` +
-    `Q${c1.x.toFixed(1)},${c1.y.toFixed(1)} ${tip.x.toFixed(1)},${tip.y.toFixed(1)} ` +
-    `Q${c2.x.toFixed(1)},${c2.y.toFixed(1)} ${CX},${CY} Z`
-  );
-}
-
-/** 三圈花瓣：外 7 / 中 5 / 内 9，颜色与旋向错开 */
-const ALL_PETAL_RINGS = [
-  { count: 7, k: 0.96, spread: 30, phase: 0, spin: 4.5, tone: 0, wave: 0.16 },
-  { count: 5, k: 0.64, spread: 38, phase: 36, spin: -6, tone: 3, wave: 0.2 },
-  { count: 9, k: 0.44, spread: 20, phase: 20, spin: 7, tone: 5, wave: 0.14 },
-] as const;
-
-/** 手机 / 低配设备去掉最内圈，减少逐帧重算 */
-const LIGHT_DEVICE =
-  (typeof window !== 'undefined' &&
-    Boolean(window.matchMedia?.('(max-width: 640px)').matches)) ||
-  (typeof navigator !== 'undefined' &&
-    ((navigator.hardwareConcurrency ?? 8) <= 4 ||
-      ((navigator as unknown as { deviceMemory?: number }).deviceMemory ?? 8) <=
-        4));
-
-const PETAL_RINGS: ReadonlyArray<(typeof ALL_PETAL_RINGS)[number]> =
-  LIGHT_DEVICE ? ALL_PETAL_RINGS.slice(0, 2) : ALL_PETAL_RINGS;
-
-const PETAL_OFFSETS: number[] = [];
-{
-  let acc = 0;
-  PETAL_RINGS.forEach((ring) => {
-    PETAL_OFFSETS.push(acc);
-    acc += ring.count;
-  });
-}
-
-/**
- * 「起点 → 现在」七维雷达对比。
- * 越靠外表示该维数值越高；颜色不表示好坏，只区分两个时间点。
- */
 export default function GrowthRadar({
   before,
   after,
@@ -155,57 +76,6 @@ export default function GrowthRadar({
   compact = false,
 }: GrowthRadarProps) {
   const uid = useId().replace(/:/g, '');
-  /* 花瓣与每瓣的渐变向量逐帧重算，让花边开合边旋转、瓣尖始终亮 */
-  const petalRefs = useRef<(SVGPathElement | null)[]>([]);
-  const petalGradRefs = useRef<(SVGLinearGradientElement | null)[]>([]);
-
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
-    if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return;
-    let raf = 0;
-    let alive = true;
-    let last = 0;
-    const tick = (now: number) => {
-      if (!alive) return;
-      /* 30fps 足够顺滑，也避免多个雷达同时动画时吃满 CPU */
-      if (now - last >= 33) {
-        last = now;
-        if (!document.documentElement.classList.contains('y-motion-off')) {
-          const t = now / 1000;
-          PETAL_RINGS.forEach((ring, ri) => {
-            for (let i = 0; i < ring.count; i += 1) {
-              const idx = PETAL_OFFSETS[ri] + i;
-              const angle =
-                (360 / ring.count) * i + ring.phase + t * ring.spin;
-              const len =
-                R *
-                ring.k *
-                (1 -
-                  ring.wave +
-                  ring.wave *
-                    (0.5 + 0.5 * Math.sin(t * 0.9 + i * 1.7 + ri)));
-              const sway = Math.sin(t * 0.8 + i * 1.3 + ri) * 5;
-              petalRefs.current[idx]?.setAttribute(
-                'd',
-                petalPath(angle, len, ring.spread, sway)
-              );
-              const tip = polar(angle + sway, len);
-              const grad = petalGradRefs.current[idx];
-              grad?.setAttribute('x2', tip.x.toFixed(1));
-              grad?.setAttribute('y2', tip.y.toFixed(1));
-            }
-          });
-        }
-      }
-      raf = window.requestAnimationFrame(tick);
-    };
-    raf = window.requestAnimationFrame(tick);
-    return () => {
-      alive = false;
-      window.cancelAnimationFrame(raf);
-    };
-  }, []);
-
   const changed = DIMS.filter((d) => before[d.k] !== after[d.k]);
   const deltaText = DIMS.map((d) => ({
     ...d,
@@ -280,163 +150,10 @@ export default function GrowthRadar({
             <stop offset='72%' stopColor='#e6f2ff' stopOpacity='0.5' />
             <stop offset='100%' stopColor='#ffffff' stopOpacity='0.05' />
           </linearGradient>
-          {/* 背景柔光、中心压暗与玻璃高光 */}
-          <radialGradient id={`${uid}-bloom-glow`} cx='50%' cy='50%' r='50%'>
-            <stop offset='0%' stopColor='#a96bff' stopOpacity='0.3' />
-            <stop offset='55%' stopColor='#35cfff' stopOpacity='0.14' />
-            <stop offset='100%' stopColor='#35cfff' stopOpacity='0' />
-          </radialGradient>
-          <radialGradient id={`${uid}-bloom-shade`} cx='50%' cy='50%' r='50%'>
-            <stop offset='0%' stopColor='#071426' stopOpacity='0.72' />
-            <stop offset='52%' stopColor='#071426' stopOpacity='0.24' />
-            <stop offset='100%' stopColor='#071426' stopOpacity='0' />
-          </radialGradient>
-          <linearGradient id={`${uid}-bloom-sheen`} x1='0' y1='0' x2='1' y2='1'>
-            <stop offset='0%' stopColor='#ffffff' stopOpacity='0' />
-            <stop offset='44%' stopColor='#ffffff' stopOpacity='0.2' />
-            <stop offset='56%' stopColor='#ffffff' stopOpacity='0.2' />
-            <stop offset='100%' stopColor='#ffffff' stopOpacity='0' />
-          </linearGradient>
-          {/* 彩绘玻璃颗粒：平铺的静态噪点，只覆盖花瓣区域 */}
-          <pattern
-            id={`${uid}-grain`}
-            width='120'
-            height='120'
-            patternUnits='userSpaceOnUse'
-          >
-            <image
-              href={GRAIN_URI}
-              xlinkHref={GRAIN_URI}
-              width='120'
-              height='120'
-            />
-          </pattern>
-          {/* 每片花瓣各自的「瓣根深、瓣尖亮」渐变 */}
-          {PETAL_RINGS.map((ring, ri) =>
-            Array.from({ length: ring.count }, (_, i) => {
-              const idx = PETAL_OFFSETS[ri] + i;
-              const angle = (360 / ring.count) * i + ring.phase;
-              const len =
-                R *
-                ring.k *
-                (1 -
-                  ring.wave +
-                  ring.wave * (0.5 + 0.5 * Math.sin(i * 1.7 + ri)));
-              const tip = polar(angle + Math.sin(i * 1.3) * 5, len);
-              const color = RAINBOW[(i + ring.tone) % RAINBOW.length];
-              const tipColor =
-                RAINBOW_TIP[(i + ring.tone) % RAINBOW_TIP.length];
-              return (
-                <linearGradient
-                  key={`pg-${ri}-${i}`}
-                  id={`${uid}-pg-${ri}-${i}`}
-                  gradientUnits='userSpaceOnUse'
-                  x1={CX}
-                  y1={CY}
-                  x2={tip.x}
-                  y2={tip.y}
-                  ref={(el) => {
-                    petalGradRefs.current[idx] = el;
-                  }}
-                >
-                  <stop offset='0%' stopColor={color} stopOpacity='0.88' />
-                  <stop offset='62%' stopColor={color} stopOpacity='0.82' />
-                  <stop offset='92%' stopColor={tipColor} stopOpacity='0.96' />
-                  <stop offset='100%' stopColor='#ffffff' stopOpacity='0.45' />
-                </linearGradient>
-              );
-            })
-          )}
-          {/* 花蕊：暖白金到透明 */}
-          <radialGradient id={`${uid}-flower-core`} cx='50%' cy='50%' r='50%'>
-            <stop offset='0%' stopColor='#fff8e6' stopOpacity='0.95' />
-            <stop offset='42%' stopColor='#ffd93d' stopOpacity='0.55' />
-            <stop offset='100%' stopColor='#ff8a3d' stopOpacity='0' />
-          </radialGradient>
         </defs>
 
-        {/* 背景：三圈七彩花瓣，边走边开合、边旋转 */}
-        <g className='y-radar-bloom' aria-hidden='true'>
-          <circle
-            className='y-radar-bloom-glow'
-            cx={CX}
-            cy={CY}
-            r={R * 1.08}
-            fill={`url(#${uid}-bloom-glow)`}
-          />
-          {PETAL_RINGS.map((ring, ri) =>
-            Array.from({ length: ring.count }, (_, i) => {
-              const idx = PETAL_OFFSETS[ri] + i;
-              const angle = (360 / ring.count) * i + ring.phase;
-              const len =
-                R *
-                ring.k *
-                (1 -
-                  ring.wave +
-                  ring.wave * (0.5 + 0.5 * Math.sin(i * 1.7 + ri)));
-              return (
-                <path
-                  key={`${ri}-${i}`}
-                  ref={(el) => {
-                    petalRefs.current[idx] = el;
-                  }}
-                  className={`y-radar-petal is-${ri}`}
-                  d={petalPath(angle, len, ring.spread, Math.sin(i * 1.3) * 5)}
-                  fill={`url(#${uid}-pg-${ri}-${i})`}
-                />
-              );
-            })
-          )}
-          <circle
-            className='y-radar-flower-core'
-            cx={CX}
-            cy={CY}
-            r={R * 0.14}
-            fill={`url(#${uid}-flower-core)`}
-          />
-          {Array.from({ length: 12 }, (_, i) => {
-            const p = polar(i * 30, R * 0.18);
-            return (
-              <circle
-                key={`st-${i}`}
-                className='y-radar-stamen'
-                cx={p.x}
-                cy={p.y}
-                r={1.5}
-                fill={RAINBOW[i % RAINBOW.length]}
-              />
-            );
-          })}
-          <circle
-            className='y-radar-bloom-shade'
-            cx={CX}
-            cy={CY}
-            r={R * 1.02}
-            fill={`url(#${uid}-bloom-shade)`}
-          />
-          <ellipse
-            className='y-radar-bloom-sheen'
-            cx={CX}
-            cy={CY}
-            rx={R * 0.92}
-            ry={R * 0.42}
-            fill={`url(#${uid}-bloom-sheen)`}
-          />
-          <circle
-            className='y-radar-bloom-grain'
-            cx={CX}
-            cy={CY}
-            r={R}
-            fill={`url(#${uid}-grain)`}
-          />
-          <circle
-            className='y-radar-bloom-ring'
-            cx={CX}
-            cy={CY}
-            r={R}
-            fill='none'
-          />
-        </g>
+        {/* 与七维雷达同一朵彩虹花：三圈花瓣开合、旋转 */}
+        <FlowerBloom cx={CX} cy={CY} r={R} />
 
         {/* 网格 */}
         {LEVELS.map((lv) => (

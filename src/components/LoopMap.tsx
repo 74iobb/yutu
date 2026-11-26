@@ -1,6 +1,6 @@
 import type { KeyboardEvent } from 'react';
 import marble from '@/assets/loop-marble.webp';
-import BloomMark from './BloomMark';
+import FlowerBloom from './FlowerBloom';
 
 export type LoopStationKey =
   | 'claim'
@@ -180,8 +180,6 @@ export default function LoopMap({
 
   return (
     <div className='y-loop-map'>
-      {/* 闭环图底色：一朵缓慢旋转的彩虹花 */}
-      <BloomMark className='y-loop-bloom' />
       <svg
         viewBox='0 0 400 400'
         role='group'
@@ -250,6 +248,9 @@ export default function LoopMap({
             <feGaussianBlur stdDeviation='2.4' />
           </filter>
         </defs>
+
+        {/* 与七维雷达同一朵彩虹花：铺在闭环螺旋下面 */}
+        <FlowerBloom cx={CX} cy={CY} r={150} />
 
         {/* 已完成轮次：内圈年轮 */}
         {rings.map((ring) => (
