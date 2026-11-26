@@ -6,6 +6,7 @@
 适合高考/考研择校、毕业 1–3 年转行、跨城市迁徙与阶段性复盘等真实决策场景。
 
 **在线体验**：`待发布后填写`（平台 prod 页面地址，格式 `https://agent.nuwax.com/page/{projectId}-{页面ID}/prod/`）  
+**源码在线预览**：<https://74iobb.github.io/yutu/>（GitHub Pages，纯前端；跨用户共享池在该域名下自动降级）  
 **产品说明计划书**：[`docs/域途-产品说明计划书.md`](docs/域途-产品说明计划书.md)  
 **参赛提交清单**：[`docs/域途-作品提交清单.md`](docs/域途-作品提交清单.md)  
 **产品哲学**：[`docs/PHILOSOPHY.md`](docs/PHILOSOPHY.md)
@@ -42,6 +43,14 @@ pnpm lint         # ESLint（0 warnings）
 ```
 
 > 本地 `vite dev` 没有平台页面代理时，会自动使用 `localStorage`；顶部状态条提示「本地存储」。
+
+## 在线预览（GitHub Pages）
+
+- 地址：<https://74iobb.github.io/yutu/>
+- 由 `.github/workflows/deploy-pages.yml` 在每次推送到 `main` 时自动构建并发布；也可在 Actions 页手动 `Run workflow`。
+- 首次启用需在仓库 **Settings → Pages → Source 选择「GitHub Actions」**（只需一次）。
+- `vite.config.ts` 的 `base: './'` 使产物适配 `/yutu/` 子路径；路由为 `HashRouter`，无需 404 回退。
+- 该域名的同源后端不存在，`/api/page/w/{token}` 会 404，前端按设计降级：个人档案 / 任务 / 胜利档案 / 沙盘 / 开篇全部可用；同伴复盘公共池、讨论、素材等**跨用户**内容为空。
 
 ## 数据层
 
