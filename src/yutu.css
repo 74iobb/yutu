@@ -1713,13 +1713,20 @@
   position: absolute;
   left: 50%;
   top: 50%;
-  width: 56px;
-  height: 56px;
+  width: 64px;
+  height: 64px;
   transform: translate(-50%, -50%);
-  opacity: 0.3;
-  filter: blur(1.4px) saturate(1.25);
+  opacity: 0.16;
+  filter: blur(1.6px) saturate(1.2);
   pointer-events: none;
   z-index: 0;
+  transition: opacity 0.3s ease;
+}
+#yutu2 .y-sub-tab:hover .y-sub-bloom {
+  opacity: 0.24;
+}
+#yutu2 .y-sub-tab[aria-selected='true'] .y-sub-bloom {
+  opacity: 0.34;
   animation: ySubBloomSpin 24s linear infinite;
 }
 #yutu2 .y-sub-tab-t {
@@ -1727,6 +1734,8 @@
   z-index: 1;
   display: inline-flex;
   align-items: center;
+  /* 花朵底纹提亮后，用一层很淡的暗影保住小字可读性 */
+  text-shadow: 0 1px 3px rgba(4, 10, 20, 0.6);
 }
 @keyframes ySubBloomSpin {
   to {

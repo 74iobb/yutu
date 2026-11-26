@@ -2661,9 +2661,7 @@ export default function Step6() {
                   aria-selected={state.sub === s.n}
                   onClick={() => setSub(s.n)}
                 >
-                  {state.sub === s.n ? (
-                    <BloomMark className='y-sub-bloom' />
-                  ) : null}
+                  <BloomMark className='y-sub-bloom' />
                   <span className='y-sub-tab-t'>
                     {s.n === 1 ? '① ' : '② '}
                     {s.label}
@@ -2737,9 +2735,7 @@ export default function Step6() {
                 aria-selected={state.sub === s.n}
                 onClick={() => setSub(s.n)}
               >
-                {state.sub === s.n ? (
-                  <BloomMark className='y-sub-bloom' />
-                ) : null}
+                <BloomMark className='y-sub-bloom' />
                 <span className='y-sub-tab-t'>
                   {s.label}
                   {s.flag ? <span className='y-flag'>{s.flag}</span> : null}
