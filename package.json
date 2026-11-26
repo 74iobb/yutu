@@ -18,7 +18,8 @@
     "clean": "rm -rf dist",
     "prebuild": "pnpm run clean",
     "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check .",
+    "publish:pages": "bash scripts/publish-pages.sh"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",

@@ -1,9 +1,8 @@
 name: Deploy to GitHub Pages
 
-# 推送到 main 即自动构建并发布；也可在 Actions 页手动触发。
+# 当前线上走 gh-pages 分支（Deploy from a branch），本工作流仅保留为
+# 切换到「GitHub Actions」发布方式后的手动方案。
 on:
-  push:
-    branches: [main]
   workflow_dispatch:
 
 permissions:

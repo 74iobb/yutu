@@ -46,9 +46,10 @@ pnpm lint         # ESLint（0 warnings）
 
 ## 在线预览（GitHub Pages）
 
-- 地址：<https://74iobb.github.io/yutu/>
-- 由 `.github/workflows/deploy-pages.yml` 在每次推送到 `main` 时自动构建并发布；也可在 Actions 页手动 `Run workflow`。
-- 首次启用需在仓库 **Settings → Pages → Source 选择「GitHub Actions」**（只需一次）。
+- 地址：<https://74iobb.github.io/yutu/>（2026-11-26 已上线）
+- **当前部署方式**：`Settings → Pages → Source = Deploy from a branch`，分支 `gh-pages`、目录 `/ (root)`。站点内容是构建后的 `dist/`，由 `scripts/publish-pages.sh` 推送。
+- **更新站点**：`pnpm run publish:pages`（等价于 build → 推送 `gh-pages`）。直接改 `main` 不会自动更新站点。
+- `.github/workflows/deploy-pages.yml` 保留为**手动**部署方案（`workflow_dispatch`）：切到 Actions 模式后可用，需同时把 Actions 权限设为 Read and write。
 - `vite.config.ts` 的 `base: './'` 使产物适配 `/yutu/` 子路径；路由为 `HashRouter`，无需 404 回退。
 - 该域名的同源后端不存在，`/api/page/w/{token}` 会 404，前端按设计降级：个人档案 / 任务 / 胜利档案 / 沙盘 / 开篇全部可用；同伴复盘公共池、讨论、素材等**跨用户**内容为空。
 
