@@ -725,7 +725,6 @@ export function Shell({ children }: { children: ReactNode }) {
           <span className='y-realm-i'>01</span>
           <span className='y-realm-t'>
             <strong>我的处境</strong>
-            <em>填写 · 环境 · 方向 · 归属摘要</em>
           </span>
         </button>
         <button
@@ -746,7 +745,6 @@ export function Shell({ children }: { children: ReactNode }) {
           <span className='y-realm-i'>02</span>
           <span className='y-realm-t'>
             <strong>我的成长</strong>
-            <em>体验 · 自省 · 档案 · 共建</em>
           </span>
           {state.victories.length ? (
             <span className='y-realm-badge'>{state.victories.length} 次胜利</span>

@@ -6749,17 +6749,6 @@ html.y-motion-ready #yutu2 .y-card.y-in {
   font-weight: 650;
   letter-spacing: 0.01em;
 }
-#yutu2 .y-realm-t em {
-  font-style: normal;
-  font-size: 11px;
-  color: var(--y-muted);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-#yutu2 .y-realm.is-on .y-realm-t em {
-  color: var(--y-ink2);
-}
 #yutu2 .y-realm-badge {
   margin-left: auto;
   flex: none;
@@ -6896,9 +6885,6 @@ html.y-motion-ready #yutu2 .y-card.y-in {
   #yutu2 .y-realm {
     padding: 7px 9px;
     gap: 8px;
-  }
-  #yutu2 .y-realm-t em {
-    font-size: 10.5px;
   }
   #yutu2 .y-realm-badge {
     display: none;
@@ -11937,12 +11923,6 @@ html.y-motion-off #yutu2 .y-step-stage.is-page-dragging {
   );
   border-color: rgba(150, 190, 255, 0.32);
   color: #f3f7ff;
-}
-#yutu2 .y-realm-t em {
-  color: var(--y-muted);
-}
-#yutu2 .y-realm.is-on .y-realm-t em {
-  color: var(--y-ink2);
 }
 #yutu2 .y-realm-i {
   color: var(--y-brand);
