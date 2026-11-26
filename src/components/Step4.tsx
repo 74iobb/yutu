@@ -324,6 +324,7 @@ export default function Step4({ onOpenList, onOpenSummary }: Props = {}) {
               stageMaterials={stageMaterials}
               scope={scope}
               cityMaterials={cityMaterials}
+              focus={focus}
             />
             <div className='y-campaign-hud'>
               <b>{scope === 'nation' ? '全国网络' : '本地作战图'}</b>
