@@ -1,5 +1,6 @@
 import type { KeyboardEvent } from 'react';
 import marble from '@/assets/loop-marble.webp';
+import BloomMark from './BloomMark';
 
 export type LoopStationKey =
   | 'claim'
@@ -179,6 +180,8 @@ export default function LoopMap({
 
   return (
     <div className='y-loop-map'>
+      {/* 闭环图底色：一朵缓慢旋转的彩虹花 */}
+      <BloomMark className='y-loop-bloom' />
       <svg
         viewBox='0 0 400 400'
         role='group'

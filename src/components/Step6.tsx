@@ -27,7 +27,6 @@ import { useImmersive } from '@/lib/uiMotion';
 import { useYutu } from '@/store/YutuContext';
 import { Chip, Empty, LinkedText, Say } from './bits';
 import DataSourceBadge from './DataSourceBadge';
-import BloomMark from './BloomMark';
 import GapPhoto from './GapPhoto';
 import LoopMap, {
   LOOP_STATIONS,
@@ -2661,12 +2660,9 @@ export default function Step6() {
                   aria-selected={state.sub === s.n}
                   onClick={() => setSub(s.n)}
                 >
-                  <BloomMark className='y-sub-bloom' />
-                  <span className='y-sub-tab-t'>
-                    {s.n === 1 ? '① ' : '② '}
-                    {s.label}
-                    {s.flag ? <span className='y-flag'>{s.flag}</span> : null}
-                  </span>
+                  {s.n === 1 ? '① ' : '② '}
+                  {s.label}
+                  {s.flag ? <span className='y-flag'>{s.flag}</span> : null}
                 </button>
               ))}
           </div>
@@ -2735,11 +2731,8 @@ export default function Step6() {
                 aria-selected={state.sub === s.n}
                 onClick={() => setSub(s.n)}
               >
-                <BloomMark className='y-sub-bloom' />
-                <span className='y-sub-tab-t'>
-                  {s.label}
-                  {s.flag ? <span className='y-flag'>{s.flag}</span> : null}
-                </span>
+                {s.label}
+                {s.flag ? <span className='y-flag'>{s.flag}</span> : null}
               </button>
             ))}
         </div>

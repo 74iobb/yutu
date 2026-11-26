@@ -1703,45 +1703,6 @@
   font-weight: 600;
 }
 
-/* 选中的次板块按钮：背后一朵缓慢旋转的迷你彩虹花 */
-#yutu2 .y-sub-tab {
-  position: relative;
-  overflow: hidden;
-  isolation: isolate;
-}
-#yutu2 .y-sub-bloom {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  width: 64px;
-  height: 64px;
-  transform: translate(-50%, -50%);
-  opacity: 0.16;
-  filter: blur(1.6px) saturate(1.2);
-  pointer-events: none;
-  z-index: 0;
-  transition: opacity 0.3s ease;
-}
-#yutu2 .y-sub-tab:hover .y-sub-bloom {
-  opacity: 0.24;
-}
-#yutu2 .y-sub-tab[aria-selected='true'] .y-sub-bloom {
-  opacity: 0.34;
-  animation: ySubBloomSpin 24s linear infinite;
-}
-#yutu2 .y-sub-tab-t {
-  position: relative;
-  z-index: 1;
-  display: inline-flex;
-  align-items: center;
-  /* 花朵底纹提亮后，用一层很淡的暗影保住小字可读性 */
-  text-shadow: 0 1px 3px rgba(4, 10, 20, 0.6);
-}
-@keyframes ySubBloomSpin {
-  to {
-    transform: translate(-50%, -50%) rotate(360deg);
-  }
-}
 #yutu2 .y-flag {
   display: inline-block;
   margin-left: 5px;
@@ -13340,7 +13301,6 @@ html.y-motion-off #yutu2 .y-step-stage.is-page-dragging {
   #yutu2 .y-radar-sweep,
   #yutu2 .y-radar-stamen,
   #yutu2 .y-radar-bloom-sheen,
-  #yutu2 .y-sub-bloom,
   #yutu2 .y-trend-flow,
   #yutu2 .y-river-sheen {
     animation: none;
@@ -13365,9 +13325,6 @@ html.y-motion-off #yutu2 .y-river-sheen {
 }
 html.y-motion-off #yutu2 .y-radar-stamen,
 html.y-motion-off #yutu2 .y-radar-bloom-sheen {
-  animation: none;
-}
-html.y-motion-off #yutu2 .y-sub-bloom {
   animation: none;
 }
 html.y-motion-off #yutu2 .y-gap-photo-poster {
