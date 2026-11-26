@@ -11,10 +11,10 @@ import DataSourcesPanel from './DataSourcesPanel';
 import OpticalBand from './OpticalBand';
 
 const STEP_META = [
-  { t: '填写信息', d: '城市、年龄与处境' },
-  { t: '了解你所处的环境', d: '城市、区域与真实讨论' },
-  { t: '方向与推演', d: '方向清单 · 作战图 · 归属摘要' },
-  { t: '成长闭环', d: '体验 · 自省 · 档案 · 共建' },
+  { t: '填写信息' },
+  { t: '了解你所处的环境' },
+  { t: '方向与推演' },
+  { t: '成长闭环' },
 ];
 
 /** 手势灵敏度：阈值越小越容易触发；轻扫按速度兜底 */
@@ -779,7 +779,6 @@ export function Shell({ children }: { children: ReactNode }) {
                   <span className='y-flag'>{state.victories.length}</span>
                 ) : null}
               </span>
-              <span className='y-step-d'>{s.d}</span>
             </button>
           );
         })}

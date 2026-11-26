@@ -212,16 +212,6 @@
   font-weight: 600;
   white-space: nowrap;
 }
-#yutu2 .y-step-d {
-  display: block;
-  font-size: 11px;
-  color: var(--y-muted);
-  margin-top: 1px;
-  font-weight: 400;
-  line-height: 1.5;
-  white-space: nowrap;
-}
-
 #yutu2 .y-main {
   padding: 18px 22px 22px;
 }
@@ -5754,9 +5744,6 @@ body {
   background: rgba(255, 255, 255, 0.22);
   color: #fff;
 }
-#yutu2 .y-step[aria-current='step'] .y-step-d {
-  color: rgba(255, 255, 255, 0.72);
-}
 #yutu2 .y-step-n {
   background: var(--y-line2);
   transition:
@@ -8057,10 +8044,6 @@ html.y-motion-ready #yutu2 .y-card.y-in {
 }
 #yutu2 .y-step[aria-current='step'] .y-step-n {
   position: relative;
-}
-#yutu2 .y-step[aria-current='step'] .y-step-d {
-  color: rgba(255, 255, 255, 0.84);
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
 }
 #yutu2 .y-step[aria-current='step'] .y-step-n::after {
   content: '';
@@ -11902,9 +11885,6 @@ html.y-motion-off #yutu2 .y-step-stage.is-page-dragging {
 }
 #yutu2 .y-step:hover:not(:disabled) {
   background-color: rgba(120, 160, 255, 0.1);
-}
-#yutu2 .y-step-d {
-  color: var(--y-muted);
 }
 #yutu2 .y-step.is-done .y-step-n {
   background: #5f9bff;
