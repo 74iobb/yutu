@@ -30,3 +30,5 @@ secrets/*.local
 # 用户截图与交接压缩包：不入公开仓库
 .attachments/
 *.zip
+.npmrc
+pnpm-lock.yaml
