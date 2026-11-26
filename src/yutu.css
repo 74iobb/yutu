@@ -12503,16 +12503,16 @@ html.y-motion-off #yutu2 .y-step-stage.is-page-dragging {
   padding: 10px 12px 8px;
   border: 1px solid rgba(186, 150, 86, 0.38);
   border-radius: var(--y-r);
-  /* 用户提供的彩绘玻璃做底色，奶白纱压亮保证数据可读 */
-  background-color: #f7efdf;
-  background-image: url('./assets/y-radar-glass.jpg');
+  /* 城市电影感底图（Unsplash 芝加哥黄昏）+ 奶白纱保证数据可读 */
+  background-color: #101a2a;
+  background-image: url('./assets/y-radar-city.jpg');
   background-image:
     image-set(
-      url('./assets/y-radar-glass.webp') type('image/webp'),
-      url('./assets/y-radar-glass.jpg') type('image/jpeg')
+      url('./assets/y-radar-city.webp') type('image/webp'),
+      url('./assets/y-radar-city.jpg') type('image/jpeg')
     );
   background-size: cover;
-  background-position: 50% 38%;
+  background-position: 50% 44%;
   background-repeat: no-repeat;
   box-shadow:
     0 26px 60px -40px rgba(120, 70, 20, 0.48),
@@ -12529,10 +12529,10 @@ html.y-motion-off #yutu2 .y-step-stage.is-page-dragging {
   inset: 0;
   background:
     radial-gradient(
-      62% 56% at 50% 42%,
-      rgba(255, 253, 248, 0.74) 0%,
-      rgba(255, 251, 244, 0.5) 55%,
-      rgba(255, 249, 240, 0.3) 100%
+      66% 58% at 50% 42%,
+      rgba(255, 253, 248, 0.8) 0%,
+      rgba(255, 251, 244, 0.58) 55%,
+      rgba(255, 249, 240, 0.38) 100%
     ),
     linear-gradient(
       112deg,
@@ -12542,9 +12542,9 @@ html.y-motion-off #yutu2 .y-step-stage.is-page-dragging {
       transparent 68%
     );
   /* 磨砂玻璃：让彩玻璃变成柔焦底纹，而不是加一层白 */
-  /* 只做极轻的柔化，几乎完整保留彩玻璃拼块 */
-  -webkit-backdrop-filter: blur(1px) saturate(1.04);
-  backdrop-filter: blur(1px) saturate(1.04);
+  /* 城市照片细节较密，轻微柔化让数据区更安静 */
+  -webkit-backdrop-filter: blur(4px) saturate(1.05);
+  backdrop-filter: blur(4px) saturate(1.05);
   pointer-events: none;
   z-index: 0;
 }
