@@ -32,3 +32,6 @@ secrets/*.local
 *.zip
 .npmrc
 pnpm-lock.yaml
+
+# 未授权且未使用的素材（带第三方水印），不入公开仓库；本地文件保留在 .attachments/
+src/assets/photos/
