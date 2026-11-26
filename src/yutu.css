@@ -13177,27 +13177,51 @@ html.y-motion-off #yutu2 .y-step-stage.is-page-dragging {
 #yutu2 .y-radar-sweep-dot {
   fill: #eaf5ff;
 }
-/* 背景：三圈七彩花瓣（正常混合，保证高饱和不被冲淡） */
+/* 背景：三圈宝石色花瓣 + 柔光 / 纵深 / 玻璃高光 */
 #yutu2 .y-radar-bloom {
-  mix-blend-mode: normal;
   pointer-events: none;
+  /* 只做一次合成后的饱和度提升，避免 21 片花瓣各自跑滤镜 */
+  filter: saturate(1.18);
+}
+#yutu2 .y-radar-bloom-glow {
+  opacity: 0.78;
 }
 #yutu2 .y-radar-petal {
-  opacity: 0.84;
-  filter: blur(0.6px) saturate(1.35);
-  stroke: rgba(255, 255, 255, 0.18);
-  stroke-width: 0.6;
+  opacity: 0.78;
+  stroke: rgba(255, 255, 255, 0.3);
+  stroke-width: 0.7;
 }
 #yutu2 .y-radar-petal.is-1 {
-  opacity: 0.7;
-  filter: blur(0.8px) saturate(1.3);
+  opacity: 0.62;
 }
 #yutu2 .y-radar-petal.is-2 {
-  opacity: 0.6;
-  filter: blur(0.5px) saturate(1.25);
+  opacity: 0.5;
 }
 #yutu2 .y-radar-flower-core {
   opacity: 0.7;
+}
+#yutu2 .y-radar-bloom-shade {
+  opacity: 0.9;
+}
+#yutu2 .y-radar-bloom-sheen {
+  opacity: 0.5;
+  mix-blend-mode: screen;
+  transform-box: view-box;
+  transform-origin: 170px 150px;
+  animation: yBloomSheen 20s linear infinite;
+}
+@keyframes yBloomSheen {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+#yutu2 .y-radar-bloom-ring {
+  stroke: rgba(220, 240, 255, 0.22);
+  stroke-width: 1;
+  filter: drop-shadow(0 0 4px rgba(180, 220, 255, 0.35));
 }
 #yutu2 .y-radar-stamen {
   opacity: 0.9;
@@ -13270,6 +13294,7 @@ html.y-motion-off #yutu2 .y-step-stage.is-page-dragging {
   #yutu2 .y-gap-photo-sheen,
   #yutu2 .y-radar-sweep,
   #yutu2 .y-radar-stamen,
+  #yutu2 .y-radar-bloom-sheen,
   #yutu2 .y-trend-flow,
   #yutu2 .y-river-sheen {
     animation: none;
@@ -13292,7 +13317,8 @@ html.y-motion-off #yutu2 .y-river-sheen {
   animation: none;
   opacity: 0;
 }
-html.y-motion-off #yutu2 .y-radar-stamen {
+html.y-motion-off #yutu2 .y-radar-stamen,
+html.y-motion-off #yutu2 .y-radar-bloom-sheen {
   animation: none;
 }
 html.y-motion-off #yutu2 .y-gap-photo-poster {

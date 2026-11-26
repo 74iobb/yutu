@@ -68,13 +68,13 @@ function sweepTailPath(spanDeg: number) {
 
 /** 七彩：高饱和彩虹色（正常混合下更艳，不被屏幕混合冲淡） */
 const RAINBOW = [
-  '#ff3d6e',
-  '#ff8a3d',
-  '#ffd93d',
-  '#4dff9d',
-  '#2fd8ff',
+  '#ff3b6b',
+  '#ff7a45',
+  '#ffcf4d',
+  '#3fe8a0',
+  '#35cfff',
   '#4f7dff',
-  '#b45bff',
+  '#a96bff',
 ] as const;
 
 /** 单片花瓣：从花心到瓣尖的两段二次曲线，spread 控制宽窄、sway 控制摆动 */
@@ -96,9 +96,9 @@ function petalPath(
 
 /** 三圈花瓣：外 7 / 中 5 / 内 9，颜色与旋向错开 */
 const ALL_PETAL_RINGS = [
-  { count: 7, k: 0.96, spread: 30, phase: 0, spin: 7, tone: 0, wave: 0.16 },
-  { count: 5, k: 0.64, spread: 38, phase: 36, spin: -10, tone: 3, wave: 0.2 },
-  { count: 9, k: 0.44, spread: 20, phase: 20, spin: 12, tone: 5, wave: 0.14 },
+  { count: 7, k: 0.96, spread: 30, phase: 0, spin: 4.5, tone: 0, wave: 0.16 },
+  { count: 5, k: 0.64, spread: 38, phase: 36, spin: -6, tone: 3, wave: 0.2 },
+  { count: 9, k: 0.44, spread: 20, phase: 20, spin: 7, tone: 5, wave: 0.14 },
 ] as const;
 
 /** 手机 / 低配设备去掉最内圈，减少逐帧重算 */
@@ -254,6 +254,23 @@ export default function GrowthRadar({
             <stop offset='72%' stopColor='#e6f2ff' stopOpacity='0.5' />
             <stop offset='100%' stopColor='#ffffff' stopOpacity='0.05' />
           </linearGradient>
+          {/* 背景柔光、中心压暗与玻璃高光 */}
+          <radialGradient id={`${uid}-bloom-glow`} cx='50%' cy='50%' r='50%'>
+            <stop offset='0%' stopColor='#a96bff' stopOpacity='0.3' />
+            <stop offset='55%' stopColor='#35cfff' stopOpacity='0.14' />
+            <stop offset='100%' stopColor='#35cfff' stopOpacity='0' />
+          </radialGradient>
+          <radialGradient id={`${uid}-bloom-shade`} cx='50%' cy='50%' r='50%'>
+            <stop offset='0%' stopColor='#071426' stopOpacity='0.72' />
+            <stop offset='52%' stopColor='#071426' stopOpacity='0.24' />
+            <stop offset='100%' stopColor='#071426' stopOpacity='0' />
+          </radialGradient>
+          <linearGradient id={`${uid}-bloom-sheen`} x1='0' y1='0' x2='1' y2='1'>
+            <stop offset='0%' stopColor='#ffffff' stopOpacity='0' />
+            <stop offset='44%' stopColor='#ffffff' stopOpacity='0.2' />
+            <stop offset='56%' stopColor='#ffffff' stopOpacity='0.2' />
+            <stop offset='100%' stopColor='#ffffff' stopOpacity='0' />
+          </linearGradient>
           {/* 花蕊：暖白金到透明 */}
           <radialGradient id={`${uid}-flower-core`} cx='50%' cy='50%' r='50%'>
             <stop offset='0%' stopColor='#fff8e6' stopOpacity='0.95' />
@@ -264,6 +281,13 @@ export default function GrowthRadar({
 
         {/* 背景：三圈七彩花瓣，边走边开合、边旋转 */}
         <g className='y-radar-bloom' aria-hidden='true'>
+          <circle
+            className='y-radar-bloom-glow'
+            cx={CX}
+            cy={CY}
+            r={R * 1.08}
+            fill={`url(#${uid}-bloom-glow)`}
+          />
           {PETAL_RINGS.map((ring, ri) =>
             Array.from({ length: ring.count }, (_, i) => {
               const idx = PETAL_OFFSETS[ri] + i;
@@ -307,6 +331,28 @@ export default function GrowthRadar({
               />
             );
           })}
+          <circle
+            className='y-radar-bloom-shade'
+            cx={CX}
+            cy={CY}
+            r={R * 1.02}
+            fill={`url(#${uid}-bloom-shade)`}
+          />
+          <ellipse
+            className='y-radar-bloom-sheen'
+            cx={CX}
+            cy={CY}
+            rx={R * 0.92}
+            ry={R * 0.42}
+            fill={`url(#${uid}-bloom-sheen)`}
+          />
+          <circle
+            className='y-radar-bloom-ring'
+            cx={CX}
+            cy={CY}
+            r={R}
+            fill='none'
+          />
         </g>
 
         {/* 网格 */}
