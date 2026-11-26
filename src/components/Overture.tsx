@@ -656,9 +656,10 @@ function stopMusic(): void {
   window.clearInterval(timer);
   try {
     const now = audioCtx ? audioCtx.currentTime : 0;
-    bus.gain.setTargetAtTime(0.0001, now, 0.5);
-    padA.stop(now + 1.6);
-    padB.stop(now + 1.6);
+    /* 退场要干净：0.3s 淡出，0.8s 内停掉所有垫音 */
+    bus.gain.setTargetAtTime(0.0001, now, 0.3);
+    padA.stop(now + 0.8);
+    padB.stop(now + 0.8);
   } catch {
     /* 上下文已关闭 */
   }
@@ -904,10 +905,15 @@ export default function Overture() {
    */
   useEffect(() => {
     if (seq.phase !== 'leaving') return;
+    /* 退场时把所有开篇声音一起收掉：音乐、录音、系统语音 */
+    stopVoice();
+    stopSpeech();
     stopMusic();
     const shell = document.getElementById('yutu2');
     shell?.classList.add('y-ov-reveal');
     const timer = window.setTimeout(() => {
+      stopSpeech();
+      setAudioMuted(true);
       setSeq((s) => (s.phase === 'leaving' ? { ...s, phase: 'idle' } : s));
     }, LEAVE_MS);
     return () => {
