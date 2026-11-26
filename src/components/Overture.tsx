@@ -916,7 +916,28 @@ export default function Overture() {
     };
   }, [seq.id, seq.phase]);
 
-  /** 任意键跳过；Tab 留给键盘导航 */
+  /**
+   * 开篇期间把应用主体设为 inert：
+   * 遮罩下方的按钮不可聚焦、不可点击，键盘与读屏都不会跑到被挡住的内容上。
+   * 卸载（或阶段回到 idle）时恢复。
+   */
+  useEffect(() => {
+    if (seq.phase === 'idle') return;
+    const shell = document.getElementById('yutu2') as
+      | (HTMLElement & { inert: boolean })
+      | null;
+    if (!shell) return;
+    const prev = shell.inert;
+    shell.inert = true;
+    return () => {
+      shell.inert = prev;
+    };
+  }, [seq.phase]);
+
+  /**
+   * 任意键跳过；Tab 留给键盘导航。
+   * 焦点在声音 / 跳过按钮上时不抢键 —— 否则空格或回车会一边切按钮一边把开篇关掉。
+   */
   useEffect(() => {
     if (seq.phase !== 'playing') return;
     const onKey = (e: KeyboardEvent) => {
@@ -926,6 +947,14 @@ export default function Overture() {
         e.key === 'Control' ||
         e.key === 'Alt' ||
         e.key === 'Meta'
+      ) {
+        return;
+      }
+      const target = e.target as HTMLElement | null;
+      if (
+        target?.closest(
+          'button, a, input, textarea, select, [contenteditable="true"]'
+        )
       ) {
         return;
       }
@@ -943,6 +972,9 @@ export default function Overture() {
       className={`y-overture y-ov-bright${
         seq.phase === 'leaving' ? ' is-leaving' : ''
       }${LOW_POWER ? ' y-ov-lite' : ''}`}
+      role='dialog'
+      aria-modal='true'
+      aria-label='域途序章：泻水置平地，各自东西南北流'
       onClick={handleOverlayClick}
     >
       <span className='y-ov-halo' aria-hidden='true' />
