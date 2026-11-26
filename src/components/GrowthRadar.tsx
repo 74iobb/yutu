@@ -1,4 +1,4 @@
-import { useId } from 'react';
+import { useEffect, useId, useRef } from 'react';
 import { DIMS } from '@/lib/model';
 import type { Scores } from '@/types';
 
@@ -66,11 +66,31 @@ function sweepTailPath(spanDeg: number) {
   );
 }
 
-/** 跟在扫描线后面的波浪线：半径随角度起伏，配合虚线流动 */
-function waveTrailPath(radius: number, amp: number, phase: number) {
+/**
+ * 飘带的中轴：主波沿带长传播，叠一层反向的二次波与阵风式振幅变化，
+ * 让形状随时间自然起伏，而不是整条刚性旋转。
+ */
+function centerAt(baseR: number, amp: number, u: number, t: number) {
+  const gust = 0.82 + 0.18 * Math.sin(t * 0.7 + u * 0.6);
+  return (
+    baseR +
+    (Math.sin(u + t * 1.5) * amp +
+      Math.sin(u * 2.25 - t * 2.2) * amp * 0.32) *
+      gust
+  );
+}
+
+/** 跟在扫描线后面的波浪线：半径随角度与时间起伏，配合虚线流动 */
+function waveTrailPath(
+  radius: number,
+  amp: number,
+  phase: number,
+  t = 0
+) {
   let d = '';
   for (let deg = -96; deg >= -168; deg -= 4) {
-    const r = radius + Math.sin((deg + phase) * 0.12) * amp;
+    const u = (deg + phase) * 0.11;
+    const r = centerAt(radius, amp, u, t);
     const p = polar(deg, r);
     d += `${d ? 'L' : 'M'}${p.x.toFixed(1)},${p.y.toFixed(1)}`;
   }
@@ -78,20 +98,23 @@ function waveTrailPath(radius: number, amp: number, phase: number) {
 }
 
 /**
- * 3D 波形缎带：内缘与外缘各自起伏、带宽随角度变化，闭合后像一条
+ * 3D 波形缎带：内缘与外缘各自起伏、带宽随角度与时间变化，闭合后像一条
  * 有厚度的飘带；配合渐变与高光脊线制造体积感。
  */
 function ribbonPath(
   baseR: number,
   amp: number,
   phase: number,
-  halfW: number
+  halfW: number,
+  t = 0
 ) {
   const outer: { x: number; y: number }[] = [];
   const inner: { x: number; y: number }[] = [];
   for (let deg = -94; deg >= -172; deg -= 3) {
-    const rc = baseR + Math.sin((deg + phase) * 0.11) * amp;
-    const w = halfW * (0.72 + 0.28 * Math.sin((deg + phase + 50) * 0.13));
+    const u = (deg + phase) * 0.11;
+    const rc = centerAt(baseR, amp, u, t);
+    const w =
+      halfW * (0.64 + 0.36 * Math.sin(u * 1.3 + t * 1.1 + 0.9));
     outer.push(polar(deg, rc + w));
     inner.push(polar(deg, rc - w));
   }
@@ -105,10 +128,11 @@ function ribbonPath(
 }
 
 /** 缎带的高光脊线 */
-function ridgePath(baseR: number, amp: number, phase: number) {
+function ridgePath(baseR: number, amp: number, phase: number, t = 0) {
   let d = '';
   for (let deg = -94; deg >= -172; deg -= 4) {
-    const r = baseR + Math.sin((deg + phase) * 0.11) * amp;
+    const u = (deg + phase) * 0.11;
+    const r = centerAt(baseR, amp, u, t);
     const p = polar(deg, r);
     d += `${d ? 'L' : 'M'}${p.x.toFixed(1)},${p.y.toFixed(1)}`;
   }
@@ -127,6 +151,62 @@ export default function GrowthRadar({
   compact = false,
 }: GrowthRadarProps) {
   const uid = useId().replace(/:/g, '');
+  /* 飘带形状逐帧重算（不触发 React 重渲染），让波沿带长自然传播 */
+  const waveBackRef = useRef<SVGPathElement>(null);
+  const waveMainRef = useRef<SVGPathElement>(null);
+  const waveCoreRef = useRef<SVGPathElement>(null);
+  const waveRidgeRef = useRef<SVGPathElement>(null);
+  const waveFlowARef = useRef<SVGPathElement>(null);
+  const waveFlowBRef = useRef<SVGPathElement>(null);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return;
+    let raf = 0;
+    let alive = true;
+    let last = 0;
+    const tick = (now: number) => {
+      if (!alive) return;
+      /* 30fps 足够顺滑，也避免多个雷达同时动画时吃满 CPU */
+      if (now - last >= 33) {
+        last = now;
+        if (!document.documentElement.classList.contains('y-motion-off')) {
+          const t = now / 1000;
+          waveBackRef.current?.setAttribute(
+            'd',
+            ribbonPath(R * 0.62, 5, 84, 5, t)
+          );
+          waveMainRef.current?.setAttribute(
+            'd',
+            ribbonPath(R * 0.82, 7, 0, 9, t)
+          );
+          waveCoreRef.current?.setAttribute(
+            'd',
+            ribbonPath(R * 0.82, 7, 0, 3.4, t)
+          );
+          waveRidgeRef.current?.setAttribute(
+            'd',
+            ridgePath(R * 0.87, 7, 0, t)
+          );
+          waveFlowARef.current?.setAttribute(
+            'd',
+            waveTrailPath(R * 0.95, 4, 30, t)
+          );
+          waveFlowBRef.current?.setAttribute(
+            'd',
+            waveTrailPath(R * 0.7, 3, 150, t)
+          );
+        }
+      }
+      raf = window.requestAnimationFrame(tick);
+    };
+    raf = window.requestAnimationFrame(tick);
+    return () => {
+      alive = false;
+      window.cancelAnimationFrame(raf);
+    };
+  }, []);
+
   const changed = DIMS.filter((d) => before[d.k] !== after[d.k]);
   const deltaText = DIMS.map((d) => ({
     ...d,
@@ -243,31 +323,37 @@ export default function GrowthRadar({
           />
           <path
             className='y-radar-wave y-radar-wave-back'
+            ref={waveBackRef}
             d={ribbonPath(R * 0.62, 5, 84, 5)}
             fill={`url(#${uid}-ribbon-dark)`}
           />
           <path
             className='y-radar-wave y-radar-wave-3d'
+            ref={waveMainRef}
             d={ribbonPath(R * 0.82, 7, 0, 9)}
             fill={`url(#${uid}-ribbon)`}
           />
           <path
             className='y-radar-wave-core'
+            ref={waveCoreRef}
             d={ribbonPath(R * 0.82, 7, 0, 3.4)}
             fill={`url(#${uid}-ribbon-core)`}
           />
           <path
             className='y-radar-wave-ridge'
+            ref={waveRidgeRef}
             d={ridgePath(R * 0.87, 7, 0)}
             stroke={`url(#${uid}-ribbon)`}
           />
           <path
             className='y-radar-wave-line'
+            ref={waveFlowARef}
             d={waveTrailPath(R * 0.95, 4, 30)}
             stroke={`url(#${uid}-trail)`}
           />
           <path
             className='y-radar-wave-line'
+            ref={waveFlowBRef}
             d={waveTrailPath(R * 0.7, 3, 150)}
             stroke={`url(#${uid}-trail)`}
             style={{ animationDelay: '-1.1s' }}
