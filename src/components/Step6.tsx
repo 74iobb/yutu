@@ -1622,6 +1622,27 @@ function WallTab({ nodes }: { nodes: PrototypeNode[] }) {
   );
 }
 
+/** 清空本机历史数据：删掉所有 yutu.* 本地键与一次性视图记忆，并换一个新的本机标识。 */
+function clearLocalHistory(): void {
+  try {
+    [
+      'yutu.state.v3',
+      'yutu.state.v2',
+      'yutu.sandbox.v2',
+      'yutu.sandbox.v1',
+      'yutu.assessment.v1',
+      'yutu.marked',
+      'yutu.dropApplied',
+      'yutu.lastActive',
+      'yutu.ownerKey',
+    ].forEach((k) => localStorage.removeItem(k));
+    sessionStorage.removeItem('yutu.view34');
+  } catch {
+    /* 本地存储不可用时直接刷新 */
+  }
+  window.location.reload();
+}
+
 function PeersTab() {
   const {
     state,
@@ -1641,6 +1662,8 @@ function PeersTab() {
   const publicReviews = state.reviews.filter(r => r.authorKey !== ownerKey);
   /** 经验星云：把公开复盘按阶段排成星云，便于发现与标记 */
   const [nebula, setNebula] = useState(false);
+  /** 清空本机历史数据的二次确认 */
+  const [confirmClear, setConfirmClear] = useState(false);
   useImmersive(nebula, setNebula);
   /** 同伴经验域内部视图：共建 / 我的 / 数据 */
   const [peerView, setPeerView] = useState<'build' | 'mine' | 'data'>(
@@ -2070,7 +2093,44 @@ function PeersTab() {
           >
             下载完整备份 JSON
           </button>
+          <button
+            type='button'
+            className='y-btn y-btn-s y-btn-danger'
+            onClick={() => setConfirmClear(true)}
+          >
+            清空本机历史数据
+          </button>
         </div>
+        {confirmClear ? (
+          <div
+            className='y-confirm'
+            role='alertdialog'
+            aria-label='确认清空本机历史数据'
+          >
+            <p>
+              会清空本机的档案、任务、档案墙、沙盘与视图记忆，并生成新的本机标识。
+              <b>
+                平台数据表里的旧记录不会被删除，但不会再加载到这台设备。
+              </b>
+            </p>
+            <div className='y-row'>
+              <button
+                type='button'
+                className='y-btn y-btn-s'
+                onClick={() => setConfirmClear(false)}
+              >
+                取消
+              </button>
+              <button
+                type='button'
+                className='y-btn y-btn-s y-btn-danger'
+                onClick={clearLocalHistory}
+              >
+                确认清空
+              </button>
+            </div>
+          </div>
+        ) : null}
         <p className='y-note' style={{ paddingTop: 6 }}>
           备份包含：个人档案与起点快照、体验任务、阶段性胜利、自己提交的复盘、自己参与的讨论、素材链接、去向样本、有效标记记录与方向候选。
           云端记录不会因下载或清理本机缓存而改变。
