@@ -140,9 +140,6 @@ export default function StepSummary({ onOpenList }: { onOpenList: () => void }) 
       <header className='y-lead'>
         <p className='y-eyebrow'>STEP 03 · 归属与摘要</p>
         <h2>你的处境、约束与归属</h2>
-        <p className='y-note' style={{ paddingTop: 6 }}>
-          这一步收拢前两步的处境与本步选定的方向；确认后直接进入成长闭环。
-        </p>
       </header>
 
       <div className='y-vor-metrics'>

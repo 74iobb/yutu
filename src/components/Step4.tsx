@@ -124,7 +124,6 @@ export default function Step4({ onOpenList, onOpenSummary }: Props = {}) {
       <header className='y-lead'>
         <p className='y-eyebrow'>STEP 03 · 资源与推进圈</p>
         <h2>资源、代价与推进圈</h2>
-        <p>近圈条件就位，中圈需补条件，外圈条件不足；点选方向看代价。</p>
       </header>
 
       <div className='y-insight'>
@@ -144,11 +143,6 @@ export default function Step4({ onOpenList, onOpenSummary }: Props = {}) {
           <h3>
             {scope === 'nation' ? '全国资源网络' : '城市处境、推进圈与方向'}
           </h3>
-          <p>
-            {scope === 'nation'
-              ? '看你的城市与全国样本城市的连接；点选方向请切回本地圈层'
-              : '点选方向节点查看代价'}
-          </p>
         </div>
         <div className='y-card y-campaign-card y-focus-card'>
           <div className='y-campaign-head'>
@@ -497,7 +491,6 @@ export default function Step4({ onOpenList, onOpenSummary }: Props = {}) {
         <div className='y-zone-head'>
           <span className='y-zone-n'>02 / 代价</span>
           <h3>资源存量、方向代价与候选 <DataSourceBadge source='resources' showLabel={false} /></h3>
-          <p>先在图上点选方向，再对照资源消耗、剩余与候选对比</p>
         </div>
         <div className='y-g2 y-g2-stretch'>
           <div className='y-card y-gap-card'>

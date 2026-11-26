@@ -119,7 +119,6 @@ export default function Step3({ onOpenMap, onOpenSummary }: Props = {}) {
       <header className='y-lead'>
         <p className='y-eyebrow'>STEP 03 · 方向清单</p>
         <h2>这一阶段的所有方向，以及你当下能走的那些</h2>
-        <p>可行性看条件是否就位，不代表对你的评价。</p>
       </header>
 
       <div className='y-flow-steps' aria-label='方向推演三步'>

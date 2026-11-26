@@ -30,7 +30,6 @@ export default function Step34() {
   );
   /* 阶段切换后，旧候选可能已不属于当前阶段：仍然列出，但标记为不可定位 */
   const candidates = state.shortlist.filter(name => stageNames.has(name));
-  const staleCount = state.shortlist.length - candidates.length;
   const pickInStage = state.pick && stageNames.has(state.pick);
 
   useEffect(() => {
@@ -47,10 +46,6 @@ export default function Step34() {
       <div className='y-subview' ref={topRef}>
         <div>
           <p className='y-eyebrow'>STEP 03 · 方向与推演</p>
-          <p className='y-subview-note'>
-            方向清单、资源作战图与归属摘要属于同一步：在清单里点「看代价」或顶部候选标签，
-            都会选中该方向并切到图上重高亮；确认归属与摘要后直接进入成长闭环。
-          </p>
         </div>
         <div className='y-mode' role='group' aria-label='方向与推演视图'>
           <button
@@ -87,11 +82,6 @@ export default function Step34() {
         <div className='y-cand-dock-head'>
           <span className='y-eyebrow'>我的候选</span>
           <b>{candidates.length} / 4</b>
-          <span className='y-cand-dock-note'>
-            {candidates.length
-              ? '点候选 → 在作战图上定位并选中；× 移出候选。'
-              : '在方向清单点「＋ 加入候选」，最多 4 条；加入后会在作战图上带描边标记。'}
-          </span>
           {state.shortlist.length ? (
             <button
               type='button'
@@ -144,16 +134,6 @@ export default function Step34() {
               </span>
             );
           })}
-          {!state.shortlist.length ? (
-            <span className='y-cand-empty'>
-              候选条会一直留在这里，切到作战图也不会消失。
-            </span>
-          ) : null}
-          {staleCount ? (
-            <span className='y-cand-empty'>
-              {`其中 ${staleCount} 条不属于「${stage.name}」，保留序号但不参与定位；可点 × 移除或清空后重选。`}
-            </span>
-          ) : null}
           {pickInStage ? (
             <span className='y-cand-current' aria-live='polite'>
               当前已选定：<b>{state.pick}</b>
