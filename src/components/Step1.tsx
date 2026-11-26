@@ -71,25 +71,15 @@ export default function Step1() {
     >
       <header className='y-lead'>
         <p className='y-eyebrow'>STEP 01 · 处境</p>
-        <h2>先把你的情况填清楚</h2>
+        <h2>
+          先把你的情况填清楚
+          {initialValues ? (
+            <span className='y-chip y-chip-w' style={{ marginLeft: 8 }}>
+              示例值
+            </span>
+          ) : null}
+        </h2>
       </header>
-
-      {initialValues ? (
-        <p
-          className='y-note'
-          role='status'
-          style={{
-            margin: '0 0 12px',
-            padding: '9px 12px',
-            borderLeft: '2px solid var(--step-accent, #4fc9e6)',
-            background: 'var(--step-accent-soft, rgba(79, 201, 230, 0.08))',
-            borderRadius: 8,
-          }}
-        >
-          当前显示的是初始示例（{city.name} · {p.s.age} 岁 ·{' '}
-          {p.field || '未填写方向'}），不是你的真实情况。请按你的城市、年龄与处境修改；改动后这行提示会自动消失。
-        </p>
-      ) : null}
 
       <GrowthDelta />
 

@@ -100,6 +100,15 @@ export function Shell({ children }: { children: ReactNode }) {
   const loopActive = state.tasks.filter((t) => !t.archived);
   const loopReady = loopActive.filter((t) => t.status === 'done').length;
   const loopRound = state.victories.length + 1;
+  /**
+   * 首次使用：还没有任何进度时不显示同步状态、衰减提醒等系统消息，
+   * 第一次进来的界面只有品牌、导航与表单本身。
+   */
+  const firstRun =
+    !state.snapshot0 &&
+    !state.tasks.length &&
+    !state.victories.length &&
+    !state.shortlist.length;
   /** 数据上只有两段：真实处境（1–3 步）与成长（第 4 步） */
   const realm = state.step === 4 ? 'growth' : 'state';
   const growthUnlocked = state.maxStep >= 4;
@@ -528,6 +537,7 @@ export function Shell({ children }: { children: ReactNode }) {
         </div>
         <div className='y-head-side'>
           <div className='y-chip-row'>
+            {firstRun ? null : (
             <span className='y-sync-wrap'>
               <button
                 type='button'
@@ -602,6 +612,7 @@ export function Shell({ children }: { children: ReactNode }) {
                 </div>
               ) : null}
             </span>
+            )}
 
             {state.maxStep >= 4 || state.tasks.length || state.victories.length ? (
               <button
@@ -702,7 +713,7 @@ export function Shell({ children }: { children: ReactNode }) {
                 </div>
               ) : null}
             </span>
-            {state.inactive?.applied ? (
+            {!firstRun && state.inactive?.applied ? (
               <span className='y-chip y-chip-w'>
                 已按 {state.inactive.days} 天未活跃小幅衰减
               </span>
