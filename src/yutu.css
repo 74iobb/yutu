@@ -12446,6 +12446,18 @@ html.y-motion-off #yutu2 .y-step-stage.is-page-dragging {
   );
 }
 
+/* 驿站的金色田野本身偏亮，暗色主题下保留它的晨光 */
+#yutu2 .y-gap-photo--field img {
+  filter: saturate(0.98) contrast(0.97) brightness(1.04);
+}
+#yutu2 .y-gap-photo--field::after {
+  background: linear-gradient(
+    180deg,
+    rgba(4, 8, 18, 0.02) 0%,
+    rgba(4, 8, 18, 0.22) 100%
+  );
+}
+
 /* 体验工作台 / 停靠驿站等子页签：当前页签也用彩玻璃，而不是蓝/绿渐变 */
 #yutu2 .y-sub-tab[aria-selected='true'] {
   position: relative;
