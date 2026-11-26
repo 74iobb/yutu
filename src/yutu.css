@@ -9060,26 +9060,6 @@ html.y-motion-ready #yutu2 .y-lead.y-in h2 {
   backdrop-filter: blur(10px);
 }
 
-#yutu2 .y-campaign-card.is-focus {
-  position: fixed;
-  inset: 14px;
-  z-index: 110;
-  display: block;
-  overflow: auto;
-  padding: 14px;
-  border-radius: 18px;
-  border-color: rgba(14, 91, 76, 0.18);
-  background: linear-gradient(180deg, #fffefb, #f6f2e9);
-  box-shadow:
-    0 40px 90px -30px rgba(0, 0, 0, 0.6),
-    0 0 0 1px rgba(255, 255, 255, 0.4) inset;
-  animation: yFocusPanel 0.5s var(--y-ease-spring) both;
-}
-#yutu2 .y-campaign-card.is-focus .y-campaign-leaflet {
-  height: calc(100vh - 330px);
-  min-height: 320px;
-}
-
 #yutu2 .y-loop-board-card.is-focus {
   position: fixed;
   inset: 14px;
@@ -9188,12 +9168,7 @@ html.y-motion-ready #yutu2 .y-lead.y-in h2 {
   }
 }
 @media (max-width: 760px) {
-  #yutu2 .y-campaign-card.is-focus .y-campaign-leaflet {
-    height: calc(100vh - 390px);
-    min-height: 260px;
-  }
   #yutu2 .y-stage.is-focus .y-globe-panel,
-  #yutu2 .y-campaign-card.is-focus,
   #yutu2 .y-loop-board-card.is-focus {
     inset: 8px;
   }
@@ -9207,7 +9182,6 @@ html.y-motion-ready #yutu2 .y-lead.y-in h2 {
   #yutu2 .y-focus-backdrop,
   #yutu2 .y-stage.is-focus .y-globe-panel,
   #yutu2 .y-stage.is-focus .y-side,
-  #yutu2 .y-campaign-card.is-focus,
   #yutu2 .y-loop-board-card.is-focus {
     animation: none !important;
   }
@@ -9962,7 +9936,6 @@ html.y-motion-ready #yutu2 .y-lead.y-in h2 {
 }
 #yutu2 .y-stage.is-focus .y-globe-panel,
 #yutu2 .y-stage.is-focus .y-side,
-#yutu2 .y-campaign-card.is-focus,
 #yutu2 .y-loop-board-card.is-focus,
 #yutu2 .y-sky {
   animation-duration: var(--motion-enter);
@@ -12165,8 +12138,7 @@ html.y-motion-off #yutu2 .y-step-stage.is-page-dragging {
 #yutu2 .y-chart-frame,
 #yutu2 .y-stage.is-focus .y-globe-panel,
 #yutu2 .y-stage.is-focus .y-side,
-#yutu2 .y-stage.is-focus .y-side-tabs,
-#yutu2 .y-campaign-card.is-focus {
+#yutu2 .y-stage.is-focus .y-side-tabs {
   background: linear-gradient(
     180deg,
     rgba(6, 12, 24, 0.5),

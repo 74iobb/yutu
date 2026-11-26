@@ -9,7 +9,6 @@ import {
   stageDirections,
 } from '@/lib/model';
 import { getCases, rankByField } from '@/lib/search';
-import { useImmersive } from '@/lib/uiMotion';
 import {
   collectCityMaterials,
   collectDirectionMaterials,
@@ -56,9 +55,6 @@ export default function Step4({ onOpenList, onOpenSummary }: Props = {}) {
   const [recenterSignal, setRecenterSignal] = useState(0);
   /* 默认落在本地圈层：近 / 中 / 外圈与方向节点是这一步的核心 */
   const [scope, setScope] = useState<'local' | 'nation'>('local');
-  /** 聚焦模式：作战图铺满视口，背后的页面变暗 */
-  const [focus, setFocus] = useState(false);
-  useImmersive(focus, setFocus);
 
   /* 从顶部候选条 / 候选表改变选定方向时，若正处于全国视图则自动切回本地圈层，
      否则选中的方向在图上不可见，容易误以为“候选丢了”。 */
@@ -154,19 +150,7 @@ export default function Step4({ onOpenList, onOpenSummary }: Props = {}) {
               : '点选方向节点查看代价'}
           </p>
         </div>
-        {focus ? (
-          <button
-            type='button'
-            className='y-focus-backdrop'
-            aria-label='退出聚焦，返回页面'
-            onClick={() => setFocus(false)}
-          />
-        ) : null}
-        <div
-          className={`y-card y-campaign-card y-focus-card${
-            focus ? ' is-focus' : ''
-          }`}
-        >
+        <div className='y-card y-campaign-card y-focus-card'>
           <div className='y-campaign-head'>
             <div>
               <p className='y-eyebrow'>
@@ -248,15 +232,6 @@ export default function Step4({ onOpenList, onOpenSummary }: Props = {}) {
               >
                 {scope === 'nation' ? '回到全国视野' : '回到我的城市'}
               </button>
-              <button
-                type='button'
-                className='y-btn y-btn-s y-focus-toggle'
-                aria-pressed={focus}
-                onClick={() => setFocus(v => !v)}
-                title={focus ? 'Esc 也可退出' : '作战图铺满视口'}
-              >
-                {focus ? '退出聚焦' : '聚焦作战图'}
-              </button>
             </div>
           </div>
 
@@ -324,7 +299,6 @@ export default function Step4({ onOpenList, onOpenSummary }: Props = {}) {
               stageMaterials={stageMaterials}
               scope={scope}
               cityMaterials={cityMaterials}
-              focus={focus}
             />
             <div className='y-campaign-hud'>
               <b>{scope === 'nation' ? '全国网络' : '本地作战图'}</b>

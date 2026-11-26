@@ -226,7 +226,6 @@ export function Shell({ children }: { children: ReactNode }) {
       '.y-campaign-picks',
       '.y-loop-map',
       '.y-stage.is-focus',
-      '.y-campaign-card.is-focus',
       '.y-loop-board-card.is-focus',
       '.y-wall-tab.is-focus',
       '.y-sky',

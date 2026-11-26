@@ -34,8 +34,6 @@ interface Props {
   scope: 'local' | 'nation';
   /** 全国视图使用的城市级检索资料 */
   cityMaterials?: CityMaterial[];
-  /** 聚焦态：卡片在 fixed 与文档流之间切换，容器尺寸会突变 */
-  focus?: boolean;
 }
 
 const TIER = {
@@ -145,7 +143,6 @@ export default function CampaignMap({
   stageMaterials = [],
   scope,
   cityMaterials = [],
-  focus = false,
 }: Props) {
   const boxRef = useRef<HTMLDivElement>(null);
   const [map, setMap] = useState<L.Map | null>(null);
@@ -202,30 +199,6 @@ export default function CampaignMap({
       layersRef.current = null;
     };
   }, [onPick]);
-
-  /**
-   * 聚焦进出会让卡片在 fixed 与文档流之间切换，容器尺寸是瞬间跳变的。
-   * ResizeObserver 的回报在绘制之后才到，退出聚焦时会出现一帧「地图还是
-   * 聚焦尺寸」的错位。这里在 class 切换的同一批 effect 里立刻重算（无动画），
-   * 再补一帧和 260ms 后的兜底，保证退出聚焦马上恢复。
-   */
-  useEffect(() => {
-    if (!map) return;
-    const fix = () => {
-      try {
-        map.invalidateSize({ animate: false });
-      } catch {
-        /* map already removed */
-      }
-    };
-    fix();
-    const raf = window.requestAnimationFrame(fix);
-    const timer = window.setTimeout(fix, 260);
-    return () => {
-      window.cancelAnimationFrame(raf);
-      window.clearTimeout(timer);
-    };
-  }, [map, focus]);
 
   useEffect(() => {
     const me = CITY_MAP[profile.city];
@@ -347,7 +320,7 @@ export default function CampaignMap({
         const key = `nation|${profile.city}|${recenterSignal}`;
         if (viewKey.current !== key) {
           viewKey.current = key;
-          /* 先按当前容器尺寸重算，再贴合；否则会用到聚焦前的旧尺寸 */
+          /* 先按当前容器尺寸重算，再贴合，避免用到上一次布局的旧尺寸 */
           try {
             map.invalidateSize({ animate: false });
           } catch {
@@ -703,7 +676,7 @@ export default function CampaignMap({
       const key = `local|${profile.city}|${recenterSignal}`;
       if (viewKey.current !== key) {
         viewKey.current = key;
-        /* 同 nation 分支：贴合前先按当前尺寸重算 */
+        /* 同 nation 分支：贴合前先按当前容器尺寸重算 */
         try {
           map.invalidateSize({ animate: false });
         } catch {
