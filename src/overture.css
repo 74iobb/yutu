@@ -635,6 +635,99 @@
   }
 }
 
+/* ------------------------------ 撞击高光 ------------------------------ */
+.y-ov-impact {
+  mix-blend-mode: screen;
+}
+
+/* 冲击波：撞击瞬间向外推开的两圈细环，比涟漪更快、更亮 */
+.y-ov-shock {
+  fill: none;
+  stroke: rgba(239, 249, 255, 0.95);
+  stroke-width: 1.5;
+  transform-box: fill-box;
+  transform-origin: center;
+  opacity: 0;
+  animation: yOvShock 1.15s cubic-bezier(0.15, 0.72, 0.25, 1) 1.56s both;
+}
+
+.y-ov-shock-b {
+  stroke: rgba(198, 231, 255, 0.7);
+  stroke-width: 0.8;
+  animation-duration: 1.9s;
+  animation-delay: 1.74s;
+}
+
+@keyframes yOvShock {
+  0% {
+    transform: scale(0.22);
+    opacity: 0.95;
+  }
+  60% {
+    opacity: 0.38;
+  }
+  100% {
+    transform: scale(3.6);
+    opacity: 0;
+  }
+}
+
+/* 横向镜头光斑：撞击点亮起，随后收成一条余光 */
+.y-ov-flare {
+  transform-box: fill-box;
+  transform-origin: center;
+  opacity: 0;
+  animation: yOvFlare 2.4s cubic-bezier(0.16, 1, 0.3, 1) 1.5s both;
+}
+
+.y-ov-flare-b {
+  animation-duration: 3.2s;
+  animation-delay: 1.68s;
+}
+
+@keyframes yOvFlare {
+  0% {
+    opacity: 0;
+    transform: scaleX(0.2) scaleY(0.5);
+  }
+  10% {
+    opacity: 1;
+  }
+  38% {
+    opacity: 0.55;
+  }
+  100% {
+    opacity: 0.14;
+    transform: scaleX(1) scaleY(1);
+  }
+}
+
+/* 四芒星：一个很短的星芒，收得比名句早，不抢戏 */
+.y-ov-star {
+  transform-box: fill-box;
+  transform-origin: center;
+  opacity: 0;
+  animation: yOvStar 2s cubic-bezier(0.16, 1, 0.3, 1) 1.52s both;
+}
+
+@keyframes yOvStar {
+  0% {
+    opacity: 0;
+    transform: scale(0.3) rotate(-6deg);
+  }
+  9% {
+    opacity: 0.95;
+  }
+  45% {
+    opacity: 0.5;
+    transform: scale(1) rotate(4deg);
+  }
+  100% {
+    opacity: 0.16;
+    transform: scale(1.05) rotate(8deg);
+  }
+}
+
 /* ------------------------------ 板块与标签 ------------------------------ */
 .y-ov-crust {
   transform-box: view-box;
@@ -1353,6 +1446,7 @@
 .y-overture.is-leaving .y-ov-horizon-line,
 .y-overture.is-leaving .y-ov-fog,
 .y-overture.is-leaving .y-ov-rays,
+.y-overture.is-leaving .y-ov-impact,
 .y-overture.is-leaving .y-ov-dusts,
 .y-overture.is-leaving .y-ov-sprays,
 .y-overture.is-leaving .y-ov-motes,
@@ -1608,6 +1702,25 @@ html.y-motion-off .y-overture {
 .y-ov-bright .y-ov-mote {
   stroke: rgba(110, 155, 205, 0.28);
   stroke-width: 0.25;
+}
+
+/* 亮底上白光会「吃」掉自己，改为靠淡蓝投影显出轮廓 */
+.y-ov-bright .y-ov-impact {
+  mix-blend-mode: normal;
+  opacity: 0.9;
+}
+
+.y-ov-bright .y-ov-flare {
+  filter: drop-shadow(0 0 7px rgba(120, 165, 212, 0.6));
+}
+
+.y-ov-bright .y-ov-star {
+  filter: drop-shadow(0 0 6px rgba(110, 155, 205, 0.55));
+}
+
+.y-ov-bright .y-ov-shock {
+  stroke: rgba(110, 158, 210, 0.6);
+  filter: drop-shadow(0 0 3px rgba(110, 158, 210, 0.45));
 }
 
 .y-ov-bright .y-ov-cell {

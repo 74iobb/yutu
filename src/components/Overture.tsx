@@ -1047,6 +1047,19 @@ export default function Overture() {
               <stop offset='72%' stopColor='#fff1d6' stopOpacity='0.18' />
               <stop offset='100%' stopColor='#e8eefb' stopOpacity='0' />
             </radialGradient>
+            {/* 横向镜头光斑：中心白、两端青蓝，模拟变形镜头 */}
+            <linearGradient id='y-ov-flare' x1='0' y1='0' x2='1' y2='0'>
+              <stop offset='0%' stopColor='#9fd4ff' stopOpacity='0' />
+              <stop offset='30%' stopColor='#cfeaff' stopOpacity='0.5' />
+              <stop offset='50%' stopColor='#ffffff' stopOpacity='0.95' />
+              <stop offset='70%' stopColor='#fff0c9' stopOpacity='0.5' />
+              <stop offset='100%' stopColor='#9fd4ff' stopOpacity='0' />
+            </linearGradient>
+            <radialGradient id='y-ov-star' cx='50%' cy='50%' r='50%'>
+              <stop offset='0%' stopColor='#ffffff' stopOpacity='1' />
+              <stop offset='45%' stopColor='#f4fbff' stopOpacity='0.6' />
+              <stop offset='100%' stopColor='#cfeaff' stopOpacity='0' />
+            </radialGradient>
             <clipPath id='y-ov-disc'>
               <circle cx={DISC.cx} cy={DISC.cy} r={DISC.r} />
             </clipPath>
@@ -1317,6 +1330,45 @@ export default function Overture() {
                 }
               />
             ))}
+          </g>
+
+          {/* 撞击高光：冲击波环 + 横向镜头光斑 + 四芒星 */}
+          <g className='y-ov-impact' aria-hidden='true'>
+            <circle
+              className='y-ov-shock'
+              cx={DISC.cx}
+              cy={DISC.cy}
+              r='72'
+              pathLength={1}
+            />
+            <circle
+              className='y-ov-shock y-ov-shock-b'
+              cx={DISC.cx}
+              cy={DISC.cy}
+              r='72'
+              pathLength={1}
+            />
+            <ellipse
+              className='y-ov-flare'
+              cx={DISC.cx}
+              cy={DISC.cy}
+              rx='320'
+              ry='3.2'
+              fill='url(#y-ov-flare)'
+            />
+            <ellipse
+              className='y-ov-flare y-ov-flare-b'
+              cx={DISC.cx}
+              cy={DISC.cy}
+              rx='200'
+              ry='1.5'
+              fill='url(#y-ov-flare)'
+            />
+            <path
+              className='y-ov-star'
+              d='M500 538 L505 594 L562 600 L505 606 L500 662 L495 606 L438 600 L495 594 Z'
+              fill='url(#y-ov-star)'
+            />
           </g>
 
           {/* 命途光轨：从落点向四周发散 */}
