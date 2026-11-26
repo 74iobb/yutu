@@ -6,7 +6,6 @@ build/
 .idea/
 .vscode/
 .DS_Store
-.npmrc
 .agents/
 .claude/
 .opencode/
@@ -31,4 +30,3 @@ secrets/*.local
 # 用户截图与交接压缩包：不入公开仓库
 .attachments/
 *.zip
-pnpm-lock.yaml
