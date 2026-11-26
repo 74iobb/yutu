@@ -524,11 +524,6 @@ export function Shell({ children }: { children: ReactNode }) {
             <p className='y-slogan'>
               远方是方向，不是终点；计划是草稿，由你改写
             </p>
-            <p className='y-sub'>
-              <i>我的处境</i> 填写 → 了解环境 → 方向推演 → 归属
-              <span className='y-sub-sep'>｜</span>
-              <i>我的成长</i> 体验 → 自省 → 归档
-            </p>
           </div>
         </div>
         <div className='y-head-side'>

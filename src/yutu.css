@@ -106,16 +106,6 @@
   color: var(--y-accent);
   margin: 1px 0 2px;
 }
-#yutu2 .y-sub {
-  font-size: 12.5px;
-  color: var(--y-muted);
-  line-height: 1.8;
-}
-#yutu2 .y-sub i {
-  font-style: normal;
-  white-space: nowrap;
-}
-
 #yutu2 .y-steps,
 #yutu2 .y-sub-rail {
   scrollbar-width: thin;
@@ -5679,10 +5669,6 @@ body {
   font-weight: 550;
   letter-spacing: 0.02em;
 }
-#yutu2 .y-sub {
-  color: var(--y-muted);
-  font-size: 11.5px;
-}
 #yutu2 .y-sync-wrap .y-chip,
 #yutu2 .y-chip {
   display: inline-flex;
@@ -6640,17 +6626,6 @@ html {
   -webkit-tap-highlight-color: transparent;
   text-size-adjust: 100%;
 }
-#yutu2 .y-sub {
-  max-height: 40px;
-  overflow: hidden;
-  transition:
-    max-height 0.3s ease,
-    opacity 0.25s ease;
-}
-#yutu2 .y-chrome.is-scrolled .y-sub {
-  max-height: 0;
-  opacity: 0;
-}
 #yutu2 .y-chrome.is-scrolled .y-logo {
   width: 40px;
   height: 40px;
@@ -6680,7 +6655,6 @@ html {
   }
 }
 @media (prefers-reduced-motion: reduce) {
-  #yutu2 .y-sub,
   #yutu2 .y-logo,
   #yutu2 .y-title {
     transition: none;
@@ -6701,10 +6675,6 @@ html.y-motion-ready #yutu2 .y-card.y-in {
 }
 
 /* -------------------------- 两大板块：处境 / 成长 -------------------------- */
-#yutu2 .y-sub-sep {
-  color: var(--y-line2);
-  margin: 0 4px;
-}
 #yutu2 .y-realms {
   display: flex;
   gap: 8px;
@@ -11914,12 +11884,8 @@ html.y-motion-off #yutu2 .y-step-stage.is-page-dragging {
   -webkit-background-clip: text;
   background-clip: text;
 }
-#yutu2 .y-slogan,
-#yutu2 .y-sub {
+#yutu2 .y-slogan {
   color: var(--y-muted);
-}
-#yutu2 .y-sub i {
-  color: #cfe0ff;
 }
 #yutu2 .y-meta-trigger {
   color: var(--y-ink2);
