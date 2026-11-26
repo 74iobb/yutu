@@ -65,8 +65,13 @@ export interface LoopArchive {
   choice: Choice;
   /** 归档前向量 */
   before: Scores;
-  /** 漂移后向量 */
+  /** 漂移后向量（未改变处境时与 before 相同） */
   after: Scores;
+  /**
+   * 这一轮是否真的改变了处境：
+   * false = 只记录成长、向量不动；旧记录没有该字段，按 true 处理。
+   */
+  moved?: boolean;
   /** 漂移后最接近的域（归档完成卡直接展示） */
   domain?: string;
   /** 漂移后的综合相似度 */

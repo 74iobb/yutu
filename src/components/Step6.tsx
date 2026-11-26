@@ -105,11 +105,20 @@ function DriftPanel({
   before,
   after,
   choice,
+  moved = true,
 }: {
   before: Scores;
   after: Scores;
   choice: Choice;
+  moved?: boolean;
 }) {
+  if (!moved) {
+    return (
+      <p className='y-note'>
+        这一轮没有改变你的处境——成长会留下来，但不一定立刻移动位置。
+      </p>
+    );
+  }
   const keys = Object.keys(DRIFT[choice]) as DimensionKey[];
   if (!keys.length) {
     return (
@@ -164,6 +173,8 @@ function LoopDone({
 }) {
   const { state } = useYutu();
   const resting = data.choice === 'rest';
+  /* 旧记录没有 moved 字段：当时确实应用了漂移，按 true 处理 */
+  const moved = data.moved !== false;
   return (
     <div className='y-loop-done' role='status'>
       <span className='y-loop-glass-flare' aria-hidden='true' />
@@ -179,7 +190,9 @@ function LoopDone({
               ? '这次以休整收尾，系统不推送新任务，等你准备好再回来。'
               : remaining
                 ? `还有 ${remaining} 条体验在本轮清单里，可以继续做完，也可以先做方向判断。`
-                : '位置已小幅漂移，回第 3 步可以看到新的落点。'}
+                : moved
+                  ? '位置已小幅漂移，回第 3 步可以看到新的落点。'
+                  : '这一轮没有改变你的处境——成长会留下来，位置不一定马上移动。'}
           </p>
         </div>
         <button
@@ -191,7 +204,12 @@ function LoopDone({
           ×
         </button>
       </div>
-      <DriftPanel before={data.before} after={data.after} choice={data.choice} />
+      <DriftPanel
+        before={data.before}
+        after={data.after}
+        choice={data.choice}
+        moved={data.moved !== false}
+      />
       {state.snapshot0 ? (
         <div className='y-loop-radar'>
           <GrowthRadar
@@ -205,7 +223,8 @@ function LoopDone({
       ) : null}
       {data.domain ? (
         <p className='y-loop-new'>
-          新落点：<b>{data.domain.split(' · ')[0]}</b> · 接近度{' '}
+          {moved ? '新落点：' : '本轮落点：'}
+          <b>{data.domain.split(' · ')[0]}</b> · 接近度{' '}
           {simBand(data.sim ?? 0)}
         </p>
       ) : null}
@@ -789,6 +808,11 @@ function StationTab({
   const [q2, setQ2] = useState('');
   const [q3, setQ3] = useState('');
   const [choice, setChoice] = useState<Choice>('keep');
+  /**
+   * 这一轮是否真的改变了处境。默认「没有变化」——
+   * 成长会留下，但处境不一定跟着移动；要漂移需要用户显式选择。
+   */
+  const [moved, setMoved] = useState(false);
   const [card, setCard] = useState('');
   const [busy, setBusy] = useState(false);
   /** 停靠三步：拷问 → 回答三问 → 归档 */
@@ -806,25 +830,31 @@ function StationTab({
 
   const preview = useMemo(() => {
     const out: Scores = { ...state.profile.s };
+    if (!moved) return out;
     (Object.keys(drift) as DimensionKey[]).forEach((k) => {
       const delta = drift[k];
       if (delta) out[k] = clampDim(k, out[k] + delta);
     });
     return out;
-  }, [drift, state.profile.s]);
+  }, [drift, moved, state.profile.s]);
 
   function doArchive() {
     if (!archivable.length || busy) return;
     setBusy(true);
-    const v = archive(choice, {
-      feel: q1.trim(),
-      ctx: q2.trim(),
-      vision: q3.trim(),
-    });
+    const v = archive(
+      choice,
+      {
+        feel: q1.trim(),
+        ctx: q2.trim(),
+        vision: q3.trim(),
+      },
+      moved
+    );
     if (v) {
       setQ1('');
       setQ2('');
       setQ3('');
+      setMoved(false);
       setStationStep(1);
     }
     window.setTimeout(() => setBusy(false), 800);
@@ -999,6 +1029,45 @@ function StationTab({
             </div>
           </div>
 
+          <div style={{ marginTop: 11 }}>
+            <label>
+              这一轮之后，我的处境有变化吗
+              <span style={{ color: 'var(--y-muted)' }}>
+                （成长不一定立刻改变处境）
+              </span>
+            </label>
+            <div className='y-opts'>
+              <label
+                className={`y-opt-card${!moved ? ' is-on' : ''}`}
+              >
+                <input
+                  type='radio'
+                  name='y-moved'
+                  checked={!moved}
+                  onChange={() => setMoved(false)}
+                />
+                <span>
+                  没有变化
+                  <em>只记录成长，向量不动</em>
+                </span>
+              </label>
+              <label
+                className={`y-opt-card${moved ? ' is-on' : ''}`}
+              >
+                <input
+                  type='radio'
+                  name='y-moved'
+                  checked={moved}
+                  onChange={() => setMoved(true)}
+                />
+                <span>
+                  有一点变化
+                  <em>按所选方向小幅漂移</em>
+                </span>
+              </label>
+            </div>
+          </div>
+
           <div className='y-row' style={{ marginTop: 13 }}>
             <button
               type='button'
@@ -1035,6 +1104,12 @@ function StationTab({
               <b>{[q1, q2, q3].filter((x) => x.trim()).length} / 3</b>
             </div>
           </div>
+
+          <p className='y-note' style={{ marginTop: 8 }}>
+            {moved
+              ? '这一轮会按所选方向小幅调整处境向量。'
+              : '这一轮不改变处境向量——成长会留下，位置不一定马上移动。'}
+          </p>
 
           <div className='y-row' style={{ marginTop: 13 }}>
             <button
@@ -1138,12 +1213,15 @@ function StationTab({
             ))
           )}
           <h4 style={{ fontSize: 12.5, fontWeight: 620, margin: '12px 0 5px' }}>
-            选择「{CHOICE_LABEL[choice]}」后的向量漂移
+            {moved
+              ? `选择「${CHOICE_LABEL[choice]}」后的向量漂移`
+              : '本轮处境：不做改动'}
           </h4>
           <DriftPanel
             before={state.profile.s}
             after={preview}
             choice={choice}
+            moved={moved}
           />
           {state.snapshot0 ? (
             <div style={{ marginTop: 10 }}>
@@ -1157,7 +1235,9 @@ function StationTab({
             </div>
           ) : null}
           <p className='y-note' style={{ paddingTop: 5 }}>
-            所有更新都是小幅调整，不做跳变；地图上的移动呈现为缓慢漂移而非瞬间跳转。
+            {moved
+              ? '所有更新都是小幅调整，不做跳变；地图上的移动呈现为缓慢漂移而非瞬间跳转。'
+              : '这一轮只记录成长与判断，处境向量保持不变。'}
           </p>
           <GapPhoto variant='hills' quote='慢一点，也是在走。' />
         </div>
@@ -2054,7 +2134,7 @@ export default function Step6() {
   if (ready > 0) {
     headline = `${ready} 段体验已完成，只差一次停靠`;
     detail =
-      '到驿站回答三个问题、选择下一步。归档后本轮闭合，位置会小幅漂移。';
+      '到驿站回答三个问题、选择下一步。归档后本轮闭合；处境是否改变由你判断，不是每次成长都会移动位置。';
   } else if (active === 0 && n === 0) {
     headline = '闭环还没有开始';
     detail = `当前处于「${domainName}」域。领一条参考任务，在真实生活里做一遍；回来标记完成，闭环就会亮起下一步。`;
@@ -2444,7 +2524,10 @@ export default function Step6() {
               {state.lastArchive ? (
                 <p className='y-loop-last'>
                   上一轮：第 {state.lastArchive.no} 次 ·{' '}
-                  {CHOICE_LABEL[state.lastArchive.choice]} · 向量已小幅漂移
+                  {CHOICE_LABEL[state.lastArchive.choice]} ·{' '}
+                  {state.lastArchive.moved === false
+                    ? '本轮处境未变'
+                    : '向量已小幅漂移'}
                 </p>
               ) : null}
             </div>

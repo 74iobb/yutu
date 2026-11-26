@@ -481,7 +481,11 @@ interface YutuContextValue {
   addCustomTask: (title: string, type: string) => void;
   updateTaskStatus: (id: string, status: TaskStatus) => void;
   removeTask: (id: string) => void;
-  archive: (choice: Choice, answers: Victory['answers']) => Victory | null;
+  archive: (
+    choice: Choice,
+    answers: Victory['answers'],
+    moved?: boolean
+  ) => Victory | null;
   submitVictoryReview: (v: Victory) => void;
   submitExperienceCard: (text: string) => void;
   submitPeerSample: (choice: Choice, note: string) => void;
@@ -990,7 +994,11 @@ export function YutuProvider({ children }: { children: ReactNode }) {
   );
 
   const archive = useCallback(
-    (choice: Choice, answers: Victory['answers']): Victory | null => {
+    (
+      choice: Choice,
+      answers: Victory['answers'],
+      moved = true
+    ): Victory | null => {
       const arr = state.tasks.filter((t) => t.status === 'done' && !t.archived);
       if (!arr.length) {
         flash('还没有已完成的体验可以归档。');
@@ -1016,7 +1024,11 @@ export function YutuProvider({ children }: { children: ReactNode }) {
         choice,
         answers,
       };
-      const nextScores: Scores = applyDrift(state.profile.s, DRIFT[choice]);
+      /* 成长不一定改变处境：只有用户明确说「有变化」时才应用漂移。
+         年龄每三轮 +1 是时间事实，与是否成长无关，仍然照常计算。 */
+      const nextScores: Scores = moved
+        ? applyDrift(state.profile.s, DRIFT[choice])
+        : { ...state.profile.s };
       if (no % 3 === 0) nextScores.age = clampDim('age', nextScores.age + 1);
       const nextRank = ranked(nextScores, nodes);
       markLocalActive();
@@ -1033,6 +1045,7 @@ export function YutuProvider({ children }: { children: ReactNode }) {
           choice,
           before: snap,
           after: nextScores,
+          moved,
           domain: nextRank[0]?.node.name ?? '',
           sim: nextRank[0]?.sim ?? 0,
           at: Date.now(),
@@ -1079,6 +1092,12 @@ export function YutuProvider({ children }: { children: ReactNode }) {
         flash('已归档。选择了暂时休整，系统不推送新任务，只确认记录已存档。');
       } else if (choice === 'switch') {
         flash('已归档。排除一条路线同样是胜利——它以可控成本换来了清晰结论。');
+      } else if (!moved) {
+        flash(
+          '第 ' +
+            no +
+            ' 次阶段性胜利已归档。这一轮处境未变——成长会留下，位置不一定马上移动。'
+        );
       } else {
         flash('第 ' + no + ' 次阶段性胜利已归档。位置已小幅漂移，回到第 3 步可以看到新的落点。');
       }

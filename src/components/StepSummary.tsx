@@ -226,7 +226,7 @@ export default function StepSummary({ onOpenList }: { onOpenList: () => void }) 
           <div className='y-card'>
             <h3>
               迁移 T
-              <span className='y-mini'>归档选择决定漂移，不是打分</span>
+              <span className='y-mini'>归档记录判断，处境是否漂移由你决定</span>
             </h3>
             {state.lastArchive ? (
               <GrowthDelta />
