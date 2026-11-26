@@ -189,15 +189,15 @@ export default function PeerNebula({
               </desc>
               <defs>
                 <radialGradient id='nebGlow' cx='50%' cy='50%' r='50%'>
-                  <stop offset='0%' stopColor='#7fc8ff' stopOpacity='0.35' />
-                  <stop offset='100%' stopColor='#7fc8ff' stopOpacity='0' />
+                  <stop offset='0%' stopColor='#f0d29a' stopOpacity='0.35' />
+                  <stop offset='100%' stopColor='#f0d29a' stopOpacity='0' />
                 </radialGradient>
                 <filter id='nebSoft' x='-40%' y='-40%' width='180%' height='180%'>
                   <feDropShadow
                     dx='0'
                     dy='0'
                     stdDeviation='7'
-                    floodColor='#7fc8ff'
+                    floodColor='#f0d29a'
                     floodOpacity='0.45'
                   />
                 </filter>
