@@ -153,7 +153,7 @@ export default function GrowthRadar({
         </defs>
 
         {/* 与七维雷达同一朵彩虹花：三圈花瓣开合、旋转 */}
-        <FlowerBloom cx={CX} cy={CY} r={R} />
+        <FlowerBloom cx={CX} cy={CY} r={R} tone='gold' />
 
         {/* 网格 */}
         {LEVELS.map((lv) => (

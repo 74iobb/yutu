@@ -12501,43 +12501,69 @@ html.y-motion-off #yutu2 .y-step-stage.is-page-dragging {
   position: relative;
   margin: 10px 0 0;
   padding: 10px 12px 8px;
-  border: 1px solid rgba(255, 210, 140, 0.2);
+  border: 1px solid rgba(186, 150, 86, 0.32);
   border-radius: var(--y-r);
-  /* 与花适配的「黑金丝绒」舞台：深棕金底 + 暖金柔光，冷色花瓣更亮 */
+  /* 薄金：浅香槟纸面 + 斜向箔光 + 暖金柔光 */
   background:
-    radial-gradient(
-      85% 65% at 50% 26%,
-      rgba(255, 206, 120, 0.3),
-      transparent 72%
+    linear-gradient(
+      112deg,
+      rgba(255, 255, 255, 0.5) 0%,
+      transparent 32%,
+      rgba(255, 250, 236, 0.55) 50%,
+      transparent 68%
     ),
     radial-gradient(
-      70% 55% at 82% 82%,
-      rgba(205, 140, 60, 0.2),
-      transparent 72%
+      90% 70% at 50% 16%,
+      rgba(255, 253, 247, 0.95),
+      transparent 70%
     ),
     radial-gradient(
-      60% 50% at 16% 84%,
-      rgba(150, 90, 220, 0.12),
+      75% 60% at 84% 88%,
+      rgba(236, 212, 164, 0.55),
       transparent 72%
     ),
-    linear-gradient(180deg, #1c1307 0%, #0f0904 100%);
+    linear-gradient(180deg, #fbf5e8 0%, #f2e7d0 100%);
   box-shadow:
-    0 26px 60px -42px rgba(200, 140, 50, 0.5),
-    inset 0 1px 0 rgba(255, 235, 190, 0.08);
+    0 24px 55px -40px rgba(150, 110, 40, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.85),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.35);
   overflow: hidden;
 }
+/* 缓慢扫过的箔光 */
 #yutu2 .y-radar::before {
   content: '';
   position: absolute;
-  inset: -30%;
-  background: radial-gradient(
-    50% 50% at 50% 50%,
-    rgba(255, 196, 96, 0.18),
-    transparent 70%
+  top: -30%;
+  bottom: -30%;
+  left: -40%;
+  width: 40%;
+  background: linear-gradient(
+    100deg,
+    transparent,
+    rgba(255, 255, 255, 0.55),
+    rgba(255, 246, 220, 0.25),
+    transparent
   );
+  transform: skewX(-12deg) translateX(-40%);
+  animation: yThinGoldSheen 16s ease-in-out infinite;
   pointer-events: none;
   z-index: 0;
 }
+@keyframes yThinGoldSheen {
+  0%,
+  55% {
+    transform: skewX(-12deg) translateX(-40%);
+    opacity: 0;
+  }
+  62% {
+    opacity: 0.7;
+  }
+  100% {
+    transform: skewX(-12deg) translateX(420%);
+    opacity: 0;
+  }
+}
+/* 顶部金线 */
 #yutu2 .y-radar::after {
   content: '';
   position: absolute;
@@ -12546,7 +12572,7 @@ html.y-motion-off #yutu2 .y-step-stage.is-page-dragging {
   background: linear-gradient(
     90deg,
     transparent,
-    rgba(255, 226, 172, 0.5),
+    rgba(198, 160, 92, 0.6),
     transparent
   );
   pointer-events: none;
@@ -12569,11 +12595,11 @@ html.y-motion-off #yutu2 .y-step-stage.is-page-dragging {
 }
 #yutu2 .y-radar-grid {
   fill: none;
-  stroke: rgba(255, 226, 175, 0.13);
+  stroke: rgba(150, 116, 66, 0.2);
   stroke-width: 1;
 }
 #yutu2 .y-radar-axis {
-  stroke: rgba(255, 226, 175, 0.17);
+  stroke: rgba(150, 116, 66, 0.26);
   stroke-width: 1;
 }
 #yutu2 .y-radar-area {
@@ -12582,27 +12608,27 @@ html.y-motion-off #yutu2 .y-step-stage.is-page-dragging {
   transition: opacity var(--motion-base, 240ms) var(--ease-out, ease);
 }
 #yutu2 .y-radar-area.is-before {
-  fill: rgba(240, 178, 90, 0.14);
-  stroke: #f0b25a;
+  fill: rgba(214, 156, 62, 0.18);
+  stroke: #b0781f;
   stroke-dasharray: 4 3;
 }
 #yutu2 .y-radar-area.is-after {
-  fill: rgba(126, 200, 255, 0.2);
-  stroke: #7ec8ff;
+  fill: rgba(70, 150, 210, 0.18);
+  stroke: #2f86c8;
 }
 #yutu2 .y-radar-dot.is-before {
-  fill: #f0b25a;
+  fill: #b0781f;
 }
 #yutu2 .y-radar-dot.is-after {
-  fill: #7ec8ff;
+  fill: #2f86c8;
 }
 #yutu2 .y-radar-label {
-  fill: #f2e6cf;
+  fill: #6b5636;
   font-size: 10px;
   font-weight: 600;
 }
 #yutu2 .y-radar-value {
-  fill: rgba(240, 224, 196, 0.6);
+  fill: rgba(107, 86, 54, 0.72);
   font-size: 9px;
 }
 #yutu2 .y-radar figcaption {
@@ -12613,7 +12639,7 @@ html.y-motion-off #yutu2 .y-step-stage.is-page-dragging {
   flex-wrap: wrap;
   gap: 12px;
   font-size: 11.5px;
-  color: var(--y-ink2);
+  color: #5a4a30;
 }
 #yutu2 .y-radar-legend span {
   display: inline-flex;
@@ -12626,10 +12652,10 @@ html.y-motion-off #yutu2 .y-step-stage.is-page-dragging {
   border-radius: 2px;
 }
 #yutu2 .y-radar-legend i.is-before {
-  background: #f0b25a;
+  background: #b0781f;
 }
 #yutu2 .y-radar-legend i.is-after {
-  background: #7ec8ff;
+  background: #2f86c8;
 }
 #yutu2 .y-radar-deltas {
   display: flex;
@@ -12639,21 +12665,21 @@ html.y-motion-off #yutu2 .y-step-stage.is-page-dragging {
   font-size: 11.5px;
 }
 #yutu2 .y-radar-deltas .is-up {
-  color: #ffb28a;
+  color: #a8501f;
 }
 #yutu2 .y-radar-deltas .is-down {
-  color: #8fd6b4;
+  color: #2f7a5a;
 }
 #yutu2 .y-radar-flat {
   margin: 6px 0 0;
   font-size: 11.5px;
-  color: var(--y-muted);
+  color: rgba(107, 86, 54, 0.75);
 }
 #yutu2 .y-radar-note {
   margin: 6px 0 0;
   font-size: 11px;
   line-height: 1.6;
-  color: var(--y-muted);
+  color: rgba(107, 86, 54, 0.75);
 }
 #yutu2 .y-gd-radar,
 #yutu2 .y-loop-radar {
@@ -13238,6 +13264,19 @@ html.y-motion-off #yutu2 .y-step-stage.is-page-dragging {
   /* 只做一次合成后的饱和度提升，避免 21 片花瓣各自跑滤镜 */
   filter: saturate(1.18);
 }
+/* 薄金底上：描边改暖褐，避免白边在浅底上发虚 */
+#yutu2 .y-radar-bloom.is-gold {
+  filter: saturate(1.1);
+}
+#yutu2 .y-radar-bloom.is-gold .y-radar-petal {
+  stroke: rgba(92, 64, 22, 0.3);
+}
+#yutu2 .y-radar-bloom.is-gold .y-radar-bloom-ring {
+  stroke: rgba(150, 112, 52, 0.3);
+}
+#yutu2 .y-radar-bloom.is-gold .y-radar-stamen {
+  opacity: 0.75;
+}
 #yutu2 .y-radar-bloom-glow {
   opacity: 0.78;
 }
@@ -13351,6 +13390,10 @@ html.y-motion-off #yutu2 .y-step-stage.is-page-dragging {
 
 /* 关闭动效：系统 prefers-reduced-motion 与顶栏「动效 关」双重降级 */
 @media (prefers-reduced-motion: reduce) {
+  #yutu2 .y-radar::before {
+    animation: none;
+    opacity: 0;
+  }
   #yutu2 .y-gap-photo-poster,
   #yutu2 .y-gap-photo-sheen,
   #yutu2 .y-radar-sweep,
@@ -13381,6 +13424,10 @@ html.y-motion-off #yutu2 .y-river-sheen {
 html.y-motion-off #yutu2 .y-radar-stamen,
 html.y-motion-off #yutu2 .y-radar-bloom-sheen {
   animation: none;
+}
+html.y-motion-off #yutu2 .y-radar::before {
+  animation: none;
+  opacity: 0;
 }
 html.y-motion-off #yutu2 .y-gap-photo-poster {
   transform: none;

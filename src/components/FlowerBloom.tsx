@@ -155,9 +155,17 @@ interface Props {
   cy: number;
   /** 花半径 */
   r: number;
+  /** night=深底舞台；gold=薄金舞台（阴影更浅、描边更暖） */
+  tone?: 'night' | 'gold';
 }
 
-export default function FlowerBloom({ cx, cy, r }: Props) {
+export default function FlowerBloom({
+  cx,
+  cy,
+  r,
+  tone = 'night',
+}: Props) {
+  const gold = tone === 'gold';
   const uid = useId().replace(/:/g, '');
   const groupRef = useRef<SVGGElement>(null);
   const visibleRef = useRef(true);
@@ -211,18 +219,42 @@ export default function FlowerBloom({ cx, cy, r }: Props) {
   });
 
   return (
-    <g ref={groupRef} className='y-radar-bloom' aria-hidden='true'>
+    <g
+      ref={groupRef}
+      className={`y-radar-bloom${gold ? ' is-gold' : ''}`}
+      aria-hidden='true'
+    >
       <defs>
         <radialGradient id={`${uid}-glow`} cx='50%' cy='50%' r='50%'>
-          <stop offset='0%' stopColor='#a96bff' stopOpacity='0.3' />
-          <stop offset='55%' stopColor='#35cfff' stopOpacity='0.14' />
+          <stop
+            offset='0%'
+            stopColor={gold ? '#7b6bff' : '#a96bff'}
+            stopOpacity={gold ? 0.22 : 0.3}
+          />
+          <stop
+            offset='55%'
+            stopColor='#35cfff'
+            stopOpacity={gold ? 0.1 : 0.14}
+          />
           <stop offset='100%' stopColor='#35cfff' stopOpacity='0' />
         </radialGradient>
         <radialGradient id={`${uid}-shade`} cx='50%' cy='50%' r='50%'>
-          {/* 中性深影：深蓝舞台与深金舞台都不偏色 */}
-          <stop offset='0%' stopColor='#08080c' stopOpacity='0.72' />
-          <stop offset='52%' stopColor='#08080c' stopOpacity='0.24' />
-          <stop offset='100%' stopColor='#08080c' stopOpacity='0' />
+          {/* 深底用中性黑，薄金底用很淡的暖褐阴影 */}
+          <stop
+            offset='0%'
+            stopColor={gold ? '#8a6a2e' : '#08080c'}
+            stopOpacity={gold ? 0.22 : 0.72}
+          />
+          <stop
+            offset='52%'
+            stopColor={gold ? '#8a6a2e' : '#08080c'}
+            stopOpacity={gold ? 0.08 : 0.24}
+          />
+          <stop
+            offset='100%'
+            stopColor={gold ? '#8a6a2e' : '#08080c'}
+            stopOpacity='0'
+          />
         </radialGradient>
         <linearGradient id={`${uid}-sheen`} x1='0' y1='0' x2='1' y2='1'>
           <stop offset='0%' stopColor='#ffffff' stopOpacity='0' />
