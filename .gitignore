@@ -13,7 +13,6 @@ build/
 .codex/
 .tmp/
 .logs/
-pnpm-lock.yaml
 yarn.lock
 package-lock.json
 
@@ -28,3 +27,8 @@ vite.config.ts.timestamp-*
 .env.*.local
 secrets/*.env
 secrets/*.local
+
+# 用户截图与交接压缩包：不入公开仓库
+.attachments/
+*.zip
+pnpm-lock.yaml
