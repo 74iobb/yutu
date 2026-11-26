@@ -23,28 +23,6 @@ import { Delaunay } from 'd3-delaunay';
  * 在 SPA 内从沙盘返回首页则不会重复打扰。
  */
 let autoPlayed = false;
-/**
- * 声音只在本次会话第一次进入平台的开场里自动播放一次；
- * 之后刷新 / 重看开篇都默认静音，需要听时再手动打开「声音」。
- */
-const SOUND_ONCE_KEY = 'yutu.overtureSoundOnce';
-
-function soundOncePlayed(): boolean {
-  try {
-    return sessionStorage.getItem(SOUND_ONCE_KEY) === '1';
-  } catch {
-    return false;
-  }
-}
-
-function markSoundOnce(): void {
-  try {
-    sessionStorage.setItem(SOUND_ONCE_KEY, '1');
-  } catch {
-    /* 会话存储不可用时退化为每次默认开 */
-  }
-}
-
 /** 名句逐字读完、小字与落款落定后再退潮（落水与铺开占前 3.3s） */
 const PLAY_MS = 7800;
 /** 退潮 + 系统显影的总时长 */
@@ -742,10 +720,10 @@ export default function Overture() {
   });
 
   /**
-   * 本次会话第一次开场默认有声；之后刷新或重看开篇默认静音，
-   * 不再自己冒出来 —— 想听可以点「声音」手动打开。
+   * 每次进入平台的开场默认有声；开篇结束会彻底停掉音乐与语音，
+   * 主流程里不会再自己冒出来。
    */
-  const [soundOn, setSoundOn] = useState(() => !soundOncePlayed());
+  const [soundOn, setSoundOn] = useState(true);
   const soundRef = useRef(soundOn);
   /** 路演模式：强制有声、并显示一枚小标签；由「更多 → 路演模式」或 `?demo=1` 触发 */
   const [demo, setDemo] = useState(() => readFlag('demo'));
@@ -782,7 +760,6 @@ export default function Overture() {
     soundRef.current = next;
     setSoundOn(next);
     if (next) {
-      markSoundOnce();
       void unlockAudio().then(markAudioReady);
       setAudioMuted(false);
       if (seqRef.current.phase === 'playing') startMusic();
@@ -897,7 +874,6 @@ export default function Overture() {
     const prevOverflow = body.style.overflow;
     body.style.overflow = 'hidden';
     if (soundRef.current || demoRef.current) {
-      markSoundOnce();
       setAudioMuted(false);
       startMusic();
       /* 提前拉录音，名句出现时才能立刻出声 */
@@ -1607,7 +1583,7 @@ export default function Overture() {
         </span>
       ) : null}
 
-      {seq.phase === 'playing' && soundOn && !audioReady ? (
+      {seq.phase === 'playing' && (!soundOn || !audioReady) ? (
         <button
           type='button'
           className='y-ov-sound-hint'
@@ -1619,7 +1595,7 @@ export default function Overture() {
           <span className='y-ov-sound-hint-note' aria-hidden='true'>
             ♪
           </span>
-          点击开启声音
+          {soundOn ? '点击开启声音' : '声音已关 · 点击开启'}
         </button>
       ) : null}
 
