@@ -113,6 +113,42 @@ function petalSway(i: number, ri: number, t: number) {
   return Math.sin(t * 0.8 + i * 1.3 + ri) * 5;
 }
 
+type BloomUpdate = (t: number) => void;
+
+/** 所有花朵共用一个 rAF 时钟：一个页面里多个花也不会重复排队 */
+const bloomUpdaters = new Set<BloomUpdate>();
+let bloomRaf = 0;
+let bloomLast = 0;
+
+function runBlooms(now: number) {
+  if (now - bloomLast >= 33) {
+    bloomLast = now;
+    if (
+      !document.documentElement.classList.contains('y-motion-off') &&
+      !window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
+    ) {
+      const t = now / 1000;
+      bloomUpdaters.forEach((fn) => fn(t));
+    }
+  }
+  bloomRaf = bloomUpdaters.size
+    ? window.requestAnimationFrame(runBlooms)
+    : 0;
+}
+
+function joinBlooms(fn: BloomUpdate) {
+  bloomUpdaters.add(fn);
+  if (!bloomRaf) bloomRaf = window.requestAnimationFrame(runBlooms);
+}
+
+function leaveBlooms(fn: BloomUpdate) {
+  bloomUpdaters.delete(fn);
+  if (!bloomUpdaters.size && bloomRaf) {
+    window.cancelAnimationFrame(bloomRaf);
+    bloomRaf = 0;
+  }
+}
+
 interface Props {
   /** 花心坐标（当前 SVG 的用户坐标） */
   cx: number;
@@ -123,48 +159,50 @@ interface Props {
 
 export default function FlowerBloom({ cx, cy, r }: Props) {
   const uid = useId().replace(/:/g, '');
+  const groupRef = useRef<SVGGElement>(null);
+  const visibleRef = useRef(true);
   const petalRefs = useRef<(SVGPathElement | null)[]>([]);
   const gradRefs = useRef<(SVGLinearGradientElement | null)[]>([]);
+
+  /* 离屏时不重算花瓣，页面里同时有多朵花也不会白耗 CPU */
+  useEffect(() => {
+    const el = groupRef.current;
+    if (!el || typeof IntersectionObserver === 'undefined') return;
+    const io = new IntersectionObserver(
+      (entries) => {
+        visibleRef.current = entries[0]?.isIntersecting ?? true;
+      },
+      { rootMargin: '120px' }
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
     if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return;
-    let raf = 0;
-    let alive = true;
-    let last = 0;
-    const tick = (now: number) => {
-      if (!alive) return;
-      if (now - last >= 33) {
-        last = now;
-        if (!document.documentElement.classList.contains('y-motion-off')) {
-          const t = now / 1000;
-          RINGS.forEach((ring, ri) => {
-            for (let i = 0; i < ring.count; i += 1) {
-              const idx = OFFSETS[ri] + i;
-              const angle =
-                (360 / ring.count) * i + ring.phase + t * ring.spin;
-              const len = petalLen(ring, r, i, ri, t);
-              const sway = petalSway(i, ri, t);
-              petalRefs.current[idx]?.setAttribute(
-                'd',
-                petalPath(cx, cy, angle, len, ring.spread, sway)
-              );
-              const tipX = cx + Math.cos((angle + sway) * RAD) * len;
-              const tipY = cy + Math.sin((angle + sway) * RAD) * len;
-              const grad = gradRefs.current[idx];
-              grad?.setAttribute('x2', tipX.toFixed(1));
-              grad?.setAttribute('y2', tipY.toFixed(1));
-            }
-          });
+    const update = (t: number) => {
+      if (!visibleRef.current) return;
+      RINGS.forEach((ring, ri) => {
+        for (let i = 0; i < ring.count; i += 1) {
+          const idx = OFFSETS[ri] + i;
+          const angle = (360 / ring.count) * i + ring.phase + t * ring.spin;
+          const len = petalLen(ring, r, i, ri, t);
+          const sway = petalSway(i, ri, t);
+          petalRefs.current[idx]?.setAttribute(
+            'd',
+            petalPath(cx, cy, angle, len, ring.spread, sway)
+          );
+          const tipX = cx + Math.cos((angle + sway) * RAD) * len;
+          const tipY = cy + Math.sin((angle + sway) * RAD) * len;
+          const grad = gradRefs.current[idx];
+          grad?.setAttribute('x2', tipX.toFixed(1));
+          grad?.setAttribute('y2', tipY.toFixed(1));
         }
-      }
-      raf = window.requestAnimationFrame(tick);
+      });
     };
-    raf = window.requestAnimationFrame(tick);
-    return () => {
-      alive = false;
-      window.cancelAnimationFrame(raf);
-    };
+    joinBlooms(update);
+    return () => leaveBlooms(update);
   }, [cx, cy, r]);
 
   const at = (deg: number, rad: number) => ({
@@ -173,7 +211,7 @@ export default function FlowerBloom({ cx, cy, r }: Props) {
   });
 
   return (
-    <g className='y-radar-bloom' aria-hidden='true'>
+    <g ref={groupRef} className='y-radar-bloom' aria-hidden='true'>
       <defs>
         <radialGradient id={`${uid}-glow`} cx='50%' cy='50%' r='50%'>
           <stop offset='0%' stopColor='#a96bff' stopOpacity='0.3' />

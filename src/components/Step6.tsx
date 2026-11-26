@@ -27,6 +27,7 @@ import { useImmersive } from '@/lib/uiMotion';
 import { useYutu } from '@/store/YutuContext';
 import { Chip, Empty, LinkedText, Say } from './bits';
 import DataSourceBadge from './DataSourceBadge';
+import FlowerBloom from './FlowerBloom';
 import GapPhoto from './GapPhoto';
 import LoopMap, {
   LOOP_STATIONS,
@@ -2504,6 +2505,14 @@ export default function Step6() {
         <div
           className={`y-card y-loop-board-card${focus ? ' is-focus' : ''}`}
         >
+          {/* 闭环卡片的氛围底花：比地图里的花更淡，只做区域母题 */}
+          <svg
+            className='y-loop-ambient'
+            viewBox='0 0 400 400'
+            aria-hidden='true'
+          >
+            <FlowerBloom cx={200} cy={200} r={190} />
+          </svg>
           <div className='y-loop-board'>
             <LoopMap
               round={round}
