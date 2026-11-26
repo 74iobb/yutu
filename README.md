@@ -95,6 +95,7 @@ scripts/        计划书 DOCX 生成、知乎快照刷新
 | [`docs/ZHIHU-RIGHTS.md`](docs/ZHIHU-RIGHTS.md) | 知乎内容使用边界 |
 | [`docs/LAYOUT-ATLAS.md`](docs/LAYOUT-ATLAS.md) | 全部版面结构 |
 | [`docs/VIDEO-SCRIPT.md`](docs/VIDEO-SCRIPT.md) | 3 分钟演示视频分镜与旁白 |
+| [`docs/VIDEO-WALKTHROUGH.md`](docs/VIDEO-WALKTHROUGH.md) | 带角色的完整操作剧本（照录版） |
 | [`docs/ASSET-LICENSES.md`](docs/ASSET-LICENSES.md) | 素材授权核查表 |
 | [`submit/提交信息.md`](submit/提交信息.md) | 参赛表单可直接粘贴的文案 |
 | [`docs/DESIGN-SYSTEM.md`](docs/DESIGN-SYSTEM.md) | 设计令牌与组件 |
