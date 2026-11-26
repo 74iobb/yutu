@@ -78,6 +78,44 @@ function waveTrailPath(radius: number, amp: number, phase: number) {
 }
 
 /**
+ * 3D 波形缎带：内缘与外缘各自起伏、带宽随角度变化，闭合后像一条
+ * 有厚度的飘带；配合渐变与高光脊线制造体积感。
+ */
+function ribbonPath(
+  baseR: number,
+  amp: number,
+  phase: number,
+  halfW: number
+) {
+  const outer: { x: number; y: number }[] = [];
+  const inner: { x: number; y: number }[] = [];
+  for (let deg = -94; deg >= -172; deg -= 3) {
+    const rc = baseR + Math.sin((deg + phase) * 0.11) * amp;
+    const w = halfW * (0.72 + 0.28 * Math.sin((deg + phase + 50) * 0.13));
+    outer.push(polar(deg, rc + w));
+    inner.push(polar(deg, rc - w));
+  }
+  inner.reverse();
+  const pts = [...outer, ...inner];
+  return (
+    pts
+      .map((p, i) => `${i ? 'L' : 'M'}${p.x.toFixed(1)},${p.y.toFixed(1)}`)
+      .join(' ') + ' Z'
+  );
+}
+
+/** 缎带的高光脊线 */
+function ridgePath(baseR: number, amp: number, phase: number) {
+  let d = '';
+  for (let deg = -94; deg >= -172; deg -= 4) {
+    const r = baseR + Math.sin((deg + phase) * 0.11) * amp;
+    const p = polar(deg, r);
+    d += `${d ? 'L' : 'M'}${p.x.toFixed(1)},${p.y.toFixed(1)}`;
+  }
+  return d;
+}
+
+/**
  * 「起点 → 现在」七维雷达对比。
  * 越靠外表示该维数值越高；颜色不表示好坏，只区分两个时间点。
  */
@@ -140,6 +178,29 @@ export default function GrowthRadar({
             <stop offset='70%' stopColor='#b9a8ff' stopOpacity='0.34' />
             <stop offset='100%' stopColor='#f0b25a' stopOpacity='0' />
           </linearGradient>
+          {/* 3D 缎带：暗边 → 亮面 → 冷色 → 暖色，制造体积与反光 */}
+          <linearGradient id={`${uid}-ribbon`} x1='0' y1='0' x2='1' y2='1'>
+            <stop offset='0%' stopColor='#10404f' stopOpacity='0.2' />
+            <stop offset='16%' stopColor='#7ee8c8' stopOpacity='0.6' />
+            <stop offset='36%' stopColor='#e8fbff' stopOpacity='0.95' />
+            <stop offset='54%' stopColor='#7ec8ff' stopOpacity='0.85' />
+            <stop offset='74%' stopColor='#b9a8ff' stopOpacity='0.62' />
+            <stop offset='90%' stopColor='#f0b25a' stopOpacity='0.4' />
+            <stop offset='100%' stopColor='#f0b25a' stopOpacity='0.06' />
+          </linearGradient>
+          <linearGradient id={`${uid}-ribbon-dark`} x1='0' y1='0' x2='1' y2='1'>
+            <stop offset='0%' stopColor='#082a36' stopOpacity='0.3' />
+            <stop offset='40%' stopColor='#2c6f8a' stopOpacity='0.5' />
+            <stop offset='78%' stopColor='#5b4f8a' stopOpacity='0.38' />
+            <stop offset='100%' stopColor='#7a5a2a' stopOpacity='0.18' />
+          </linearGradient>
+          {/* 缎带亮芯：让中轴像被灯打亮，强化圆柱感 */}
+          <linearGradient id={`${uid}-ribbon-core`} x1='0' y1='0' x2='1' y2='1'>
+            <stop offset='0%' stopColor='#ffffff' stopOpacity='0.12' />
+            <stop offset='42%' stopColor='#f2ffff' stopOpacity='0.8' />
+            <stop offset='72%' stopColor='#e6f2ff' stopOpacity='0.5' />
+            <stop offset='100%' stopColor='#ffffff' stopOpacity='0.05' />
+          </linearGradient>
         </defs>
 
         {/* 网格 */}
@@ -174,28 +235,42 @@ export default function GrowthRadar({
           aria-hidden='true'
           filter={`url(#${uid}-glow)`}
         >
-          {/* 波尾：柔光扇形 + 三条错相的波浪线，随扫描线一起转动 */}
+          {/* 波尾：柔光扇形 + 3D 缎带（暗背带 / 主带 / 亮芯 / 高光脊），随扫描线一起转 */}
           <path
-            className='y-radar-wave'
+            className='y-radar-wave-glass'
             d={sweepTailPath(62)}
             fill={`url(#${uid}-trail)`}
           />
           <path
+            className='y-radar-wave y-radar-wave-back'
+            d={ribbonPath(R * 0.62, 5, 84, 5)}
+            fill={`url(#${uid}-ribbon-dark)`}
+          />
+          <path
+            className='y-radar-wave y-radar-wave-3d'
+            d={ribbonPath(R * 0.82, 7, 0, 9)}
+            fill={`url(#${uid}-ribbon)`}
+          />
+          <path
+            className='y-radar-wave-core'
+            d={ribbonPath(R * 0.82, 7, 0, 3.4)}
+            fill={`url(#${uid}-ribbon-core)`}
+          />
+          <path
+            className='y-radar-wave-ridge'
+            d={ridgePath(R * 0.87, 7, 0)}
+            stroke={`url(#${uid}-ribbon)`}
+          />
+          <path
             className='y-radar-wave-line'
-            d={waveTrailPath(R * 0.92, 7, 0)}
+            d={waveTrailPath(R * 0.95, 4, 30)}
             stroke={`url(#${uid}-trail)`}
           />
           <path
             className='y-radar-wave-line'
-            d={waveTrailPath(R * 0.76, 9, 60)}
+            d={waveTrailPath(R * 0.7, 3, 150)}
             stroke={`url(#${uid}-trail)`}
-            style={{ animationDelay: '-0.9s' }}
-          />
-          <path
-            className='y-radar-wave-line'
-            d={waveTrailPath(R * 0.6, 6, 120)}
-            stroke={`url(#${uid}-trail)`}
-            style={{ animationDelay: '-1.7s' }}
+            style={{ animationDelay: '-1.1s' }}
           />
           <line
             x1={CX}

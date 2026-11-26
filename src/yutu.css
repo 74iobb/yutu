@@ -13167,7 +13167,7 @@ html.y-motion-off #yutu2 .y-step-stage.is-page-dragging {
   transform-box: view-box;
   transform-origin: 170px 150px;
   animation: yRadarSweep 10s linear infinite;
-  opacity: 0.6;
+  opacity: 0.7;
 }
 #yutu2 .y-radar-sweep-line {
   stroke: #7ec8ff;
@@ -13177,10 +13177,42 @@ html.y-motion-off #yutu2 .y-step-stage.is-page-dragging {
 #yutu2 .y-radar-sweep-dot {
   fill: #eaf5ff;
 }
-/* 扫描线后的彩色波尾：柔光扇形 + 波浪虚线，跟随扫描线转动 */
-#yutu2 .y-radar-wave {
-  opacity: 0.55;
+/* 扫描线后的彩色波尾：柔光扇形 + 3D 缎带 + 流动虚线 */
+#yutu2 .y-radar-wave-glass,
+#yutu2 .y-radar-wave,
+#yutu2 .y-radar-wave-core {
   mix-blend-mode: screen;
+}
+#yutu2 .y-radar-wave-glass {
+  opacity: 0.5;
+}
+#yutu2 .y-radar-wave-back {
+  opacity: 0.34;
+  filter: blur(2.6px);
+}
+#yutu2 .y-radar-wave-3d {
+  opacity: 0.92;
+  filter: drop-shadow(0 2px 3px rgba(0, 18, 30, 0.55));
+}
+#yutu2 .y-radar-wave-core {
+  opacity: 0.6;
+  filter: blur(1.1px);
+  animation: yRadarWaveShine 3.4s ease-in-out infinite alternate;
+}
+#yutu2 .y-radar-wave-ridge {
+  fill: none;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  opacity: 0.95;
+  animation: yRadarWaveShine 3s ease-in-out infinite alternate;
+}
+@keyframes yRadarWaveShine {
+  from {
+    opacity: 0.45;
+  }
+  to {
+    opacity: 1;
+  }
 }
 #yutu2 .y-radar-wave-line {
   fill: none;
