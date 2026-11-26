@@ -821,6 +821,7 @@ export function Shell({ children }: { children: ReactNode }) {
 
       </div>{/* /y-chrome */}
 
+      {firstRun ? null : (
       <div className='y-glance' aria-label='当前进度概览'>
         <div className='y-glance-item'>
           <span>阶段</span>
@@ -866,6 +867,7 @@ export function Shell({ children }: { children: ReactNode }) {
           })}
         </div>
       </div>
+      )}
 
       <div className='y-main'>
         <div

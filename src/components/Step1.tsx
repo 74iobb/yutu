@@ -272,36 +272,47 @@ export default function Step1() {
         <aside className='y-aside'>
           <div className='y-card y-focus-card' id='y-p1-result'>
             <p className='y-eyebrow'>判定结果</p>
-            <p className='y-stage-name'>
-              {stage.name} <DataSourceBadge source='stage' showLabel={false} />
-              <small>你当前所在的阶段</small>
-            </p>
-            <Kv
-              rows={[
-                ['判定依据', stageReason(p)],
-                [
-                  '检索方向',
-                  p.field.trim()
-                    ? `${p.field}${
-                        fieldMatch
-                          ? ` → 「${fieldMatch.label}」大类`
-                          : ' → 关键词检索'
-                      }`
-                    : '尚未填写（下一步会要求先写方向）',
-                ],
-                ['阶段任务', stage.desc],
-                [
-                  '地理位置',
-                  `${p.s.place} / 100（由 ${city.name}·${urban.n} 导出；城市属性为近似值）`,
-                ],
-              ]}
-            />
-            <div style={{ marginTop: 10 }}>
-              <Say>
-                按你填的情况，你处在「{stage.name}」。下一步会显示{city.name}
-                与你所在区域里的城市信息与真实讨论。
-              </Say>
-            </div>
+            {initialValues ? (
+              /* 还没有真实填写时，不把默认模板当成数据展示 */
+              <p className='y-stage-name'>
+                尚未判定 <small>填写后生成阶段、七维与归属</small>
+              </p>
+            ) : (
+              <>
+                <p className='y-stage-name'>
+                  {stage.name}{' '}
+                  <DataSourceBadge source='stage' showLabel={false} />
+                  <small>你当前所在的阶段</small>
+                </p>
+                <Kv
+                  rows={[
+                    ['判定依据', stageReason(p)],
+                    [
+                      '检索方向',
+                      p.field.trim()
+                        ? `${p.field}${
+                            fieldMatch
+                              ? ` → 「${fieldMatch.label}」大类`
+                              : ' → 关键词检索'
+                          }`
+                        : '尚未填写（下一步会要求先写方向）',
+                    ],
+                    ['阶段任务', stage.desc],
+                    [
+                      '地理位置',
+                      `${p.s.place} / 100（由 ${city.name}·${urban.n} 导出；城市属性为近似值）`,
+                    ],
+                  ]}
+                />
+                <div style={{ marginTop: 10 }}>
+                  <Say>
+                    按你填的情况，你处在「{stage.name}」。下一步会显示
+                    {city.name}
+                    与你所在区域里的城市信息与真实讨论。
+                  </Say>
+                </div>
+              </>
+            )}
           </div>
           <GapPhoto
             variant='writing'
