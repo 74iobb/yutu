@@ -3106,7 +3106,7 @@ body {
   width: 100%;
   position: relative;
   z-index: 0;
-  background: #07151d;
+  background: #1e2c46;
 }
 #yutu2 .y-campaign-leaflet .leaflet-container {
   background: transparent;
@@ -5419,7 +5419,7 @@ body {
    ========================================================================== */
 
 body {
-  background: #040610;
+  background: #1d2433;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
 }
@@ -5472,7 +5472,7 @@ body {
   content: '';
   position: absolute;
   inset: -8%;
-  background-color: #0b0a14;
+  background-color: #232a3c;
   background-image: url('./assets/yutu-bg-leaves.jpg');
   background-image:
     image-set(
@@ -5482,7 +5482,8 @@ body {
   background-size: cover;
   background-position: 50% 50%;
   background-repeat: no-repeat;
-  filter: brightness(0.82) saturate(1.06);
+  /* 叶面本身偏暗：提亮到晨光水平，让整体不再是夜色 */
+  filter: brightness(1.24) saturate(0.94) contrast(0.96);
   transform: scale(1.08) rotate(-0.6deg);
   animation: yNebulaDrift 72s ease-in-out infinite alternate;
   pointer-events: none;
@@ -5504,12 +5505,17 @@ body {
       transparent 72%
     ),
     radial-gradient(
+      60% 50% at 50% 42%,
+      rgba(255, 240, 214, 0.16),
+      transparent 74%
+    ),
+    radial-gradient(
       60% 50% at 50% 50%,
-      rgba(255, 255, 255, 0.06),
+      rgba(255, 255, 255, 0.12),
       transparent 75%
     );
   mix-blend-mode: screen;
-  opacity: 0.38;
+  opacity: 0.52;
   animation: yStarTwinkle 10s ease-in-out infinite alternate;
   pointer-events: none;
 }
@@ -11751,34 +11757,34 @@ html.y-motion-off #yutu2 .y-step-stage.is-page-dragging {
    ========================================================================== */
 
 #yutu2 {
-  /* V6 令牌 */
-  --paper: #081226;
-  --surface: #0d1830;
-  --surface-2: #111f3c;
-  --ink: #e9efff;
-  --ink-2: #b7c5e4;
-  --muted-2: #8393b3;
-  --line-2: rgba(160, 190, 255, 0.16);
-  --brand-3: #9fc4ff;
-  --brand-4: #c2d8ff;
-  --accent-2: #f5c15a;
-  --danger: #ff9b8b;
-  --night: #040610;
+  /* V6 令牌：晨光蓝灰，不再压到近黑 */
+  --paper: #1a2742;
+  --surface: #21314f;
+  --surface-2: #283a5c;
+  --ink: #eef4ff;
+  --ink-2: #c7d5ee;
+  --muted-2: #aebdd7;
+  --line-2: rgba(178, 205, 255, 0.24);
+  --brand-3: #b9d4ff;
+  --brand-4: #d8e8ff;
+  --accent-2: #f7cd78;
+  --danger: #ffb0a2;
+  --night: #101c33;
 
   /* V2 / V4 令牌 */
-  --y-bg: #081226;
-  --y-surface: #0d1830;
-  --y-surface2: #111f3c;
-  --y-ink: #e9efff;
-  --y-ink2: #b7c5e4;
-  --y-muted: #8393b3;
-  --y-line: rgba(160, 190, 255, 0.16);
-  --y-line2: rgba(170, 200, 255, 0.26);
-  --y-soft: rgba(110, 150, 255, 0.12);
-  --y-accent: #6fa8ff;
-  --y-brand: #9fc4ff;
-  --y-brand-2: #c2d8ff;
-  --y-amber: #f5c15a;
+  --y-bg: #1a2742;
+  --y-surface: #21314f;
+  --y-surface2: #283a5c;
+  --y-ink: #eef4ff;
+  --y-ink2: #c7d5ee;
+  --y-muted: #aebdd7;
+  --y-line: rgba(178, 205, 255, 0.24);
+  --y-line2: rgba(190, 215, 255, 0.36);
+  --y-soft: rgba(140, 180, 255, 0.16);
+  --y-accent: #8dbdff;
+  --y-brand: #b9d4ff;
+  --y-brand-2: #d8e8ff;
+  --y-amber: #f7cd78;
   --y-warm: #f0bd6e;
   --y-calm: #8fd6c0;
   --y-red: #ff9b8b;
@@ -11802,10 +11808,10 @@ html.y-motion-off #yutu2 .y-step-stage.is-page-dragging {
     ),
     linear-gradient(
       180deg,
-      rgba(5, 10, 22, 0.28),
-      rgba(6, 12, 26, 0.18)
+      rgba(26, 39, 66, 0.1),
+      rgba(30, 44, 72, 0.06)
     );
-  border-color: rgba(150, 185, 255, 0.18);
+  border-color: rgba(170, 200, 255, 0.24);
   box-shadow:
     0 1px 0 rgba(255, 255, 255, 0.08) inset,
     0 30px 90px -40px rgba(0, 0, 0, 0.9),
@@ -11825,11 +11831,11 @@ html.y-motion-off #yutu2 .y-step-stage.is-page-dragging {
 #yutu2 .y-chrome {
   background: linear-gradient(
     180deg,
-    rgba(5, 10, 22, 0.62),
-    rgba(6, 12, 26, 0.5)
+    rgba(34, 48, 76, 0.62),
+    rgba(36, 50, 78, 0.48)
   );
   border-bottom-color: var(--y-line);
-  box-shadow: 0 12px 32px -28px rgba(0, 0, 0, 0.85);
+  box-shadow: 0 12px 32px -30px rgba(0, 0, 0, 0.5);
 }
 #yutu2 .y-chrome.is-scrolled {
   box-shadow: 0 20px 44px -30px rgba(0, 0, 0, 0.95);
@@ -11857,8 +11863,8 @@ html.y-motion-off #yutu2 .y-step-stage.is-page-dragging {
 #yutu2 .y-glance {
   background: linear-gradient(
     90deg,
-    rgba(12, 22, 44, 0.8),
-    rgba(9, 17, 34, 0.72)
+    rgba(54, 70, 98, 0.8),
+    rgba(48, 64, 92, 0.72)
   );
   border-bottom-color: var(--y-line);
 }
@@ -11947,14 +11953,14 @@ html.y-motion-off #yutu2 .y-step-stage.is-page-dragging {
 #yutu2 .y-chart-frame {
   background: linear-gradient(
     180deg,
-    rgba(6, 12, 24, 0.5),
-    rgba(8, 14, 28, 0.42)
+    rgba(44, 60, 88, 0.55),
+    rgba(52, 68, 98, 0.46)
   );
-  border-color: rgba(160, 190, 255, 0.2);
-  box-shadow: 0 18px 40px -32px rgba(0, 0, 0, 0.85);
+  border-color: rgba(185, 210, 255, 0.26);
+  box-shadow: 0 18px 40px -32px rgba(0, 0, 0, 0.5);
 }
 #yutu2 .y-insight {
-  border-color: rgba(120, 160, 255, 0.26);
+  border-color: rgba(150, 190, 255, 0.32);
 }
 /* 主要容器做磨砂玻璃；嵌套小面不再重复 blur，避免性能开销 */
 #yutu2 .y-card,
@@ -12005,7 +12011,7 @@ html.y-motion-off #yutu2 .y-step-stage.is-page-dragging {
   border-color: rgba(130, 175, 255, 0.45);
 }
 #yutu2 .y-campaign-picks {
-  background: rgba(12, 20, 38, 0.8);
+  background: rgba(52, 68, 96, 0.8);
   border-color: var(--y-line);
 }
 #yutu2 .y-stat-grid > div,
@@ -12018,8 +12024,8 @@ html.y-motion-off #yutu2 .y-step-stage.is-page-dragging {
 #yutu2 .y-lead-facts > div {
   background: linear-gradient(
     180deg,
-    rgba(20, 32, 58, 0.82),
-    rgba(13, 22, 42, 0.82)
+    rgba(60, 78, 110, 0.6),
+    rgba(48, 64, 94, 0.6)
   );
   border-color: var(--y-line);
 }
@@ -12028,7 +12034,7 @@ html.y-motion-off #yutu2 .y-step-stage.is-page-dragging {
 #yutu2 input:not([type='range']):not([type='checkbox']):not([type='radio']),
 #yutu2 select,
 #yutu2 textarea {
-  background: rgba(10, 18, 34, 0.86);
+  background: rgba(44, 60, 90, 0.8);
   border-color: var(--y-line2);
   color: var(--y-ink);
 }
@@ -12037,25 +12043,25 @@ html.y-motion-off #yutu2 .y-step-stage.is-page-dragging {
   color: var(--y-muted);
 }
 #yutu2 select option {
-  background: #0d1730;
-  color: #e9efff;
+  background: #22334f;
+  color: #eef4ff;
 }
 #yutu2 textarea:focus,
 #yutu2 input:focus,
 #yutu2 select:focus {
-  background: rgba(14, 24, 46, 0.92);
-  border-color: rgba(130, 175, 255, 0.55);
+  background: rgba(56, 74, 106, 0.92);
+  border-color: rgba(150, 190, 255, 0.6);
 }
 
 /* 按钮：彩色主按钮保留，其余改为深色玻璃 */
 #yutu2 .y-btn:not(.y-btn-main) {
-  background: rgba(18, 30, 56, 0.72);
+  background: rgba(52, 70, 100, 0.68);
   border-color: var(--y-line2);
   color: var(--y-ink);
 }
 #yutu2 .y-btn:not(.y-btn-main):hover:not(:disabled) {
-  background-color: rgba(30, 48, 86, 0.85);
-  border-color: rgba(140, 180, 255, 0.45);
+  background-color: rgba(66, 88, 124, 0.82);
+  border-color: rgba(160, 195, 255, 0.5);
   color: #fff;
 }
 #yutu2 .y-btn.y-btn-danger {
@@ -12071,7 +12077,7 @@ html.y-motion-off #yutu2 .y-step-stage.is-page-dragging {
 
 /* 标签与提示 */
 #yutu2 .y-chip {
-  background: rgba(18, 30, 56, 0.72);
+  background: rgba(52, 70, 100, 0.68);
   border-color: var(--y-line2);
   color: var(--y-ink2);
 }
@@ -12096,7 +12102,7 @@ html.y-motion-off #yutu2 .y-step-stage.is-page-dragging {
   color: #cfe0ff;
 }
 #yutu2 .y-motion-chip.is-off {
-  background: rgba(18, 30, 56, 0.6);
+  background: rgba(56, 74, 104, 0.6);
   color: var(--y-muted);
 }
 #yutu2 .y-warn {
@@ -12121,30 +12127,30 @@ html.y-motion-off #yutu2 .y-step-stage.is-page-dragging {
   color: #d8c7ff;
 }
 #yutu2 .y-gap-photo.is-on {
-  background: #0c1830;
+  background: #22334f;
 }
 #yutu2 .y-companion-fab {
-  background: rgba(12, 20, 38, 0.86);
+  background: rgba(52, 68, 96, 0.86);
 }
 
 /* 地图与图表内的深色控制件 */
 #yutu2 .y-gis {
-  background: #071022;
+  background: #1c2940;
 }
 #yutu2 .y-gis .leaflet-control-zoom a,
 #yutu2 .y-campaign-leaflet .leaflet-control-zoom a {
-  background: rgba(12, 20, 38, 0.92);
+  background: rgba(52, 68, 96, 0.92);
   color: var(--y-ink);
   border-color: var(--y-line2);
 }
 #yutu2 .y-gis .leaflet-control-attribution {
-  background: rgba(8, 14, 28, 0.8);
+  background: rgba(48, 64, 92, 0.8);
   color: var(--y-muted);
 }
 #yutu2 .camp-ring-label,
 #yutu2 .camp-depot,
 #yutu2 .leaflet-tooltip.camp-label {
-  background: rgba(12, 20, 38, 0.92);
+  background: rgba(52, 68, 96, 0.92);
   color: var(--y-ink);
   border-color: var(--y-line2);
 }
@@ -12154,7 +12160,7 @@ html.y-motion-off #yutu2 .y-step-stage.is-page-dragging {
 }
 /* 圈层公里的 pill（近/中/外圈 3 个）在暗色底图上仍有浅底，统一改成深色玻璃 */
 #yutu2 .camp-ring-label span {
-  background: rgba(12, 20, 38, 0.92);
+  background: rgba(52, 68, 96, 0.92);
   border-color: var(--y-line2);
   color: var(--y-ink2);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.45);
@@ -12162,7 +12168,7 @@ html.y-motion-off #yutu2 .y-step-stage.is-page-dragging {
 /* Leaflet 比例尺（第 4 个公里标识）默认白底黑字，暗色地图上是明显的过曝块 */
 #yutu2 .y-gis .leaflet-control-scale-line,
 #yutu2 .y-campaign-leaflet .leaflet-control-scale-line {
-  background: rgba(12, 20, 38, 0.9);
+  background: rgba(52, 68, 96, 0.9);
   border-color: rgba(150, 190, 255, 0.42);
   color: #cfe0ff;
   text-shadow: none;
@@ -12179,7 +12185,7 @@ html.y-motion-off #yutu2 .y-step-stage.is-page-dragging {
 /* 全局滚动条仍是浅米色，候选对比表横向滚动时会在暗色卡片底部出现亮条 */
 #yutu2 ::-webkit-scrollbar-thumb {
   background: rgba(120, 160, 255, 0.26);
-  border-color: rgba(8, 14, 28, 0.6);
+  border-color: rgba(48, 64, 92, 0.6);
 }
 #yutu2 ::-webkit-scrollbar-thumb:hover {
   background: rgba(120, 160, 255, 0.42);
@@ -12188,8 +12194,8 @@ html.y-motion-off #yutu2 .y-step-stage.is-page-dragging {
 #yutu2 .y-empty {
   background: linear-gradient(
     180deg,
-    rgba(12, 20, 38, 0.5),
-    rgba(8, 14, 28, 0.42)
+    rgba(52, 68, 96, 0.5),
+    rgba(48, 64, 92, 0.42)
   );
   border-color: rgba(160, 190, 255, 0.22);
   color: var(--y-muted);
@@ -12215,7 +12221,7 @@ html.y-motion-off #yutu2 .y-step-stage.is-page-dragging {
   color: #b7c5e4;
 }
 #yutu2 .y-fatal {
-  background: #0d1730;
+  background: #22334f;
 }
 
 /* 吉祥物：暗色头部下用一圈月光承接 multiply 视频 */
@@ -12233,8 +12239,8 @@ html.y-motion-off #yutu2 .y-step-stage.is-page-dragging {
 #yutu2 .y-loop-next {
   background: linear-gradient(
     180deg,
-    rgba(20, 34, 60, 0.84),
-    rgba(13, 22, 42, 0.82)
+    rgba(58, 76, 106, 0.84),
+    rgba(52, 68, 96, 0.82)
   );
   border-color: rgba(130, 175, 255, 0.26);
 }
@@ -12245,8 +12251,8 @@ html.y-motion-off #yutu2 .y-step-stage.is-page-dragging {
 #yutu2 .y-loop-step.is-active {
   background: linear-gradient(
     180deg,
-    rgba(30, 48, 86, 0.84),
-    rgba(13, 22, 42, 0.82)
+    rgba(64, 84, 118, 0.84),
+    rgba(52, 68, 96, 0.82)
   );
 }
 #yutu2 .y-loop-step.is-active {
@@ -12260,7 +12266,7 @@ html.y-motion-off #yutu2 .y-step-stage.is-page-dragging {
   border-left-color: #8fd6c0;
 }
 .y-fatal {
-  background: #0d1730;
+  background: #22334f;
   border-color: rgba(160, 190, 255, 0.18);
   color: #e9efff;
 }
@@ -12281,8 +12287,8 @@ html.y-motion-off #yutu2 .y-step-stage.is-page-dragging {
     ),
     linear-gradient(
       180deg,
-      rgba(18, 30, 56, 0.9),
-      rgba(12, 20, 38, 0.86)
+      rgba(56, 74, 104, 0.9),
+      rgba(52, 68, 96, 0.86)
     );
   border-color: rgba(120, 160, 255, 0.26);
   box-shadow:
@@ -12333,7 +12339,7 @@ html.y-motion-off #yutu2 .y-step-stage.is-page-dragging {
 
 /* 暗色主题下把照片压成夜里的窗，sunrise 再额外压暗太阳 */
 #yutu2 .y-gap-photo img {
-  filter: saturate(0.78) contrast(0.92) brightness(0.62);
+  filter: saturate(0.86) contrast(0.94) brightness(0.78);
 }
 #yutu2 .y-gap-photo::after {
   content: '';
@@ -12348,7 +12354,7 @@ html.y-motion-off #yutu2 .y-step-stage.is-page-dragging {
   );
 }
 #yutu2 .y-gap-photo--sunrise img {
-  filter: saturate(0.68) contrast(0.9) brightness(0.48);
+  filter: saturate(0.78) contrast(0.92) brightness(0.62);
 }
 #yutu2 .y-gap-photo--sunrise::after {
   background:
@@ -12362,12 +12368,12 @@ html.y-motion-off #yutu2 .y-step-stage.is-page-dragging {
 
 /* 头部「平台数据表 x/5」：.y-sync-wrap .y-chip 的旧浅色规则优先级更高，单独覆盖 */
 #yutu2 .y-sync-wrap .y-chip {
-  background: rgba(18, 30, 56, 0.72);
+  background: rgba(56, 74, 104, 0.72);
   border-color: var(--y-line2);
   color: var(--y-ink2);
 }
 #yutu2 .y-sync-wrap .y-chip.y-chip-c {
-  background: rgba(18, 30, 56, 0.72);
+  background: rgba(56, 74, 104, 0.72);
   border-color: var(--y-line2);
   color: var(--y-ink2);
 }
@@ -12384,7 +12390,7 @@ html.y-motion-off #yutu2 .y-step-stage.is-page-dragging {
   padding: 6px 14px;
   border-radius: 10px;
   border: 1px solid rgba(160, 190, 255, 0.14);
-  background: rgba(4, 8, 18, 0.46);
+  background: rgba(44, 58, 84, 0.5);
   color: rgba(225, 235, 255, 0.86);
   text-shadow: 0 1px 8px rgba(0, 0, 0, 0.6);
   -webkit-backdrop-filter: blur(8px);
@@ -12393,8 +12399,8 @@ html.y-motion-off #yutu2 .y-step-stage.is-page-dragging {
 #yutu2 .y-glance {
   background: linear-gradient(
     90deg,
-    rgba(6, 12, 26, 0.55),
-    rgba(8, 14, 28, 0.45)
+    rgba(50, 66, 94, 0.55),
+    rgba(48, 64, 92, 0.45)
   );
   -webkit-backdrop-filter: blur(10px) saturate(120%);
   backdrop-filter: blur(10px) saturate(120%);
@@ -12656,7 +12662,7 @@ html.y-motion-off #yutu2 .y-step-stage.is-page-dragging {
 
 /* 趋势图 */
 #yutu2 .y-trend-bg {
-  fill: rgba(8, 15, 32, 0.5);
+  fill: rgba(50, 66, 94, 0.5);
   stroke: rgba(160, 190, 255, 0.16);
   stroke-width: 1;
 }
@@ -12696,7 +12702,7 @@ html.y-motion-off #yutu2 .y-step-stage.is-page-dragging {
   stroke-width: 2;
 }
 #yutu2 .y-trend-tip {
-  fill: rgba(8, 16, 34, 0.94);
+  fill: rgba(50, 66, 94, 0.94);
   stroke: rgba(126, 200, 255, 0.4);
   stroke-width: 0.8;
 }
@@ -12815,7 +12821,7 @@ html.y-motion-off #yutu2 .y-step-stage.is-page-dragging {
   border-radius: var(--y-r);
   background:
     radial-gradient(circle at 12% 0%, rgba(126, 200, 255, 0.12), transparent 46%),
-    linear-gradient(180deg, rgba(8, 16, 34, 0.62), rgba(8, 14, 28, 0.5));
+    linear-gradient(180deg, rgba(50, 66, 94, 0.62), rgba(48, 64, 92, 0.5));
   box-shadow: 0 18px 40px -32px rgba(0, 0, 0, 0.85);
 }
 #yutu2 .y-second-head {
@@ -12907,7 +12913,7 @@ html.y-motion-off #yutu2 .y-step-stage.is-page-dragging {
   padding: 11px 12px 12px;
   border: 1px solid rgba(126, 200, 255, 0.2);
   border-radius: var(--y-r);
-  background: rgba(8, 15, 32, 0.5);
+  background: rgba(50, 66, 94, 0.5);
 }
 #yutu2 .y-checklist-head {
   display: flex;
@@ -13064,7 +13070,7 @@ html.y-motion-off #yutu2 .y-step-stage.is-page-dragging {
   pointer-events: none;
 }
 #yutu2 .leaflet-tooltip.gis-tip-target {
-  background: rgba(8, 20, 36, 0.92);
+  background: rgba(32, 46, 68, 0.92);
   color: #dff2ff;
   border-color: rgba(126, 200, 255, 0.5);
   font-weight: 600;
@@ -13288,7 +13294,7 @@ html.y-motion-off #yutu2 .gis-me-halo {
   padding: 9px 10px 10px;
   border: 1px solid rgba(160, 190, 255, 0.18);
   border-radius: var(--y-r);
-  background: rgba(8, 15, 32, 0.5);
+  background: rgba(50, 66, 94, 0.5);
 }
 #yutu2 .y-memory-meta {
   display: flex;
@@ -13365,7 +13371,7 @@ html.y-motion-off #yutu2 .gis-me-halo {
   padding: 7px 9px;
   border: 1px solid rgba(160, 190, 255, 0.14);
   border-radius: 8px;
-  background: rgba(8, 15, 32, 0.42);
+  background: rgba(50, 66, 94, 0.42);
 }
 #yutu2 .y-disc-list li.is-reply {
   border-left: 2px solid rgba(126, 200, 255, 0.35);
@@ -13522,7 +13528,7 @@ html.y-motion-off #yutu2 .gis-me-halo {
   padding: 10px 11px;
   border: 1px solid rgba(160, 190, 255, 0.18);
   border-radius: var(--y-r);
-  background: rgba(8, 15, 32, 0.5);
+  background: rgba(50, 66, 94, 0.5);
 }
 #yutu2 .y-memory-detail-head {
   display: flex;
@@ -13610,7 +13616,7 @@ html.y-motion-off #yutu2 .gis-me-halo {
   padding: 7px;
   border: 1px solid rgba(160, 190, 255, 0.16);
   border-radius: 8px;
-  background: rgba(8, 15, 32, 0.45);
+  background: rgba(50, 66, 94, 0.45);
 }
 #yutu2 .y-media-img-link img {
   display: block;
@@ -13691,7 +13697,7 @@ html.y-motion-off #yutu2 .gis-me-halo {
   padding: 2px 8px;
   border-radius: 999px;
   border: 1px solid rgba(160, 190, 255, 0.2);
-  background: rgba(8, 15, 32, 0.5);
+  background: rgba(50, 66, 94, 0.5);
   color: var(--y-muted);
   font-size: 10.5px;
   cursor: pointer;
@@ -13756,7 +13762,7 @@ html.y-motion-off #yutu2 .gis-me-halo {
   padding: 8px 9px;
   border: 1px solid rgba(160, 190, 255, 0.16);
   border-radius: 8px;
-  background: rgba(8, 15, 32, 0.45);
+  background: rgba(50, 66, 94, 0.45);
 }
 #yutu2 .y-search-meta {
   display: flex;
@@ -13794,7 +13800,7 @@ html.y-motion-off #yutu2 .gis-me-halo {
   padding: 4px;
   border: 1px solid var(--y-line);
   border-radius: 999px;
-  background: rgba(8, 15, 32, 0.55);
+  background: rgba(50, 66, 94, 0.55);
 }
 #yutu2 .y-peer-viewbar button {
   border: 0;
@@ -13850,7 +13856,7 @@ html.y-motion-off #yutu2 .gis-me-halo {
   padding: 4px;
   border: 1px solid var(--y-line);
   border-radius: 999px;
-  background: rgba(8, 15, 32, 0.55);
+  background: rgba(50, 66, 94, 0.55);
 }
 #yutu2 .y-wall-viewbar button {
   border: 0;
@@ -13909,7 +13915,7 @@ html.y-motion-off #yutu2 .gis-me-halo {
   padding: 6px 8px;
   border: 1px solid rgba(160, 190, 255, 0.18);
   border-radius: 8px;
-  background: rgba(8, 15, 32, 0.5);
+  background: rgba(50, 66, 94, 0.5);
   color: var(--y-muted);
   font-size: 11px;
   cursor: pointer;
@@ -13949,7 +13955,7 @@ html.y-motion-off #yutu2 .gis-me-halo {
   padding: 8px 10px;
   border: 1px solid rgba(160, 190, 255, 0.16);
   border-radius: 8px;
-  background: rgba(8, 15, 32, 0.45);
+  background: rgba(50, 66, 94, 0.45);
 }
 #yutu2 .y-station-summary span {
   display: block;
@@ -13987,7 +13993,7 @@ html.y-motion-off #yutu2 .gis-me-halo {
   padding: 6px;
   border: 1px solid var(--y-line2);
   border-radius: 10px;
-  background: rgba(8, 14, 28, 0.96);
+  background: rgba(48, 64, 92, 0.96);
   box-shadow: 0 18px 40px -20px rgba(0, 0, 0, 0.9);
   -webkit-backdrop-filter: blur(12px);
   backdrop-filter: blur(12px);
@@ -14040,7 +14046,7 @@ html.y-motion-off #yutu2 .gis-me-halo {
   padding: 6px 8px;
   border: 1px solid var(--y-line);
   border-radius: 10px;
-  background: rgba(8, 15, 32, 0.4);
+  background: rgba(50, 66, 94, 0.4);
 }
 #yutu2 .y-anchor-nav > span {
   margin-right: 4px;
@@ -14052,7 +14058,7 @@ html.y-motion-off #yutu2 .gis-me-halo {
   padding: 3px 9px;
   border: 1px solid rgba(160, 190, 255, 0.16);
   border-radius: 999px;
-  background: rgba(8, 15, 32, 0.5);
+  background: rgba(50, 66, 94, 0.5);
   color: var(--y-ink2);
   font-size: 10.5px;
   cursor: pointer;
@@ -14166,7 +14172,7 @@ html.y-motion-off #yutu2 .y-deep-drawer {
   padding: 7px 10px;
   border: 1px solid var(--y-line);
   border-radius: 10px;
-  background: rgba(8, 15, 32, 0.42);
+  background: rgba(50, 66, 94, 0.42);
 }
 #yutu2 .y-flow-steps em {
   font-style: normal;
@@ -14189,7 +14195,7 @@ html.y-motion-off #yutu2 .y-deep-drawer {
   padding: 4px 11px;
   border: 1px solid rgba(160, 190, 255, 0.16);
   border-radius: 999px;
-  background: rgba(8, 15, 32, 0.5);
+  background: rgba(50, 66, 94, 0.5);
   color: var(--y-muted);
   font-size: 11px;
   cursor: pointer;
