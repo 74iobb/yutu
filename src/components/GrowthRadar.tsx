@@ -46,6 +46,37 @@ function labelAnchor(x: number) {
   return x > CX ? 'start' : 'end';
 }
 
+const RAD = Math.PI / 180;
+
+function polar(deg: number, r: number) {
+  return {
+    x: CX + Math.cos(deg * RAD) * r,
+    y: CY + Math.sin(deg * RAD) * r,
+  };
+}
+
+/** 扫描线后面的彩色波尾：一个随扫描线旋转的柔光扇形 */
+function sweepTailPath(spanDeg: number) {
+  const rr = R * 0.96;
+  const tip = polar(-90, rr);
+  const tail = polar(-90 - spanDeg, rr);
+  return (
+    `M${CX},${CY} L${tip.x.toFixed(1)},${tip.y.toFixed(1)} ` +
+    `A${rr.toFixed(1)},${rr.toFixed(1)} 0 0 0 ${tail.x.toFixed(1)},${tail.y.toFixed(1)} Z`
+  );
+}
+
+/** 跟在扫描线后面的波浪线：半径随角度起伏，配合虚线流动 */
+function waveTrailPath(radius: number, amp: number, phase: number) {
+  let d = '';
+  for (let deg = -96; deg >= -168; deg -= 4) {
+    const r = radius + Math.sin((deg + phase) * 0.12) * amp;
+    const p = polar(deg, r);
+    d += `${d ? 'L' : 'M'}${p.x.toFixed(1)},${p.y.toFixed(1)}`;
+  }
+  return d;
+}
+
 /**
  * 「起点 → 现在」七维雷达对比。
  * 越靠外表示该维数值越高；颜色不表示好坏，只区分两个时间点。
@@ -102,6 +133,13 @@ export default function GrowthRadar({
             <stop offset='0%' stopColor='#bfe3ff' stopOpacity='0.85' />
             <stop offset='100%' stopColor='#7ec8ff' stopOpacity='0' />
           </radialGradient>
+          {/* 扫描线背后的彩色波尾：青 → 蓝 → 紫 → 金 */}
+          <linearGradient id={`${uid}-trail`} x1='0' y1='0' x2='1' y2='1'>
+            <stop offset='0%' stopColor='#7ee8c8' stopOpacity='0.6' />
+            <stop offset='38%' stopColor='#7ec8ff' stopOpacity='0.45' />
+            <stop offset='70%' stopColor='#b9a8ff' stopOpacity='0.34' />
+            <stop offset='100%' stopColor='#f0b25a' stopOpacity='0' />
+          </linearGradient>
         </defs>
 
         {/* 网格 */}
@@ -136,6 +174,29 @@ export default function GrowthRadar({
           aria-hidden='true'
           filter={`url(#${uid}-glow)`}
         >
+          {/* 波尾：柔光扇形 + 三条错相的波浪线，随扫描线一起转动 */}
+          <path
+            className='y-radar-wave'
+            d={sweepTailPath(62)}
+            fill={`url(#${uid}-trail)`}
+          />
+          <path
+            className='y-radar-wave-line'
+            d={waveTrailPath(R * 0.92, 7, 0)}
+            stroke={`url(#${uid}-trail)`}
+          />
+          <path
+            className='y-radar-wave-line'
+            d={waveTrailPath(R * 0.76, 9, 60)}
+            stroke={`url(#${uid}-trail)`}
+            style={{ animationDelay: '-0.9s' }}
+          />
+          <path
+            className='y-radar-wave-line'
+            d={waveTrailPath(R * 0.6, 6, 120)}
+            stroke={`url(#${uid}-trail)`}
+            style={{ animationDelay: '-1.7s' }}
+          />
           <line
             x1={CX}
             y1={CY}
