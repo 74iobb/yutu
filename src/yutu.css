@@ -14574,7 +14574,7 @@ html.y-motion-off #yutu2 .y-station-pane {
    ========================================================================== */
 #yutu2 .y-head {
   position: relative;
-  min-height: 104px;
+  min-height: 112px;
   overflow: hidden;
   background-color: #1a1510;
   background-image: url('./assets/y-head-sea.jpg');
@@ -14596,14 +14596,14 @@ html.y-motion-off #yutu2 .y-station-pane {
   background:
     linear-gradient(
       90deg,
-      rgba(10, 8, 6, 0.8) 0%,
-      rgba(14, 10, 7, 0.56) 46%,
-      rgba(14, 10, 7, 0.28) 100%
+      rgba(10, 8, 6, 0.62) 0%,
+      rgba(14, 10, 7, 0.38) 46%,
+      rgba(14, 10, 7, 0.12) 100%
     ),
     linear-gradient(
       180deg,
-      rgba(10, 8, 6, 0.2) 0%,
-      rgba(8, 6, 4, 0.5) 100%
+      rgba(10, 8, 6, 0.12) 0%,
+      rgba(8, 6, 4, 0.4) 100%
     );
   pointer-events: none;
   z-index: 0;
@@ -14617,4 +14617,12 @@ html.y-motion-off #yutu2 .y-station-pane {
     min-height: 0;
     background-position: 50% 62%;
   }
+}
+
+/* 头部照片透出后，给标题与主张补一层轻投影保可读 */
+#yutu2 .y-title {
+  filter: drop-shadow(0 2px 10px rgba(0, 0, 0, 0.55));
+}
+#yutu2 .y-slogan {
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.65);
 }
