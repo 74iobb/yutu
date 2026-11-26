@@ -1188,7 +1188,7 @@ function StationTab({
             </p>
           ) : null}
           <GapPhoto
-            variant='sunrise'
+            variant='field'
             quote='休息也是路线的一部分。'
             still
           />

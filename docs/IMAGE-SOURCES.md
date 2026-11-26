@@ -5,14 +5,14 @@
 | 文件 | 用途 | 原始地址 |
 |---|---|---|
 | `src/assets/scenery-hills.jpg` | 第六步「慢一点」空隙 | https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05 |
-| `src/assets/scenery-sunrise.jpg` | 第六步「驿站 · 休息」空隙 | https://images.unsplash.com/photo-1500534623283-312aade485b7 |
+| `src/assets/scenery-sunrise.jpg` | 备选素材，当前未使用（原驿站休息图） | https://images.unsplash.com/photo-1500534623283-312aade485b7 |
 | `src/assets/scenery-city.jpg` | 第二步「区域构成」空隙（城市俯瞰） | https://images.unsplash.com/photo-1477959858617-67f85cf4f1df |
 | `src/assets/scenery-people.jpg` | 第二步「近期讨论」/ 第六步「经验域」空隙（同伴） | https://images.unsplash.com/photo-1529156069898-49953e39b3ac |
 | `src/assets/scenery-path.jpg` | 第三步「方向列表」空隙（岔路） | https://images.unsplash.com/photo-1441974231531-c6227db76b6e |
 | `src/assets/scenery-ridge.jpg` | 第三步「真实记述」/ 第五步「参考域」/ 第六步「档案墙」空隙（层叠山脊） | https://images.unsplash.com/photo-1500534314209-a25ddb2bd429 |
 | `src/assets/scenery-pack.jpg` | 第四步「一次性资源」空隙（行囊） | https://images.unsplash.com/photo-1501555088652-021faa106b9b |
 | `src/assets/scenery-plan.jpg` | 第四步「点选方向代价」侧栏空隙（手账计划） | https://images.unsplash.com/photo-1484480974693-6ca0a78fb36b |
-| `src/assets/scenery-field.jpg` | 第五步「归属与周边域」空隙（田野） | https://images.unsplash.com/photo-1500382017468-9049fed747ef |
+| `src/assets/scenery-field.jpg` | 第六步驿站「休息也是路线的一部分」空隙（金色田野，2026-11-26 起静态使用） | https://images.unsplash.com/photo-1500382017468-9049fed747ef |
 | `src/assets/scenery-writing.jpg` | 第一步右侧「判定结果」下方（钢笔书写近景；2026-11-26 由 morning 换回，保持静止） | https://images.unsplash.com/photo-1455390582262-044cdead277a |
 | `src/assets/scenery-morning.jpg` | 备选素材，当前未使用（晨光极简客厅为单点透视构图，2026-11-26 因「不要透视」撤下） | https://images.unsplash.com/photo-1493809842364-78817add7ffb |
 
