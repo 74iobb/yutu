@@ -7,6 +7,7 @@
 
 **在线体验**：`待发布后填写`（平台 prod 页面地址，格式 `https://agent.nuwax.com/page/{projectId}-{页面ID}/prod/`）  
 **源码在线预览**：<https://74iobb.github.io/yutu/>（GitHub Pages，纯前端；跨用户共享池在该域名下自动降级）  
+**演示片（录屏版）**：<https://74iobb.github.io/yutu/demo-show.html> ｜ **录制提词器**：<https://74iobb.github.io/yutu/teleprompter.html>  
 **产品说明计划书**：[`docs/域途-产品说明计划书.md`](docs/域途-产品说明计划书.md)  
 **参赛提交清单**：[`docs/域途-作品提交清单.md`](docs/域途-作品提交清单.md)  
 **产品哲学**：[`docs/PHILOSOPHY.md`](docs/PHILOSOPHY.md)
