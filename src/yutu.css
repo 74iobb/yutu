@@ -2954,9 +2954,6 @@ body {
   border-radius: 8px;
   overflow: hidden;
 }
-#yutu2 .y-gis.is-net {
-  background: radial-gradient(circle at 32% 26%, #0b2430, #050e13 72%);
-}
 #yutu2 .y-gis.is-picking,
 #yutu2 .y-gis.is-picking .leaflet-container,
 #yutu2 .y-gis.is-picking .leaflet-interactive {
@@ -2992,10 +2989,6 @@ body {
   font-size: 9.5px;
   padding: 1px 5px;
   border-radius: 3px 0 0 0;
-}
-#yutu2 .y-gis.is-net .leaflet-control-attribution {
-  background: rgba(6, 15, 23, 0.65);
-  color: #9fb9c8;
 }
 #yutu2 .y-gis .leaflet-control-attribution a {
   color: inherit;
@@ -3052,9 +3045,6 @@ body {
   filter: invert(0.94) hue-rotate(180deg) brightness(0.95) contrast(0.95)
     saturate(0.9);
 }
-#yutu2 .y-gis.is-net .leaflet-tile {
-  filter: none;
-}
 /* 四周轻微压暗，让地图和暗色卡片自然衔接 */
 #yutu2 .y-gis::after {
   content: '';
@@ -3064,9 +3054,6 @@ body {
   pointer-events: none;
   border-radius: 8px;
   box-shadow: inset 0 0 40px 4px rgba(4, 8, 18, 0.35);
-}
-#yutu2 .y-gis.is-net::after {
-  box-shadow: inset 0 0 28px 2px rgba(4, 8, 18, 0.26);
 }
 @media (max-width: 640px) {
   #yutu2 .y-gis {
@@ -8966,18 +8953,9 @@ html.y-motion-ready #yutu2 .y-lead.y-in h2 {
 }
 
 /* ==========================================================================
-   V5.2 聚焦模式
-   第二步地图 / 第四步作战图可铺满视口；侧栏变玻璃抽屉，Esc 或点击背景退出
+   V5.2 聚焦模式（当前仅第五步轮盘保留；地图与作战图已改为页面内嵌）
    ========================================================================== */
 
-#yutu2 .y-globe-actions {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  flex-wrap: wrap;
-  gap: 8px;
-  flex: 0 0 auto;
-}
 #yutu2 .y-focus-toggle {
   white-space: nowrap;
 }
@@ -9007,57 +8985,6 @@ html.y-motion-ready #yutu2 .y-lead.y-in h2 {
   -webkit-backdrop-filter: blur(7px) saturate(120%);
   backdrop-filter: blur(7px) saturate(120%);
   animation: yFocusFade 0.3s ease both;
-}
-
-#yutu2 .y-stage.is-focus .y-globe-panel {
-  position: fixed;
-  inset: 14px;
-  z-index: 110;
-  display: flex;
-  flex-direction: column;
-  padding: 14px 14px 10px;
-  border-radius: 18px;
-  border-color: rgba(14, 91, 76, 0.18);
-  background: linear-gradient(180deg, #fffefb, #f6f2e9);
-  box-shadow:
-    0 40px 90px -30px rgba(0, 0, 0, 0.6),
-    0 0 0 1px rgba(255, 255, 255, 0.4) inset;
-  animation: yFocusPanel 0.5s var(--y-ease-spring) both;
-}
-#yutu2 .y-stage.is-focus .y-globe-panel > .y-globe {
-  flex: 1 1 auto;
-  min-height: 0;
-}
-#yutu2 .y-stage.is-focus .y-gis {
-  height: 100%;
-}
-#yutu2 .y-stage.is-focus .y-disclosure {
-  display: none;
-}
-#yutu2 .y-stage.is-focus .y-side {
-  position: fixed;
-  top: 14px;
-  right: 14px;
-  bottom: 14px;
-  width: min(400px, 35vw);
-  z-index: 112;
-  padding: 12px;
-  overflow: auto;
-  border-radius: 16px;
-  border: 1px solid rgba(255, 255, 255, 0.55);
-  background: rgba(255, 253, 249, 0.94);
-  -webkit-backdrop-filter: blur(18px) saturate(140%);
-  backdrop-filter: blur(18px) saturate(140%);
-  box-shadow: 0 30px 70px -30px rgba(0, 0, 0, 0.55);
-  animation: yFocusSide 0.55s var(--y-ease-spring) both;
-}
-#yutu2 .y-stage.is-focus .y-side-tabs {
-  position: sticky;
-  top: -1px;
-  z-index: 2;
-  background: rgba(255, 253, 249, 0.96);
-  -webkit-backdrop-filter: blur(10px);
-  backdrop-filter: blur(10px);
 }
 
 #yutu2 .y-loop-board-card.is-focus {
@@ -9134,26 +9061,6 @@ html.y-motion-ready #yutu2 .y-lead.y-in h2 {
   }
 }
 
-@media (min-width: 981px) {
-  #yutu2 .y-stage.is-focus .y-globe-panel {
-    right: calc(min(400px, 35vw) + 28px);
-  }
-}
-@media (max-width: 980px) {
-  #yutu2 .y-stage.is-focus .y-globe-panel {
-    bottom: calc(46vh + 26px);
-  }
-  #yutu2 .y-stage.is-focus .y-side {
-    top: auto;
-    left: 14px;
-    right: 14px;
-    width: auto;
-    max-height: 44vh;
-  }
-  #yutu2 .y-stage.is-focus .y-globe-hint {
-    display: none;
-  }
-}
 @media (max-width: 860px) {
   #yutu2 .y-loop-board-card.is-focus {
     inset: 8px;
@@ -9168,20 +9075,12 @@ html.y-motion-ready #yutu2 .y-lead.y-in h2 {
   }
 }
 @media (max-width: 760px) {
-  #yutu2 .y-stage.is-focus .y-globe-panel,
   #yutu2 .y-loop-board-card.is-focus {
     inset: 8px;
-  }
-  #yutu2 .y-stage.is-focus .y-side {
-    left: 8px;
-    right: 8px;
-    bottom: 8px;
   }
 }
 @media (prefers-reduced-motion: reduce) {
   #yutu2 .y-focus-backdrop,
-  #yutu2 .y-stage.is-focus .y-globe-panel,
-  #yutu2 .y-stage.is-focus .y-side,
   #yutu2 .y-loop-board-card.is-focus {
     animation: none !important;
   }
@@ -9934,8 +9833,6 @@ html.y-motion-ready #yutu2 .y-lead.y-in h2 {
 #yutu2 .y-focus-backdrop {
   animation-duration: 240ms;
 }
-#yutu2 .y-stage.is-focus .y-globe-panel,
-#yutu2 .y-stage.is-focus .y-side,
 #yutu2 .y-loop-board-card.is-focus,
 #yutu2 .y-sky {
   animation-duration: var(--motion-enter);
@@ -12135,10 +12032,7 @@ html.y-motion-off #yutu2 .y-step-stage.is-page-dragging {
 #yutu2 .y-data-group li,
 #yutu2 .y-card--data,
 #yutu2 .y-card--evidence,
-#yutu2 .y-chart-frame,
-#yutu2 .y-stage.is-focus .y-globe-panel,
-#yutu2 .y-stage.is-focus .y-side,
-#yutu2 .y-stage.is-focus .y-side-tabs {
+#yutu2 .y-chart-frame {
   background: linear-gradient(
     180deg,
     rgba(6, 12, 24, 0.5),
@@ -13243,21 +13137,7 @@ html.y-motion-off #yutu2 .y-step-stage.is-page-dragging {
   }
 }
 
-/* ---------- V9.7 网络模式可见性：模式徽标 / 城市回落 / 目标常驻标签 ---------- */
-#yutu2 .y-gis-net-badge {
-  position: absolute;
-  left: 10px;
-  top: 10px;
-  z-index: 900;
-  padding: 3px 9px;
-  border-radius: 999px;
-  border: 1px solid rgba(126, 200, 255, 0.35);
-  background: rgba(8, 20, 36, 0.84);
-  color: #cfe9ff;
-  font-size: 10.5px;
-  font-weight: 600;
-  pointer-events: none;
-}
+/* ---------- V9.7 城市回落标记（网络模式已移除） ---------- */
 #yutu2 .y-gis-fallback {
   position: absolute;
   left: 10px;

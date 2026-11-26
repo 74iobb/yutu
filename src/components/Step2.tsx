@@ -23,7 +23,6 @@ import {
   type MaterialItem,
 } from '@/lib/materials';
 import { SNAPSHOT_AT } from '@/data/snapshot-meta';
-import { useImmersive } from '@/lib/uiMotion';
 import { useYutu } from '@/store/YutuContext';
 import GisMap from './GisMap';
 import { Empty, Kv, LiveCard } from './bits';
@@ -53,16 +52,12 @@ export default function Step2() {
   const p = state.profile;
   const stage = currentStage(p);
   const city = CITY_MAP[p.city] ?? CITIES[0];
-  const [mode, setMode] = useState<'geo' | 'net'>('geo');
   const [sideTab, setSideTab] = useState<SideTab>('city');
   const [focusMaterial, setFocusMaterial] = useState<{
     mat: CityMaterial;
     item: MaterialItem;
   } | null>(null);
   const [showMaterials, setShowMaterials] = useState(true);
-  /** 聚焦模式：地图铺满视口，侧栏变成右侧玻璃抽屉 */
-  const [focus, setFocus] = useState(false);
-  useImmersive(focus, setFocus);
 
   /* 侧栏两页签自动轮播：桌面精细指针下生效，鼠标在面板上时暂停 */
   const sideRef = useRef<HTMLElement>(null);
@@ -327,22 +322,11 @@ export default function Step2() {
       ?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   }, [focusMaterial]);
 
-  const baseLegend: [string, string][] =
-    mode === 'net'
-      ? [
-          ['#78d6d0', '你的城市'],
-          ['#7ed4c4', '目标岗位更密'],
-          ['#c4a678', '目标岗位更稀'],
-          ['#7ed4c4', '迁移弧线'],
-        ]
-      : [
-          ['#1f6fb2', '你的城市'],
-          ['#a9762f', '蓝圈内城市'],
-          ['#7ed4c4', '同区域飞线'],
-          ['#8a979f', '其他城市'],
-        ];
   const legend: [string, string][] = [
-    ...baseLegend,
+    ['#1f6fb2', '你的城市'],
+    ['#a9762f', '蓝圈内城市'],
+    ['#7ed4c4', '同区域飞线'],
+    ['#8a979f', '其他城市'],
     ...(showMaterials
       ? ([
           ['#7a5a86', `检索资料 ${materialCount} 条（飞线连回城市）`],
@@ -350,10 +334,8 @@ export default function Step2() {
       : []),
   ];
 
-  const modeNote =
-    mode === 'net'
-      ? '网络模式：在离线矢量陆地上，从你的城市连向可迁移城市。同区域城市全部连上，另补四个岗位密度更高的跨区域城市；弧线粗细表示岗位密度差，青色为目标更密，棕色为目标更稀。紫色资料点同样用飞线连回所属城市。'
-      : '地理模式：交互式 GIS 底图，可拖动平移、滚轮/双指缩放。城市点大小表示岗位密度；紫色小点是按城市检索归位的资料，位置表示检索城市，不表示作者所在地（悬停看标题、点击看原文），每个资料点有一条紫色飞线连回所属城市；青色飞线连接蓝圈内的邻近城市；底图加载失败时自动回落到离线矢量陆地。';
+  const mapNote =
+    '交互式 GIS 底图，可拖动平移、滚轮/双指缩放。城市点大小表示岗位密度；紫色小点是按城市检索归位的资料，位置表示检索城市，不表示作者所在地（悬停看标题、点击看原文），每个资料点有一条紫色飞线连回所属城市；青色飞线连接蓝圈内的邻近城市；底图加载失败时自动回落到离线矢量陆地。';
 
   return (
     <section id='y-p2' role='tabpanel' aria-labelledby='y-s2'>
@@ -388,15 +370,7 @@ export default function Step2() {
         </p>
       </div>
 
-      <div className={`y-stage${focus ? ' is-focus' : ''}`}>
-        {focus ? (
-          <button
-            type='button'
-            className='y-focus-backdrop'
-            aria-label='退出聚焦，返回页面'
-            onClick={() => setFocus(false)}
-          />
-        ) : null}
+      <div className='y-stage'>
         <div className='y-globe-panel y-focus-card'>
           <div className='y-globe-head'>
             <div>
@@ -408,42 +382,12 @@ export default function Step2() {
                 </span>
               </h3>
             </div>
-            <div className='y-globe-actions'>
-              <div className='y-mode' role='group' aria-label='地球显示模式'>
-                <button
-                  type='button'
-                  className={mode === 'geo' ? 'is-on' : ''}
-                  aria-pressed={mode === 'geo'}
-                  onClick={() => setMode('geo')}
-                >
-                  地理模式
-                </button>
-                <button
-                  type='button'
-                  className={mode === 'net' ? 'is-on' : ''}
-                  aria-pressed={mode === 'net'}
-                  onClick={() => setMode('net')}
-                >
-                  网络模式
-                </button>
-              </div>
-              <button
-                type='button'
-                className='y-btn y-btn-s y-focus-toggle'
-                aria-pressed={focus}
-                onClick={() => setFocus(v => !v)}
-                title={focus ? 'Esc 也可退出' : '地图铺满视口，侧栏变成抽屉'}
-              >
-                {focus ? '退出聚焦' : '聚焦地图'}
-              </button>
-            </div>
           </div>
 
           <div className='y-globe'>
             <GisMap
               city={p.city}
               coords={null}
-              mode={mode}
               recenterSignal={0}
               onSelectCity={id => {
                 applyCity(id);
@@ -495,7 +439,7 @@ export default function Step2() {
 
           <details className='y-disclosure'>
             <summary>地图说明与坐标精度</summary>
-            <p>{modeNote}</p>
+            <p>{mapNote}</p>
             <p>
               地球为等距方位投影的示意渲染，城市坐标为近似经纬度，山脉为主要山系的脊线示意，均不用于地理测量。
             </p>
