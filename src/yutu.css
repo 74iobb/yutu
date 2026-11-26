@@ -12529,10 +12529,10 @@ html.y-motion-off #yutu2 .y-step-stage.is-page-dragging {
   inset: 0;
   background:
     radial-gradient(
-      62% 56% at 50% 42%,
-      rgba(255, 253, 248, 0.72) 0%,
-      rgba(255, 251, 244, 0.5) 55%,
-      rgba(255, 249, 240, 0.28) 100%
+      58% 52% at 50% 42%,
+      rgba(255, 253, 248, 0.64) 0%,
+      rgba(255, 251, 244, 0.42) 55%,
+      rgba(255, 249, 240, 0.2) 100%
     ),
     linear-gradient(
       112deg,
@@ -12542,9 +12542,9 @@ html.y-motion-off #yutu2 .y-step-stage.is-page-dragging {
       transparent 68%
     );
   /* 磨砂玻璃：让彩玻璃变成柔焦底纹，而不是加一层白 */
-  /* 只做很轻的柔化，尽量保留城市照片的细节 */
-  -webkit-backdrop-filter: blur(2px) saturate(1.05);
-  backdrop-filter: blur(2px) saturate(1.05);
+  /* 几乎不做柔化，城市照片的楼宇与晚霞尽量保留 */
+  -webkit-backdrop-filter: blur(1px) saturate(1.06);
+  backdrop-filter: blur(1px) saturate(1.06);
   pointer-events: none;
   z-index: 0;
 }
@@ -12625,7 +12625,7 @@ html.y-motion-off #yutu2 .y-step-stage.is-page-dragging {
   stroke-width: 1.8;
   stroke-linejoin: round;
   transition: opacity var(--motion-base, 240ms) var(--ease-out, ease);
-  filter: drop-shadow(0 0 1.5px rgba(255, 255, 255, 0.7));
+  filter: drop-shadow(0 0 2px rgba(255, 255, 255, 0.85));
 }
 #yutu2 .y-radar-area.is-before {
   fill: rgba(214, 156, 62, 0.18);
@@ -12639,7 +12639,7 @@ html.y-motion-off #yutu2 .y-step-stage.is-page-dragging {
 }
 #yutu2 .y-radar-dot.is-before {
   fill: #b0781f;
-  filter: drop-shadow(0 0 1.5px rgba(255, 255, 255, 0.8));
+  filter: drop-shadow(0 0 2px rgba(255, 255, 255, 0.9));
 }
 #yutu2 .y-radar-dot.is-after {
   fill: #2f86c8;
@@ -12651,15 +12651,15 @@ html.y-motion-off #yutu2 .y-step-stage.is-page-dragging {
   font-weight: 600;
   letter-spacing: 0.02em;
   paint-order: stroke;
-  stroke: rgba(255, 253, 246, 0.98);
-  stroke-width: 3.2px;
+  stroke: rgba(255, 253, 246, 1);
+  stroke-width: 3.6px;
 }
 #yutu2 .y-radar-value {
   fill: rgba(107, 86, 54, 0.78);
   font-size: 9px;
   paint-order: stroke;
-  stroke: rgba(255, 253, 246, 0.88);
-  stroke-width: 2.6px;
+  stroke: rgba(255, 253, 246, 0.94);
+  stroke-width: 3px;
 }
 #yutu2 .y-radar figcaption {
   margin-top: 4px;
@@ -12672,7 +12672,7 @@ html.y-motion-off #yutu2 .y-step-stage.is-page-dragging {
   padding: 3px 10px;
   border-radius: 999px;
   border: 1px solid rgba(186, 150, 86, 0.22);
-  background: rgba(255, 253, 247, 0.82);
+  background: rgba(255, 253, 247, 0.88);
   -webkit-backdrop-filter: blur(4px);
   backdrop-filter: blur(4px);
   font-size: 11.5px;
