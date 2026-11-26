@@ -1151,6 +1151,12 @@
   }
 }
 @media (max-width: 640px) {
+  /* iOS 在字号 <16px 的输入框聚焦时会自动放大整页，正文版式会失真 */
+  #yutu2 input:not([type='range']):not([type='checkbox']):not([type='radio']),
+  #yutu2 select,
+  #yutu2 textarea {
+    font-size: 16px;
+  }
   #yutu2 .y-nav-step {
     flex-direction: column;
     align-items: stretch;
@@ -1996,7 +2002,12 @@ body {
 .y-page {
   max-width: 1240px;
   margin: 0 auto;
-  padding: 22px 20px 46px;
+  /* 真机：给刘海 / 底部手势条留安全区，内容不被裁掉 */
+  padding:
+    max(22px, env(safe-area-inset-top))
+    max(20px, env(safe-area-inset-right))
+    max(46px, env(safe-area-inset-bottom))
+    max(20px, env(safe-area-inset-left));
 }
 .y-page > #yutu2 {
   box-shadow: 0 10px 30px rgba(60, 52, 40, 0.08);
@@ -2035,7 +2046,11 @@ body {
 }
 @media (max-width: 520px) {
   .y-page {
-    padding: 10px 8px 30px;
+    padding:
+      max(10px, env(safe-area-inset-top))
+      max(8px, env(safe-area-inset-right))
+      max(30px, env(safe-area-inset-bottom))
+      max(8px, env(safe-area-inset-left));
   }
 }
 
@@ -3107,6 +3122,18 @@ body {
   position: relative;
   z-index: 0;
   background: #1e2c46;
+}
+/* 真机：地图高度随屏幕收敛，避免在手机上占掉整屏、横屏机型又过高 */
+@media (max-width: 640px) {
+  #yutu2 .y-campaign-leaflet {
+    height: 420px;
+  }
+}
+@media (max-height: 560px) and (orientation: landscape) {
+  #yutu2 .y-gis,
+  #yutu2 .y-campaign-leaflet {
+    height: 300px;
+  }
 }
 #yutu2 .y-campaign-leaflet .leaflet-container {
   background: transparent;
