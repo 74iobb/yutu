@@ -157,11 +157,6 @@ export default function Step4({ onOpenList, onOpenSummary }: Props = {}) {
                 {scope === 'nation'
                   ? `${city.name} 与全国样本城市`
                   : `${city.name} 的处境、推进圈与方向`}
-                <span className='y-mini'>
-                  {scope === 'nation'
-                    ? '从你的城市连向全国 46 城；城市坐标为近似值'
-                    : '方位与距离为示意，不对应真实地理方位'}
-                </span>
               </h3>
             </div>
             <div className='y-campaign-controls'>
@@ -494,9 +489,7 @@ export default function Step4({ onOpenList, onOpenSummary }: Props = {}) {
         </div>
         <div className='y-g2 y-g2-stretch'>
           <div className='y-card y-gap-card'>
-            <h3>
-              一次性资源存量<span className='y-mini'>用掉或过期即不可逆</span>
-            </h3>
+            <h3>一次性资源存量</h3>
             <div>
               {levelAssets.map(({ asset, lv }) => (
                 <div
@@ -642,9 +635,6 @@ export default function Step4({ onOpenList, onOpenSummary }: Props = {}) {
                         这条方向的资料（
                         {dirMaterials[hit.dir.name].items.length} 条 ·
                         已标在图上）
-                        {state.intent.trim() ? (
-                          <span className='y-mini'>按想法优先</span>
-                        ) : null}
                       </h4>
                       <ul className='y-mat-list'>
                         {dirMaterials[hit.dir.name].items
@@ -694,7 +684,6 @@ export default function Step4({ onOpenList, onOpenSummary }: Props = {}) {
             <div className='y-card'>
               <h3>
                 我的候选对比
-                <span className='y-mini'>最多 4 条 · 在方向清单加入</span>
                 {state.shortlist.length ? (
                   <button
                     type='button'
@@ -847,15 +836,9 @@ export default function Step4({ onOpenList, onOpenSummary }: Props = {}) {
         <summary className='y-zone-head'>
           <span className='y-zone-n'>03 / 关系</span>
           <h3>方向互斥、共用资源与条件关系</h3>
-          <p>互斥、共用资源与条件判定，均附检索依据</p>
         </summary>
         <div className='y-card'>
-          <h3>
-            方向之间的张力
-            <span className='y-mini'>
-              互斥、共用资源与条件判定，均附检索依据
-            </span>
-          </h3>
+          <h3>方向之间的张力</h3>
           {!tensions.length ? (
             <Empty>这一阶段的方向之间暂无已检索到的硬性互斥关系。</Empty>
           ) : (

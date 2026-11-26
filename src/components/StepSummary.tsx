@@ -188,10 +188,7 @@ export default function StepSummary({ onOpenList }: { onOpenList: () => void }) 
       <div className='y-next-grid'>
         <div className='y-next-main'>
           <div className='y-card'>
-            <h3>
-              处境 S
-              <span className='y-mini'>模型的状态输入</span>
-            </h3>
+            <h3>处境 S</h3>
             <div className='y-state-list'>
               {DIMS.map((d, i) => (
                 <div
@@ -221,10 +218,7 @@ export default function StepSummary({ onOpenList }: { onOpenList: () => void }) 
           </div>
 
           <div className='y-card'>
-            <h3>
-              迁移 T
-              <span className='y-mini'>归档记录判断，处境是否漂移由你决定</span>
-            </h3>
+            <h3>迁移 T</h3>
             {state.lastArchive ? (
               <GrowthDelta />
             ) : (
@@ -235,10 +229,7 @@ export default function StepSummary({ onOpenList }: { onOpenList: () => void }) 
           </div>
 
           <div className='y-card'>
-            <h3>
-              为什么是这个归属
-              <span className='y-mini'>带权余弦的逐维方向贡献</span>
-            </h3>
+            <h3>为什么是这个归属</h3>
             <div className='y-why-list'>
               {whyTop.map(x => {
                 const max = Math.max(
@@ -272,10 +263,7 @@ export default function StepSummary({ onOpenList }: { onOpenList: () => void }) 
 
         <aside className='y-next-side y-glass-rail'>
           <div className='y-card'>
-            <h3>
-              方向约束 C
-              <span className='y-mini'>只看已选 / 候选</span>
-            </h3>
+            <h3>方向约束 C</h3>
             {focused.length ? (
               <>
                 {focused.map(({ dir, f }) => {
@@ -336,10 +324,7 @@ export default function StepSummary({ onOpenList }: { onOpenList: () => void }) 
           </div>
 
           <div className='y-card'>
-            <h3>
-              相近经验 R
-              <span className='y-mini'>按处境相似度排序</span>
-            </h3>
+            <h3>相近经验 R</h3>
             {peerReviews.length ? (
               peerReviews.map(({ review: r, sim }) => {
                 const text = r.content.replace('[经验卡] ', '');
@@ -370,10 +355,7 @@ export default function StepSummary({ onOpenList }: { onOpenList: () => void }) 
 
           <details className='y-card y-fold-card' open>
             <summary className='y-fold-card-summary'>
-              <h3>
-                你的历史档案
-                <span className='y-mini'>{victoryHistory.length} 次</span>
-              </h3>
+              <h3>你的历史档案</h3>
               <span>展开</span>
             </summary>
             {recentVictories.length ? (
@@ -422,9 +404,7 @@ export default function StepSummary({ onOpenList }: { onOpenList: () => void }) 
 
           <details className='y-card y-fold-card'>
             <summary className='y-fold-card-summary'>
-              <h3>
-                模型边界<span className='y-mini'>必须明示</span>
-              </h3>
+              <h3>模型边界</h3>
               <span>展开</span>
             </summary>
             <Kv
@@ -450,10 +430,7 @@ export default function StepSummary({ onOpenList }: { onOpenList: () => void }) 
           </details>
 
           <div className='y-card'>
-            <h3>
-              一页纸摘要
-              <span className='y-mini'>把处境、归属、候选与资源带走</span>
-            </h3>
+            <h3>一页纸摘要</h3>
             <p className='y-note' style={{ paddingBottom: 8 }}>
               生成一份可离线保存的 Markdown。
             </p>

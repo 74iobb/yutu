@@ -18,7 +18,6 @@ import {
   liveByField,
   searchByField,
 } from '@/lib/search';
-import { SNAPSHOT_AT } from '@/data/snapshot-meta';
 import { useImmersive } from '@/lib/uiMotion';
 import { useYutu } from '@/store/YutuContext';
 import DirectionSky from './DirectionSky';
@@ -369,7 +368,6 @@ export default function Step3({ onOpenMap, onOpenSummary }: Props = {}) {
             <h3>
               同类处境者的记述
               <DataSourceBadge source='zhihuCases' showLabel={false} />
-              <span className='y-mini'>知乎检索，保留原文链接</span>
             </h3>
             <p className='y-note' style={{ paddingBottom: 6 }}>
               以下为知乎开放平台检索取得的真实内容，摘要来自原文；标注类型以便区分亲历记述、社区回答与文章。
@@ -408,16 +406,6 @@ export default function Step3({ onOpenMap, onOpenSummary }: Props = {}) {
                   style={{ fontSize: 12.5, fontWeight: 620, marginBottom: 4 }}
                 >
                   近期社区讨论
-                  <span
-                    className='y-mini'
-                    style={{
-                      fontWeight: 400,
-                      color: 'var(--y-muted)',
-                      marginLeft: 7,
-                    }}
-                  >
-                    知乎 CLI · {SNAPSHOT_AT} 快照
-                  </span>
                 </h4>
                 <p className='y-note' style={{ paddingBottom: 6 }}>
                   以下为按「{liveLabel}
