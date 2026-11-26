@@ -12501,67 +12501,46 @@ html.y-motion-off #yutu2 .y-step-stage.is-page-dragging {
   position: relative;
   margin: 10px 0 0;
   padding: 10px 12px 8px;
-  border: 1px solid rgba(186, 150, 86, 0.32);
+  border: 1px solid rgba(186, 150, 86, 0.38);
   border-radius: var(--y-r);
-  /* 薄金：浅香槟纸面 + 斜向箔光 + 暖金柔光 */
-  background:
-    linear-gradient(
-      112deg,
-      rgba(255, 255, 255, 0.5) 0%,
-      transparent 32%,
-      rgba(255, 250, 236, 0.55) 50%,
-      transparent 68%
-    ),
-    radial-gradient(
-      90% 70% at 50% 16%,
-      rgba(255, 253, 247, 0.95),
-      transparent 70%
-    ),
-    radial-gradient(
-      75% 60% at 84% 88%,
-      rgba(236, 212, 164, 0.55),
-      transparent 72%
-    ),
-    linear-gradient(180deg, #fbf5e8 0%, #f2e7d0 100%);
+  /* 用户提供的彩绘玻璃做底色，奶白纱压亮保证数据可读 */
+  background-color: #f7efdf;
+  background-image: url('./assets/y-radar-glass.jpg');
+  background-image:
+    image-set(
+      url('./assets/y-radar-glass.webp') type('image/webp'),
+      url('./assets/y-radar-glass.jpg') type('image/jpeg')
+    );
+  background-size: cover;
+  background-position: 50% 38%;
+  background-repeat: no-repeat;
   box-shadow:
-    0 24px 55px -40px rgba(150, 110, 40, 0.35),
-    inset 0 1px 0 rgba(255, 255, 255, 0.85),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.35);
+    0 24px 55px -40px rgba(150, 110, 40, 0.42),
+    inset 0 1px 0 rgba(255, 255, 255, 0.7);
   overflow: hidden;
+  isolation: isolate;
 }
-/* 缓慢扫过的箔光 */
+/* 奶白纱：中心更实、边缘更透，数据区安静、四周显色 */
 #yutu2 .y-radar::before {
   content: '';
   position: absolute;
-  top: -30%;
-  bottom: -30%;
-  left: -40%;
-  width: 40%;
-  background: linear-gradient(
-    100deg,
-    transparent,
-    rgba(255, 255, 255, 0.55),
-    rgba(255, 246, 220, 0.25),
-    transparent
-  );
-  transform: skewX(-12deg) translateX(-40%);
-  animation: yThinGoldSheen 16s ease-in-out infinite;
+  inset: 0;
+  background:
+    radial-gradient(
+      70% 62% at 50% 42%,
+      rgba(255, 253, 248, 0.95) 0%,
+      rgba(255, 251, 244, 0.84) 55%,
+      rgba(255, 249, 240, 0.7) 100%
+    ),
+    linear-gradient(
+      112deg,
+      rgba(255, 255, 255, 0.22) 0%,
+      transparent 32%,
+      rgba(255, 250, 236, 0.22) 50%,
+      transparent 68%
+    );
   pointer-events: none;
   z-index: 0;
-}
-@keyframes yThinGoldSheen {
-  0%,
-  55% {
-    transform: skewX(-12deg) translateX(-40%);
-    opacity: 0;
-  }
-  62% {
-    opacity: 0.7;
-  }
-  100% {
-    transform: skewX(-12deg) translateX(420%);
-    opacity: 0;
-  }
 }
 /* 顶部金线 */
 #yutu2 .y-radar::after {
@@ -12626,10 +12605,16 @@ html.y-motion-off #yutu2 .y-step-stage.is-page-dragging {
   fill: #6b5636;
   font-size: 10px;
   font-weight: 600;
+  paint-order: stroke;
+  stroke: rgba(255, 253, 246, 0.6);
+  stroke-width: 2px;
 }
 #yutu2 .y-radar-value {
-  fill: rgba(107, 86, 54, 0.72);
+  fill: rgba(107, 86, 54, 0.78);
   font-size: 9px;
+  paint-order: stroke;
+  stroke: rgba(255, 253, 246, 0.5);
+  stroke-width: 1.6px;
 }
 #yutu2 .y-radar figcaption {
   margin-top: 4px;
@@ -13390,10 +13375,6 @@ html.y-motion-off #yutu2 .y-step-stage.is-page-dragging {
 
 /* 关闭动效：系统 prefers-reduced-motion 与顶栏「动效 关」双重降级 */
 @media (prefers-reduced-motion: reduce) {
-  #yutu2 .y-radar::before {
-    animation: none;
-    opacity: 0;
-  }
   #yutu2 .y-gap-photo-poster,
   #yutu2 .y-gap-photo-sheen,
   #yutu2 .y-radar-sweep,
@@ -13424,10 +13405,6 @@ html.y-motion-off #yutu2 .y-river-sheen {
 html.y-motion-off #yutu2 .y-radar-stamen,
 html.y-motion-off #yutu2 .y-radar-bloom-sheen {
   animation: none;
-}
-html.y-motion-off #yutu2 .y-radar::before {
-  animation: none;
-  opacity: 0;
 }
 html.y-motion-off #yutu2 .y-gap-photo-poster {
   transform: none;
