@@ -12498,11 +12498,65 @@ html.y-motion-off #yutu2 .y-step-stage.is-page-dragging {
 /* ---------- V9：起点 → 现在 雷达对比 + 灵魂拷问 ---------- */
 
 #yutu2 .y-radar {
+  position: relative;
   margin: 10px 0 0;
   padding: 10px 12px 8px;
-  border: 1px solid var(--y-line);
+  border: 1px solid rgba(170, 200, 255, 0.16);
   border-radius: var(--y-r);
-  background: rgba(9, 16, 34, 0.55);
+  /* 与花适配的「暗夜舞台」：紫 / 青 / 金的极淡光晕 + 深蓝底 */
+  background:
+    radial-gradient(
+      80% 62% at 50% 34%,
+      rgba(130, 90, 230, 0.24),
+      transparent 72%
+    ),
+    radial-gradient(
+      70% 55% at 82% 80%,
+      rgba(45, 200, 230, 0.13),
+      transparent 72%
+    ),
+    radial-gradient(
+      60% 50% at 16% 82%,
+      rgba(255, 170, 70, 0.09),
+      transparent 72%
+    ),
+    linear-gradient(180deg, #0a1526 0%, #060b16 100%);
+  box-shadow:
+    0 26px 60px -42px rgba(90, 70, 180, 0.55),
+    inset 0 1px 0 rgba(255, 255, 255, 0.07);
+  overflow: hidden;
+}
+#yutu2 .y-radar::before {
+  content: '';
+  position: absolute;
+  inset: -30%;
+  background: radial-gradient(
+    50% 50% at 50% 50%,
+    rgba(140, 100, 240, 0.16),
+    transparent 70%
+  );
+  pointer-events: none;
+  z-index: 0;
+}
+#yutu2 .y-radar::after {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(180, 215, 255, 0.4),
+    transparent
+  );
+  pointer-events: none;
+}
+#yutu2 .y-radar > * {
+  position: relative;
+  z-index: 1;
+}
+#yutu2 .y-radar.is-compact {
+  padding: 8px 10px 6px;
 }
 #yutu2 .y-radar svg {
   display: block;
