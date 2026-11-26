@@ -127,7 +127,7 @@ const REDUCED_EFFECTS = SMALL_SCREEN || LOW_POWER;
 
 /** 下落粒子：每 4 颗里 1 条速度线，其余是水珠；错峰持续约 2s */
 const FALL_PARTICLES = Array.from(
-  { length: REDUCED_EFFECTS ? 64 : 108 },
+  { length: REDUCED_EFFECTS ? 96 : 156 },
   (_, i) => {
     const a = noise(i * 3 + 1);
     const b = noise(i * 3 + 2);
@@ -145,9 +145,38 @@ const FALL_PARTICLES = Array.from(
   }
 );
 
+/**
+ * 水束：之前只有 5 根，落到水面上显得单薄。
+ * 这里按确定性种子铺开 18 根（移动端 / 低配 10 根）：
+ * 核心密、外缘疏，越往下越向落点收拢，连成一挂连续的瀑布。
+ */
+const STREAMS = Array.from(
+  { length: REDUCED_EFFECTS ? 10 : 18 },
+  (_, i) => {
+    const a = noise(i * 13 + 600);
+    const b = noise(i * 13 + 601);
+    const c = noise(i * 13 + 602);
+    /** 每 6 根里 1 根外缘细束，其余聚在核心水柱附近 */
+    const outer = i % 6 === 0;
+    const spread = (a - 0.5) * (outer ? 220 : 118);
+    const x0 = 500 + spread * (0.75 + b * 0.35) + (c - 0.5) * 10;
+    const x2 = 500 + spread * 0.5 + (c - 0.5) * 16;
+    const bow = (b - 0.5) * (outer ? 46 : 26);
+    return {
+      d: `M ${x0.toFixed(1)} -190 C ${(x0 + bow).toFixed(1)} 90, ${(
+        x2 - bow
+      ).toFixed(1)} 360, ${x2.toFixed(1)} 600`,
+      width: (outer ? 0.7 : 1.1) + b * (outer ? 0.9 : 2.6),
+      opacity: outer ? 0.34 + c * 0.18 : 0.55 + c * 0.4,
+      delay: Math.round(120 + c * 980),
+      gradient: ['y-ov-stream', 'y-ov-stream-2', 'y-ov-stream-3'][i % 3],
+    };
+  }
+);
+
 /** 落点溅水：从水面向两侧上方抛起的水星 */
 const SPLASH_PARTICLES = Array.from(
-  { length: REDUCED_EFFECTS ? 18 : 28 },
+  { length: REDUCED_EFFECTS ? 24 : 38 },
   (_, i) => {
     const a = noise(i * 5 + 100);
     const b = noise(i * 5 + 101);
@@ -1173,36 +1202,27 @@ export default function Overture() {
               pathLength={1}
               stroke='url(#y-ov-stream)'
             />
+            {/* 第二层水幕，偏向另一侧，让整挂水的体积更厚 */}
             <path
-              className='y-ov-fall'
-              d='M 500 -160 C 518 120, 482 340, 500 600'
-              pathLength={1}
-              stroke='url(#y-ov-stream)'
-            />
-            <path
-              className='y-ov-fall y-ov-fall-b'
-              d='M 484 -120 C 504 140, 466 340, 490 588'
+              className='y-ov-veil y-ov-veil-b'
+              d='M 500 -200 C 484 110, 516 350, 500 600'
               pathLength={1}
               stroke='url(#y-ov-stream-2)'
             />
-            <path
-              className='y-ov-fall y-ov-fall-c'
-              d='M 516 -180 C 526 160, 484 360, 508 604'
-              pathLength={1}
-              stroke='url(#y-ov-stream-3)'
-            />
-            <path
-              className='y-ov-fall y-ov-fall-d'
-              d='M 492 -200 C 510 120, 474 330, 496 596'
-              pathLength={1}
-              stroke='url(#y-ov-stream-2)'
-            />
-            <path
-              className='y-ov-fall y-ov-fall-e'
-              d='M 508 -130 C 520 150, 490 350, 504 600'
-              pathLength={1}
-              stroke='url(#y-ov-stream-3)'
-            />
+            {STREAMS.map((stream, i) => (
+              <path
+                key={i}
+                className='y-ov-fall'
+                d={stream.d}
+                pathLength={1}
+                stroke={`url(#${stream.gradient})`}
+                style={{
+                  strokeWidth: stream.width,
+                  strokeOpacity: stream.opacity,
+                  animationDelay: `${stream.delay}ms`,
+                }}
+              />
+            ))}
             {FALL_PARTICLES.map((p, i) => {
               const style = {
                 animationDelay: `${p.delay}ms`,
