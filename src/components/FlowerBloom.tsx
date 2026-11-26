@@ -219,9 +219,10 @@ export default function FlowerBloom({ cx, cy, r }: Props) {
           <stop offset='100%' stopColor='#35cfff' stopOpacity='0' />
         </radialGradient>
         <radialGradient id={`${uid}-shade`} cx='50%' cy='50%' r='50%'>
-          <stop offset='0%' stopColor='#071426' stopOpacity='0.72' />
-          <stop offset='52%' stopColor='#071426' stopOpacity='0.24' />
-          <stop offset='100%' stopColor='#071426' stopOpacity='0' />
+          {/* 中性深影：深蓝舞台与深金舞台都不偏色 */}
+          <stop offset='0%' stopColor='#08080c' stopOpacity='0.72' />
+          <stop offset='52%' stopColor='#08080c' stopOpacity='0.24' />
+          <stop offset='100%' stopColor='#08080c' stopOpacity='0' />
         </radialGradient>
         <linearGradient id={`${uid}-sheen`} x1='0' y1='0' x2='1' y2='1'>
           <stop offset='0%' stopColor='#ffffff' stopOpacity='0' />
