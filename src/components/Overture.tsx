@@ -680,6 +680,45 @@ function setAudioMuted(muted: boolean): void {
 }
 
 /**
+ * 彻底收声：停掉录音 / 音乐 / 系统语音，并连续取消几次语音
+ * （部分浏览器第一次 cancel 时有延迟），最后在确认没有新音乐时
+ * 挂起整个音频上下文，确保主流程里一点声音都不漏。
+ */
+function hardStopAudio(): void {
+  stopVoice();
+  stopSpeech();
+  stopMusic();
+  setAudioMuted(true);
+  try {
+    const synth = window.speechSynthesis;
+    if (synth) {
+      synth.cancel();
+      [120, 320, 640, 1000, 1600].forEach((delay) => {
+        window.setTimeout(() => {
+          try {
+            synth.cancel();
+          } catch {
+            /* ignore */
+          }
+        }, delay);
+      });
+    }
+  } catch {
+    /* ignore */
+  }
+  window.setTimeout(() => {
+    try {
+      /* 期间用户重开开场时 musicNodes 会重新存在，此时不要挂起 */
+      if (!musicNodes && audioCtx && audioCtx.state === 'running') {
+        void audioCtx.suspend();
+      }
+    } catch {
+      /* ignore */
+    }
+  }, 900);
+}
+
+/**
  * 单行诗句：逐字拆开，`--i` 控制字与字的错峰、`--start` 控制这一行的起点。
  * 单独成组件而不是用 Fragment —— 平台会给元素注入属性，
  * 而 Fragment 只接受 key / children。
@@ -775,10 +814,7 @@ export default function Overture() {
   }, [markAudioReady, startVoice]);
 
   const skip = useCallback(() => {
-    stopVoice();
-    stopSpeech();
-    stopMusic();
-    setAudioMuted(true);
+    hardStopAudio();
     setSeq((s) => (s.phase === 'playing' ? { ...s, phase: 'leaving' } : s));
   }, []);
 
@@ -861,9 +897,7 @@ export default function Overture() {
     window.addEventListener('yutu:overture', onReplay);
     return () => {
       window.removeEventListener('yutu:overture', onReplay);
-      stopVoice();
-      stopSpeech();
-      stopMusic();
+      hardStopAudio();
     };
   }, []);
 
@@ -905,10 +939,8 @@ export default function Overture() {
    */
   useEffect(() => {
     if (seq.phase !== 'leaving') return;
-    /* 退场时把所有开篇声音一起收掉：音乐、录音、系统语音 */
-    stopVoice();
-    stopSpeech();
-    stopMusic();
+    /* 退场时把所有开篇声音一起硬停：音乐、录音、系统语音 */
+    hardStopAudio();
     const shell = document.getElementById('yutu2');
     shell?.classList.add('y-ov-reveal');
     const timer = window.setTimeout(() => {
