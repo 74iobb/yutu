@@ -41,6 +41,10 @@ export default function YutuApp() {
       <Overture />
       <p className="y-page-foot">
         域途 · 体验式生涯陪伴系统 ｜ 数据来自知乎开放平台检索快照与平台数据表；示意数据已在界面标注。
+        ｜{' '}
+        <a href="./manual.html" target="_blank" rel="noreferrer">
+          使用说明书
+        </a>
         <br />
         背景：用户提供的叶面水珠照片。
       </p>

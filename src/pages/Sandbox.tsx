@@ -1165,7 +1165,10 @@ export default function Sandbox() {
       </div>
 
       <p className='y-page-foot'>
-        域途 · 体验式生涯陪伴系统 ｜ 沙盘是固定规则的启发式推演，不是预测。
+        域途 · 体验式生涯陪伴系统 ｜ 沙盘是固定规则的启发式推演，不是预测。 ｜{' '}
+        <a href='./manual.html' target='_blank' rel='noreferrer'>
+          使用说明书
+        </a>
         <br />
         背景：用户提供的叶面水珠照片。
       </p>

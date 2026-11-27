@@ -684,6 +684,16 @@ export function Shell({ children }: { children: ReactNode }) {
                     <span>沙盘推演</span>
                     <span aria-hidden='true'>→</span>
                   </a>
+                  <a
+                    className='y-more-item'
+                    href='./manual.html'
+                    target='_blank'
+                    rel='noreferrer'
+                    onClick={() => setMoreOpen(false)}
+                  >
+                    <span>使用说明书</span>
+                    <span aria-hidden='true'>↗</span>
+                  </a>
                   <button
                     type='button'
                     className='y-more-item'
