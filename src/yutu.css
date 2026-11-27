@@ -1209,6 +1209,11 @@
 #yutu2 .y-chip-row .y-chip {
   margin: 0;
 }
+/* 顶部常驻说明书入口：与「更多」同级，避免入口被折叠 */
+#yutu2 .y-doc-chip {
+  text-decoration: none;
+  cursor: pointer;
+}
 #yutu2 .y-sync-wrap {
   position: relative;
   display: inline-flex;

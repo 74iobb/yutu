@@ -643,6 +643,15 @@ export function Shell({ children }: { children: ReactNode }) {
               <i className='y-motion-dot' />
               动效 {motionOff ? '关' : '开'}
             </button>
+            <a
+              className='y-chip y-doc-chip'
+              href='./manual.html'
+              target='_blank'
+              rel='noreferrer'
+              title='打开使用说明书'
+            >
+              说明书
+            </a>
             <span className='y-more-wrap' ref={moreRef}>
               <button
                 type='button'
