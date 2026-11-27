@@ -233,6 +233,31 @@ def footer_xml(label):
         '</w:p></w:ftr>'
     )
 
+def toc_xml():
+    """目录域：打开 Word 后自动/手动更新域即可生成带页码的目录。"""
+    return (
+        "<w:p><w:pPr><w:spacing w:before=\"240\" w:after=\"160\"/></w:pPr>"
+        '<w:r><w:rPr><w:b/><w:color w:val="0E5B4C"/><w:sz w:val="32"/><w:szCs w:val="32"/></w:rPr>'
+        "<w:t>目录</w:t></w:r></w:p>"
+        "<w:p><w:r><w:fldChar w:fldCharType=\"begin\"/></w:r>"
+        '<w:r><w:instrText xml:space="preserve"> TOC \\o "1-3" \\h \\z \\u </w:instrText></w:r>'
+        '<w:r><w:fldChar w:fldCharType="separate"/></w:r>'
+        "<w:r><w:t>目录将在打开文档后更新；若未显示，请右键 → 更新域 → 更新整个目录。</w:t></w:r>"
+        '<w:r><w:fldChar w:fldCharType="end"/></w:r></w:p>'
+        '<w:p><w:r><w:br w:type="page"/></w:r></w:p>'
+    )
+
+
+def settings_xml():
+    """要求 Word 打开时更新域（用于目录）。"""
+    return (
+        '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
+        f'<w:settings xmlns:w="{W_NS}">'
+        '<w:updateFields w:val="true"/>'
+        "</w:settings>"
+    )
+
+
 SECT = (
     "<w:sectPr>"
     '<w:footerReference w:type="default" r:id="rId2"/>'
@@ -366,12 +391,23 @@ def main():
         action="store_true",
         help="仅首个 H1 作为标题，H2/H3/H4 逐级映射为 Heading1/2/3",
     )
+    ap.add_argument(
+        "--toc",
+        action="store_true",
+        help="在标题后插入 Word 目录域（打开后更新域生成页码）",
+    )
     args = ap.parse_args()
 
     with open(args.src, encoding="utf-8") as f:
         md = f.read()
 
     body = build_body(md, simple_headings=args.simple_headings)
+    if args.toc:
+        # 插在文档标题（第一个段落）之后
+        idx = body.find("</w:p>")
+        if idx != -1:
+            cut = idx + len("</w:p>")
+            body = body[:cut] + toc_xml() + body[cut:]
     document = (
         '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
         f'<w:document xmlns:w="{W_NS}" xmlns:r="{R_NS}">'
@@ -402,6 +438,19 @@ def main():
   <Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/footer" Target="footer1.xml"/>
 </Relationships>
 """
+    if args.toc:
+        content_types = content_types.replace(
+            "</Types>",
+            '  <Override PartName="/word/settings.xml" '
+            'ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.settings+xml"/>\n'
+            "</Types>",
+        )
+        doc_rels = doc_rels.replace(
+            "</Relationships>",
+            '  <Relationship Id="rId3" '
+            'Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/settings" '
+            'Target="settings.xml"/>\n</Relationships>',
+        )
 
     core = (
         '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
@@ -419,6 +468,8 @@ def main():
         z.writestr("word/styles.xml", STYLES)
         z.writestr("word/footer1.xml", footer_xml(args.footer))
         z.writestr("word/_rels/document.xml.rels", doc_rels)
+        if args.toc:
+            z.writestr("word/settings.xml", settings_xml())
         z.writestr("docProps/core.xml", core)
 
     print("written:", args.out)
