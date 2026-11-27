@@ -10,7 +10,7 @@
 **演示片（录屏版）**：<https://74iobb.github.io/yutu/demo-show.html> ｜ **录制提词器**：<https://74iobb.github.io/yutu/teleprompter.html>  
 **项目计划书（Word）**：[`docs/域途-项目计划书.docx`](docs/域途-项目计划书.docx) ｜ [Markdown](docs/域途-项目计划书.md)  
 **产品说明计划书**：[`docs/域途-产品说明计划书.md`](docs/域途-产品说明计划书.md)  
-**使用说明书**：[`docs/域途-使用说明书.md`](docs/域途-使用说明书.md) ｜ [Word](docs/域途-使用说明书.docx)  
+**使用说明书**：[`docs/域途-使用说明书.md`](docs/域途-使用说明书.md) ｜ [浏览器直接打开](docs/域途-使用说明书.html) ｜ [Word](docs/域途-使用说明书.docx)  
 **参赛提交清单**：[`docs/域途-作品提交清单.md`](docs/域途-作品提交清单.md)  
 **产品哲学**：[`docs/PHILOSOPHY.md`](docs/PHILOSOPHY.md)
 
@@ -94,7 +94,9 @@ scripts/        计划书 DOCX 生成、知乎快照刷新
 | [`docs/域途-项目计划书.docx`](docs/域途-项目计划书.docx) | 赛事提交版项目计划书（含目录、47 张表，可直接编辑） |
 | [`docs/域途-产品说明计划书.md`](docs/域途-产品说明计划书.md) | 产品说明 + 迭代计划（评审重点） |
 | [`docs/域途-使用说明书.md`](docs/域途-使用说明书.md) | 面向使用者 / 评审的逐步操作手册（含 Word 版） |
+| [`docs/域途-使用说明书.html`](docs/域途-使用说明书.html) | 说明书网页版，浏览器直接打开，可打印 / 另存为 PDF |
 | [`docs/域途-使用说明书.docx`](docs/域途-使用说明书.docx) | 使用说明书 Word 版（含目录，可直接编辑） |
+| [`docs/yutu-manual-v1.0.docx`](docs/yutu-manual-v1.0.docx) | Word 兼容版（ASCII 文件名、无目录域） |
 | [`docs/域途-作品提交清单.md`](docs/域途-作品提交清单.md) | 参赛材料逐项对照与执行 |
 | [`docs/PHILOSOPHY.md`](docs/PHILOSOPHY.md) | 产品圣经与界面禁令 |
 | [`docs/DATA-SOURCES.md`](docs/DATA-SOURCES.md) | 数据来源与口径 |
