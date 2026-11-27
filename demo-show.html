@@ -1,0 +1,254 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="robots" content="noindex, nofollow" />
+<title>域途 · 演示片（录屏版）</title>
+<link rel="stylesheet" href="fonts/400.css" />
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%;background:#05080d;overflow:hidden;
+    font-family:"Noto Sans SC",-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;}
+  #stage{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:#05080d;}
+  .slide{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+    opacity:0;transition:opacity .9s ease;pointer-events:none;}
+  .slide.on{opacity:1}
+  .slide img{width:100%;height:100%;object-fit:contain;transform:scale(1.001);
+    transition-property:transform;transition-timing-function:linear;will-change:transform;}
+  .slide.kb img{transform:scale(1.075)}
+  #cap{position:absolute;left:50%;bottom:7%;transform:translateX(-50%);
+    width:min(1500px,88vw);text-align:center;opacity:0;transition:opacity .5s ease;z-index:5;}
+  #cap.on{opacity:1}
+  #cap span{display:inline-block;padding:.55em 1.1em;border-radius:12px;
+    background:rgba(8,12,18,.72);color:#fff;font-size:clamp(18px,1.75vw,34px);
+    line-height:1.5;letter-spacing:.02em;backdrop-filter:blur(6px);
+    box-shadow:0 10px 30px rgba(0,0,0,.35);}
+  #cap em{color:#f0d29a;font-style:normal;font-weight:700}
+  .title{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;
+    gap:18px;background:radial-gradient(120% 90% at 50% 40%,#16233a 0%,#070b12 70%);opacity:0;transition:opacity 1s;
+    pointer-events:none;z-index:4;}
+  .title.on{opacity:1}
+  .title h1{color:#f5efe0;font-size:clamp(40px,6vw,104px);letter-spacing:.22em;font-weight:800;
+    text-shadow:0 8px 40px rgba(240,210,154,.25);}
+  .title p{color:#9fb0c8;font-size:clamp(15px,1.5vw,26px);letter-spacing:.18em}
+  .title .sub{color:#f0d29a;font-size:clamp(14px,1.25vw,22px);letter-spacing:.12em;margin-top:6px}
+  #bar{position:fixed;top:0;left:0;right:0;height:4px;background:rgba(255,255,255,.08);z-index:20}
+  #fill{height:100%;width:0;background:linear-gradient(90deg,#f0d29a,#e8c98f)}
+  #hud{position:fixed;left:0;right:0;bottom:0;display:flex;gap:14px;align-items:center;justify-content:center;
+    padding:10px;font-size:12px;color:#6e7c90;z-index:20;transition:opacity .4s;
+    background:linear-gradient(transparent,rgba(5,8,13,.9))}
+  #hud.hide{opacity:0;pointer-events:none}
+  #hud kbd{background:#141b24;border:1px solid #23303f;border-radius:5px;padding:1px 6px;color:#9fb0c8;font-family:inherit}
+  #gate{position:fixed;inset:0;z-index:30;display:flex;flex-direction:column;align-items:center;justify-content:center;
+    gap:22px;background:rgba(3,5,9,.94);color:#e9e2d2;text-align:center;padding:24px}
+  #gate h2{font-size:clamp(22px,2.4vw,38px);letter-spacing:.14em;font-weight:700}
+  #gate p{color:#8b98a8;font-size:clamp(13px,1.1vw,17px);line-height:1.9;max-width:640px}
+  #gate button{margin-top:8px;padding:14px 42px;border-radius:999px;border:1px solid rgba(240,210,154,.5);
+    background:linear-gradient(180deg,rgba(240,210,154,.22),rgba(240,210,154,.08));color:#f6eeda;
+    font-size:clamp(15px,1.2vw,19px);letter-spacing:.12em;cursor:pointer}
+  #gate button:disabled{opacity:.4;cursor:default}
+</style>
+</head>
+<body>
+<div id="stage">
+  <div class="title" id="t0"><h1>域 途</h1><p>多维沃罗诺伊体验式生涯陪伴系统</p><div class="sub">远方是方向，不是终点；计划是草稿，由你改写</div></div>
+  <div class="slide" data-img="demo/01-step1-top.webp?v=2"></div>
+  <div class="slide" data-img="demo/02-step2.webp?v=2"></div>
+  <div class="slide" data-img="demo/03-step3-list.webp?v=2"></div>
+  <div class="slide" data-img="demo/04-step3-map.webp?v=2"></div>
+  <div class="slide" data-img="demo/05b-step3-summary-picked.webp?v=2"></div>
+  <div class="slide" data-img="demo/06-sandbox.webp?v=2"></div>
+  <div class="slide" data-img="demo/08-step4-tasks.webp?v=2"></div>
+  <div class="slide" data-img="demo/09-step4-stop.webp?v=2"></div>
+  <div class="title" id="tEnd"><h1>看 清 处 境</h1><p>比得到一个答案更重要</p><div class="sub">域途 · 知乎黑客松 S3</div></div>
+  <div id="cap"><span></span></div>
+</div>
+<div id="bar"><div id="fill"></div></div>
+<div id="hud">
+  <span><kbd>空格</kbd> 暂停/继续</span>
+  <span><kbd>R</kbd> 重播</span>
+  <span><kbd>F</kbd> 全屏</span>
+  <span><kbd>C</kbd> 字幕开关</span>
+  <span id="clock">00:00 / 00:00</span>
+</div>
+<div id="gate">
+  <h2>域途 · 演示片</h2>
+  <p>约 3 分钟，自动播放。<br>录屏时按 <b>F</b> 全屏、按 <b>C</b> 可关字幕。<br>播放前请确认浏览器缩放 100%、无通知弹窗。</p>
+  <button id="go" disabled>加载中…</button>
+</div>
+
+<script>
+(function () {
+  var SCENES = [
+    { dur: 6,  title: 't0',   cap: '一台真实环境的显影仪' },
+    { dur: 20, idx: 0, kb: 1, caps: ['它不告诉小林该不该辞职，也不告诉他哪条路更好。',
+                                     '它只把<em>此刻站在哪</em>、能往哪走、走一步要付什么，摆到桌面上。'] },
+    { dur: 18, idx: 1, kb: 1, caps: ['城市决定机会密度。同样的 27 岁，<em>在深圳和在县城</em>，能走的路不同。',
+                                     '同一座城市，核心区、近郊、县域，也是三种完全不同的处境。'] },
+    { dur: 18, idx: 2, kb: 1, caps: ['这一步只检查一件事：<em>你的回答有没有自相矛盾</em>。',
+                                     '它不替你圆过去，只把矛盾指出来——你可能还没跟家里谈过。'] },
+    { dur: 16, idx: 3, kb: 1, caps: ['飞线只表示信息密度，<em>不代表任何人流向了哪里</em>。',
+                                     '每一条讨论都能点回原文，页头写着快照时间。'] },
+    { dur: 16, idx: 4, kb: 1, caps: ['归属摘要回答「你和谁更像」，',
+                                     '但它<em>不参与你自己的判断</em>。相似度高，只说明坐标离得近。'] },
+    { dur: 18, idx: 5, kb: 1, caps: ['六个格子，每个代表一个季度。你可以先在这里活一遍。',
+                                     '规则是确定的，<em>没有随机</em>。维持现状和行动之后，并排放着。'] },
+    { dur: 16, idx: 6, kb: 1, caps: ['每条任务都有前置条件、风险、完成标准。',
+                                     '做完一件，不是打卡结束，是回来复盘。'] },
+    { dur: 16, idx: 7, kb: 1, caps: ['归档之后，七维坐标<em>真的会动</em>。',
+                                     '三问留空的记录不会进入公共池——宁可少收，也不收空话。'] },
+    { dur: 9,  title: 'tEnd', cap: '看清处境，比得到一个答案更重要' }
+  ];
+
+  var slides = Array.prototype.slice.call(document.querySelectorAll('.slide'));
+  var t0 = document.getElementById('t0');
+  var tEnd = document.getElementById('tEnd');
+  var capEl = document.getElementById('cap');
+  var capSpan = capEl.querySelector('span');
+  var fillEl = document.getElementById('fill');
+  var clockEl = document.getElementById('clock');
+  var gate = document.getElementById('gate');
+  var goBtn = document.getElementById('go');
+
+  var TOTAL = SCENES.reduce(function (a, s) { return a + s.dur; }, 0);
+  var idx = -1, running = false, raf = 0;
+  var t0stamp = 0, sceneStart = 0, elapsedBefore = 0, pausedSceneElapsed = 0;
+  var capTimer = [], capVisible = true;
+
+  function fmt(sec) {
+    var m = Math.floor(sec / 60), s = Math.floor(sec % 60);
+    return (m < 10 ? '0' : '') + m + ':' + (s < 10 ? '0' : '') + s;
+  }
+  clockEl.textContent = '00:00 / ' + fmt(TOTAL);
+
+  // 预加载
+  var loaded = 0;
+  slides.forEach(function (s) {
+    var img = new Image();
+    img.onload = img.onerror = function () {
+      loaded++;
+      if (loaded === slides.length) { goBtn.disabled = false; goBtn.textContent = '开始播放'; }
+    };
+    img.src = s.getAttribute('data-img');
+    s.appendChild(img);
+  });
+
+  function clearScene() {
+    slides.forEach(function (s) { s.classList.remove('on', 'kb'); s.querySelector('img').style.transitionDuration = '0s'; });
+    t0.classList.remove('on');
+    tEnd.classList.remove('on');
+    capEl.classList.remove('on');
+    capTimer.forEach(clearTimeout);
+    capTimer = [];
+  }
+
+  function setCap(html, durSec) {
+    if (!capVisible) return;
+    capSpan.innerHTML = html;
+    capEl.classList.add('on');
+    capTimer.push(setTimeout(function () { capEl.classList.remove('on'); }, Math.max(800, durSec * 1000 - 400)));
+  }
+
+  function showScene(i) {
+    clearScene();
+    var sc = SCENES[i];
+    if (!sc) return;
+
+    if (sc.title) {
+      document.getElementById(sc.title).classList.add('on');
+      setCap(sc.cap, sc.dur * 0.85);
+      return;
+    }
+
+    var el = slides[sc.idx];
+    var img = el.querySelector('img');
+    el.classList.add('on');
+    if (sc.kb) {
+      img.style.transitionDuration = sc.dur + 's';
+      void el.offsetWidth;          // 强制 reflow，让过渡从 scale(1) 开始
+      el.classList.add('kb');
+    }
+    var caps = sc.caps || [];
+    if (caps.length === 1) {
+      setCap(caps[0], sc.dur * 0.85);
+    } else if (caps.length >= 2) {
+      var half = sc.dur / 2;
+      setCap(caps[0], half);
+      capTimer.push(setTimeout(function () { setCap(caps[1], half); }, half * 1000));
+    }
+  }
+
+  function advance() {
+    idx++;
+    if (idx >= SCENES.length) { finish(); return; }
+    showScene(idx);
+    sceneStart = performance.now();
+  }
+
+  function loop() {
+    if (!running) return;
+    var now = performance.now();
+    var sc = SCENES[idx];
+    if (sc && now - sceneStart >= sc.dur * 1000) advance();
+
+    var total = elapsedBefore + (now - t0stamp) / 1000;
+    fillEl.style.width = Math.min(100, (total / TOTAL) * 100) + '%';
+    clockEl.textContent = fmt(Math.min(TOTAL, total)) + ' / ' + fmt(TOTAL);
+    raf = requestAnimationFrame(loop);
+  }
+
+  function start() {
+    clearScene();
+    idx = -1;
+    elapsedBefore = 0;
+    pausedSceneElapsed = 0;
+    running = true;
+    t0stamp = performance.now();
+    advance();
+    raf = requestAnimationFrame(loop);
+  }
+
+  function pause() {
+    if (!running) return;
+    running = false;
+    cancelAnimationFrame(raf);
+    var now = performance.now();
+    elapsedBefore += (now - t0stamp) / 1000;
+    pausedSceneElapsed = now - sceneStart;
+  }
+
+  function resume() {
+    if (running) return;
+    running = true;
+    t0stamp = performance.now();
+    sceneStart = performance.now() - pausedSceneElapsed;
+    raf = requestAnimationFrame(loop);
+  }
+
+  function finish() {
+    running = false;
+    cancelAnimationFrame(raf);
+    fillEl.style.width = '100%';
+    clockEl.textContent = fmt(TOTAL) + ' / ' + fmt(TOTAL);
+  }
+
+  goBtn.onclick = function () {
+    gate.style.display = 'none';
+    start();
+  };
+
+  document.addEventListener('keydown', function (e) {
+    if (e.code === 'Space') { e.preventDefault(); running ? pause() : resume(); }
+    if (e.key === 'r' || e.key === 'R') { start(); }
+    if (e.key === 'f' || e.key === 'F') { if (!document.fullscreenElement) document.documentElement.requestFullscreen?.(); else document.exitFullscreen?.(); }
+    if (e.key === 'c' || e.key === 'C') {
+      capVisible = !capVisible;
+      if (!capVisible) capEl.style.display = 'none';
+      else capEl.style.display = '';
+    }
+  });
+})();
+</script>
+</body>
+</html>
